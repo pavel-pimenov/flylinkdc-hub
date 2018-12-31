@@ -22,9 +22,9 @@
 //------------------------------------------------------------------------------
 
 #if LUA_VERSION_NUM > 501
-    int RegIP2Country(lua_State * pLua);
+int RegIP2Country(lua_State * pLua);
 #else
-    void RegIP2Country(lua_State * pLua);
+void RegIP2Country(lua_State * pLua);
 #endif
 //------------------------------------------------------------------------------
 

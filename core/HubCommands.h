@@ -24,20 +24,22 @@
 struct User;
 //---------------------------------------------------------------------------
 
-struct ChatCommand {
+struct ChatCommand
+{
 	User * m_pUser;
-
+	
 	char * m_sCommand;
-
+	
 	uint32_t m_ui32CommandLen;
-
+	
 	bool m_bFromPM;
 };
 
-class HubCommands {
+class HubCommands
+{
 private:
 	static ChatCommand m_ChatCommand;
-
+	
 	static bool AddRegUser(ChatCommand * pChatCommand);
 	static bool Ban(ChatCommand * pChatCommand);
 	static bool BanIp(ChatCommand * pChatCommand);
@@ -51,7 +53,7 @@ private:
 	static bool Drop(ChatCommand * pChatCommand);
 	static bool DelRegUser(ChatCommand * pChatCommand);
 	static bool Debug(ChatCommand * pChatCommand);
-
+	
 	static bool FullBan(ChatCommand * pChatCommand);
 	static bool FullBanIp(ChatCommand * pChatCommand);
 	static bool FullTempBan(ChatCommand * pChatCommand);
@@ -69,7 +71,7 @@ private:
 	static bool GetRangePermBans(ChatCommand * pChatCommand);
 	static bool GetRangeTempBans(ChatCommand * pChatCommand);
 	static bool Help(ChatCommand * pChatCommand);
-
+	
 	static bool MyIp(ChatCommand * pChatCommand);
 	static bool MassMsg(ChatCommand * pChatCommand);
 	static bool NickBan(ChatCommand * pChatCommand);
@@ -78,7 +80,7 @@ private:
 	static bool OpMassMsg(ChatCommand * pChatCommand);
 	static bool Passwd(ChatCommand * pChatCommand);
 	static bool PermUnban(ChatCommand * pChatCommand);
-
+	
 	static bool RestartScripts(ChatCommand * pChatCommand);
 	static bool Restart(ChatCommand * pChatCommand);
 	static bool ReloadTxt(ChatCommand * pChatCommand);
@@ -98,23 +100,23 @@ private:
 	static bool Topic(ChatCommand * pChatCommand);
 	static bool Unban(ChatCommand * pChatCommand);
 	static bool Ungag(ChatCommand * pChatCommand);
-
-    static bool Ban(ChatCommand * pChatCommand, const bool bFull);
-    static bool BanIp(ChatCommand * pChatCommand, const bool bFull);
-    static bool NickBan(ChatCommand * pChatCommand, char * sReason);
-    static bool TempBan(ChatCommand * pChatCommand, const bool bFull);
-    static bool TempBanIp(ChatCommand * pChatCommand, const bool bFull);
-    static bool TempNickBan(ChatCommand * pChatCommand, char * sNick, char * sTime, const uint16_t ui16TimeLen, char * sReason, const bool bNotNickBan = false);
-    static bool RangeBan(ChatCommand * pChatCommand, const bool bFull);
-    static bool RangeTempBan(ChatCommand * pChatCommand, const bool bFull);
-    static bool RangeUnban(ChatCommand * pChatCommand);
-    static bool RangeUnban(ChatCommand * pChatCommand, const uint8_t ui8Type);
-
-    static void SendNoPermission(ChatCommand * pChatCommand);
-    static int CheckFromPm(ChatCommand * pChatCommand);
-    static void UncountDeflood(ChatCommand * pChatCommand);
+	
+	static bool Ban(ChatCommand * pChatCommand, const bool bFull);
+	static bool BanIp(ChatCommand * pChatCommand, const bool bFull);
+	static bool NickBan(ChatCommand * pChatCommand, char * sReason);
+	static bool TempBan(ChatCommand * pChatCommand, const bool bFull);
+	static bool TempBanIp(ChatCommand * pChatCommand, const bool bFull);
+	static bool TempNickBan(ChatCommand * pChatCommand, char * sNick, char * sTime, const uint16_t ui16TimeLen, char * sReason, const bool bNotNickBan = false);
+	static bool RangeBan(ChatCommand * pChatCommand, const bool bFull);
+	static bool RangeTempBan(ChatCommand * pChatCommand, const bool bFull);
+	static bool RangeUnban(ChatCommand * pChatCommand);
+	static bool RangeUnban(ChatCommand * pChatCommand, const uint8_t ui8Type);
+	
+	static void SendNoPermission(ChatCommand * pChatCommand);
+	static int CheckFromPm(ChatCommand * pChatCommand);
+	static void UncountDeflood(ChatCommand * pChatCommand);
 public:
-    static bool DoCommand(User * pUser, char * sCommand, const uint32_t ui32CmdLen, bool bFromPM = false);
+	static bool DoCommand(User * pUser, char * sCommand, const uint32_t ui32CmdLen, bool bFromPM = false);
 };
 //---------------------------------------------------------------------------
 

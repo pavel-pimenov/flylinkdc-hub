@@ -28,126 +28,150 @@
 #include "utility.h"
 //---------------------------------------------------------------------------
 #ifdef _WIN32
-	#pragma hdrstop
+#pragma hdrstop
 #endif
 //---------------------------------------------------------------------------
 #include "IP2Country.h"
 #include "LuaScript.h"
 //---------------------------------------------------------------------------
 
-static int GetCountryCode(lua_State * pLua) {
-	if(lua_gettop(pLua) != 1) {
+static int GetCountryCode(lua_State * pLua)
+{
+	if (lua_gettop(pLua) != 1)
+	{
 		luaL_error(pLua, "bad argument count to 'GetCountryCode' (1 expected, got %d)", lua_gettop(pLua));
-        lua_settop(pLua, 0);
-        lua_pushnil(pLua);
-        return 1;
-    }
-
-    if(lua_type(pLua, 1) != LUA_TSTRING) {
-        luaL_error(pLua, "bad argument to 'GetCountryCode' (string expected, got %s)", lua_typename(pLua, lua_type(pLua, 1)));
 		lua_settop(pLua, 0);
 		lua_pushnil(pLua);
-        return 1;
-    }
-
-    size_t szLen;
-    char * sIP = (char *)lua_tolstring(pLua, 1, &szLen);
-
-    uint8_t ui128Hash[16];
-    memset(ui128Hash, 0, 16);
-
-    if(szLen == 0 || HashIP(sIP, ui128Hash) == false) {
-        lua_settop(pLua, 0);
-        lua_pushnil(pLua);
-        return 1;
-    }
-
-    const char * sCountry = IpP2Country::m_Ptr->Find(ui128Hash, false);
-
-    lua_settop(pLua, 0);
-
-    lua_pushlstring(pLua, sCountry, 2);
-
-    return 1;
+		return 1;
+	}
+	
+	if (lua_type(pLua, 1) != LUA_TSTRING)
+	{
+		luaL_error(pLua, "bad argument to 'GetCountryCode' (string expected, got %s)", lua_typename(pLua, lua_type(pLua, 1)));
+		lua_settop(pLua, 0);
+		lua_pushnil(pLua);
+		return 1;
+	}
+	
+	size_t szLen;
+	const char * sIP = lua_tolstring(pLua, 1, &szLen);
+	
+	Hash128 ui128Hash;
+	
+	if (szLen == 0 || HashIP(sIP, ui128Hash) == false)
+	{
+		lua_settop(pLua, 0);
+		lua_pushnil(pLua);
+		return 1;
+	}
+	
+	const char * sCountry = IpP2Country::m_Ptr->Find(ui128Hash, false);
+	
+	lua_settop(pLua, 0);
+	
+	lua_pushlstring(pLua, sCountry, 2);
+	
+	return 1;
 }
 //------------------------------------------------------------------------------
 
-static int GetCountryName(lua_State * pLua) {
-	if(lua_gettop(pLua) != 1) {
+static int GetCountryName(lua_State * pLua)
+{
+	if (lua_gettop(pLua) != 1)
+	{
 		luaL_error(pLua, "bad argument count to 'GetCountryName' (1 expected, got %d)", lua_gettop(pLua));
-        lua_settop(pLua, 0);
-        lua_pushnil(pLua);
-        return 1;
-    }
-
-    const char * sCountry;
-
-    if(lua_type(pLua, 1) == LUA_TSTRING) {
-        size_t szLen;
-        char * sIP = (char *)lua_tolstring(pLua, 1, &szLen);
-
-        uint8_t ui128Hash[16];
-        memset(ui128Hash, 0, 16);
-
-        if(szLen == 0 || HashIP(sIP, ui128Hash) == false) {
-            lua_settop(pLua, 0);
-            lua_pushnil(pLua);
-            return 1;
-        }
-
-        sCountry = IpP2Country::m_Ptr->Find(ui128Hash, true);
-    } else if(lua_type(pLua, 1) == LUA_TTABLE) {
-		User * u = ScriptGetUser(pLua, 1, "GetCountryName");
-        if(u == NULL) {
-    		lua_settop(pLua, 0);
-            lua_pushnil(pLua);
-            return 1;
-        }
-
-        sCountry = IpP2Country::m_Ptr->GetCountry(u->m_ui8Country, true);
-    } else {
-        luaL_error(pLua, "bad argument to 'GetCountryName' (string or table expected, got %s)", lua_typename(pLua, lua_type(pLua, 1)));
 		lua_settop(pLua, 0);
 		lua_pushnil(pLua);
-        return 1;
-    }
-
-    lua_settop(pLua, 0);
-
-    lua_pushstring(pLua, sCountry);
-
-    return 1;
+		return 1;
+	}
+	
+	const char * sCountry;
+	
+	if (lua_type(pLua, 1) == LUA_TSTRING)
+	{
+		size_t szLen;
+		const char * sIP = lua_tolstring(pLua, 1, &szLen);
+		
+		Hash128 ui128Hash;
+		
+		// alex82 ... Определяем страну по коду
+		if (szLen == 2)
+		{
+			lua_settop(pLua, 0);
+			lua_pushstring(pLua, IpP2Country::m_Ptr->GetCountryName(sIP));
+			
+			return 1;
+		}
+		else if (szLen == 0 || HashIP(sIP, ui128Hash) == false)
+		{
+			lua_settop(pLua, 0);
+			lua_pushnil(pLua);
+			return 1;
+		}
+		
+		sCountry = IpP2Country::m_Ptr->Find(ui128Hash, true);
+	}
+	else if (lua_type(pLua, 1) == LUA_TTABLE)
+	{
+		User * u = ScriptGetUser(pLua, 1, "GetCountryName");
+		if (u == NULL)
+		{
+			lua_settop(pLua, 0);
+			lua_pushnil(pLua);
+			return 1;
+		}
+		
+		sCountry = IpP2Country::m_Ptr->GetCountry(u->m_ui8Country, true);
+	}
+	else
+	{
+		luaL_error(pLua, "bad argument to 'GetCountryName' (string or table expected, got %s)", lua_typename(pLua, lua_type(pLua, 1)));
+		lua_settop(pLua, 0);
+		lua_pushnil(pLua);
+		return 1;
+	}
+	
+	lua_settop(pLua, 0);
+	
+	lua_pushstring(pLua, sCountry);
+	
+	return 1;
 }
 //------------------------------------------------------------------------------
 
-static int Reload(lua_State * pLua) {
-	if(lua_gettop(pLua) != 0) {
-        luaL_error(pLua, "bad argument count to 'IP2Country.Reload' (0 expected, got %d)", lua_gettop(pLua));
-        lua_settop(pLua, 0);
-        return 0;
-    }
-
+static int Reload(lua_State * pLua)
+{
+	if (lua_gettop(pLua) != 0)
+	{
+		luaL_error(pLua, "bad argument count to 'IP2Country.Reload' (0 expected, got %d)", lua_gettop(pLua));
+		lua_settop(pLua, 0);
+		return 0;
+	}
+	
 	IpP2Country::m_Ptr->Reload();
-
-    return 0;
+	
+	return 0;
 }
 //------------------------------------------------------------------------------
 
-static const luaL_Reg Ip2CountryRegs[] = {
+static const luaL_Reg Ip2CountryRegs[] =
+{
 	{ "GetCountryCode", GetCountryCode },
-	{ "GetCountryName", GetCountryName }, 
+	{ "GetCountryName", GetCountryName },
 	{ "Reload", Reload },
 	{ NULL, NULL }
 };
 //---------------------------------------------------------------------------
 
 #if LUA_VERSION_NUM > 501
-int RegIP2Country(lua_State * pLua) {
-    luaL_newlib(pLua, Ip2CountryRegs);
-    return 1;
+int RegIP2Country(lua_State * pLua)
+{
+	luaL_newlib(pLua, Ip2CountryRegs);
+	return 1;
 #else
-void RegIP2Country(lua_State * pLua) {
-    luaL_register(pLua, "IP2Country", Ip2CountryRegs);
+void RegIP2Country(lua_State * pLua)
+{
+	luaL_register(pLua, "IP2Country", Ip2CountryRegs);
 #endif
 }
 //---------------------------------------------------------------------------

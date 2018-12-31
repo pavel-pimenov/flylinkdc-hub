@@ -20,42 +20,34 @@
 #ifndef DBMySQLH
 #define DBMySQLH
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-struct ChatCommand;
 struct User;
 typedef struct st_mysql MYSQL;
 typedef struct st_mysql_res MYSQL_RES;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-class DBMySQL {
+class DBMySQL
+{
 private:
-	MYSQL * m_pDBHandle;
-
-#ifdef _WIN32
-	HANDLE m_hThreadHandle;
-#else
-	pthread_t m_threadId;
-#endif
-
-	bool m_bConnected, m_bTerminated;
-
-    DBMySQL(const DBMySQL&);
-    const DBMySQL& operator=(const DBMySQL&);
-
-	bool SendQueryResults(ChatCommand * pChatCommand, MYSQL_RES * pResult, uint64_t &ui64Rows);
-	void ReconnectDb();
+	MYSQL * pDBHandle;
+	
+	bool bConnected;
+	
+	DBMySQL(const DBMySQL&);
+	const DBMySQL& operator=(const DBMySQL&);
+	
+	bool SendQueryResults(User * pUser, const bool &bFromPM, MYSQL_RES * pResult, uint64_t &ui64Rows);
 public:
-    static DBMySQL * m_Ptr;
-
+	static DBMySQL * mPtr;
+	
 	DBMySQL();
 	~DBMySQL();
-
+	
 	void UpdateRecord(User * pUser);
-
-	bool SearchNick(ChatCommand * pChatCommand);
-	bool SearchIP(ChatCommand * pChatCommand);
-
-	void RemoveOldRecords(const uint16_t ui16Days);
-	void RunReconnect();
+	
+	bool SearchNick(char * sNick, const uint8_t &ui8NickLen, User * pUser, const bool &bFromPM);
+	bool SearchIP(char * sIP, User * pUser, const bool &bFromPM);
+	
+	void RemoveOldRecords(const uint16_t &ui16Days);
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

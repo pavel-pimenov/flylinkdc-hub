@@ -22,9 +22,9 @@
 //------------------------------------------------------------------------------
 
 #if LUA_VERSION_NUM > 501
-    int RegCore(lua_State * pLua);
+int RegCore(lua_State * pLua);
 #else
-    void RegCore(lua_State * pLua);
+void RegCore(lua_State * pLua);
 #endif
 //------------------------------------------------------------------------------
 

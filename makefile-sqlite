@@ -8,6 +8,7 @@
 # Compiler
 #*******************************************************************************
 CXX = c++
+CC = cc
 
 #*******************************************************************************
 # Path where install
@@ -17,12 +18,13 @@ INSTDIR = /usr/local/bin
 #*******************************************************************************
 # Debug flags
 #*******************************************************************************
-#CXXFLAGS = -g -Wall -Wextra
+#CXXFLAGS = -std=c++11 -g -Wall -Wextra -std=c++11 -DxUSE_FLYLINKDC_EXT_JSON
 
 #*******************************************************************************
 # Release flags
 #*******************************************************************************
-CXXFLAGS = -O -g -Wall -Wextra -D_WITH_SQLITE
+CXXFLAGS = -std=c++11 -O2 -g -Wall -Wextra -D_WITH_SQLITE -DFLYLINKDC_USE_DB -DxUSE_FLYLINKDC_EXT_JSON
+CCFLAGS = -O2 -g -Wall -Wextra
 
 #*******************************************************************************
 # Include
@@ -39,7 +41,7 @@ OBJS = $(CURDIR)/obj/colUsers.o $(CURDIR)/obj/DB-SQLite.o $(CURDIR)/obj/DcComman
 		$(CURDIR)/obj/LuaProfManLib.o $(CURDIR)/obj/LuaRegManLib.o $(CURDIR)/obj/LuaScript.o $(CURDIR)/obj/LuaScriptManager.o $(CURDIR)/obj/LuaScriptManLib.o $(CURDIR)/obj/LuaSetManLib.o \
 		$(CURDIR)/obj/LuaTmrManLib.o $(CURDIR)/obj/LuaUDPDbgLib.o $(CURDIR)/obj/ProfileManager.o $(CURDIR)/obj/PtokaX-nix.o $(CURDIR)/obj/PXBReader.o $(CURDIR)/obj/pxstring.o $(CURDIR)/obj/RegThread.o \
 		$(CURDIR)/obj/ResNickManager.o $(CURDIR)/obj/ServerManager.o $(CURDIR)/obj/ServerThread.o $(CURDIR)/obj/serviceLoop.o $(CURDIR)/obj/SettingManager.o $(CURDIR)/obj/TextConverter.o \
-		$(CURDIR)/obj/TextFileManager.o $(CURDIR)/obj/UdpDebug.o $(CURDIR)/obj/UDPThread.o $(CURDIR)/obj/User.o $(CURDIR)/obj/utility.o $(CURDIR)/obj/ZlibUtility.o
+		$(CURDIR)/obj/TextFileManager.o $(CURDIR)/obj/UdpDebug.o $(CURDIR)/obj/UDPThread.o $(CURDIR)/obj/User.o $(CURDIR)/obj/utility.o $(CURDIR)/obj/ZlibUtility.o $(CURDIR)/obj/sqlite3.o
 
 #*******************************************************************************
 # Binary to create
@@ -55,58 +57,58 @@ OBJS = $(CURDIR)/obj/colUsers.o $(CURDIR)/obj/DB-SQLite.o $(CURDIR)/obj/DcComman
 PtokaX: INCLUDE = -Iskein/Optimized_32bit -I/usr/include -I/usr/include/lua5.3
 PtokaX: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -lz -llua5.3 -ltinyxml -lsqlite3
+	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -lz -llua5.3 -ltinyxml -ldl
 
 lua52: INCLUDE = -Iskein/Optimized_32bit -I/usr/include -I/usr/include/lua5.2
 lua52: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -lz -llua5.2 -ltinyxml -lsqlite3
+	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -lz -llua5.2 -ltinyxml -ldl
 
 lua51: INCLUDE = -Iskein/Optimized_32bit -I/usr/include -I/usr/include/lua5.1
 lua51: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -lz -llua5.1 -ltinyxml -lsqlite3
+	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -lz -llua5.1 -ltinyxml -ldl
 
 centos: CXXFLAGS = -O -g -Wall -Wextra -DTIXML_USE_STL -D_WITH_SQLITE
 centos: $(OBJS)
 	cd skein; $(MAKE)
 	cd tinyxml; $(MAKE)
-	$(CXX) $(OBJS) $(CURDIR)/tinyxml/tinyxml.a $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -lz -llua -lsqlite3
+	$(CXX) $(OBJS) $(CURDIR)/tinyxml/tinyxml.a $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -lz -llua -ldl
 
 fedora: INCLUDE = -Iskein/Optimized_32bit -I/usr/include
 fedora: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua -ltinyxml -lsqlite3
+	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua -ltinyxml -ldl 
 
 freebsd: INCLUDE = -Iskein/Optimized_32bit -I/usr/include -I/usr/local/include -I/usr/local/include/lua53
 freebsd: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) -L/usr/local/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua-5.3 -ltinyxml -liconv -lsqlite3
-
+	$(CXX) $(OBJS) -L/usr/local/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua-5.3 -ltinyxml -liconv -ldl
+	
 freebsd51: INCLUDE = -Iskein/Optimized_32bit -I/usr/include -I/usr/local/include -I/usr/local/include/lua51
 freebsd51: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) -L/usr/local/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua-5.1 -ltinyxml -liconv -lsqlite3
+	$(CXX) $(OBJS) -L/usr/local/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua-5.1 -ltinyxml -liconv -ldl
 
 openbsd: INCLUDE = -Iskein/Optimized_32bit -I/usr/include -I/usr/local/include -I/usr/local/include/lua-5.3
 openbsd: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) -L/usr/local/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua5.3 -ltinyxml -liconv -lsqlite3
+	$(CXX) $(OBJS) -L/usr/local/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua5.3 -ltinyxml -liconv -ldl
 
 openbsd51: INCLUDE = -Iskein/Optimized_32bit -I/usr/include -I/usr/local/include -I/usr/local/include/lua-5.1
 openbsd51: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) -L/usr/local/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua5.1 -ltinyxml -liconv -lsqlite3
+	$(CXX) $(OBJS) -L/usr/local/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua5.1 -ltinyxml -liconv -ldl
 
 netbsd: INCLUDE = -Iskein/Optimized_32bit -I/usr/include -I/usr/pkg/include -I/usr/pkg/include/lua-5.3
 netbsd: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) -L/usr/pkg/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua5.3 -ltinyxml -liconv -lsqlite3
+	$(CXX) $(OBJS) -L/usr/pkg/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua5.3 -ltinyxml -liconv -ldl
 
 netbsd51: INCLUDE = -Iskein/Optimized_32bit -I/usr/include -I/usr/pkg/include -I/usr/pkg/include/lua-5.1
 netbsd51: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) -L/usr/pkg/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua5.1 -ltinyxml -liconv -lsqlite3
+	$(CXX) $(OBJS) -L/usr/pkg/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua5.1 -ltinyxml -liconv -ldl
 
 install:
 	@if test -d $(INSTDIR); then \
@@ -133,8 +135,11 @@ $(CURDIR)/obj/colUsers.o: $(CURDIR)/core/colUsers.cpp $(CURDIR)/core/stdinc.h $(
 $(CURDIR)/obj/DB-SQLite.o: $(CURDIR)/core/DB-SQLite.cpp $(CURDIR)/core/stdinc.h $(CURDIR)/core/pxstring.h $(CURDIR)/core/DB-SQLite.h \
   $(CURDIR)/core/hashRegManager.h $(CURDIR)/core/hashUsrManager.h $(CURDIR)/core/LanguageManager.h $(CURDIR)/core/LanguageIds.h \
   $(CURDIR)/core/ProfileManager.h $(CURDIR)/core/ServerManager.h $(CURDIR)/core/SettingManager.h $(CURDIR)/core/SettingIds.h \
-  $(CURDIR)/core/TextConverter.h $(CURDIR)/core/UdpDebug.h $(CURDIR)/core/User.h $(CURDIR)/core/utility.h $(CURDIR)/core/IP2Country.h
+  $(CURDIR)/core/TextConverter.h $(CURDIR)/core/UdpDebug.h $(CURDIR)/core/User.h $(CURDIR)/core/utility.h $(CURDIR)/core/IP2Country.h $(CURDIR)/sqlite/sqlite3.h
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $(CURDIR)/core/DB-SQLite.cpp -o $(CURDIR)/obj/DB-SQLite.o
+
+$(CURDIR)/obj/sqlite3.o: $(CURDIR)/sqlite/sqlite3.c $(CURDIR)/sqlite/sqlite3.h
+	$(CC) $(CCFLAGS) $(INCLUDE) -c $(CURDIR)/sqlite/sqlite3.c -o $(CURDIR)/obj/sqlite3.o
 
 $(CURDIR)/obj/DcCommands.o: $(CURDIR)/core/DcCommands.cpp $(CURDIR)/core/stdinc.h $(CURDIR)/core/pxstring.h $(CURDIR)/core/DcCommands.h $(CURDIR)/core/colUsers.h \
   $(CURDIR)/core/GlobalDataQueue.h $(CURDIR)/core/hashBanManager.h $(CURDIR)/core/hashRegManager.h $(CURDIR)/core/hashUsrManager.h \
@@ -369,3 +374,4 @@ clean:
 	cd skein; $(MAKE) clean
 	cd tinyxml; $(MAKE) clean
 	-rm $(OBJS) PtokaX
+	

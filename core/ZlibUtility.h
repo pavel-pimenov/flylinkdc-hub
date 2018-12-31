@@ -21,23 +21,23 @@
 #define zlibutilityH
 //---------------------------------------------------------------------------
 
-class ZlibUtility {
+class ZlibUtility
+{
 private:
 	char * m_pZbuffer;
-
-    size_t m_szZbufferSize;
-
-    ZlibUtility(const ZlibUtility&);
-    const ZlibUtility& operator=(const ZlibUtility&);
+	
+	size_t m_szZbufferSize;
+	
+	DISALLOW_COPY_AND_ASSIGN(ZlibUtility);
 public:
-    static ZlibUtility * m_Ptr;
-
+	static ZlibUtility * m_Ptr;
+	
 	ZlibUtility();
 	~ZlibUtility();
 	
-    char * CreateZPipe(const char * sInData, const size_t szInDataSize, uint32_t &ui32OutDataLen);
-    char * CreateZPipe(char * sInData, const size_t szInDataSize, char * sOutData, size_t &szOutDataLen, size_t &szOutDataSize);
-    char * CreateZPipe(char *sInData, const size_t szInDataSize, char * sOutData, uint32_t &ui32OutDataLen, uint32_t &ui32OutDataSize, size_t (* pAllignFunc)(size_t n));
+	char * CreateZPipe(const char *sInData, const size_t szInDataSize, uint32_t &ui32OutDataLen);
+	char * CreateZPipe(const char *sInData, const size_t szInDataSize, char *sOutData, uint32_t &szOutDataLen, uint32_t &szOutDataSize);
+	char * CreateZPipeAlign(const char *sInData, const size_t szInDataSize, char * sOutData, uint32_t &ui32OutDataLen, uint32_t &ui32OutDataSize);
 };
 //---------------------------------------------------------------------------
 

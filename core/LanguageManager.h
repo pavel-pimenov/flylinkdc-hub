@@ -23,22 +23,23 @@
 #include "LanguageIds.h"
 //---------------------------------------------------------------------------
 
-class LanguageManager {
-private:
-    LanguageManager(const LanguageManager&);
-    const LanguageManager& operator=(const LanguageManager&);
-public:
-    static LanguageManager * m_Ptr;
-
-    char * m_sTexts[LANG_IDS_END]; //LanguageManager::m_Ptr->m_sTexts[]
-    uint16_t m_ui16TextsLens[LANG_IDS_END]; //LanguageManager::m_Ptr->m_ui16TextsLens[]
-
-    LanguageManager(void);
-    ~LanguageManager(void);
-
-	void Load();
-	
-	static void GenerateXmlExample();
+class LanguageManager
+{
+	private:
+		DISALLOW_COPY_AND_ASSIGN(LanguageManager);
+	public:
+		static LanguageManager * m_Ptr;
+		
+		char * m_sTexts[LANG_IDS_END]; //LanguageManager::m_Ptr->m_sTexts[]
+		uint16_t m_ui16TextsLens[LANG_IDS_END]; //LanguageManager::m_Ptr->m_ui16TextsLens[]
+		
+		LanguageManager(void);
+		~LanguageManager(void);
+		
+		//char * GetLangStr(size_t TextId); //LanguageManager->GetLangStr
+		void Load();
+		
+		static void GenerateXmlExample();
 };
 //---------------------------------------------------------------------------
 

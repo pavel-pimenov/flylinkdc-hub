@@ -21,40 +21,46 @@
 #define UDPThreadH
 //---------------------------------------------------------------------------
 
-class UDPThread {
+#ifdef FLYLINKDC_USE_UDP_THREAD
+class UDPThread
+{
 private:
 #ifdef _WIN32
-	HANDLE m_hThreadHandle;
-
-    SOCKET m_Socket;
+	HANDLE hThreadHandle;
+	
+	SOCKET m_Sock;
+	
+	unsigned int m_ThreadId;
 #else
 	pthread_t m_ThreadId;
-
-    int m_Socket;
+	
+	int m_Sock;
 #endif
-
-    bool m_bTerminated;
-
-	char m_RecvBuf[4096];
-
-    UDPThread(const UDPThread&);
-    const UDPThread& operator=(const UDPThread&);
+	
+	bool m_bTerminated;
+	
+	char rcvbuf[1024];
+	
+	DISALLOW_COPY_AND_ASSIGN(UDPThread);
 public:
-    static UDPThread * m_PtrIPv4;
-    static UDPThread * m_PtrIPv6;
-
+	static UDPThread * mPtrIPv4;
+#ifdef FLYLINKDC_USE_UDP_THREAD_IP6
+	static UDPThread * mPtrIPv6;
+#endif
+	
 	UDPThread();
 	~UDPThread();
-
-    bool Listen(const int iAddressFamily);
-    void Resume();
-    void Run();
+	
+	bool Listen(const int iAddressFamily);
+	void Resume();
+	void Run();
 	void Close();
 	void WaitFor();
-
-    static UDPThread * Create(const int iAddressFamily);
-    static void Destroy(UDPThread * pUDPThread);
+	
+	static UDPThread * Create(const int iAddressFamily);
+	static void Destroy(UDPThread *& pUDPThread);
 };
 //---------------------------------------------------------------------------
+#endif // FLYLINKDC_USE_UDP_THREAD
 
 #endif

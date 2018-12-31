@@ -1,4 +1,4 @@
-PtokaX DC hub software - Ptaczek/Frontline3k/aMutex (c) 2oo2/2oo3
+﻿PtokaX DC hub software - Ptaczek/Frontline3k/aMutex (c) 2oo2/2oo3
 PtokaX DC hub software - Ptaczek/PPK (c) 2004/2005
 PtokaX DC hub software - PPK (c) 2006/2017
 ------------------------------------------------------------------------------
@@ -158,7 +158,7 @@ Changed: Memory allocation failures checking. When memory allocation fail then u
 Changed: Line ending to \n on windoze.
 Changed: Registered users are now stored in binary file instead of xml.
 Changed: !ban and !tempban now working for offline nicks and create nickban for them.
-Fixed: TmrMan.RemoveTimer Lua api call in windoze version (thx Cęńoßy+ę for report).
+Fixed: TmrMan.RemoveTimer Lua api call in windoze version (thx Ceno?y+e for report).
 Fixed: MOTD was not updated after change in gui (thx mappy for report).
 Fixed: Few settings was not updated after change in gui.
 Fixed: Buggy chat input line after using some settings pages (thx The-Master for report).
@@ -247,7 +247,7 @@ Removed: Auto save of regs after add/change/del Reg.
 
 
 ----------------------------------------0.4.1.1 21.Jun.2008-----------------------------------
-Fixed: High cpu usage when udp port bind failed (thx §hĺdýlĺdý™ for report).
+Fixed: High cpu usage when udp port bind failed (thx �hldylldy� for report).
 Fixed: Missing password checking for not allowed pipe char, removed checking for other chars.
 Fixed: Missing nick checking for not allowed chars in !addreguser command.
 Fixed: Freeze on year or longer tempban in win versions (thx dmvn for report).
@@ -282,8 +282,8 @@ Added: When PtokaX is terminated on nix by signal then it is saved to log.
 Added: Script memory usage to !getscripts.
 Added: Few working hublist register addresses.
 Fixed: Initial temp ban year in gui was always 2007 instead of actual year.
-Fixed: Crash in gui version on ScriptMan.MoveUp and ScriptMan.MoveDown when script use them in OnStartup and scripts window is opened (thx Z˙gđ†† and Twisted-devil for report).
-Fixed: Never ending loop caused by multiple script processing when using MoveDown (thx Z˙gđ†† for report).
+Fixed: Crash in gui version on ScriptMan.MoveUp and ScriptMan.MoveDown when script use them in OnStartup and scripts window is opened (thx Z?gd�� and Twisted-devil for report).
+Fixed: Never ending loop caused by multiple script processing when using MoveDown (thx Z?gd�� for report).
 Fixed: Lua was able to change language to not existant one (thx CrazyGuy for report).
 Fixed: Crash on exit when default hub-security nick was used (thx ']['yphoon for report).
 Fixed: Crash on loading xml file with comments (thx Rag3Rac3r for report).
@@ -409,11 +409,11 @@ Added: Max users logins per 10 seconds settings to gui and Lua.
 Added: UDPSRArrival to lua.
 Added: Max limit (16) for script bots to disallow fake users.
 Added: GetDefaultTempBanTime() and SetDefaultTempBanTime() to lua (request by UwV).
-Fixed: Not working "no main chat deflood" and "no private message deflood" for multiline messages (thx ']['yphoon™ for report).
+Fixed: Not working "no main chat deflood" and "no private message deflood" for multiline messages (thx ']['yphoon� for report).
 Fixed: Bug in changing registered nick in gui (thx GeceBekcisi and ruler for report).
 Fixed: Not working address for hublist register with port (thx Pothead for report).
 Fixed: Saving to system.log (thx plop for report).
-Fixed: Buggy GetTempBannedItemTime (thx ']['yphoon™ for report).
+Fixed: Buggy GetTempBannedItemTime (thx ']['yphoon� for report).
 Fixed: Bug in addreguser hub command and addreguser in lua (thx GeceBekcisi for report).
 Fixed: Bug in nick hashing (thx [SK]2qq2q for report).
 Fixed: Buffer overflow on !massmsg (thx netcelli for report).
@@ -477,7 +477,7 @@ Fixed: Crash in profilemanager if no profile selected and remove is pressed (thx
 Fixed: Few crashes in lua if hub not running (thx Northwind for report).
 Fixed: Crash on dblclick on script files (thx GeceBekcisi for report).
 Fixed: Scripts state saving on exit (thx GeceBekcisi for report).
-Fixed: Bug in nickban allowing to ban user with higher profile (thx •§kT®•™ for report).
+Fixed: Bug in nickban allowing to ban user with higher profile (thx ��kT��� for report).
 Fixed: Buffer overflow caused by sending of long data from lua. Added limits, check Scripting-Interface.txt !
 Changed: Name of error.log to system.log, old name confusing users.
 Changed: Memory management in data procesing for better performance (thx BigMuscle for hint).
@@ -543,7 +543,7 @@ Improved: Gui, added back now maybe bug free XP like style for Windows XP users.
 
 --------------------------------0.3.3.1 10.June.2005----------------------------
 Fixed: Crash on !restart (thx dkt and madman for report).
-Fixed: Bug in registered users manager (thx TïMê†råVêlléR for report and reglist for testing).
+Fixed: Bug in registered users manager (thx TiMe�raVelleR for report and reglist for testing).
 Fixed: Missing opchat on !op and !addreguser (thx [AT]conejodelmal for report).
 Fixed: Memory leaks on closing PtokaX.
 Added: BW Traffic Report in xB/s to stats and gui (request by Friz and GeceBekcisi).
@@ -561,7 +561,7 @@ Fixed: Few bugs in GUI (thx Stravides and Star for reports).
 Fixed: Crash on !restartscript (thx madman for report).
 Fixed: addreguser bug on adding user with OP status (thx Optimus for report).
 Fixed: Bugs in hashed reglist manager (thx [AT]conejodelmal and Bud for reports).
-Fixed: MOTD sending to pm (thx [H€LL§]§corpion™ for report).
+Fixed: MOTD sending to pm (thx [H�LL�]�corpion� for report).
 Fixed: Crash caused by timer using SendToAll in lua (thx -RICK- for report).
 Fixed: Crash on stop server (thx -RICK- for report).
 
@@ -649,7 +649,7 @@ Fixed: Bug in email text box not allowing to add chars used for hub commands pre
 Fixed: Crash in lua AddRegUser with unexisting profile (thx NightLitch for report).
 Fixed: !nickban with given spaces in nick bug (thx Jemte for report).
 Fixed: Enbaling of autoregister to hublist if hub running (thx ruspant for report).
-Fixed: Crash in onerror lua function (thx TïMê†råVêlléR for report).
+Fixed: Crash in onerror lua function (thx TiMe�raVelleR for report).
 Changed: Good pinger is allowed to check full hub.
 Changed: Uptime timer, maybe is now faster.
 Changed: Addreguser and delreguser (hubcommand and lua) change user profile on-the-fly. On reg it add key too.
@@ -1308,7 +1308,7 @@ Added:
 	Norwegian (LeviataN)
 	Finnish (MadBeezzz)
 	Hungarian (a1s and dentro)
-	Danish (JenZen™ and Ratcom_Owner)
+	Danish (JenZen� and Ratcom_Owner)
 	Latvian (XericsX)
 	Spanish (poweroperator)
 	Dutch (FlipDeluXe)
@@ -1400,7 +1400,7 @@ Fixed: IPMF (Intelligent Pm Frequency Measuring) is now tweaked a little.
        I hope it will get rid of PM spammers but keep innocents on the hub.
 Added: The LUA memory monitor is back.
 
-Thanx to [DK][TIC]Icemand™ for quick test.
+Thanx to [DK][TIC]Icemand� for quick test.
 
 
 --------------------------------v0.324 Test3--------------------------------
@@ -1492,7 +1492,7 @@ Language files by (in no particular order):
     Stimorol	swedish
     aMutex	german
     Maicom	finnish
-    Dazzle®	french
+    Dazzle�	french
     Ptaczek	czech
 
 
@@ -1604,7 +1604,7 @@ Fixed: backward compatibility with Neo-Modus Direct Connect client.
 --------------------------------v0.203--------------------------------
 Fixed: Access violation error caused by improper pointer arithmetic.
 Fixed: Anybody can send others MyINFO! Thanx to big_dave.
-Fixed: Neo-Modus Direct Connect users cannot see the logon message. Thanx to iCeRapto®.
+Fixed: Neo-Modus Direct Connect users cannot see the logon message. Thanx to iCeRapto�.
 Added: redirections.
 
 
@@ -1798,7 +1798,7 @@ ICS is great component!!! Starting new project and go deep to C++.
 
 
 --------------------------------18.6.2002--------------------------------
-ICS  Internet Component Suite (Aka FPIETTE's Components) is best alternative i found and i must learn it more. François PIETTE who ICS write and not want anything for it is in one word genius :) Next 3 days i don't have time for programming :(
+ICS  Internet Component Suite (Aka FPIETTE's Components) is best alternative i found and i must learn it more. Francois PIETTE who ICS write and not want anything for it is in one word genius :) Next 3 days i don't have time for programming :(
 
 
 --------------------------------14.6.2002--------------------------------
