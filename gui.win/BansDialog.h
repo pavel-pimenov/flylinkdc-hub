@@ -23,54 +23,52 @@
 struct BanItem;
 //------------------------------------------------------------------------------
 
-class clsBansDialog
-{
+class BansDialog {
 public:
-	static clsBansDialog * mPtr;
-	
-	HWND m_hWndWindowItems[8];
-	
-	enum enmWindowItems
-	{
-		WINDOW_HANDLE,
-		BTN_ADD_BAN,
-		LV_BANS,
-		GB_FILTER,
-		EDT_FILTER,
-		CB_FILTER,
-		BTN_CLEAR_TEMP_BANS,
-		BTN_CLEAR_PERM_BANS
-	};
-	
-	clsBansDialog();
-	~clsBansDialog();
-	
-	static LRESULT CALLBACK StaticBansDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	static int CompareBans(const void * pItem, const void * pOtherItem);
-	static int CALLBACK SortCompareBans(LPARAM lParam1, LPARAM lParam2, LPARAM /*lParamSort*/);
-	
+    static BansDialog * m_Ptr;
+
+    HWND m_hWndWindowItems[8];
+
+    enum enmWindowItems {
+        WINDOW_HANDLE,
+        BTN_ADD_BAN,
+        LV_BANS,
+        GB_FILTER,
+        EDT_FILTER,
+        CB_FILTER,
+        BTN_CLEAR_TEMP_BANS,
+        BTN_CLEAR_PERM_BANS
+    };
+
+    BansDialog();
+    ~BansDialog();
+
+    static LRESULT CALLBACK StaticBansDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    static int CompareBans(const void * pItem, const void * pOtherItem);
+    static int CALLBACK SortCompareBans(LPARAM lParam1, LPARAM lParam2, LPARAM /*lParamSort*/);
+
 	void DoModal(HWND hWndParent);
 	void FilterBans();
 	void AddBan(const BanItem * pBan);
 	void RemoveBan(const BanItem * pBan);
 private:
-	string sFilterString;
-	
-	int iFilterColumn, iSortColumn;
-	
-	bool bSortAscending;
-	
-	LRESULT BansDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
-	
-	void AddAllBans();
-	void OnColumnClick(const LPNMLISTVIEW &pListView);
-	void RemoveBans();
-	void OnContextMenu(HWND hWindow, LPARAM lParam);
-	bool FilterBan(const BanItem * pBan);
-	void ChangeBan();
-	
-	DISALLOW_COPY_AND_ASSIGN(clsBansDialog);
-	
+    string m_sFilterString;
+
+    int m_iFilterColumn, m_iSortColumn;
+
+    bool m_bSortAscending;
+
+    BansDialog(const BansDialog&) = delete;
+    const BansDialog& operator=(const BansDialog&) = delete;
+
+    LRESULT BansDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+    void AddAllBans();
+    void OnColumnClick(const LPNMLISTVIEW pListView);
+    void RemoveBans();
+    void OnContextMenu(HWND hWindow, LPARAM lParam);
+    bool FilterBan(const BanItem * pBan);
+    void ChangeBan();
 };
 //------------------------------------------------------------------------------
 

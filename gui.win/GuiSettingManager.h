@@ -23,53 +23,51 @@
 #include "GuiSettingIds.h"
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-class clsGuiSettingManager
-{
-private:
-
-	void Load();
+class GuiSettingManager {
 public:
-	static clsGuiSettingManager * mPtr;
-	
-	static HFONT hFont;
-	static HCURSOR hArrowCursor;
-	static HCURSOR hVerticalCursor;
-	static WNDPROC wpOldButtonProc;
-	static WNDPROC wpOldEditProc;
-	static WNDPROC wpOldListViewProc;
-	static WNDPROC wpOldMultiRichEditProc;
-	static WNDPROC wpOldNumberEditProc;
-	static WNDPROC wpOldTabsProc;
-	static WNDPROC wpOldTreeProc;
-	
-	static float fScaleFactor;
-	
-	static int iGroupBoxMargin;
-	static int iCheckHeight;
-	static int iEditHeight;
-	static int iTextHeight;
-	static int iUpDownWidth;
-	static int iOneLineGB;
-	static int iOneLineOneChecksGB;
-	static int iOneLineTwoChecksGB;
-	
-	int32_t i32Integers[GUISETINT_IDS_END]; //clsGuiSettingManager::mPtr->iIntegers[]
-	
-	bool bBools[GUISETBOOL_IDS_END]; //clsGuiSettingManager::mPtr->bBools[]
-	
-	clsGuiSettingManager(void);
-	~clsGuiSettingManager(void);
-	
-	static bool GetDefaultBool(const size_t szBoolId);
-	static int32_t GetDefaultInteger(const size_t szIntegerId);
-	
-	void SetBool(const size_t szBoolId, const bool bValue); //clsGuiSettingManager::mPtr->SetBool()
-	void SetInteger(const size_t szIntegerId, const int32_t i32Value); //clsGuiSettingManager::mPtr->SetInteger()
-	
-	void Save() const;
-	
-	DISALLOW_COPY_AND_ASSIGN(clsGuiSettingManager);
-	
+    static GuiSettingManager * m_Ptr;
+
+    static HFONT m_hFont;
+    static HCURSOR m_hArrowCursor;
+    static HCURSOR m_hVerticalCursor;
+    static WNDPROC m_wpOldButtonProc;
+    static WNDPROC m_wpOldEditProc;
+    static WNDPROC m_wpOldListViewProc;
+    static WNDPROC m_wpOldMultiRichEditProc;
+    static WNDPROC m_wpOldNumberEditProc;
+    static WNDPROC m_wpOldTabsProc;
+    static WNDPROC m_wpOldTreeProc;
+
+    static float m_fScaleFactor;
+
+    static int m_iGroupBoxMargin;
+    static int m_iCheckHeight;
+    static int m_iEditHeight;
+    static int m_iTextHeight;
+    static int m_iUpDownWidth;
+    static int m_iOneLineGB;
+    static int m_iOneLineOneChecksGB;
+    static int m_iOneLineTwoChecksGB;
+
+    int32_t m_i32Integers[GUISETINT_IDS_END]; //GuiSettingManager::mPtr->iIntegers[]
+
+    bool m_bBools[GUISETBOOL_IDS_END]; //GuiSettingManager::mPtr->bBools[]
+
+    GuiSettingManager(void);
+    ~GuiSettingManager(void);
+
+    static bool GetDefaultBool(const size_t szBoolId);
+    static int32_t GetDefaultInteger(const size_t szIntegerId);
+
+    void SetBool(const size_t szBoolId, const bool bValue); //GuiSettingManager::mPtr->SetBool()
+    void SetInteger(const size_t szIntegerId, const int32_t i32Value); //GuiSettingManager::mPtr->SetInteger()
+
+    void Save() const;
+private:
+    GuiSettingManager(const GuiSettingManager&) = delete;
+    const GuiSettingManager& operator=(const GuiSettingManager&) = delete;
+
+    void Load();
 };
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

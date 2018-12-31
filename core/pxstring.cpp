@@ -18,6 +18,7 @@
 
 //---------------------------------------------------------------------------
 #include "stdinc.h"
+
 //---------------------------------------------------------------------------
 #include "pxstring.h"
 //---------------------------------------------------------------------------
@@ -30,7 +31,7 @@
 static const char * sEmpty = "";
 //---------------------------------------------------------------------------
 
-void string::stralloc(const char * sTxt, const size_t szLen)
+void px_string::stralloc(const char * sTxt, const size_t szLen)
 {
 	m_szDataLen = szLen;
 	
@@ -43,7 +44,7 @@ void string::stralloc(const char * sTxt, const size_t szLen)
 	m_sData = (char *)malloc(m_szDataLen + 1);
 	if (m_sData == NULL)
 	{
-		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for sData in string::stralloc\n", m_szDataLen+1);
+		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for sData in px_string::stralloc\n", m_szDataLen+1);
 		
 		return;
 	}
@@ -53,31 +54,31 @@ void string::stralloc(const char * sTxt, const size_t szLen)
 }
 //---------------------------------------------------------------------------
 
-string::string() : m_sData((char *)sEmpty), m_szDataLen(0)
+px_string::px_string() : m_sData((char *)sEmpty), m_szDataLen(0)
 {
 	// ...
 }
 //---------------------------------------------------------------------------
 
-string::string(const char * sTxt) : m_sData((char *)sEmpty), m_szDataLen(0)
+px_string::px_string(const char * sTxt) : m_sData((char *)sEmpty), m_szDataLen(0)
 {
 	stralloc(sTxt, strlen(sTxt));
 }
 //---------------------------------------------------------------------------
 
-string::string(const char * sTxt, const size_t szLen) : m_sData((char *)sEmpty), m_szDataLen(0)
+px_string::px_string(const char * sTxt, const size_t szLen) : m_sData((char *)sEmpty), m_szDataLen(0)
 {
 	stralloc(sTxt, szLen);
 }
 //---------------------------------------------------------------------------
 
-string::string(const string & sStr) : m_sData((char *)sEmpty), m_szDataLen(0)
+px_string::px_string(const px_string & sStr) : m_sData((char *)sEmpty), m_szDataLen(0)
 {
 	stralloc(sStr.c_str(), sStr.size());
 }
 //---------------------------------------------------------------------------
 
-string::string(const uint32_t ui32Number) : m_sData((char *)sEmpty), m_szDataLen(0)
+px_string::px_string(const uint32_t ui32Number) : m_sData((char *)sEmpty), m_szDataLen(0)
 {
 	char tmp[16];
 #ifdef _WIN32
@@ -93,7 +94,7 @@ string::string(const uint32_t ui32Number) : m_sData((char *)sEmpty), m_szDataLen
 }
 //---------------------------------------------------------------------------
 
-string::string(const int32_t i32Number) : m_sData((char *)sEmpty), m_szDataLen(0)
+px_string::px_string(const int32_t i32Number) : m_sData((char *)sEmpty), m_szDataLen(0)
 {
 	char tmp[16];
 #ifdef _WIN32
@@ -109,7 +110,7 @@ string::string(const int32_t i32Number) : m_sData((char *)sEmpty), m_szDataLen(0
 }
 //---------------------------------------------------------------------------
 
-string::string(const uint64_t ui64Number) : m_sData((char *)sEmpty), m_szDataLen(0)
+px_string::px_string(const uint64_t ui64Number) : m_sData((char *)sEmpty), m_szDataLen(0)
 {
 	char tmp[32];
 #ifdef _WIN32
@@ -125,7 +126,7 @@ string::string(const uint64_t ui64Number) : m_sData((char *)sEmpty), m_szDataLen
 }
 //---------------------------------------------------------------------------
 
-string::string(const int64_t i64Number) : m_sData((char *)sEmpty), m_szDataLen(0)
+px_string::px_string(const int64_t i64Number) : m_sData((char *)sEmpty), m_szDataLen(0)
 {
 	char tmp[32];
 #ifdef _WIN32
@@ -141,7 +142,7 @@ string::string(const int64_t i64Number) : m_sData((char *)sEmpty), m_szDataLen(0
 }
 //---------------------------------------------------------------------------
 
-string::string(const string & sStr1, const string & sStr2) : m_sData((char *)sEmpty), m_szDataLen(0)
+px_string::px_string(const px_string & sStr1, const px_string & sStr2) : m_sData((char *)sEmpty), m_szDataLen(0)
 {
 	m_szDataLen = sStr1.size() + sStr2.size();
 	
@@ -154,7 +155,7 @@ string::string(const string & sStr1, const string & sStr2) : m_sData((char *)sEm
 	m_sData = (char *)malloc(m_szDataLen + 1);
 	if (m_sData == NULL)
 	{
-		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for sData in string::string(string, string)\n", m_szDataLen+1);
+		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for sData in px_string::px_string(px_string, px_string)\n", m_szDataLen+1);
 		
 		return;
 	}
@@ -165,7 +166,7 @@ string::string(const string & sStr1, const string & sStr2) : m_sData((char *)sEm
 }
 //---------------------------------------------------------------------------
 
-string::string(const char * sTxt, const string & sStr) : m_sData((char *)sEmpty), m_szDataLen(0)
+px_string::px_string(const char * sTxt, const px_string & sStr) : m_sData((char *)sEmpty), m_szDataLen(0)
 {
 	size_t szLen = strlen(sTxt);
 	m_szDataLen = szLen + sStr.size();
@@ -179,7 +180,7 @@ string::string(const char * sTxt, const string & sStr) : m_sData((char *)sEmpty)
 	m_sData = (char *)malloc(m_szDataLen + 1);
 	if (m_sData == NULL)
 	{
-		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for sData in string::string(char, string)\n", m_szDataLen+1);
+		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for sData in px_string::px_string(char, px_string)\n", m_szDataLen+1);
 		
 		return;
 	}
@@ -190,7 +191,7 @@ string::string(const char * sTxt, const string & sStr) : m_sData((char *)sEmpty)
 }
 //---------------------------------------------------------------------------
 
-string::string(const string & sStr, const char * sTxt) : m_sData((char *)sEmpty), m_szDataLen(0)
+px_string::px_string(const px_string & sStr, const char * sTxt) : m_sData((char *)sEmpty), m_szDataLen(0)
 {
 	size_t szLen = strlen(sTxt);
 	m_szDataLen = sStr.size() + szLen;
@@ -204,7 +205,7 @@ string::string(const string & sStr, const char * sTxt) : m_sData((char *)sEmpty)
 	m_sData = (char *)malloc(m_szDataLen + 1);
 	if (m_sData == NULL)
 	{
-		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for sData in string::string(string, char)\n", m_szDataLen+1);
+		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for sData in px_string::px_string(px_string, char)\n", m_szDataLen+1);
 		
 		return;
 	}
@@ -215,7 +216,7 @@ string::string(const string & sStr, const char * sTxt) : m_sData((char *)sEmpty)
 }
 //---------------------------------------------------------------------------
 
-string::~string()
+px_string::~px_string()
 {
 	if (m_sData != sEmpty)
 	{
@@ -226,7 +227,7 @@ string::~string()
 
 //---------------------------------------------------------------------------
 
-void string::clear()
+void px_string::clear()
 {
 	if (m_sData != sEmpty)
 	{
@@ -238,28 +239,28 @@ void string::clear()
 }
 //---------------------------------------------------------------------------
 
-string string::operator+(const char * sTxt) const
+px_string px_string::operator+(const char * sTxt) const
 {
-	string result(*this, sTxt);
+	px_string result(*this, sTxt);
 	return result;
 }
 //---------------------------------------------------------------------------
 
-string string::operator+(const string & sStr) const
+px_string px_string::operator+(const px_string & sStr) const
 {
-	string result(*this, sStr);
+	px_string result(*this, sStr);
 	return result;
 }
 //---------------------------------------------------------------------------
 
-string operator+(const char * sTxt, const string & sStr)
+px_string operator+(const char * sTxt, const px_string & sStr)
 {
-	string result(sTxt, sStr);
+	px_string result(sTxt, sStr);
 	return result;
 }
 //---------------------------------------------------------------------------
 
-string & string::operator+=(const char * sTxt)
+px_string & px_string::operator+=(const char * sTxt)
 {
 	size_t szLen = strlen(sTxt);
 	
@@ -278,7 +279,7 @@ string & string::operator+=(const char * sTxt)
 	{
 		m_sData = oldbuf;
 		
-		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for sData in string::operator+=(char)\n", m_szDataLen+szLen+1);
+		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for sData in px_string::operator+=(char)\n", m_szDataLen+szLen+1);
 		
 		return *this;
 	}
@@ -291,7 +292,7 @@ string & string::operator+=(const char * sTxt)
 }
 //---------------------------------------------------------------------------
 
-string & string::operator+=(const string & sStr)
+px_string & px_string::operator+=(const px_string & sStr)
 {
 	if (sStr.c_str() == sEmpty)
 	{
@@ -313,7 +314,7 @@ string & string::operator+=(const string & sStr)
 	{
 		m_sData = oldbuf;
 		
-		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for sData in string::operator+=(string)\n", m_szDataLen+sStr.size()+1);
+		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for sData in px_string::operator+=(px_string)\n", m_szDataLen+sStr.size()+1);
 		
 		return *this;
 	}
@@ -326,7 +327,7 @@ string & string::operator+=(const string & sStr)
 }
 //---------------------------------------------------------------------------
 
-string & string::operator=(const char * sTxt)
+px_string & px_string::operator=(const char * sTxt)
 {
 	if (m_sData != sEmpty)
 	{
@@ -339,7 +340,7 @@ string & string::operator=(const char * sTxt)
 }
 //---------------------------------------------------------------------------
 
-string & string::operator=(const string & sStr)
+px_string & px_string::operator=(const px_string & sStr)
 {
 	if (this == &sStr)
 		return *this;
@@ -354,7 +355,7 @@ string & string::operator=(const string & sStr)
 }
 //---------------------------------------------------------------------------
 
-bool string::operator==(const char * sTxt)
+bool px_string::operator==(const char * sTxt)
 {
 	if (m_szDataLen != strlen(sTxt) ||
 	        memcmp(m_sData, sTxt, m_szDataLen) != 0)
@@ -366,7 +367,7 @@ bool string::operator==(const char * sTxt)
 }
 //---------------------------------------------------------------------------
 
-bool string::operator==(const string & sStr)
+bool px_string::operator==(const px_string & sStr)
 {
 	if (m_szDataLen != sStr.size() ||
 	        memcmp(m_sData, sStr.c_str(), m_szDataLen) != 0)

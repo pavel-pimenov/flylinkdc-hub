@@ -23,51 +23,49 @@
 #include "MainWindowPage.h"
 //------------------------------------------------------------------------------
 
-class MainWindowPageStats : public MainWindowPage
-{
+class MainWindowPageStats : public MainWindowPage {
 public:
-	HWND hWndPageItems[20];
-	
-	enum enmPageItems
-	{
-		BTN_START_STOP,
-		GB_STATS,
-		LBL_STATUS,
-		LBL_STATUS_VALUE,
-		LBL_JOINS,
-		LBL_JOINS_VALUE,
-		LBL_PARTS,
-		LBL_PARTS_VALUE,
-		LBL_ACTIVE,
-		LBL_ACTIVE_VALUE,
-		LBL_ONLINE,
-		LBL_ONLINE_VALUE,
-		LBL_PEAK,
-		LBL_PEAK_VALUE,
-		LBL_RECEIVED,
-		LBL_RECEIVED_VALUE,
-		LBL_SENT,
-		LBL_SENT_VALUE,
-		BTN_REDIRECT_ALL,
-		BTN_MASS_MSG
-	};
-	
-	MainWindowPageStats();
-	~MainWindowPageStats() { };
-	
-	bool CreateMainWindowPage(HWND hOwner);
-	void UpdateLanguage();
-	char * GetPageName();
-	void FocusFirstItem();
-	void FocusLastItem();
+    HWND m_hWndPageItems[20];
+
+    enum enmPageItems {
+        BTN_START_STOP,
+        GB_STATS,
+        LBL_STATUS,
+        LBL_STATUS_VALUE,
+        LBL_JOINS,
+        LBL_JOINS_VALUE,
+        LBL_PARTS,
+        LBL_PARTS_VALUE,
+        LBL_ACTIVE,
+        LBL_ACTIVE_VALUE,
+        LBL_ONLINE,
+        LBL_ONLINE_VALUE,
+        LBL_PEAK,
+        LBL_PEAK_VALUE,
+        LBL_RECEIVED,
+        LBL_RECEIVED_VALUE,
+        LBL_SENT,
+        LBL_SENT_VALUE,
+        BTN_REDIRECT_ALL,
+        BTN_MASS_MSG
+    };
+
+    MainWindowPageStats();
+    ~MainWindowPageStats() { };
+
+    bool CreateMainWindowPage(HWND hOwner);
+    void UpdateLanguage();
+    char * GetPageName();
+    void FocusFirstItem();
+    void FocusLastItem();
 private:
-	MainWindowPageStats(const MainWindowPageStats&);
-	const MainWindowPageStats& operator=(const MainWindowPageStats&);
-	
-	LRESULT MainWindowPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
-	
-	void OnRedirectAll();
-	void OnMassMessage();
+    MainWindowPageStats(const MainWindowPageStats&) = delete;
+    const MainWindowPageStats& operator=(const MainWindowPageStats&) = delete;
+
+    LRESULT MainWindowPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+    void OnRedirectAll();
+    void OnMassMessage();
 };
 //------------------------------------------------------------------------------
 

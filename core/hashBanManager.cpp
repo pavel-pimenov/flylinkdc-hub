@@ -360,9 +360,9 @@ void BanManager::Rem(BanItem * Ban, const bool /*bFromGui = false*/)
 	}
 	
 #ifdef _BUILD_GUI
-	if (bFromGui == false && clsBansDialog::m_Ptr != NULL)
+	if (bFromGui == false && BansDialog::m_Ptr != NULL)
 	{
-		clsBansDialog::m_Ptr->RemoveBan(Ban);
+		BansDialog::m_Ptr->RemoveBan(Ban);
 	}
 #endif
 }
@@ -610,9 +610,9 @@ void BanManager::AddRange(RangeBanItem *RangeBan)
 	}
 	
 #ifdef _BUILD_GUI
-	if (clsRangeBansDialog::m_Ptr != NULL)
+	if (RangeBansDialog::m_Ptr != NULL)
 	{
-		clsRangeBansDialog::m_Ptr->AddRangeBan(RangeBan);
+		RangeBansDialog::m_Ptr->AddRangeBan(RangeBan);
 	}
 #endif
 }
@@ -650,9 +650,9 @@ void BanManager::RemRange(RangeBanItem *RangeBan, const bool /*bFromGui = false*
 	}
 	
 #ifdef _BUILD_GUI
-	if (bFromGui == false && clsRangeBansDialog::m_Ptr != NULL)
+	if (bFromGui == false && RangeBansDialog::m_Ptr != NULL)
 	{
-		clsRangeBansDialog::m_Ptr->RemoveRangeBan(RangeBan);
+		RangeBansDialog::m_Ptr->RemoveRangeBan(RangeBan);
 	}
 #endif
 }

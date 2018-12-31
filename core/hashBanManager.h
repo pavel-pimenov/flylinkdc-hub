@@ -68,7 +68,6 @@ struct RangeBanItem : public BanItemBase
 	
 	Hash128 m_ui128FromIpHash, m_ui128ToIpHash;
 	
-	
 	char m_sIpFrom[40], m_sIpTo[40] ;
 	
 	RangeBanItem();

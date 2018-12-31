@@ -21,50 +21,49 @@
 #define ProfilesDialogH
 //------------------------------------------------------------------------------
 
-class clsProfilesDialog
-{
+class ProfilesDialog {
 public:
-	static clsProfilesDialog * mPtr;
-	
-	HWND m_hWndWindowItems[9];
-	
-	enum enmWindowItems
-	{
-		WINDOW_HANDLE,
-		BTN_ADD_PROFILE,
-		LV_PROFILES,
-		BTN_MOVE_UP,
-		BTN_MOVE_DOWN,
-		GB_PERMISSIONS,
-		LV_PERMISSIONS,
-		BTN_SET_ALL,
-		BTN_CLEAR_ALL
-	};
-	
-	clsProfilesDialog();
-	~clsProfilesDialog();
-	
-	static LRESULT CALLBACK StaticProfilesDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	
+    static ProfilesDialog * m_Ptr;
+
+    HWND m_hWndWindowItems[9];
+
+    enum enmWindowItems {
+        WINDOW_HANDLE,
+        BTN_ADD_PROFILE,
+        LV_PROFILES,
+        BTN_MOVE_UP,
+        BTN_MOVE_DOWN,
+        GB_PERMISSIONS,
+        LV_PERMISSIONS,
+        BTN_SET_ALL,
+        BTN_CLEAR_ALL
+    };
+
+    ProfilesDialog();
+    ~ProfilesDialog();
+
+    static LRESULT CALLBACK StaticProfilesDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
 	void DoModal(HWND hWndParent);
 	void RemoveProfile(const uint16_t iProfile);
 	void AddProfile();
-	void MoveDown(const uint16_t iProfile);
-	void MoveUp(const uint16_t iProfile);
+    void MoveDown(const uint16_t iProfile);
+    void MoveUp(const uint16_t iProfile);
 private:
-	bool bIgnoreItemChanged;
-	
-	LRESULT ProfilesDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
-	
-	void AddAllProfiles();
-	void OnContextMenu(HWND hWindow, LPARAM lParam);
-	void OnProfileChanged(const LPNMLISTVIEW &pListView);
-	void ChangePermissionChecks(const bool bCheck);
-	void RenameProfile(const int iProfile);
-	void UpdateUpDown();
-	void OnPermissionChanged(const LPNMLISTVIEW &pListView);
-	
-	DISALLOW_COPY_AND_ASSIGN(clsProfilesDialog);
+    bool m_bIgnoreItemChanged;
+
+    ProfilesDialog(const ProfilesDialog&) = delete;
+    const ProfilesDialog& operator=(const ProfilesDialog&) = delete;
+
+    LRESULT ProfilesDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+    void AddAllProfiles();
+    void OnContextMenu(HWND hWindow, LPARAM lParam);
+    void OnProfileChanged(const LPNMLISTVIEW pListView);
+    void ChangePermissionChecks(const bool bCheck);
+    void RenameProfile(const int iProfile);
+    void UpdateUpDown();
+    void OnPermissionChanged(const LPNMLISTVIEW pListView);
 };
 //------------------------------------------------------------------------------
 

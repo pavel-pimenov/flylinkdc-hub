@@ -23,69 +23,67 @@
 #include "SettingPage.h"
 //---------------------------------------------------------------------------
 
-class SettingPageAdvanced : public SettingPage
-{
+class SettingPageAdvanced : public SettingPage {
 public:
-	bool bUpdateSysTray, bUpdateScripting;
-	
-	SettingPageAdvanced();
-	~SettingPageAdvanced() { };
-	
-	bool CreateSettingPage(HWND hOwner);
-	
-	void Save();
-	void GetUpdates(bool & /*bUpdatedHubNameWelcome*/, bool & /*bUpdatedHubName*/, bool & /*bUpdatedTCPPorts*/, bool & /*bUpdatedUDPPort*/, bool & /*bUpdatedAutoReg*/,
-	                bool & /*bUpdatedMOTD*/, bool & /*bUpdatedHubSec*/, bool & /*bUpdatedRegOnlyMessage*/, bool & /*bUpdatedShareLimitMessage*/,
-	                bool & /*bUpdatedSlotsLimitMessage*/, bool & /*bUpdatedHubSlotRatioMessage*/, bool & /*bUpdatedMaxHubsLimitMessage*/, bool & /*bUpdatedNoTagMessage*/,
-	                bool & /*bUpdatedNickLimitMessage*/, bool & /*bUpdatedBotsSameNick*/, bool & /*bUpdatedBotNick*/, bool & /*bUpdatedBot*/, bool & /*bUpdatedOpChatNick*/,
-	                bool & /*bUpdatedOpChat*/, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
-	                bool & /*bUpdatedPermBanRedirAddress*/, bool &bUpdatedSysTray, bool &bUpdatedScripting, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/);
-	                
-	char * GetPageName();
-	void FocusLastItem();
+    bool m_bUpdateSysTray, m_bUpdateScripting;
+
+    SettingPageAdvanced();
+    ~SettingPageAdvanced() { };
+
+    bool CreateSettingPage(HWND hOwner);
+
+    void Save();
+    void GetUpdates(bool & /*bUpdatedHubNameWelcome*/, bool & /*bUpdatedHubName*/, bool & /*bUpdatedTCPPorts*/, bool & /*bUpdatedUDPPort*/, bool & /*bUpdatedAutoReg*/,
+        bool & /*bUpdatedMOTD*/, bool & /*bUpdatedHubSec*/, bool & /*bUpdatedRegOnlyMessage*/, bool & /*bUpdatedShareLimitMessage*/,
+        bool & /*bUpdatedSlotsLimitMessage*/, bool & /*bUpdatedHubSlotRatioMessage*/, bool & /*bUpdatedMaxHubsLimitMessage*/, bool & /*bUpdatedNoTagMessage*/,
+        bool & /*bUpdatedNickLimitMessage*/, bool & /*bUpdatedBotsSameNick*/, bool & /*bUpdatedBotNick*/, bool & /*bUpdatedBot*/, bool & /*bUpdatedOpChatNick*/,
+        bool & /*bUpdatedOpChat*/, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
+        bool & /*bUpdatedPermBanRedirAddress*/, bool &bUpdatedSysTray, bool &bUpdatedScripting, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/);
+
+    char * GetPageName();
+    void FocusLastItem();
 private:
 #if defined(_WITH_SQLITE) || defined(_WITH_POSTGRES) || defined(_WITH_MYSQL)
-	HWND hWndPageItems[26];
+	HWND m_hWndPageItems[26];
 #else
-	HWND hWndPageItems[21];
+    HWND m_hWndPageItems[21];
 #endif
-	
-	enum enmPageItems
-	{
-		GB_HUB_STARTUP_AND_TRAY,
-		BTN_AUTO_START,
-		BTN_CHECK_FOR_UPDATE,
-		BTN_ENABLE_TRAY_ICON,
-		BTN_MINIMIZE_ON_STARTUP,
-		GB_HUB_COMMANDS,
-		LBL_PREFIXES_FOR_HUB_COMMANDS,
-		EDT_PREFIXES_FOR_HUB_COMMANDS,
-		BTN_REPLY_TO_HUB_COMMANDS_IN_PM,
-		GB_SCRIPTING,
-		BTN_ENABLE_SCRIPTING,
-		BTN_STOP_SCRIPT_ON_ERROR,
-		BTN_SAVE_SCRIPT_ERRORS_TO_LOG,
-		GB_KICK_MESSAGES,
-		BTN_FILTER_KICK_MESSAGES,
-		BTN_SEND_KICK_MESSAGES_TO_OPS,
-		GB_STATUS_MESSAGES,
-		BTN_SEND_STATUS_MESSAGES_TO_OPS,
-		BTN_SEND_STATUS_MESSAGES_IN_PM,
-		GB_ADMIN_NICK,
-		EDT_ADMIN_NICK,
+    
+    enum enmPageItems {
+        GB_HUB_STARTUP_AND_TRAY,
+        BTN_AUTO_START,
+        BTN_CHECK_FOR_UPDATE,
+        BTN_ENABLE_TRAY_ICON,
+        BTN_MINIMIZE_ON_STARTUP,
+        GB_HUB_COMMANDS,
+        LBL_PREFIXES_FOR_HUB_COMMANDS,
+        EDT_PREFIXES_FOR_HUB_COMMANDS,
+        BTN_REPLY_TO_HUB_COMMANDS_IN_PM,
+        GB_SCRIPTING,
+        BTN_ENABLE_SCRIPTING,
+        BTN_STOP_SCRIPT_ON_ERROR,
+        BTN_SAVE_SCRIPT_ERRORS_TO_LOG,
+        GB_KICK_MESSAGES,
+        BTN_FILTER_KICK_MESSAGES,
+        BTN_SEND_KICK_MESSAGES_TO_OPS,
+        GB_STATUS_MESSAGES,
+        BTN_SEND_STATUS_MESSAGES_TO_OPS,
+        BTN_SEND_STATUS_MESSAGES_IN_PM,
+        GB_ADMIN_NICK,
+        EDT_ADMIN_NICK,
 #if defined(_WITH_SQLITE) || defined(_WITH_POSTGRES) || defined(_WITH_MYSQL)
-		GB_DATABASE_SUPPORT,
-		CHK_ENABLE_DATABASE,
-		LBL_REMOVE_OLD_RECORDS,
-		EDT_REMOVE_OLD_RECORDS,
-		UD_REMOVE_OLD_RECORDS,
+        GB_DATABASE_SUPPORT,
+        CHK_ENABLE_DATABASE,
+        LBL_REMOVE_OLD_RECORDS,
+        EDT_REMOVE_OLD_RECORDS,
+        UD_REMOVE_OLD_RECORDS,
 #endif
-	};
-	
-	SettingPageAdvanced(const SettingPageAdvanced&);
-	const SettingPageAdvanced& operator=(const SettingPageAdvanced&);
-	
-	LRESULT SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+    };
+
+    SettingPageAdvanced(const SettingPageAdvanced&) = delete;
+    const SettingPageAdvanced& operator=(const SettingPageAdvanced&) = delete;
+
+    LRESULT SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 };
 //------------------------------------------------------------------------------
 
