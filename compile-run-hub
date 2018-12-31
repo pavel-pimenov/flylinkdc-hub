@@ -48,6 +48,8 @@
 # net.netfilter.nf_conntrack_max = 2000000
 
 #-----------------------------------------------------
+# CentOS
+# sudo yum install tinyxml-devel.x86_64
 
 git pull
 rm PtokaX
