@@ -67,6 +67,11 @@
 #endif
 //---------------------------------------------------------------------------
 static ServerThread * m_pServersE = nullptr;
+
+#ifdef _BUILD_GUI
+HWND ServerManager::m_hMainWindow;
+#endif
+
 //---------------------------------------------------------------------------
 
 #ifdef _WIN32
@@ -1257,9 +1262,9 @@ bool ServerManager::ResolveHubAddress(const bool bSilent/* = false*/)
 #ifdef _WIN32
 					int err = WSAGetLastError();
 #ifdef _BUILD_GUI
-					::MessageBox(MainWindow::m_Ptr->m_hWnd, (string(LanguageManager::m_Ptr->m_sTexts[LAN_RESOLVING_OF_HOSTNAME], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RESOLVING_OF_HOSTNAME]) + " '" + string(SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS]) + "' " +
-					                                           string(LanguageManager::m_Ptr->m_sTexts[LAN_HAS_FAILED], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_HAS_FAILED]) + ".\n" + string(LanguageManager::m_Ptr->m_sTexts[LAN_ERROR_CODE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_ERROR_CODE]) + ": " + string(WSErrorStr(err)) + " (" + string(err) + ")\n\n" +
-					                                           string(LanguageManager::m_Ptr->m_sTexts[LAN_CHECK_THE_ADDRESS_PLEASE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_CHECK_THE_ADDRESS_PLEASE]) + ".").c_str(), LanguageManager::m_Ptr->m_sTexts[LAN_ERROR], MB_OK | MB_ICONERROR);
+					::MessageBox(MainWindow::m_Ptr->m_hWnd, (px_string(LanguageManager::m_Ptr->m_sTexts[LAN_RESOLVING_OF_HOSTNAME], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RESOLVING_OF_HOSTNAME]) + " '" + px_string(SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS]) + "' " +
+					                                           px_string(LanguageManager::m_Ptr->m_sTexts[LAN_HAS_FAILED], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_HAS_FAILED]) + ".\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_ERROR_CODE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_ERROR_CODE]) + ": " + px_string(WSErrorStr(err)) + " (" + px_string(err) + ")\n\n" +
+					                                           px_string(LanguageManager::m_Ptr->m_sTexts[LAN_CHECK_THE_ADDRESS_PLEASE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_CHECK_THE_ADDRESS_PLEASE]) + ".").c_str(), LanguageManager::m_Ptr->m_sTexts[LAN_ERROR], MB_OK | MB_ICONERROR);
 #else
 					AppendLog(string(LanguageManager::m_Ptr->m_sTexts[LAN_RESOLVING_OF_HOSTNAME], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RESOLVING_OF_HOSTNAME]) +
 					          " '" + string(SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS]) + "' " + string(LanguageManager::m_Ptr->m_sTexts[LAN_HAS_FAILED], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_HAS_FAILED]) + ".\n" + string(LanguageManager::m_Ptr->m_sTexts[LAN_ERROR_CODE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_ERROR_CODE]) +

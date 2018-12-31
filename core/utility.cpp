@@ -1011,13 +1011,13 @@ bool HaveOnlyNumbers(char *sData, const uint16_t ui16Len)
 bool CheckSprintf(const int &iRetVal, const size_t &szMax, const char * sMsg) {
 	if (iRetVal > 0) {
 		if (szMax != 0 && iRetVal >= (int)szMax) {
-			string sDbgstr = "%s - [ERR] sprintf high value " + string(iRetVal) + "/" + string((uint64_t)szMax) + " in " + string(sMsg) + "\n";
+            px_string sDbgstr = "%s - [ERR] sprintf high value " + px_string(iRetVal) + "/" + px_string((uint64_t)szMax) + " in " + px_string(sMsg) + "\n";
 			AppendDebugLog(sDbgstr.c_str()/*, 0*/);
 			return false;
 		}
 	}
 	else {
-		string sDbgstr = "%s - [ERR] sprintf low value " + string(iRetVal) + " in " + string(sMsg) + "\n";
+        px_string sDbgstr = "%s - [ERR] sprintf low value " + px_string(iRetVal) + " in " + px_string(sMsg) + "\n";
 		AppendDebugLog(sDbgstr.c_str()/*, 0*/);
 		return false;
 	}
@@ -1028,13 +1028,13 @@ bool CheckSprintf(const int &iRetVal, const size_t &szMax, const char * sMsg) {
 bool CheckSprintf1(const int &iRetVal, const size_t &szLenVal, const size_t &szMax, const char * sMsg) {
 	if (iRetVal > 0) {
 		if (szMax != 0 && szLenVal >= szMax) {
-			string sDbgstr = "%s - [ERR] sprintf high value " + string((uint64_t)szLenVal) + "/" + string((uint64_t)szMax) + " in " + string(sMsg) + "\n";
+            px_string sDbgstr = "%s - [ERR] sprintf high value " + px_string((uint64_t)szLenVal) + "/" + px_string((uint64_t)szMax) + " in " + px_string(sMsg) + "\n";
 			AppendDebugLog(sDbgstr.c_str()/*, 0*/);
 			return false;
 		}
 	}
 	else {
-		string sDbgstr = "%s - [ERR] sprintf low value " + string(iRetVal) + " in " + string(sMsg) + "\n";
+        px_string sDbgstr = "%s - [ERR] sprintf low value " + px_string(iRetVal) + " in " + px_string(sMsg) + "\n";
 		AppendDebugLog(sDbgstr.c_str()/*, 0*/);
 		return false;
 	}

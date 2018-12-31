@@ -20,8 +20,10 @@
 #ifndef PXSTRING_H
 #define PXSTRING_H
 //------------------------------------------------------------------------------
+#include <string>
+using std::string;
 
-class string
+class px_string
 {
 	private:
 		char * m_sData;
@@ -29,20 +31,20 @@ class string
 		size_t m_szDataLen;
 		
 		void stralloc(const char * sTxt, const size_t szLen);
-		string(const string & sStr1, const string & sStr2);
-		string(const char * sTxt, const string & sStr);
-		string(const string & sStr, const char * sTxt);
+		px_string(const px_string & sStr1, const px_string & sStr2);
+		px_string(const char * sTxt, const px_string & sStr);
+		px_string(const px_string & sStr, const char * sTxt);
 	public:
-		string();
-		explicit string(const char * sTxt);
-		string(const char * sTxt, const size_t szLen);
-		string(const string & sStr);
-		explicit string(const uint32_t ui32Number);
-		explicit string(const int32_t i32Number);
-		explicit string(const uint64_t ui64Number);
-		explicit string(const int64_t i64Number);
+		px_string();
+		explicit px_string(const char * sTxt);
+		px_string(const char * sTxt, const size_t szLen);
+		px_string(const px_string & sStr);
+        explicit px_string(const uint32_t ui32Number);
+		explicit px_string(const int32_t i32Number);
+		explicit px_string(const uint64_t ui64Number);
+		explicit px_string(const int64_t i64Number);
 		
-		~string();
+		~px_string();
 		
 		size_t size() const
          {
@@ -54,18 +56,22 @@ class string
          }
 		void clear();
 		
-		string operator+(const char * sTxt) const;
-		string operator+(const string & sStr) const;
-		friend string operator+(const char * sTxt, const string & sStr);
+		px_string operator+(const char * sTxt) const;
+		px_string operator+(const px_string & sStr) const;
+		friend px_string operator+(const char * sTxt, const px_string & sStr);
 		
-		string & operator+=(const char * sTxt);
-		string & operator+=(const string & sStr);
-		
-		string & operator=(const char * sTxt);
-		string & operator=(const string & sStr);
+		px_string & operator+=(const char * sTxt);
+		px_string & operator+=(const px_string & sStr);
+        px_string & operator+=(const std::string & sStr)
+        {
+            return operator+=(sStr.c_str());
+        }
+
+		px_string & operator=(const char * sTxt);
+		px_string & operator=(const px_string & sStr);
 		
 		bool operator==(const char * sTxt);
-		bool operator==(const string & sStr);
+		bool operator==(const px_string & sStr);
 };
 //------------------------------------------------------------------------------
 

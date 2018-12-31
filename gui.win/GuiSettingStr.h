@@ -21,42 +21,40 @@
 #define GuiSettingStrH
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-const char* GuiSetBoolStr[] =
-{
-	"ShowChat",
-	"ShowCommands",
-	"AutoUpdateUserlist",
+const char* GuiSetBoolStr[] = {
+    "ShowChat",
+    "ShowCommands",
+    "AutoUpdateUserlist",
 };
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-const char* GuiSetIntegerStr[] =
-{
-	"MainWindowWidth",
-	"MainWindowHeight",
-	"UserChatSplitter",
-	"ScriptsSplitter",
-	"ScriptNames",
-	"ScriptMemoryUsages",
-	"RegsWindowWidth",
-	"RegsWindowHeight",
-	"RegsNick",
-	"RegsPassword",
-	"RegsProfile",
-	"ProfilesWindowWidth",
-	"ProfilesWindowHeight",
-	"BansWindowWidth",
-	"BansWindowHeight",
-	"BansNick",
-	"BansIP",
-	"BansReason",
-	"BansExpire",
-	"BansBy",
-	"RangeBansWindowWidth",
-	"RangeBansWindowHeight",
-	"RangeBansRange",
-	"RangeBansReason",
-	"RangeBansExpire",
-	"RangeBansBy",
+const char* GuiSetIntegerStr[] = {
+    "MainWindowWidth",
+    "MainWindowHeight",
+    "UserChatSplitter",
+    "ScriptsSplitter",
+    "ScriptNames",
+    "ScriptMemoryUsages",
+    "RegsWindowWidth",
+    "RegsWindowHeight",
+    "RegsNick",
+    "RegsPassword",
+    "RegsProfile",
+    "ProfilesWindowWidth",
+    "ProfilesWindowHeight",
+    "BansWindowWidth",
+    "BansWindowHeight",
+    "BansNick",
+    "BansIP",
+    "BansReason",
+    "BansExpire",
+    "BansBy",
+    "RangeBansWindowWidth",
+    "RangeBansWindowHeight",
+    "RangeBansRange",
+    "RangeBansReason",
+    "RangeBansExpire",
+    "RangeBansBy",
 };
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

@@ -2158,7 +2158,7 @@ static int Disconnect(lua_State * pLua)
 	}
 	
 	
-//    UdpDebug->BroadcastFormat("[SYS] User %s (%s) disconnected by script.", u->sNick, u->sIP);
+//    UdpDebug->BroadcastFormat("[SYS] User %s (%s) disconnected by script.", u->m_sNick, u->m_sIP);
 	u->Close();
 	
 	lua_settop(pLua, 0);
@@ -2278,7 +2278,7 @@ static int Redirect(lua_State * pLua)
 		sAddress, LanguageManager::m_Ptr->m_sTexts[LAN_MESSAGE], sReason, sAddress);
 	
 	
-//	UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) redirected by script.", pUser->sNick, pUser->sIP);
+//	UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) redirected by script.", pUser->m_sNick, pUser->m_sIP);
 
 	pUser->Close();
 	

@@ -638,7 +638,7 @@ ProfileItem * ProfileManager::CreateProfile(const char * sName)
 	pNewProfile->m_sName = (char *)malloc(szLen + 1);
 	if (pNewProfile->m_sName == NULL)
 	{
-		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes in ProfileManager::CreateProfile for pNewProfile->sName\n", szLen);
+		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes in ProfileManager::CreateProfile for pNewProfile->m_sName\n", szLen);
 		
 		exit(EXIT_FAILURE);
 	}
@@ -803,7 +803,7 @@ void ProfileManager::ChangeProfileName(const uint16_t ui16Profile, const char * 
 	{
 		m_ppProfilesTable[ui16Profile]->m_sName = sOldName;
 		
-		AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in ProfileManager::ChangeProfileName for m_ppProfilesTable[ui16Profile]->sName\n", szLen);
+		AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in ProfileManager::ChangeProfileName for m_ppProfilesTable[ui16Profile]->m_sName\n", szLen);
 		
 		return;
 	}

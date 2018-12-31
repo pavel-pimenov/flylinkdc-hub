@@ -23,52 +23,52 @@
 struct RangeBanItem;
 //------------------------------------------------------------------------------
 
-class clsRangeBansDialog
-{
+class RangeBansDialog {
 public:
-	static clsRangeBansDialog * mPtr;
-	
-	HWND m_hWndWindowItems[8];
-	
-	enum enmWindowItems
-	{
-		WINDOW_HANDLE,
-		BTN_ADD_RANGE_BAN,
-		LV_RANGE_BANS,
-		GB_FILTER,
-		EDT_FILTER,
-		CB_FILTER,
-		BTN_CLEAR_RANGE_TEMP_BANS,
-		BTN_CLEAR_RANGE_PERM_BANS
-	};
-	
-	clsRangeBansDialog();
-	~clsRangeBansDialog();
-	
-	static LRESULT CALLBACK StaticRangeBansDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	static int CompareRangeBans(const void * pItem, const void * pOtherItem);
-	static int CALLBACK SortCompareRangeBans(LPARAM lParam1, LPARAM lParam2, LPARAM /*lParamSort*/);
-	
+    static RangeBansDialog * m_Ptr;
+
+    HWND m_hWndWindowItems[8];
+
+    enum enmWindowItems {
+        WINDOW_HANDLE,
+        BTN_ADD_RANGE_BAN,
+        LV_RANGE_BANS,
+        GB_FILTER,
+        EDT_FILTER,
+        CB_FILTER,
+        BTN_CLEAR_RANGE_TEMP_BANS,
+        BTN_CLEAR_RANGE_PERM_BANS
+    };
+
+    RangeBansDialog();
+    ~RangeBansDialog();
+
+    static LRESULT CALLBACK StaticRangeBansDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    static int CompareRangeBans(const void * pItem, const void * pOtherItem);
+    static int CALLBACK SortCompareRangeBans(LPARAM lParam1, LPARAM lParam2, LPARAM /*lParamSort*/);
+
 	void DoModal(HWND hWndParent);
 	void FilterRangeBans();
 	void AddRangeBan(const RangeBanItem * pRangeBan);
 	void RemoveRangeBan(const RangeBanItem * pRangeBan);
 private:
-	string sFilterString;
-	
-	int iFilterColumn, iSortColumn;
-	
-	bool bSortAscending;
-	
-	LRESULT RangeBansDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
-	
-	void AddAllRangeBans();
-	void OnColumnClick(const LPNMLISTVIEW &pListView);
-	void RemoveRangeBans();
-	void OnContextMenu(HWND hWindow, LPARAM lParam);
-	bool FilterRangeBan(const RangeBanItem * pRangeBan);
-	void ChangeRangeBan();
-	DISALLOW_COPY_AND_ASSIGN(clsRangeBansDialog);
+    string m_sFilterString;
+
+    int m_iFilterColumn, m_iSortColumn;
+
+    bool m_bSortAscending;
+
+    RangeBansDialog(const RangeBansDialog&) = delete;
+    const RangeBansDialog& operator=(const RangeBansDialog&) = delete;
+
+    LRESULT RangeBansDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+    void AddAllRangeBans();
+    void OnColumnClick(const LPNMLISTVIEW pListView);
+    void RemoveRangeBans();
+    void OnContextMenu(HWND hWindow, LPARAM lParam);
+    bool FilterRangeBan(const RangeBanItem * pRangeBan);
+    void ChangeRangeBan();
 };
 //------------------------------------------------------------------------------
 

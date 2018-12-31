@@ -44,8 +44,8 @@ clsUpdateCheckThread::clsUpdateCheckThread() : hThread(INVALID_HANDLE_VALUE), sR
 
 clsUpdateCheckThread::~clsUpdateCheckThread()
 {
-	clsServerManager::ui64BytesRead += (uint64_t)ui32BytesRead;
-	clsServerManager::ui64BytesSent += (uint64_t)ui32BytesSent;
+	ServerManager::ui64BytesRead += (uint64_t)ui32BytesRead;
+	ServerManager::ui64BytesSent += (uint64_t)ui32BytesSent;
 	
 	if (sSocket != INVALID_SOCKET)
 	{
@@ -88,7 +88,7 @@ void clsUpdateCheckThread::Run()
 	
 	hints.ai_socktype = SOCK_STREAM;
 	
-	if (clsServerManager::bUseIPv6 == true)
+	if (ServerManager::m_bUseIPv6 == true)
 	{
 		hints.ai_family = AF_UNSPEC;
 	}

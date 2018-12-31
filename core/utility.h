@@ -71,7 +71,7 @@ class Hash128
 		{
 			memcpy(m_ui128Hash, ui128Hash, sizeof(m_ui128Hash));
 		}
-		operator uint8_t* ()
+        operator uint8_t* ()
 		{
 			return m_ui128Hash;
 		}

@@ -44,15 +44,15 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -657,6 +657,10 @@
     <ClCompile Include="core\hashBanManager.cpp" />
     <ClCompile Include="core\hashRegManager.cpp" />
     <ClCompile Include="core\hashUsrManager.cpp" />
+    <ClCompile Include="core\HubCommands-AE.cpp" />
+    <ClCompile Include="core\HubCommands-FH.cpp" />
+    <ClCompile Include="core\HubCommands-IQ.cpp" />
+    <ClCompile Include="core\HubCommands-RZ.cpp" />
     <ClCompile Include="core\HubCommands.cpp" />
     <ClCompile Include="core\IP2Country.cpp" />
     <ClCompile Include="core\LanguageManager.cpp" />

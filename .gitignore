@@ -73,3 +73,5 @@ valgrind*.log
 /*.opendb
 /*.db
 callgrind.out.*
+*.VC.db
+*.opendb

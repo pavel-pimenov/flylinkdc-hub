@@ -83,7 +83,7 @@ static bool UserProcessLines(User * pUser, const uint32_t ui32NewDataStart)
 			const uint32_t ui32CommandLen = (uint32_t)(((pUser->m_pRecvBuf + ui32i) - pBuffer) + 1);
 			if (pBuffer[0] == '|')
 			{
-				//UdpDebug->BroadcastFormat("[SYS] heartbeat from %s (%s).", pUser->Nick, pUser->sIP);
+				//UdpDebug->BroadcastFormat("[SYS] heartbeat from %s (%s).", pUser->Nick, pUser->m_sIP);
 				//send(Sck, "|", 1, 0);
 			}
 			else if (ui32CommandLen <= (pUser->m_ui8State < User::STATE_ADDME ? 1024U : 65536U))
@@ -760,7 +760,7 @@ User::~User()
 #ifdef _BUILD_GUI
 	if (::SendMessage(MainWindowPageUsersChat::m_Ptr->m_hWndPageItems[MainWindowPageUsersChat::BTN_SHOW_COMMANDS], BM_GETCHECK, 0, 0) == BST_CHECKED)
 	{
-		RichEditAppendText(MainWindowPageUsersChat::m_Ptr->m_hWndPageItems[MainWindowPageUsersChat::REDT_CHAT], ("x User removed: " + string(m_sNick, m_ui8NickLen) + " (Socket " + string(m_Socket) + ")").c_str());
+		RichEditAppendText(MainWindowPageUsersChat::m_Ptr->m_hWndPageItems[MainWindowPageUsersChat::REDT_CHAT], ("x User removed: " + px_string(m_sNick, m_ui8NickLen) + " (Socket " + px_string(m_Socket) + ")").c_str());
 	}
 #endif
 	

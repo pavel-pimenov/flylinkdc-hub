@@ -22,8 +22,8 @@
 #include "Resources.h"
 //------------------------------------------------------------------------------
 
-IDR_MAINICON            ICON            "..\\ico\\Spider16M-32x32.ico"
-IDR_MAINICONSMALL       ICON            "..\\ico\\Spider256-16x16.ico"
-IDR_MAINICONBIG         ICON            "..\\ico\\Spider-64x64x32.ico"
-IDR_LUAICON             ICON            "..\\ico\\Lua-64x64x32.ico"
+IDR_MAINICON            ICON            "ico\\Spider16M-32x32.ico"
+IDR_MAINICONSMALL       ICON            "ico\\Spider256-16x16.ico"
+IDR_MAINICONBIG         ICON            "ico\\Spider-64x64x32.ico"
+IDR_LUAICON             ICON            "ico\\Lua-64x64x32.ico"
 //------------------------------------------------------------------------------

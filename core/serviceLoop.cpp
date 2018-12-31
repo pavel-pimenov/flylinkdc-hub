@@ -766,7 +766,7 @@ void ServiceLoop::ReceiveLoop()
 				        ((curUser->m_ui32BoolBits & User::BIT_PINGER) == User::BIT_PINGER) == true)
 					continue;
 				// without Welcome message
-				// curUser->SendFormat("clsServiceLoop::ReceiveLoop->User::STATE_ADDME", true, "%s|", clsSettingManager::mPtr->sPreTexts[clsSettingManager::SETPRETXT_HUB_NAME_WLCM]);
+				// curUser->SendFormat("clsServiceLoop::ReceiveLoop->User::STATE_ADDME", true, "%s|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_NAME_WLCM]);
 				curUser->SendFormat("ServiceLoop::ReceiveLoop->User::STATE_ADDME", true, "%s%" PRIu64 " %s, %" PRIu64 " %s, %" PRIu64 " %s / %s: %u)|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_NAME_WLCM], ServerManager::m_ui64Days, LanguageManager::m_Ptr->m_sTexts[LAN_DAYS_LWR],
 				                    ServerManager::m_ui64Hours, LanguageManager::m_Ptr->m_sTexts[LAN_HOURS_LWR], ServerManager::m_ui64Mins, LanguageManager::m_Ptr->m_sTexts[LAN_MINUTES_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_USERS], ServerManager::m_ui32Logged);
 				curUser->m_ui8State = User::STATE_ADDME_1LOOP;
