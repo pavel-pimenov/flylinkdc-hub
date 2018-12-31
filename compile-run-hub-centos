@@ -1,10 +1,27 @@
-#-----------------------------------------------------
 # CentOS
 # sudo yum install tinyxml-devel.x86_64 libunwind-devel.x86_64
 
 git pull
 rm PtokaX
-make -B -f makefile-sqlite-centos centos
+pvs-studio-analyzer trace -- make -B -f makefile-sqlite-centos centos
+
+rm -r ~/pvs/flylinkdc-hub.html
+rm ~/pvs/flylinkdc-hub.log
+pvs-studio-analyzer analyze -l ~/.config/PVS-Studio/PVS-Studio.lic -o ~/pvs/flylinkdc-hub.log
+plog-converter -a GA:1,2 -t fullhtml -o ~/pvs/flylinkdc-hub.html ~/pvs/flylinkdc-hub.log
+rm -r /var/www/pvs-studio/flylinkdc-hub/*
+cp -p -r ~/pvs/flylinkdc-hub.html/* /var/www/pvs-studio/flylinkdc-hub/
+cp pvs-analyse /var/www/pvs-studio/flylinkdc-hub
+cd /var/www/pvs-studio/flylinkdc-hub
+
+svn add *
+cd /var/www/pvs-studio/flylinkdc-hub/sources
+svn add *
+cd ..
+svn commit -m "* flylinkdc-hub"
+
+
+
 ulimit -n 32768
 ulimit -c unlimited
 LANG=ru_RU.CP1251
