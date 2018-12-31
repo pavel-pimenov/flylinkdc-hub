@@ -1007,6 +1007,40 @@ bool HaveOnlyNumbers(char *sData, const uint16_t ui16Len)
 	return true;
 }
 //---------------------------------------------------------------------------
+// + alex82 ... from MOD
+bool CheckSprintf(const int &iRetVal, const size_t &szMax, const char * sMsg) {
+	if (iRetVal > 0) {
+		if (szMax != 0 && iRetVal >= (int)szMax) {
+			string sDbgstr = "%s - [ERR] sprintf high value " + string(iRetVal) + "/" + string((uint64_t)szMax) + " in " + string(sMsg) + "\n";
+			AppendDebugLog(sDbgstr.c_str()/*, 0*/);
+			return false;
+		}
+	}
+	else {
+		string sDbgstr = "%s - [ERR] sprintf low value " + string(iRetVal) + " in " + string(sMsg) + "\n";
+		AppendDebugLog(sDbgstr.c_str()/*, 0*/);
+		return false;
+	}
+	return true;
+}
+//---------------------------------------------------------------------------
+
+bool CheckSprintf1(const int &iRetVal, const size_t &szLenVal, const size_t &szMax, const char * sMsg) {
+	if (iRetVal > 0) {
+		if (szMax != 0 && szLenVal >= szMax) {
+			string sDbgstr = "%s - [ERR] sprintf high value " + string((uint64_t)szLenVal) + "/" + string((uint64_t)szMax) + " in " + string(sMsg) + "\n";
+			AppendDebugLog(sDbgstr.c_str()/*, 0*/);
+			return false;
+		}
+	}
+	else {
+		string sDbgstr = "%s - [ERR] sprintf low value " + string(iRetVal) + " in " + string(sMsg) + "\n";
+		AppendDebugLog(sDbgstr.c_str()/*, 0*/);
+		return false;
+	}
+	return true;
+}
+//---------------------------------------------------------------------------
 
 void AppendLog(const char* sData, const bool bScript/* == false*/)
 {

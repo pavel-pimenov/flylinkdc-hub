@@ -282,9 +282,12 @@ bool RegManager::AddNew(const char * sNick, const char * sPasswd, const uint16_t
 			
 			if (((AddedUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == true)
 			{
+				// alex82 ... HideUserKey / Прячем ключ юзера
+				if (((AddedUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false)
+				{
 				Users::m_Ptr->Add2OpList(AddedUser);
 				GlobalDataQueue::m_Ptr->OpListStore(AddedUser->m_sNick);
-				
+				}
 				if (bAllowedOpChat != ProfileManager::m_Ptr->IsAllowed(AddedUser, ProfileManager::ALLOWEDOPCHAT))
 				{
 					if (SettingManager::m_Ptr->m_bBools[SETBOOL_REG_OP_CHAT] == true &&
@@ -381,14 +384,38 @@ void RegManager::ChangeReg(RegUser * pReg, const char * sNewPasswd, const uint16
 			if (ProfileManager::m_Ptr->IsAllowed(ChangedUser, ProfileManager::HASKEYICON) == true)
 			{
 				ChangedUser->m_ui32BoolBits |= User::BIT_OPERATOR;
+				// alex82 ... HideUserKey / Прячем ключ юзера
+				if (((ChangedUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false) {
 				Users::m_Ptr->Add2OpList(ChangedUser);
 				GlobalDataQueue::m_Ptr->OpListStore(ChangedUser->m_sNick);
+			}
 			}
 			else
 			{
 				ChangedUser->m_ui32BoolBits &= ~User::BIT_OPERATOR;
+				// alex82 ... HideUserKey / Прячем ключ юзера
+				if (((ChangedUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false) {
+					// alex82 ... Исправили отправку OpList
+					int imsgLen = sprintf(ServerManager::m_pGlobalBuffer, "$Quit %s|", ChangedUser->m_sNick);
+					if (CheckSprintf(imsgLen, 128, "RegManager::ChangeReg1") == true) {
+						GlobalDataQueue::m_Ptr->AddQueueItem(ServerManager::m_pGlobalBuffer, imsgLen, NULL, 0, GlobalDataQueue::CMD_QUIT);
+					}
+					switch (SettingManager::m_Ptr->m_ui8FullMyINFOOption) {
+					case 0:
+						GlobalDataQueue::m_Ptr->AddQueueItem(ChangedUser->m_sMyInfoLong, ChangedUser->m_ui16MyInfoLongLen, NULL, 0, GlobalDataQueue::CMD_MYINFO);
+						break;
+					case 1:
+						GlobalDataQueue::m_Ptr->AddQueueItem(ChangedUser->m_sMyInfoShort, ChangedUser->m_ui16MyInfoShortLen, ChangedUser->m_sMyInfoLong, ChangedUser->m_ui16MyInfoLongLen, GlobalDataQueue::CMD_MYINFO);
+						break;
+					case 2:
+						GlobalDataQueue::m_Ptr->AddQueueItem(ChangedUser->m_sMyInfoShort, ChangedUser->m_ui16MyInfoShortLen, NULL, 0, GlobalDataQueue::CMD_MYINFO);
+						break;
+					default:
+						break;
+					}
 				Users::m_Ptr->DelFromOpList(ChangedUser->m_sNick);
 			}
+		}
 		}
 		
 		if (bAllowedOpChat != ProfileManager::m_Ptr->IsAllowed(ChangedUser, ProfileManager::ALLOWEDOPCHAT))

@@ -421,7 +421,10 @@ bool HubCommands::Op(ChatCommand * pChatCommand)   // !op nick
 	bool bAllowedOpChat = ProfileManager::m_Ptr->IsAllowed(pOtherUser, ProfileManager::ALLOWEDOPCHAT);
 	pOtherUser->m_i32Profile = iProfileIndex;
 	pOtherUser->m_ui32BoolBits |= User::BIT_TEMP_OPERATOR; // to disallow adding more tempop by tempop user ;)
+	// alex82 ... HideUserKey / Прячем ключ юзера
+	if (((pOtherUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false) {
 	Users::m_Ptr->Add2OpList(pOtherUser);
+	}
 	
 	if (((pOtherUser->m_ui32SupportBits & User::SUPPORTBIT_QUICKLIST) == User::SUPPORTBIT_QUICKLIST) == false)
 	{
@@ -431,9 +434,10 @@ bool HubCommands::Op(ChatCommand * pChatCommand)   // !op nick
 	{
 		pOtherUser->SendFormat("HubCommands::Op7", true, "<%s> *** %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_GOT_TEMP_OP]);
 	}
-	
+	// alex82 ... Прячем ключ юзера
+	if (((pOtherUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false) {
 	GlobalDataQueue::m_Ptr->OpListStore(pOtherUser->m_sNick);
-	
+	}
 	if (bAllowedOpChat != ProfileManager::m_Ptr->IsAllowed(pOtherUser, ProfileManager::ALLOWEDOPCHAT))
 	{
 		if (SettingManager::m_Ptr->m_bBools[SETBOOL_REG_OP_CHAT] == true &&

@@ -37,6 +37,8 @@ struct ScriptBot
 	~ScriptBot();
 	
 	static ScriptBot * CreateScriptBot(const char * sBotNick, const size_t szNickLen, const char * sDescription, const size_t szDscrLen, const char * sEmail, const size_t szEmailLen, const bool bOP);
+	// alex82 ... RegBot / Добавили альтернативную функцию для создания бота с полноценным $MyINFO
+	static ScriptBot * CreateScriptBot(const char * sNick, const size_t szNickLen, const char * sBotMyINFO, const size_t szMyINFOLen, const bool bOP);
 	DISALLOW_COPY_AND_ASSIGN(ScriptBot);
 };
 //------------------------------------------------------------------------------

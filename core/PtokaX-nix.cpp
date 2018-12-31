@@ -41,6 +41,24 @@ using std::ostringstream;
 static bool bTerminatedBySignal = false;
 static int iSignal = 0;
 //---------------------------------------------------------------------------
+#ifndef _WIN32
+#define UNW_LOCAL_ONLY
+#include <libunwind.h>
+
+void show_backtrace (void) {
+  unw_cursor_t cursor; unw_context_t uc;
+  unw_word_t ip, sp;
+
+  unw_getcontext(&uc);
+  unw_init_local(&cursor, &uc);
+  while (unw_step(&cursor) > 0) {
+    unw_get_reg(&cursor, UNW_REG_IP, &ip);
+    unw_get_reg(&cursor, UNW_REG_SP, &sp);
+    printf ("ip = %lx, sp = %lx\n", (long) ip, (long) sp);
+  }
+}
+#endif // _WIN32
+
 
 static void SigHandler(int iSig)
 {
@@ -57,88 +75,6 @@ static void SigHandler(int iSig)
 	sigaction(iSig, &sigact, NULL);
 }
 
-//--------------------------------------------------------------------------
-// http://stackoverflow.com/questions/77005/how-to-generate-a-stacktrace-when-my-gcc-c-app-crashes
-//--------------------------------------------------------------------------
-void handler_crash(int sig)
-{
-	/*
-	  void *array[60];
-	  size_t size;
-	
-	  // get void*'s for all entries on the stack
-	  size = backtrace(array, 60);
-	
-	  // print out all the frames to stderr
-	  fprintf(stderr, "Error: signal %d:\n", sig);
-	  backtrace_symbols_fd(array, size, STDERR_FILENO);
-	  exit(1);
-	*/
-	void* addrlist[64];
-	int addrlen = backtrace(addrlist, sizeof(addrlist) / sizeof(void*));
-	
-	if (!addrlen)
-	{
-		std::cout << "Stack backtrace is empty, possibly corrupt" << endl;
-		exit(1);
-		return;
-	}
-	
-	char** symbollist = backtrace_symbols(addrlist, addrlen);
-	size_t funcnamesize = 256;
-	char* funcname = (char*)malloc(funcnamesize);
-	ostringstream bt;
-	
-	for (int i = 1; i < addrlen; i++)
-	{
-		char *begin_name = 0, *begin_offset = 0, *end_offset = 0;
-		
-		for (char *p = symbollist[i]; *p; ++p)
-		{
-			if (*p == '(')
-			{
-				begin_name = p;
-			}
-			else if (*p == '+')
-			{
-				begin_offset = p;
-			}
-			else if ((*p == ')') && begin_offset)
-			{
-				end_offset = p;
-				break;
-			}
-		}
-		
-		if (begin_name && begin_offset && end_offset && (begin_name < begin_offset))
-		{
-			*begin_name++ = '\0';
-			*begin_offset++ = '\0';
-			*end_offset = '\0';
-			int status;
-			char* ret = abi::__cxa_demangle(begin_name, funcname, &funcnamesize, &status);
-			
-			if (!status)
-			{
-				funcname = ret;
-				bt << symbollist[i] << ": " << funcname << " +" << begin_offset << endl;
-			}
-			else
-			{
-				bt << symbollist[i] << ": " << begin_name << "() +" << begin_offset << endl;
-			}
-		}
-		else
-		{
-			bt << symbollist[i] << endl;
-		}
-	}
-	
-	free(funcname);
-	free(symbollist);
-	std::cout << "Stack backtrace:" << endl << endl << bt.str() << endl;
-	exit(1);
-}
 
 //---------------------------------------------------------------------------
 static void showUsage()
@@ -158,7 +94,6 @@ static void showUsage()
 
 int main(int argc, char* argv[])
 {
-	signal(SIGSEGV, handler_crash);
 //	mtrace();
 	bool bSetup = false;
 	

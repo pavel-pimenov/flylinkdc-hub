@@ -386,7 +386,14 @@ struct User
 		INFOBIT_EMAIL_SHORT_PERM           = 0x800,
 		INFOBIT_EMAIL_LONG_PERM            = 0x1000,
 		INFOBIT_SHARE_SHORT_PERM           = 0x2000,
-		INFOBIT_SHARE_LONG_PERM            = 0x4000
+		INFOBIT_SHARE_LONG_PERM            = 0x4000,
+		// alex82 ... HideUser / Скрытие юзера
+		INFOBIT_HIDDEN                     = 0x8000,
+		// alex82 ... NoQuit / Подавляем $Quit для юзера
+		INFOBIT_NO_QUIT                    = 0x10000,
+		// alex82 ... HideUserKey / Прячем ключ юзера
+		INFOBIT_HIDE_KEY                   = 0x20000,
+		// alex82 feature...
 	};
 	
 	enum UserSupportBits

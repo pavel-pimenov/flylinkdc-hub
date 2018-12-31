@@ -66,5 +66,9 @@ if [ -n `locale -a|grep -i ru_RU.cp1251` ]; then
 else
 echo 'ERROR: run $sudo localedef -c -i ru_RU -f CP1251 ru_RU.CP1251'
 fi
+# ulimit -c unlimited
 # valgrind --leak-check=full --leak-resolution=med --log-file=valgrind-log-file.log --time-stamp=yes ./PtokaX
 valgrind --tool=callgrind ./PtokaX
+
+#iptables -A INPUT -p tcp -d 193.70.112.113 --dport 80 -m state --state NEW -m recent --update --seconds 10 --hitcount 10 --rttl -j DROP
+#iptables -A INPUT -p tcp -d 193.70.112.113 --dport 80 -m state --state NEW -m recent --update --seconds 10 --hitcount 10 --rttl -j DROP
