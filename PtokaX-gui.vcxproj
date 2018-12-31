@@ -1,0 +1,672 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Testing|x64">
+      <Configuration>Testing</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release Lua 5.1.5|x64">
+      <Configuration>Release Lua 5.1.5</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Testing|Win32">
+      <Configuration>Testing</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release Lua 5.1.5|Win32">
+      <Configuration>Release Lua 5.1.5</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{34750F97-E9AE-4D1D-9240-24C4A85ED070}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Testing|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140_xp</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140_xp</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140_xp</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Testing|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Testing|x64'">compiled\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">compiled\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'">compiled\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">compiled\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compiled\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">compiled\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Testing|x64'">obj-gui\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">obj-gui\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'">obj-gui\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">obj-gui\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">obj-gui\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">obj-gui\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Testing|x64'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Testing|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Testing|x64'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Testing|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'" />
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Testing|x64'">PtokaX-x64</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PtokaX-x64</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'">PtokaX-x64</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">PtokaX</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PtokaX</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">PtokaX</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Testing|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>lua\src;tinyxml\src;zlib\src;skein\Optimized_32bit;sqlite\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_PtokaX_TESTING_;_BUILD_GUI;_CRT_SECURE_NO_WARNINGS;_WITH_SQLITE;SQLITE_API=__declspec(dllimport);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <OmitFramePointers>false</OmitFramePointers>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <CreateHotpatchableImage>false</CreateHotpatchableImage>
+      <OpenMPSupport>false</OpenMPSupport>
+      <CallingConvention>Cdecl</CallingConvention>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <ShowProgress>NotSet</ShowProgress>
+      <AdditionalDependencies>ws2_32.lib;comctl32.lib;Iphlpapi.lib;psapi.lib;Dbghelp.lib;tinyxml-x64.lib;zlib-x64.lib;PXLua-x64.lib;skein-x64.lib;sqlite-x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)PtokaX-x64.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalManifestDependencies>type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*';%(AdditionalManifestDependencies)</AdditionalManifestDependencies>
+      <AdditionalLibraryDirectories>lua;tinyxml;zlib;skein;sqlite;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>dbghelp.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>false</GenerateMapFile>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <SetChecksum>true</SetChecksum>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <FixedBaseAddress>false</FixedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX64</TargetMachine>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <LargeAddressAware>true</LargeAddressAware>
+      <TerminalServerAware>false</TerminalServerAware>
+    </Link>
+    <Manifest>
+      <AssemblyIdentity>PtokaX,version=0.5.2.2,processorArchitecture=amd64,type=win32</AssemblyIdentity>
+    </Manifest>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>lua\src;tinyxml\src;zlib\src;skein\Optimized_32bit;sqlite\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_BUILD_GUI;_CRT_SECURE_NO_WARNINGS;_WITH_SQLITE;SQLITE_API=__declspec(dllimport);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <OmitFramePointers>false</OmitFramePointers>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <CreateHotpatchableImage>false</CreateHotpatchableImage>
+      <OpenMPSupport>false</OpenMPSupport>
+      <CallingConvention>Cdecl</CallingConvention>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <ShowProgress>NotSet</ShowProgress>
+      <AdditionalDependencies>ws2_32.lib;comctl32.lib;Iphlpapi.lib;psapi.lib;Dbghelp.lib;tinyxml-x64.lib;zlib-x64.lib;PXLua-x64.lib;skein-x64.lib;sqlite-x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)PtokaX-x64.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalManifestDependencies>type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*';%(AdditionalManifestDependencies)</AdditionalManifestDependencies>
+      <AdditionalLibraryDirectories>lua;tinyxml;zlib;skein;sqlite;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>dbghelp.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>false</GenerateMapFile>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <SetChecksum>true</SetChecksum>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <FixedBaseAddress>false</FixedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX64</TargetMachine>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <LargeAddressAware>true</LargeAddressAware>
+      <TerminalServerAware>false</TerminalServerAware>
+    </Link>
+    <Manifest>
+      <AssemblyIdentity>PtokaX,version=0.5.2.2,processorArchitecture=amd64,type=win32</AssemblyIdentity>
+    </Manifest>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>lua-515\src;tinyxml\src;zlib\src;skein\Optimized_32bit;sqlite\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_BUILD_GUI;_CRT_SECURE_NO_WARNINGS;_WITH_SQLITE;SQLITE_API=__declspec(dllimport);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <OmitFramePointers>false</OmitFramePointers>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <CreateHotpatchableImage>false</CreateHotpatchableImage>
+      <OpenMPSupport>false</OpenMPSupport>
+      <CallingConvention>Cdecl</CallingConvention>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <ShowProgress>NotSet</ShowProgress>
+      <AdditionalDependencies>ws2_32.lib;comctl32.lib;Iphlpapi.lib;psapi.lib;Dbghelp.lib;tinyxml-x64.lib;zlib-x64.lib;PXLua-x64.lib;skein-x64.lib;sqlite-x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)PtokaX-x64.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalManifestDependencies>type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*';%(AdditionalManifestDependencies)</AdditionalManifestDependencies>
+      <AdditionalLibraryDirectories>lua-515;tinyxml;zlib;skein;sqlite;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>dbghelp.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>false</GenerateMapFile>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <SetChecksum>true</SetChecksum>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <FixedBaseAddress>false</FixedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX64</TargetMachine>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <LargeAddressAware>true</LargeAddressAware>
+      <TerminalServerAware>false</TerminalServerAware>
+    </Link>
+    <Manifest>
+      <AssemblyIdentity>PtokaX,version=0.5.2.2,processorArchitecture=amd64,type=win32</AssemblyIdentity>
+    </Manifest>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>lua\src;tinyxml\src;zlib\src;skein\Optimized_32bit;sqlite\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_PtokaX_TESTING_;_BUILD_GUI;_CRT_SECURE_NO_WARNINGS;_WITH_SQLITE;SQLITE_API=__declspec(dllimport);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CallingConvention>FastCall</CallingConvention>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <CreateHotpatchableImage>false</CreateHotpatchableImage>
+      <OpenMPSupport>false</OpenMPSupport>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;comctl32.lib;Iphlpapi.lib;psapi.lib;Dbghelp.lib;tinyxml.lib;zlib-x86.lib;PXLua.lib;skein.lib;sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ShowProgress>NotSet</ShowProgress>
+      <OutputFile>$(OutDir)PtokaX.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalManifestDependencies>type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*';%(AdditionalManifestDependencies)</AdditionalManifestDependencies>
+      <AdditionalLibraryDirectories>lua;tinyxml;zlib;skein;sqlite;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>dbghelp.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>false</GenerateMapFile>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <SetChecksum>true</SetChecksum>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <FixedBaseAddress>false</FixedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <LargeAddressAware>false</LargeAddressAware>
+      <TerminalServerAware>false</TerminalServerAware>
+    </Link>
+    <Manifest>
+      <AssemblyIdentity>PtokaX,version=0.5.2.2,processorArchitecture=x86,type=win32</AssemblyIdentity>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>lua\src;tinyxml\src;zlib\src;skein\Optimized_32bit;sqlite\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_BUILD_GUI;_CRT_SECURE_NO_WARNINGS;_WITH_SQLITE;SQLITE_API=__declspec(dllimport);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CallingConvention>FastCall</CallingConvention>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <CreateHotpatchableImage>false</CreateHotpatchableImage>
+      <OpenMPSupport>false</OpenMPSupport>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;comctl32.lib;Iphlpapi.lib;psapi.lib;Dbghelp.lib;tinyxml.lib;zlib-x86.lib;PXLua.lib;skein.lib;sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ShowProgress>NotSet</ShowProgress>
+      <OutputFile>$(OutDir)PtokaX.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalManifestDependencies>type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*';%(AdditionalManifestDependencies)</AdditionalManifestDependencies>
+      <AdditionalLibraryDirectories>lua;tinyxml;zlib;skein;sqlite;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>dbghelp.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>false</GenerateMapFile>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <SetChecksum>true</SetChecksum>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <FixedBaseAddress>false</FixedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <LargeAddressAware>false</LargeAddressAware>
+      <TerminalServerAware>false</TerminalServerAware>
+    </Link>
+    <Manifest>
+      <AssemblyIdentity>PtokaX,version=0.5.2.2,processorArchitecture=x86,type=win32</AssemblyIdentity>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>lua-515\src;tinyxml\src;zlib\src;skein\Optimized_32bit;sqlite\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_BUILD_GUI;_CRT_SECURE_NO_WARNINGS;_WITH_SQLITE;SQLITE_API=__declspec(dllimport);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CallingConvention>FastCall</CallingConvention>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <CreateHotpatchableImage>false</CreateHotpatchableImage>
+      <OpenMPSupport>false</OpenMPSupport>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Link>
+      <AdditionalDependencies>ws2_32.lib;comctl32.lib;Iphlpapi.lib;psapi.lib;Dbghelp.lib;tinyxml.lib;zlib-x86.lib;PXLua.lib;skein.lib;sqlite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ShowProgress>NotSet</ShowProgress>
+      <OutputFile>$(OutDir)PtokaX.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalManifestDependencies>type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*';%(AdditionalManifestDependencies)</AdditionalManifestDependencies>
+      <AdditionalLibraryDirectories>lua-515;tinyxml;zlib;skein;sqlite;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>dbghelp.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>false</GenerateMapFile>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <SetChecksum>true</SetChecksum>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <FixedBaseAddress>false</FixedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <LargeAddressAware>false</LargeAddressAware>
+      <TerminalServerAware>false</TerminalServerAware>
+    </Link>
+    <Manifest>
+      <AssemblyIdentity>PtokaX,version=0.5.2.2,processorArchitecture=x86,type=win32</AssemblyIdentity>
+    </Manifest>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="core\colUsers.h" />
+    <ClInclude Include="core\DB-SQLite.h" />
+    <ClInclude Include="core\DcCommands.h" />
+    <ClInclude Include="core\DeFlood.h" />
+    <ClInclude Include="core\eventqueue.h" />
+    <ClInclude Include="core\ExceptionHandling.h" />
+    <ClInclude Include="core\GlobalDataQueue.h" />
+    <ClInclude Include="core\hashBanManager.h" />
+    <ClInclude Include="core\hashRegManager.h" />
+    <ClInclude Include="core\hashUsrManager.h" />
+    <ClInclude Include="core\HubCommands.h" />
+    <ClInclude Include="core\IP2Country.h" />
+    <ClInclude Include="core\LanguageIds.h" />
+    <ClInclude Include="core\LanguageManager.h" />
+    <ClInclude Include="core\LanguageStrings.h" />
+    <ClInclude Include="core\LanguageXml.h" />
+    <ClInclude Include="core\LuaBanManLib.h" />
+    <ClInclude Include="core\LuaCoreLib.h" />
+    <ClInclude Include="core\LuaInc.h" />
+    <ClInclude Include="core\LuaIP2CountryLib.h" />
+    <ClInclude Include="core\LuaProfManLib.h" />
+    <ClInclude Include="core\LuaRegManLib.h" />
+    <ClInclude Include="core\LuaScript.h" />
+    <ClInclude Include="core\LuaScriptManager.h" />
+    <ClInclude Include="core\LuaScriptManLib.h" />
+    <ClInclude Include="core\LuaSetManLib.h" />
+    <ClInclude Include="core\LuaTmrManLib.h" />
+    <ClInclude Include="core\LuaUDPDbgLib.h" />
+    <ClInclude Include="core\ProfileManager.h" />
+    <ClInclude Include="core\PXBReader.h" />
+    <ClInclude Include="core\pxstring.h" />
+    <ClInclude Include="core\RegThread.h" />
+    <ClInclude Include="core\ResNickManager.h" />
+    <ClInclude Include="core\ServerManager.h" />
+    <ClInclude Include="core\ServerThread.h" />
+    <ClInclude Include="core\serviceLoop.h" />
+    <ClInclude Include="core\SettingCom.h" />
+    <ClInclude Include="core\SettingDefaults.h" />
+    <ClInclude Include="core\SettingIds.h" />
+    <ClInclude Include="core\SettingManager.h" />
+    <ClInclude Include="core\SettingStr.h" />
+    <ClInclude Include="core\stdinc.h" />
+    <ClInclude Include="core\TextConverter.h" />
+    <ClInclude Include="core\TextFileManager.h" />
+    <ClInclude Include="core\UdpDebug.h" />
+    <ClInclude Include="core\UDPThread.h" />
+    <ClInclude Include="core\UpdateCheckThread.h" />
+    <ClInclude Include="core\User.h" />
+    <ClInclude Include="core\utility.h" />
+    <ClInclude Include="core\ZlibUtility.h" />
+    <ClInclude Include="gui.win\AboutDialog.h" />
+    <ClInclude Include="gui.win\BanDialog.h" />
+    <ClInclude Include="gui.win\BansDialog.h" />
+    <ClInclude Include="gui.win\BasicSplitter.h" />
+    <ClInclude Include="gui.win\GuiSettingDefaults.h" />
+    <ClInclude Include="gui.win\GuiSettingIds.h" />
+    <ClInclude Include="gui.win\GuiSettingManager.h" />
+    <ClInclude Include="gui.win\GuiSettingStr.h" />
+    <ClInclude Include="gui.win\GuiUtil.h" />
+    <ClInclude Include="gui.win\LineDialog.h" />
+    <ClInclude Include="gui.win\MainWindow.h" />
+    <ClInclude Include="gui.win\MainWindowPage.h" />
+    <ClInclude Include="gui.win\MainWindowPageScripts.h" />
+    <ClInclude Include="gui.win\MainWindowPageStats.h" />
+    <ClInclude Include="gui.win\MainWindowPageUsersChat.h" />
+    <ClInclude Include="gui.win\ProfilesDialog.h" />
+    <ClInclude Include="gui.win\RangeBanDialog.h" />
+    <ClInclude Include="gui.win\RangeBansDialog.h" />
+    <ClInclude Include="gui.win\RegisteredUserDialog.h" />
+    <ClInclude Include="gui.win\RegisteredUsersDialog.h" />
+    <ClInclude Include="gui.win\Resources.h" />
+    <ClInclude Include="gui.win\ScriptEditorDialog.h" />
+    <ClInclude Include="gui.win\SettingDialog.h" />
+    <ClInclude Include="gui.win\SettingPage.h" />
+    <ClInclude Include="gui.win\SettingPageAdvanced.h" />
+    <ClInclude Include="gui.win\SettingPageBans.h" />
+    <ClInclude Include="gui.win\SettingPageBots.h" />
+    <ClInclude Include="gui.win\SettingPageDeflood.h" />
+    <ClInclude Include="gui.win\SettingPageDeflood2.h" />
+    <ClInclude Include="gui.win\SettingPageDeflood3.h" />
+    <ClInclude Include="gui.win\SettingPageGeneral.h" />
+    <ClInclude Include="gui.win\SettingPageGeneral2.h" />
+    <ClInclude Include="gui.win\SettingPageMOTD.h" />
+    <ClInclude Include="gui.win\SettingPageMyINFO.h" />
+    <ClInclude Include="gui.win\SettingPageRules.h" />
+    <ClInclude Include="gui.win\SettingPageRules2.h" />
+    <ClInclude Include="gui.win\UpdateDialog.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="gui.win\PtokaX.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ico\Spider16M-32x32.ico" />
+    <None Include="ico\Spider256-16x16.ico" />
+    <None Include="ico\Spider-64x64x32.ico" />
+    <None Include="ico\Lua-64x64x32.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="core\colUsers.cpp" />
+    <ClCompile Include="core\DB-SQLite.cpp" />
+    <ClCompile Include="core\DcCommands.cpp" />
+    <ClCompile Include="core\DeFlood.cpp" />
+    <ClCompile Include="core\eventqueue.cpp" />
+    <ClCompile Include="core\ExceptionHandling.cpp" />
+    <ClCompile Include="core\GlobalDataQueue.cpp" />
+    <ClCompile Include="core\hashBanManager.cpp" />
+    <ClCompile Include="core\hashRegManager.cpp" />
+    <ClCompile Include="core\hashUsrManager.cpp" />
+    <ClCompile Include="core\HubCommands-AE.cpp" />
+    <ClCompile Include="core\HubCommands-FH.cpp" />
+    <ClCompile Include="core\HubCommands-IQ.cpp" />
+    <ClCompile Include="core\HubCommands-RZ.cpp" />
+    <ClCompile Include="core\HubCommands.cpp" />
+    <ClCompile Include="core\IP2Country.cpp" />
+    <ClCompile Include="core\LanguageManager.cpp" />
+    <ClCompile Include="core\LuaBanManLib.cpp" />
+    <ClCompile Include="core\LuaCoreLib.cpp" />
+    <ClCompile Include="core\LuaIP2CountryLib.cpp" />
+    <ClCompile Include="core\LuaProfManLib.cpp" />
+    <ClCompile Include="core\LuaRegManLib.cpp" />
+    <ClCompile Include="core\LuaScript.cpp" />
+    <ClCompile Include="core\LuaScriptManager.cpp" />
+    <ClCompile Include="core\LuaScriptManLib.cpp" />
+    <ClCompile Include="core\LuaSetManLib.cpp" />
+    <ClCompile Include="core\LuaTmrManLib.cpp" />
+    <ClCompile Include="core\LuaUDPDbgLib.cpp" />
+    <ClCompile Include="core\ProfileManager.cpp" />
+    <ClCompile Include="core\PXBReader.cpp" />
+    <ClCompile Include="core\pxstring.cpp" />
+    <ClCompile Include="core\RegThread.cpp" />
+    <ClCompile Include="core\ResNickManager.cpp" />
+    <ClCompile Include="core\ServerManager.cpp" />
+    <ClCompile Include="core\ServerThread.cpp" />
+    <ClCompile Include="core\serviceLoop.cpp" />
+    <ClCompile Include="core\SettingManager.cpp" />
+    <ClCompile Include="core\TextConverter.cpp" />
+    <ClCompile Include="core\TextFileManager.cpp" />
+    <ClCompile Include="core\UdpDebug.cpp" />
+    <ClCompile Include="core\UDPThread.cpp" />
+    <ClCompile Include="core\UpdateCheckThread.cpp" />
+    <ClCompile Include="core\User.cpp" />
+    <ClCompile Include="core\utility.cpp" />
+    <ClCompile Include="core\ZlibUtility.cpp" />
+    <ClCompile Include="gui.win\AboutDialog.cpp" />
+    <ClCompile Include="gui.win\BanDialog.cpp" />
+    <ClCompile Include="gui.win\BansDialog.cpp" />
+    <ClCompile Include="gui.win\BasicSplitter.cpp" />
+    <ClCompile Include="gui.win\GuiSettingManager.cpp" />
+    <ClCompile Include="gui.win\GuiUtil.cpp" />
+    <ClCompile Include="gui.win\LineDialog.cpp" />
+    <ClCompile Include="gui.win\MainWindow.cpp" />
+    <ClCompile Include="gui.win\MainWindowPage.cpp" />
+    <ClCompile Include="gui.win\MainWindowPageScripts.cpp" />
+    <ClCompile Include="gui.win\MainWindowPageStats.cpp" />
+    <ClCompile Include="gui.win\MainWindowPageUsersChat.cpp" />
+    <ClCompile Include="gui.win\ProfilesDialog.cpp" />
+    <ClCompile Include="gui.win\PtokaX.cpp" />
+    <ClCompile Include="gui.win\RangeBanDialog.cpp" />
+    <ClCompile Include="gui.win\RangeBansDialog.cpp" />
+    <ClCompile Include="gui.win\RegisteredUserDialog.cpp" />
+    <ClCompile Include="gui.win\RegisteredUsersDialog.cpp" />
+    <ClCompile Include="gui.win\ScriptEditorDialog.cpp" />
+    <ClCompile Include="gui.win\SettingDialog.cpp" />
+    <ClCompile Include="gui.win\SettingPage.cpp" />
+    <ClCompile Include="gui.win\SettingPageAdvanced.cpp" />
+    <ClCompile Include="gui.win\SettingPageBans.cpp" />
+    <ClCompile Include="gui.win\SettingPageBots.cpp" />
+    <ClCompile Include="gui.win\SettingPageDeflood.cpp" />
+    <ClCompile Include="gui.win\SettingPageDeflood2.cpp" />
+    <ClCompile Include="gui.win\SettingPageDeflood3.cpp" />
+    <ClCompile Include="gui.win\SettingPageGeneral.cpp" />
+    <ClCompile Include="gui.win\SettingPageGeneral2.cpp" />
+    <ClCompile Include="gui.win\SettingPageMOTD.cpp" />
+    <ClCompile Include="gui.win\SettingPageMyINFO.cpp" />
+    <ClCompile Include="gui.win\SettingPageRules.cpp" />
+    <ClCompile Include="gui.win\SettingPageRules2.cpp" />
+    <ClCompile Include="gui.win\UpdateDialog.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="core\PtokaX.Manifest" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
