@@ -27,6 +27,7 @@ static const uint32_t NICKLISTSIZE = 1024 * 8;
 static const uint32_t OPLISTSIZE = 512;
 //---------------------------------------------------------------------------
 #include <vector>
+#include <string>
 
 class Users
 {

@@ -21,6 +21,8 @@
 #define eventqueueH
 //---------------------------------------------------------------------------
 #include "CriticalSection.h"
+#include <string>
+
 class EventQueue
 {
 private:
