@@ -106,7 +106,9 @@ DcCommands::~DcCommands()
 // Process DC data form User
 void DcCommands::PreProcessData(DcCommand * pDcCommand)
 {
-	bool bCheck = true; // TODO 
+#ifdef USE_FLYLINKDC_EXT_JSON
+    bool bCheck = true; // TODO 
+#endif
 #ifdef _BUILD_GUI
 	// Full raw data trace for better logging
 	if (::SendMessage(MainWindowPageUsersChat::m_Ptr->m_hWndPageItems[MainWindowPageUsersChat::BTN_SHOW_COMMANDS], BM_GETCHECK, 0, 0) == BST_CHECKED)
