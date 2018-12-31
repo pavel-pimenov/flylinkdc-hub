@@ -131,6 +131,53 @@ ScriptBot * ScriptBot::CreateScriptBot(const char * sBotNick, const size_t szNic
 	return pScriptBot;
 }
 //------------------------------------------------------------------------------
+// alex82 ... RegBot / Добавили альтернативную функцию для создания бота с полноценным $MyINFO
+ScriptBot * ScriptBot::CreateScriptBot(const char * sBotNick, const size_t szNickLen, const char * sBotMyINFO, const size_t szMyINFOLen, const bool bOP)
+{
+	ScriptBot * pScriptBot = new (std::nothrow) ScriptBot();
+
+	if (pScriptBot == NULL)
+	{
+		AppendDebugLog("%s - [MEM] Cannot allocate new pScriptBot in ScriptBot::CreateScriptBot\n");
+
+		return NULL;
+	}
+
+	pScriptBot->m_sNick = (char *)malloc(szNickLen + 1);
+	if (pScriptBot->m_sNick == NULL)
+	{
+		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for m_sNick in ScriptBot::CreateScriptBot\n", szNickLen + 1);
+
+		delete pScriptBot;
+		return NULL;
+	}
+	memcpy(pScriptBot->m_sNick, sBotNick, szNickLen);
+	pScriptBot->m_sNick[szNickLen] = '\0';
+
+	pScriptBot->m_bIsOP = bOP;
+
+	bool bAddPipe = false;
+	if (sBotMyINFO[szMyINFOLen - 1] != '|') bAddPipe = true;
+
+	size_t szWantLen = szMyINFOLen + 1;
+	if (bAddPipe == true) szWantLen++;
+
+	pScriptBot->m_sMyINFO = (char *)malloc(szWantLen);
+	if (pScriptBot->m_sMyINFO == NULL)
+	{
+		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for m_sMyINFO in ScriptBot::CreateScriptBot\n", szWantLen);
+
+		delete pScriptBot;
+		return NULL;
+	}
+
+	memcpy(pScriptBot->m_sMyINFO, sBotMyINFO, szMyINFOLen);
+	if (bAddPipe == true) pScriptBot->m_sMyINFO[szMyINFOLen] = '|';
+	pScriptBot->m_sMyINFO[0] = '\0';
+
+	return pScriptBot;
+}
+//------------------------------------------------------------------------------
 
 ScriptTimer::ScriptTimer() :
 #if defined(_WIN32) && !defined(_WIN_IOT)
@@ -777,7 +824,7 @@ static bool ScriptOnError(Script * pScript, const char * sErrorMsg, const size_t
 		size_t szLen = 0;
 		const char * stmp = (char*)lua_tolstring(pScript->m_pLua, -1, &szLen);
 		
-		
+	
 #ifdef _BUILD_GUI
 		RichEditAppendText(MainWindowPageScripts::m_Ptr->m_hWndPageItems[MainWindowPageScripts::REDT_SCRIPTS_ERRORS],
 		                   (string(LanguageManager::m_Ptr->m_sTexts[LAN_SYNTAX], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_SYNTAX]) + " " + sMsg).c_str());
@@ -1230,6 +1277,21 @@ void ScriptPushUserExtended(lua_State * pLua, User * pUser, const int iTable)
 		lua_rawset(pLua, t);
 	}
 	
+	lua_rawset(pLua, iTable);
+
+	// alex82 ... HideUser / Скрытие юзера
+	lua_pushliteral(pLua, "bHidden");
+	(pUser->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN ? lua_pushboolean(pLua, 1) : lua_pushboolean(pLua, 0);
+	lua_rawset(pLua, iTable);
+
+	// alex82 ... NoQuit / Подавляем $Quit для юзера
+	lua_pushliteral(pLua, "bNoQuit");
+	(pUser->m_ui32InfoBits & User::INFOBIT_NO_QUIT) == User::INFOBIT_NO_QUIT ? lua_pushboolean(pLua, 1) : lua_pushboolean(pLua, 0);
+	lua_rawset(pLua, iTable);
+
+	// alex82 ... HideUserKey / Прячем ключ юзера
+	lua_pushliteral(pLua, "bHiddenKey");
+	(pUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY ? lua_pushboolean(pLua, 1) : lua_pushboolean(pLua, 0);
 	lua_rawset(pLua, iTable);
 }
 //------------------------------------------------------------------------------

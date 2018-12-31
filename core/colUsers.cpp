@@ -392,7 +392,8 @@ void Users::Add2NickList(User * pUser)
 	
 	m_ui32ZNickListLen = 0;
 	
-	if (((pUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == false)
+	// alex82 ... HideUserKey / Прячем ключ юзера
+	if (((pUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == false || ((pUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == true)
 	{
 		return;
 	}

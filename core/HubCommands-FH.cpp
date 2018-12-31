@@ -452,6 +452,7 @@ bool HubCommands::GetInfo(ChatCommand * pChatCommand)   // !getinfo nick
 	User * pOtherUser = HashManager::m_Ptr->FindUser(pChatCommand->m_sCommand, pChatCommand->m_ui32CommandLen);
 	if (pOtherUser == NULL)
 	{
+#ifdef FLYLINKDC_USE_DB
 #ifdef _WITH_SQLITE
 		if (DBSQLite::m_Ptr->SearchNick(pChatCommand) == true)
 		{
@@ -470,6 +471,7 @@ bool HubCommands::GetInfo(ChatCommand * pChatCommand)   // !getinfo nick
 			UncountDeflood(pChatCommand);
 			return true;
 		}
+#endif
 #endif
 		pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::GetInfo3", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s: %s %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],
 		                                         LanguageManager::m_Ptr->m_sTexts[LAN_ERROR], pChatCommand->m_sCommand, LanguageManager::m_Ptr->m_sTexts[LAN_NOT_FOUND]);
@@ -636,7 +638,7 @@ bool HubCommands::GetIpInfo(ChatCommand * pChatCommand)   // !getipinfo ip
 		                                         LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0],  LanguageManager::m_Ptr->m_sTexts[LAN_IP], LanguageManager::m_Ptr->m_sTexts[LAN_NO_VALID_IP_SPECIFIED]);
 		return true;
 	}
-	
+#ifdef FLYLINKDC_USE_DB
 #ifdef _WITH_SQLITE
 	if (DBSQLite::m_Ptr->SearchIP(pChatCommand) == true)
 	{
@@ -655,6 +657,7 @@ bool HubCommands::GetIpInfo(ChatCommand * pChatCommand)   // !getipinfo ip
 		UncountDeflood(pChatCommand);
 		return true;
 	}
+#endif
 #endif
 	pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::GetIpInfo4", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s: %s %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],
 	                                         LanguageManager::m_Ptr->m_sTexts[LAN_ERROR], pChatCommand->m_sCommand, LanguageManager::m_Ptr->m_sTexts[LAN_NOT_FOUND]);

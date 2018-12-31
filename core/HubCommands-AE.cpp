@@ -188,8 +188,11 @@ bool HubCommands::AddRegUser(ChatCommand * pChatCommand)
 			
 			if (((pOtherUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == true)
 			{
+				// alex82 ... HideUserKey / Прячем ключ юзера
+				if (((pOtherUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false) {
 				Users::m_Ptr->Add2OpList(pOtherUser);
 				GlobalDataQueue::m_Ptr->OpListStore(pOtherUser->m_sNick);
+				}
 				if (bAllowedOpChat != ProfileManager::m_Ptr->IsAllowed(pOtherUser, ProfileManager::ALLOWEDOPCHAT))
 				{
 					if (SettingManager::m_Ptr->m_bBools[SETBOOL_REG_OP_CHAT] == true && (SettingManager::m_Ptr->m_bBools[SETBOOL_REG_BOT] == false || SettingManager::m_Ptr->m_bBotsSameNick == false))

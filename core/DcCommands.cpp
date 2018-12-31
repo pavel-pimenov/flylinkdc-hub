@@ -107,7 +107,7 @@ DcCommands::~DcCommands()
 void DcCommands::PreProcessData(DcCommand * pDcCommand)
 {
 #ifdef USE_FLYLINKDC_EXT_JSON
-    bool bCheck = true; // TODO 
+	bool bCheck = true; // TODO 
 #endif
 #ifdef _BUILD_GUI
 	// Full raw data trace for better logging
@@ -695,9 +695,12 @@ void DcCommands::PreProcessData(DcCommand * pDcCommand)
 										
 										pDcCommand->m_pUser->m_ui32BoolBits |= User::BIT_OPERATOR;
 										
+										// alex82 ... HideUserKey / Прячем ключ юзера
+										if (((pDcCommand->m_pUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false)
+										{
 										Users::m_Ptr->Add2OpList(pDcCommand->m_pUser);
 										GlobalDataQueue::m_Ptr->OpListStore(pDcCommand->m_pUser->m_sNick);
-										
+										}
 										if (ProfileManager::m_Ptr->IsAllowed(pDcCommand->m_pUser, ProfileManager::ALLOWEDOPCHAT) == true)
 										{
 											if (SettingManager::m_Ptr->m_bBools[SETBOOL_REG_OP_CHAT] == true &&
@@ -4080,12 +4083,7 @@ void DcCommands::ProcessCmds(User * pUser)
 					memcpy(ServerManager::m_pGlobalBuffer + iSupportsLen, " HubURL", 7);
 					iSupportsLen += 7;
 				}
-				if ((pUser->m_ui32SupportBits & User::SUPPORTBIT_IP64) == User::SUPPORTBIT_IP64)
-				{
-					memcpy(ServerManager::m_pGlobalBuffer + iSupportsLen, " IP64", 5);
-					iSupportsLen += 5;
-				}
-// FlylinkDC++				
+
 				if ((pUser->m_ui32SupportBits & User::SUPPORTBIT_IP64) == User::SUPPORTBIT_IP64)
 				{
 					memcpy(ServerManager::m_pGlobalBuffer + iSupportsLen, " IP64", 5);
@@ -4208,7 +4206,8 @@ void DcCommands::ProcessCmds(User * pUser)
 		{
 			pUser->HasSuspiciousTag();
 		}
-		
+		// alex82 ... HideUser / Скрытие юзера
+		if (((pUser->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == false) {
 		if (SettingManager::m_Ptr->m_ui8FullMyINFOOption == 0)
 		{
 			if (pUser->GenerateMyInfoLong() == false)
@@ -4227,7 +4226,6 @@ void DcCommands::ProcessCmds(User * pUser)
 			{
 				GlobalDataQueue::m_Ptr->AddQueueItem(pUser->m_sMyInfoLong, pUser->m_ui16MyInfoLongLen, NULL, 0, GlobalDataQueue::CMD_OPS);
 			}
-			
 			return;
 		}
 		else if (SettingManager::m_Ptr->m_ui8FullMyINFOOption == 2)
@@ -4248,7 +4246,6 @@ void DcCommands::ProcessCmds(User * pUser)
 			{
 				GlobalDataQueue::m_Ptr->AddQueueItem(pUser->m_sMyInfoShort, pUser->m_ui16MyInfoShortLen, NULL, 0, GlobalDataQueue::CMD_OPS);
 			}
-			
 			return;
 		}
 		
@@ -4275,7 +4272,7 @@ void DcCommands::ProcessCmds(User * pUser)
 		}
 		
 		GlobalDataQueue::m_Ptr->AddQueueItem(sShortMyINFO, szShortMyINFOLen, pUser->m_sMyInfoLong, pUser->m_ui16MyInfoLongLen, GlobalDataQueue::CMD_MYINFO);
-	}
+
 #ifdef USE_FLYLINKDC_EXT_JSON
 	if ((pUser->m_ui32BoolBits & User::BIT_PRCSD_EXT_JSON) == User::BIT_PRCSD_EXT_JSON)
 	{
@@ -4303,6 +4300,8 @@ void DcCommands::ProcessCmds(User * pUser)
 		}
 	}
 #endif // USE_FLYLINKDC_EXT_JSON    
+		}	// HideUser
+	}	// MyINFO
 }
 //---------------------------------------------------------------------------
 

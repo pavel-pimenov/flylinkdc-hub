@@ -765,7 +765,8 @@ void ServiceLoop::ReceiveLoop()
 				        ((curUser->m_ui32SupportBits & User::SUPPORTBIT_QUICKLIST) == User::SUPPORTBIT_QUICKLIST) == false &&
 				        ((curUser->m_ui32BoolBits & User::BIT_PINGER) == User::BIT_PINGER) == true)
 					continue;
-					
+				// without Welcome message
+				// curUser->SendFormat("clsServiceLoop::ReceiveLoop->User::STATE_ADDME", true, "%s|", clsSettingManager::mPtr->sPreTexts[clsSettingManager::SETPRETXT_HUB_NAME_WLCM]);
 				curUser->SendFormat("ServiceLoop::ReceiveLoop->User::STATE_ADDME", true, "%s%" PRIu64 " %s, %" PRIu64 " %s, %" PRIu64 " %s / %s: %u)|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_NAME_WLCM], ServerManager::m_ui64Days, LanguageManager::m_Ptr->m_sTexts[LAN_DAYS_LWR],
 				                    ServerManager::m_ui64Hours, LanguageManager::m_Ptr->m_sTexts[LAN_HOURS_LWR], ServerManager::m_ui64Mins, LanguageManager::m_Ptr->m_sTexts[LAN_MINUTES_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_USERS], ServerManager::m_ui32Logged);
 				curUser->m_ui8State = User::STATE_ADDME_1LOOP;
@@ -855,12 +856,17 @@ void ServiceLoop::ReceiveLoop()
 					curUser->HasSuspiciousTag();
 				}
 				
+				// alex82 ... HideUser / Скрытие юзера
+				if (((curUser->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == false)
+				{
 				curUser->Add2Userlist();
 				
-				m_dLoggedUsers++;
-				curUser->m_ui8State = User::STATE_ADDME_2LOOP;
 				ServerManager::m_ui64TotalShare += curUser->m_ui64SharedSize;
 				curUser->m_ui32BoolBits |= User::BIT_HAVE_SHARECOUNTED;
+				}
+
+				m_dLoggedUsers++;
+				curUser->m_ui8State = User::STATE_ADDME_2LOOP;
 				
 #ifdef _BUILD_GUI
 				if (::SendMessage(MainWindowPageUsersChat::m_Ptr->m_hWndPageItems[MainWindowPageUsersChat::BTN_AUTO_UPDATE_USERLIST], BM_GETCHECK, 0, 0) == BST_CHECKED)
@@ -885,6 +891,9 @@ void ServiceLoop::ReceiveLoop()
 					GlobalDataQueue::m_Ptr->AddQueueItem(ServerManager::m_pGlobalBuffer, iMsgLen, NULL, 0, GlobalDataQueue::CMD_HELLO);
 				}
 				
+				// alex82 ... HideUser / Скрытие юзера
+				if (((curUser->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == false)
+				{
 				GlobalDataQueue::m_Ptr->UserIPStore(curUser);
 				
 				switch (SettingManager::m_Ptr->m_ui8FullMyINFOOption)
@@ -920,9 +929,11 @@ void ServiceLoop::ReceiveLoop()
 */
 #endif
 				
-				if (((curUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == true)
+					// alex82 ... HideUserKey / Прячем ключ юзера
+					if (((curUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == true && ((curUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false)
 				{
 					GlobalDataQueue::m_Ptr->OpListStore(curUser->m_sNick);
+				}
 				}
 				
 				curUser->m_ui64LastMyINFOSendTick = ServerManager::m_ui64ActualTick;
@@ -1164,7 +1175,11 @@ void ServiceLoop::SendLoop()
 		{
 			case User::STATE_ADDME_2LOOP:
 			{
+				// alex82 ... HideUser / Скрытие юзера
+				if (((curUser->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == false) 
+				{
 				ServerManager::m_ui32Logged++;
+				}
 				
 				if (ServerManager::m_ui32Peak < ServerManager::m_ui32Logged)
 				{

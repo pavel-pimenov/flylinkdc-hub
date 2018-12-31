@@ -111,12 +111,13 @@
 //---------------------------------------------------------------------------
 #define PtokaXVersionString "0.5.2.2"
 #define BUILD_NUMBER "556"
+#define ModString " / Alex82 Mod's support v.04 (part.)"
 #ifdef USE_FLYLINKDC_EXT_JSON
 const char g_sPtokaXTitle[] = "PtokaX DC Hub for FlylinkDC++ " PtokaXVersionString
 #else
 const char g_sPtokaXTitle[] = "PtokaX++ DC Hub " PtokaXVersionString
 #endif // USE_FLYLINKDC_EXT_JSON
-                              " [build " BUILD_NUMBER "]";
+			" [build " BUILD_NUMBER "] " ModString;
 #ifdef _WIN32
 #define strcasecmp stricmp
 #define strncasecmp strnicmp

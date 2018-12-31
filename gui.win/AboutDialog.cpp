@@ -94,54 +94,54 @@ LRESULT AboutDialog::AboutDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
-	case WM_PAINT:
-	{
-		RECT rcParent;
-		::GetClientRect(m_hWndWindowItems[WINDOW_HANDLE], &rcParent);
-		
-		PAINTSTRUCT ps;
-		HDC hdc = ::BeginPaint(m_hWndWindowItems[WINDOW_HANDLE], &ps);
-		::DrawIconEx(hdc, 5, 5, hSpider, 0, 0, 0, NULL, DI_NORMAL);
-		::DrawIconEx(hdc, rcParent.right - 69, 5, hLua, 0, 0, 0, NULL, DI_NORMAL);
-		::EndPaint(m_hWndWindowItems[WINDOW_HANDLE], &ps);
-		return 0;
-	}
-	case WM_NOTIFY:
-		if (((LPNMHDR)lParam)->hwndFrom == m_hWndWindowItems[REDT_ABOUT] && ((LPNMHDR)lParam)->code == EN_LINK)
+		case WM_PAINT:
 		{
-			if (((ENLINK *)lParam)->msg == WM_LBUTTONUP)
-			{
-				RichEditOpenLink(m_hWndWindowItems[REDT_ABOUT], (ENLINK *)lParam);
-			}
-		}
-		break;
-	case WM_CLOSE:
-		::EnableWindow(::GetParent(m_hWndWindowItems[WINDOW_HANDLE]), TRUE);
-		clsServerManager::hWndActiveDialog = nullptr;
-		break;
-	case WM_NCDESTROY:
-	{
-		HWND hWnd = m_hWndWindowItems[WINDOW_HANDLE];
-		delete this;
-		return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
-	}
-	case WM_COMMAND:
-		switch (LOWORD(wParam))
-		{
-		case IDOK:
-		case IDCANCEL:
-			::PostMessage(m_hWndWindowItems[WINDOW_HANDLE], WM_CLOSE, 0, 0);
+			RECT rcParent;
+			::GetClientRect(m_hWndWindowItems[WINDOW_HANDLE], &rcParent);
+			
+			PAINTSTRUCT ps;
+			HDC hdc = ::BeginPaint(m_hWndWindowItems[WINDOW_HANDLE], &ps);
+			::DrawIconEx(hdc, 5, 5, hSpider, 0, 0, 0, NULL, DI_NORMAL);
+			::DrawIconEx(hdc, rcParent.right - 69, 5, hLua, 0, 0, 0, NULL, DI_NORMAL);
+			::EndPaint(m_hWndWindowItems[WINDOW_HANDLE], &ps);
 			return 0;
 		}
-		
-		break;
-	case WM_SETFOCUS:
-	{
-		CHARRANGE cr = { 0, 0 };
-		::SendMessage(m_hWndWindowItems[REDT_ABOUT], EM_EXSETSEL, 0, (LPARAM)&cr);
-		::SetFocus(m_hWndWindowItems[REDT_ABOUT]);
-		return 0;
-	}
+		case WM_NOTIFY:
+			if (((LPNMHDR)lParam)->hwndFrom == m_hWndWindowItems[REDT_ABOUT] && ((LPNMHDR)lParam)->code == EN_LINK)
+			{
+				if (((ENLINK *)lParam)->msg == WM_LBUTTONUP)
+				{
+					RichEditOpenLink(m_hWndWindowItems[REDT_ABOUT], (ENLINK *)lParam);
+				}
+			}
+			break;
+		case WM_CLOSE:
+			::EnableWindow(::GetParent(m_hWndWindowItems[WINDOW_HANDLE]), TRUE);
+			clsServerManager::hWndActiveDialog = nullptr;
+			break;
+		case WM_NCDESTROY:
+		{
+			HWND hWnd = m_hWndWindowItems[WINDOW_HANDLE];
+			delete this;
+			return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
+		}
+		case WM_COMMAND:
+			switch (LOWORD(wParam))
+			{
+				case IDOK:
+				case IDCANCEL:
+					::PostMessage(m_hWndWindowItems[WINDOW_HANDLE], WM_CLOSE, 0, 0);
+					return 0;
+			}
+			
+			break;
+		case WM_SETFOCUS:
+		{
+			CHARRANGE cr = { 0, 0 };
+			::SendMessage(m_hWndWindowItems[REDT_ABOUT], EM_EXSETSEL, 0, (LPARAM)&cr);
+			::SetFocus(m_hWndWindowItems[REDT_ABOUT]);
+			return 0;
+		}
 	}
 	
 	return ::DefWindowProc(m_hWndWindowItems[WINDOW_HANDLE], uMsg, wParam, lParam);
@@ -172,10 +172,10 @@ void AboutDialog::DoModal(HWND hWndParent)
 	int iY = (rcParent.top + ((rcParent.bottom - rcParent.top) / 2)) - (ScaleGui(454) / 2);
 	
 	m_hWndWindowItems[WINDOW_HANDLE] = ::CreateWindowEx(WS_EX_DLGMODALFRAME | WS_EX_WINDOWEDGE, MAKEINTATOM(atomAboutDialog),
-	                                                    (string(clsLanguageManager::mPtr->sTexts[LAN_ABOUT], clsLanguageManager::mPtr->ui16TextsLens[LAN_ABOUT]) + " PtokaX").c_str(),
-	                                                    WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, iX >= 5 ? iX : 5, iY >= 5 ? iY : 5, ScaleGui(443), ScaleGui(454),
-	                                                    hWndParent, NULL, clsServerManager::hInstance, NULL);
-	                                                    
+	                                                  (string(clsLanguageManager::mPtr->sTexts[LAN_ABOUT], clsLanguageManager::mPtr->ui16TextsLens[LAN_ABOUT]) + " PtokaX").c_str(),
+	                                                  WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, iX >= 5 ? iX : 5, iY >= 5 ? iY : 5, ScaleGui(443), ScaleGui(454),
+	                                                  hWndParent, NULL, clsServerManager::hInstance, NULL);
+	                                                  
 	if (m_hWndWindowItems[WINDOW_HANDLE] == NULL)
 	{
 		return;
@@ -189,36 +189,38 @@ void AboutDialog::DoModal(HWND hWndParent)
 	::GetClientRect(m_hWndWindowItems[WINDOW_HANDLE], &rcParent);
 	
 	m_hWndWindowItems[LBL_PTOKAX_VERSION] = ::CreateWindowEx(0, WC_STATIC, "PtokaX++ " PtokaXVersionString " [build " BUILD_NUMBER "]", WS_CHILD | WS_VISIBLE | SS_CENTER,
-	                                                         73, 10, ScaleGui(290), ScaleGui(25), m_hWndWindowItems[WINDOW_HANDLE], NULL, clsServerManager::hInstance, NULL);
+	                                                       73, 10, ScaleGui(290), ScaleGui(25), m_hWndWindowItems[WINDOW_HANDLE], NULL, clsServerManager::hInstance, NULL);
 	::SendMessage(m_hWndWindowItems[LBL_PTOKAX_VERSION], WM_SETFONT, (WPARAM)hBigFont, MAKELPARAM(TRUE, 0));
 	
 	m_hWndWindowItems[LBL_LUA_VERSION] = ::CreateWindowEx(0, WC_STATIC,
 #ifdef _WITH_SQLITE
-	                                                      LUA_RELEASE " / SQLite " SQLITE_VERSION
+	                                                    LUA_RELEASE " / SQLite " SQLITE_VERSION
 #elif _WITH_POSTGRES
-	                                                      (LUA_RELEASE " / PostgreSQL " string(PQlibVersion())).c_str()
+	                                                    (LUA_RELEASE " / PostgreSQL " string(PQlibVersion())).c_str()
 #elif _WITH_MYSQL
-	                                                      LUA_RELEASE " / MySQL " MYSQL_SERVER_VERSION
+	                                                    LUA_RELEASE " / MySQL " MYSQL_SERVER_VERSION
 #else
-	                                                      LUA_RELEASE " / without SQL DB "
+	                                                    LUA_RELEASE " / without SQL DB "
 #endif
-	                                                      , WS_CHILD | WS_VISIBLE | SS_CENTER, 73, ScaleGui(39), ScaleGui(290), ScaleGui(25),
-	                                                      m_hWndWindowItems[WINDOW_HANDLE], NULL, clsServerManager::hInstance, NULL);
+	                                                    , WS_CHILD | WS_VISIBLE | SS_CENTER, 73, ScaleGui(39), ScaleGui(290), ScaleGui(25),
+	                                                    m_hWndWindowItems[WINDOW_HANDLE], NULL, clsServerManager::hInstance, NULL);
 	::SendMessage(m_hWndWindowItems[LBL_LUA_VERSION], WM_SETFONT, (WPARAM)hBigFont, MAKELPARAM(TRUE, 0));
 	
 	m_hWndWindowItems[REDT_ABOUT] = ::CreateWindowEx(WS_EX_CLIENTEDGE, /*MSFTEDIT_CLASS*/RICHEDIT_CLASS, "", WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_MULTILINE | ES_CENTER | ES_READONLY,
-	                                                 5, ScaleGui(74), rcParent.right - 10, rcParent.bottom - ScaleGui(74) - 5, m_hWndWindowItems[WINDOW_HANDLE], NULL, clsServerManager::hInstance, NULL);
+	                                               5, ScaleGui(74), rcParent.right - 10, rcParent.bottom - ScaleGui(74) - 5, m_hWndWindowItems[WINDOW_HANDLE], NULL, clsServerManager::hInstance, NULL);
 	::SendMessage(m_hWndWindowItems[REDT_ABOUT], EM_SETBKGNDCOLOR, 0, ::GetSysColor(COLOR_3DFACE));
 	::SendMessage(m_hWndWindowItems[REDT_ABOUT], EM_AUTOURLDETECT, TRUE, 0);
 	::SendMessage(m_hWndWindowItems[REDT_ABOUT], EM_SETEVENTMASK, 0, (LPARAM)::SendMessage(m_hWndWindowItems[REDT_ABOUT], EM_GETEVENTMASK, 0, 0) | ENM_LINK);
 	::SendMessage(m_hWndWindowItems[REDT_ABOUT], WM_SETFONT, (WPARAM)clsGuiSettingManager::hFont, MAKELPARAM(TRUE, 0));
 	
 	::SendMessage(m_hWndWindowItems[REDT_ABOUT], EM_REPLACESEL, FALSE, (LPARAM)"{\\rtf1\\ansi\\ansicpg1250{\\colortbl ;\\red0\\green0\\blue128;}"
+		          "PtokaX++ " PtokaXVersionString " [build " BUILD_NUMBER "]" ModString "\\par\n"
+		          "\\par\n"
 	              "PtokaX is a server-software for the Direct Connect P2P Network.\\par\n"
 	              "It's currently in developing by PPK and Ptaczek since May 2002.\\par\n"
 	              "\\par\n"
 	              "\\b Fork homepage:\\par\n"
-	              "https://github.com/pavel-pimenov/PtokaX\\par\n"
+	              "https://github.com/pavel-pimenov/PtokaX \\par\n"
 	              "\\par\n"
 	              "\\b Base homepage:\\par\n"
 	              "http://www.PtokaX.org\\par\n"

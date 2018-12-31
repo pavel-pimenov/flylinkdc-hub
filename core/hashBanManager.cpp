@@ -18,8 +18,6 @@
 
 //---------------------------------------------------------------------------
 #include "stdinc.h"
-#include "tinyxml.h"
-
 //---------------------------------------------------------------------------
 #include "hashBanManager.h"
 //---------------------------------------------------------------------------
@@ -29,7 +27,6 @@
 #include "UdpDebug.h"
 #include "User.h"
 #include "utility.h"
-
 //---------------------------------------------------------------------------
 #ifdef _BUILD_GUI
 #include "../gui.win/BansDialog.h"
@@ -2764,7 +2761,7 @@ char BanManager::BanIp(User * pUser, const char * sIp, const char * sReason, con
 	}
 	
 	if (CreateReason(pBan, sReason, __FUNCTION__))
-			return 1;
+		return 1;
 	
 	if (AddBanInternal(sBy, pBan, __FUNCTION__) == false)
 	{
@@ -2887,8 +2884,8 @@ bool BanManager::NickBan(User * pUser, const char * sNick, const char * sReason,
 	}
 	if (CreateReason(pBan, sReason, __FUNCTION__))
 	{
-			return false;
-		}
+		return false;
+	}
 	if (AddBanInternal(sBy, pBan, __FUNCTION__) == false)
 	{
 		return false;
@@ -3126,10 +3123,10 @@ void BanManager::TempBan(User * pUser, const char * sReason, const char * sBy, c
 		delete curBan;
 	}
 	if (CreateReason(pBan, sReason, __FUNCTION__))
-		{
-			return;
-		}
-		
+	{
+		return;
+	}
+	
 	if (AddBanInternal(sBy, pBan, __FUNCTION__) == false)
 	{
 		return;
@@ -3232,9 +3229,9 @@ char BanManager::TempBanIp(User * pUser, const char * sIp, const char * sReason,
 	}
 	if (CreateReason(pBan, sReason, __FUNCTION__))
 	{
-			return 1;
-		}
-		
+		return 1;
+	}
+
 	if (AddBanInternal(sBy, pBan, __FUNCTION__) == false)
 	{
 		return 1;
@@ -3378,9 +3375,9 @@ bool BanManager::NickTempBan(User * pUser, const char * sNick, const char * sRea
 		}
 	}
 	if (CreateReason(pBan, sReason, __FUNCTION__))
-		{
-			return false;
-		}
+	{
+		return false;
+	}
 		
 	if (AddBanInternal(sBy, pBan, __FUNCTION__) == false)
 	{
@@ -3684,10 +3681,10 @@ bool BanManager::RangeBan(const char * m_sIpFrom, const uint8_t * ui128FromIpHas
 		return false;
 	}
 	if (CreateReason(pRangeBan, sReason, __FUNCTION__))
-		{
-			return false;
-		}
-		
+	{
+		return false;
+	}
+	
 	if (AddBanInternal(sBy, pRangeBan, __FUNCTION__) == false)
 	{
 		return false;
@@ -3780,9 +3777,9 @@ bool BanManager::RangeTempBan(const char * m_sIpFrom, const uint8_t * ui128FromI
 	}
 	if (CreateReason(pRangeBan, sReason, __FUNCTION__))
 	{
-			return false;
-		}
-		
+		return false;
+	}
+	
 	if (AddBanInternal(sBy, pRangeBan, __FUNCTION__) == false)
 	{
 		return false;

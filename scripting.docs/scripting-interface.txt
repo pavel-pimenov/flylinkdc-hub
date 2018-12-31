@@ -53,6 +53,7 @@ SuspendAccepts()													- Stop listening thread(s). Hub looks in this time 
 SuspendAccepts(nTime)												- Stop listening thread(s) for given time in seconds. Hub looks in this time like it is not running.
 
 RegBot(sBotName, sDescription, sEmail, bHaveKey)					- Chars $| and space not allowed in nick. $ and | not allowed in Description and Email, max length 64 chars per string. Return nil when failed, true when success.
+RegBot(sNick, sMyINFOString, bHaveKey)								- Chars $| and space not allowed in nick. Return nil when failed, true when success.
 UnregBot(sBotName)													- Return nil when failed, true when success.
 
 GetBots()															- Return table with all bots registered by scripts as tables with sNick, sMyINFO, bIsOP and sScriptName.
@@ -104,9 +105,13 @@ SendPmToOps(sFromNick, sData)										- Send data to operators. Max FromNick le
 SendPmToProfile(iProfileNumber, sFromNick, sData)					- Send data as private message to users with given profile. Max FromNick length 64 chars, max Data length 128000 chars.
 SendPmToUser(tUser, sFromNick, sData)								- Send private message to user. Max FromNick length 64 chars, max Data length 128000 chars.
 
-Core.SetUserInfo(tUser, iValueId, nil/sValue/iValue, bPermanent)	- Set user info in MyINFO. Max sValue lenght 64 chars, $ and | is not allowed. Use bPermanent when you want to apply change permanently.
-Core.SetUserJson(tUser, sValue)	- Set user info in ExtJSON. Max sValue lenght 10*1024 chars.
+// PPA addons
+SetUserInfo(tUser, iValueId, nil/sValue/iValue, bPermanent)	- Set user info in MyINFO. Max sValue lenght 64 chars, $ and | is not allowed. Use bPermanent when you want to apply change permanently.
+SetUserJson(tUser, sValue)	- Set user info in ExtJSON. Max sValue lenght 10*1024 chars.
 
+HideUser(tUser, bHide)												- Hide user.
+UserNoQuit(tUser, bState)											- Supress $Quit command when user disconnect from hub.
+HideUserKey(tUser, bHide)											- Hide user from OpList.
 
 SetMan.
 -------------------
@@ -745,6 +750,9 @@ User data IDs for Core.GetUserData and Core.GetUserValue call.
 41	- iScriptediShareSizeShort
 42	- iScriptediShareSizeLong
 43	- tIPs
+65	- bHidden		// by alex82
+66	- bNoQuit		// by alex82
+67	- bHiddenKey	// by alex82
 100	- sExtJson // FlylinkDC++
 
 User info IDs for Core.SetUserInfo call.
