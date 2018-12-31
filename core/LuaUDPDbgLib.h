@@ -22,9 +22,9 @@
 //------------------------------------------------------------------------------
 
 #if LUA_VERSION_NUM > 501
-    int RegUDPDbg(lua_State * pLua);
+int RegUDPDbg(lua_State * pLua);
 #else
-    void RegUDPDbg(lua_State * pLua);
+void RegUDPDbg(lua_State * pLua);
 #endif
 //------------------------------------------------------------------------------
 

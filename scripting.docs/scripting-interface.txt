@@ -105,6 +105,7 @@ SendPmToProfile(iProfileNumber, sFromNick, sData)					- Send data as private mes
 SendPmToUser(tUser, sFromNick, sData)								- Send private message to user. Max FromNick length 64 chars, max Data length 128000 chars.
 
 Core.SetUserInfo(tUser, iValueId, nil/sValue/iValue, bPermanent)	- Set user info in MyINFO. Max sValue lenght 64 chars, $ and | is not allowed. Use bPermanent when you want to apply change permanently.
+Core.SetUserJson(tUser, sValue)	- Set user info in ExtJSON. Max sValue lenght 10*1024 chars.
 
 
 SetMan.
@@ -265,6 +266,7 @@ IP2Country.
 GetCountryCode(sIP)		- Return country code of given IP or nil when IP is not valid.
 GetCountryName(sIP)		- Return country name of given IP or nil when IP is not valid.
 GetCountryName(tUser)	- Return country name for given user.
+GetCountryName(sCode)	- Return country name for given country code.
 Reload()				- Reload (update) database from database files.
 
 
@@ -467,7 +469,7 @@ ProfMan.tPermissions.NoMaxUsrSameIp			-	No maximum users from same IP.
 ProfMan.tPermissions.NoReconnTime			-	No reconnect time.
 
 
-Settings bool IDs for SetMan.(G/S)etBool
+Settings bool IDs forSetMan.(G/S)etBool
 -------------------
 SetMan.tBooleans.AntiMoGlo				-	Anti MoGlo description
 SetMan.tBooleans.AutoStart				-	Hub autostart
@@ -743,7 +745,7 @@ User data IDs for Core.GetUserData and Core.GetUserValue call.
 41	- iScriptediShareSizeShort
 42	- iScriptediShareSizeLong
 43	- tIPs
-
+100	- sExtJson // FlylinkDC++
 
 User info IDs for Core.SetUserInfo call.
 -------------------

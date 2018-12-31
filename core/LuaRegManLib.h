@@ -22,9 +22,9 @@
 //------------------------------------------------------------------------------
 
 #if LUA_VERSION_NUM > 501
-    int RegRegMan(lua_State * pLua);
+int RegRegMan(lua_State * pLua);
 #else
-    void RegRegMan(lua_State * pLua);
+void RegRegMan(lua_State * pLua);
 #endif
 //------------------------------------------------------------------------------
 

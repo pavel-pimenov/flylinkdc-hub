@@ -20,41 +20,32 @@
 #ifndef DBPostgreSQLH
 #define DBPostgreSQLH
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-struct ChatCommand;
 struct User;
 typedef struct pg_conn PGconn;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-class DBPostgreSQL {
+class DBPostgreSQL
+{
 private:
-	PGconn * m_pDBConn;
-
-#ifdef _WIN32
-	HANDLE m_hThreadHandle;
-#else
-	pthread_t m_threadId;
-#endif
-
-	bool m_bConnected, m_bTerminated;
-
-    DBPostgreSQL(const DBPostgreSQL&);
-    const DBPostgreSQL& operator=(const DBPostgreSQL&);
-
-	void ReconnectDb();
+	PGconn * pDBConn;
+	
+	bool bConnected;
+	
+	DBPostgreSQL(const DBPostgreSQL&);
+	const DBPostgreSQL& operator=(const DBPostgreSQL&);
+	
 public:
-    static DBPostgreSQL * m_Ptr;
-
+	static DBPostgreSQL * mPtr;
+	
 	DBPostgreSQL();
 	~DBPostgreSQL();
-
+	
 	void UpdateRecord(User * pUser);
-
-	bool SearchNick(ChatCommand * pChatCommand);
-	bool SearchIP(ChatCommand * pChatCommand);
-
-	void RemoveOldRecords(const uint16_t ui16Days);
-
-	void RunReconnect();
+	
+	bool SearchNick(char * sNick, const uint8_t &ui8NickLen, User * pUser, const bool &bFromPM);
+	bool SearchIP(char * sIP, User * pUser, const bool &bFromPM);
+	
+	void RemoveOldRecords(const uint16_t &ui16Days);
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

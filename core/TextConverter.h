@@ -20,26 +20,29 @@
 #ifndef TextConverterH
 #define TextConverterH
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-class TextConverter {
+#ifdef FLYLINKDC_USE_DB
+#if defined(_WITH_SQLITE)
+class TextConverter
+{
 private:
 #ifndef _WIN32
 	iconv_t m_iconvUtfCheck;
 	iconv_t m_iconvAsciiToUtf;
 #endif
-
-	bool CheckUtf8Validity(char * sInput, const uint8_t ui8InputLen, char * sOutput, const uint8_t ui8OutputSize);
-
-    TextConverter(const TextConverter&);
-    const TextConverter& operator=(const TextConverter&);
+	
+	bool CheckUtf8Validity(const char * sInput, const uint8_t ui8InputLen, char * sOutput, const uint8_t ui8OutputSize);
+	
 public:
-    static TextConverter * m_Ptr;
-
+	static TextConverter * m_Ptr;
+	
 	TextConverter();
 	~TextConverter();
-
-	size_t CheckUtf8AndConvert(char * sInput, const uint8_t ui8InputLen, char * sOutput, const uint8_t ui8OutputSize);
+	
+	size_t CheckUtf8AndConvert(const char * sInput, const uint8_t ui8InputLen, char * sOutput, const uint8_t ui8OutputSize);
+	DISALLOW_COPY_AND_ASSIGN(TextConverter);
 };
+#endif // _WITH_SQLITE
+#endif // FLYLINKDC_USE_DB
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #endif

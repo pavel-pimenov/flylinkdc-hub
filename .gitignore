@@ -1,32 +1,74 @@
-# Prerequisites
-*.d
+/obj/*.obj
+/obj-gui
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+/*.suo
 
-# Precompiled Headers
-*.gch
-*.pch
+/PtokaX.sdf
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+/*.opensdf
 
-# Fortran module files
-*.mod
-*.smod
+/ipch/ptokax-f61ce7fd/*.ipch
 
-# Compiled Static libraries
-*.lai
-*.la
+/obj/*.pdb
+
+/compiled/*.pdb
+
+/obj/*.tlog
+
+/zlib/src/*.map
+
+/obj/PtokaX.res
+
+/PtokaX.vcxproj.user
+
+/compiled/PtokaX.ilk
+
+/compiled/PtokaX.exe
+
+/obj/vc100.idb
+
+/obj/PtokaX.vcxprojResolveAssemblyReference.cache
+
+/obj/*.lastbuildstate
+
+/obj/PtokaX.log
+
+/compiled/cfg/*.xml
+
+/compiled/logs
+
+/obj/*.unsuccessfulbuild
+
+PtokaX
+
 *.a
-*.lib
 
-# Executables
-*.exe
-*.out
-*.app
+*.o
+
+/cfg/*
+
+/logs/*
+
+valgrind*.log
+
+/PtokaX-gui.vcxproj.user
+/*.sdf
+/ipch/ptokax-gui-ae5b162f/*.ipch
+
+/compiled/*.ilk
+
+/compiled/PtokaX-gui.exe
+
+/*.psess
+
+/*.vsp
+
+/obj/PtokaX.Build.CppClean.log
+*.ipch
+/obj/PtokaX.exe.intermediate.manifest
+/*.7z
+/compiled/*.dmp
+/obj/*.idb
+/compiled/*.7z
+/*.opendb
+/*.db

@@ -23,43 +23,57 @@
 //---------------------------------------------------------------------------
 struct User;
 //---------------------------------------------------------------------------
+#include <unordered_map>
+/*
+#include <unordered_set>
+#include <map>
 
-class HashManager {
+struct CFlyIPCountUser
+{
+    std::unordered_set<User *> m_Users;
+    uint16_t m_ui16Count;
+    CFlyIPCountUser() : m_ui16Count(0) {}
+};
+        std::unordered_map<std::string, CFlyIPCountUser> m_IPCountTable;
+*/
+class HashManager
+{
 private:
-    User * m_pNickTable[65536];
-
-    struct IpTableItem {
-        IpTableItem * m_pPrev, * m_pNext;
-
-        User * m_pFirstUser;
-
-        uint16_t m_ui16Count;
-
-        IpTableItem() : m_pPrev(NULL), m_pNext(NULL), m_pFirstUser(NULL), m_ui16Count(0) { };
-
-        IpTableItem(const IpTableItem&);
-        const IpTableItem& operator=(const IpTableItem&);
-    };
-
+	std::unordered_map<std::string, User*> m_NickTable;
+	
+	struct IpTableItem
+	{
+		IpTableItem * m_pPrev, * m_pNext;
+		
+		User * m_pFirstUser;
+		
+		uint16_t m_ui16Count;
+		
+		IpTableItem() : m_pPrev(NULL), m_pNext(NULL), m_pFirstUser(NULL), m_ui16Count(0) { }
+		
+		DISALLOW_COPY_AND_ASSIGN(IpTableItem);
+	};
+	
 	IpTableItem * m_pIpTable[65536];
-
-    HashManager(const HashManager&);
-    const HashManager& operator=(const HashManager&);
+	
+	DISALLOW_COPY_AND_ASSIGN(HashManager);
 public:
-    static HashManager * m_Ptr;
-
-    HashManager();
-    ~HashManager();
-
-    bool Add(User * pUser);
-    void Remove(User * pUser);
-
-    User * FindUser(char * sNick, const size_t szNickLen);
-    User * FindUser(User * pUser);
-    User * FindUser(const uint8_t * ui128IpHash);
-
-    uint32_t GetUserIpCount(User * pUser) const;
+	static HashManager * m_Ptr;
+	
+	HashManager();
+	~HashManager();
+	
+	bool Add(User * pUser);
+	void Remove(User * pUser);
+	
+	User * FindUser(const char * sNick, const size_t szNickLen)  const;
+	User * FindUser(const std::string& sNick) const;
+	User * FindUser(const User * pUser)  const;
+	User * FindUser(const uint8_t * m_ui128IpHash) const;
+	
+	uint32_t GetUserIpCount(const User * pUser) const;
 };
 //---------------------------------------------------------------------------
 
 #endif
+

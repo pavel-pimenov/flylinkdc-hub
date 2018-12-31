@@ -21,43 +21,44 @@
 #define ResNickManagerH
 //---------------------------------------------------------------------------
 
-class ReservedNicksManager {
+class ReservedNicksManager
+{
 private:
-    struct ReservedNick {
-    	ReservedNick * m_pPrev, * m_pNext;
-
-        char * m_sNick;
-
-        uint32_t m_ui32Hash;
-
-        bool m_bFromScript;
-
-        ReservedNick();
-        ~ReservedNick();
-
-        ReservedNick(const ReservedNick&);
-        const ReservedNick& operator=(const ReservedNick&);
-
-        static ReservedNick * CreateReservedNick(const char * sNewNick, const uint32_t ui32NickHash);
-    };
-
+	struct ReservedNick
+	{
+		ReservedNick * m_pPrev, * m_pNext;
+		
+		char * m_sNick;
+		
+		uint32_t m_ui32Hash;
+		
+		bool m_bFromScript;
+		
+		ReservedNick();
+		~ReservedNick();
+		
+		static ReservedNick * CreateReservedNick(const char * sNewNick, uint32_t m_ui32NickHash);
+		
+		DISALLOW_COPY_AND_ASSIGN(ReservedNick);
+	};
+	
 	ReservedNick * m_pReservedNicks;
-
-    ReservedNicksManager(const ReservedNicksManager&);
-    const ReservedNicksManager& operator=(const ReservedNicksManager&);
-
+	
+	DISALLOW_COPY_AND_ASSIGN(ReservedNicksManager);
+	
+	
 	void Load();
 	void Save() const;
 	void LoadXML();
 public:
-    static ReservedNicksManager * m_Ptr;
-
+	static ReservedNicksManager * m_Ptr;
+	
 	ReservedNicksManager();
 	~ReservedNicksManager();
-
-    bool CheckReserved(const char * sNick, const uint32_t ui32Hash) const;
-    void AddReservedNick(const char * sNick, const bool bFromScript = false);
-    void DelReservedNick(char * sNick, const bool bFromScript = false);
+	
+	bool CheckReserved(const char * sNick, const uint32_t ui32Hash) const;
+	void AddReservedNick(const char * sNick, const bool bFromScript = false);
+	void DelReservedNick(const char * sNick, const bool bFromScript = false);
 };
 //---------------------------------------------------------------------------
 
