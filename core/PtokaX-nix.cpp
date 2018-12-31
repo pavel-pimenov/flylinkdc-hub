@@ -409,7 +409,7 @@ int main(int argc, char* argv[])
 			}
 			else
 			{
-				str += string(iSignal);
+				str += px_string(iSignal);
 			}
 			
 			str += " ending...";
