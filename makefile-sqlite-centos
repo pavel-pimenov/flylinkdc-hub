@@ -72,7 +72,7 @@ lua51: $(OBJS)
 centos: CXXFLAGS = -std=c++11 -O2 -g -Wall -Wextra -DTIXML_USE_STL -D_WITH_SQLITE -DFLYLINKDC_USE_DB -DxUSE_FLYLINKDC_EXT_JSON
 centos: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -lz -llua -ldl -ltinyxml
+	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -lz -llua -ldl -ltinyxml -lunwind
 
 fedora: INCLUDE = -Iskein/Optimized_32bit -I/usr/include
 fedora: $(OBJS)
