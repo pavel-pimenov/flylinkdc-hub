@@ -1,0 +1,315 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="core\colUsers.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\DcCommands.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\DeFlood.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\eventqueue.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\GlobalDataQueue.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\hashBanManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\hashRegManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\hashUsrManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\HubCommands.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\IP2Country.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\LanguageManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\LuaBanManLib.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\LuaCoreLib.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\LuaIP2CountryLib.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\LuaProfManLib.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\LuaRegManLib.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\LuaScript.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\LuaScriptManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\LuaScriptManLib.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\LuaSetManLib.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\LuaTmrManLib.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\LuaUDPDbgLib.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\ProfileManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\pxstring.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\RegThread.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\ResNickManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\ServerManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\ServerThread.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\serviceLoop.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\SettingManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\TextFileManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\UdpDebug.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\UDPThread.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\User.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\utility.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\ZlibUtility.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\ExceptionHandling.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\PtokaX-win.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\PXBReader.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\DB-SQLite.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\TextConverter.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\HubCommands-AE.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\HubCommands-FH.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\HubCommands-IQ.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\HubCommands-RZ.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="core\eventqueue.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\colUsers.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\DcCommands.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\DeFlood.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\LuaUDPDbgLib.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\GlobalDataQueue.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\hashBanManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\hashRegManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\hashUsrManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\HubCommands.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\IP2Country.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\LanguageIds.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\LanguageManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\LanguageStrings.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\LanguageXml.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\LuaBanManLib.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\LuaCoreLib.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\LuaInc.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\LuaIP2CountryLib.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\LuaProfManLib.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\LuaRegManLib.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\LuaScript.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\LuaScriptManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\LuaScriptManLib.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\LuaSetManLib.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\LuaTmrManLib.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ZlibUtility.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ProfileManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\pxstring.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\RegThread.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ResNickManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ServerManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ServerThread.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\serviceLoop.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SettingDefaults.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SettingIds.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SettingManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SettingStr.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\stdinc.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\TextFileManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\UdpDebug.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\UDPThread.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\User.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\utility.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\ExceptionHandling.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\PXBReader.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\DB-SQLite.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\TextConverter.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SettingCom.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ico\Spider16M-32x32.ico">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="ico\Spider256-16x16.ico">
+      <Filter>Resources</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{5d9389cb-f451-405a-ad69-0b91271260be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{7f6e8427-46f5-4dd5-9fa0-6caa1032d0b1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="core\PtokaX.Manifest">
+      <Filter>Resources</Filter>
+    </Manifest>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="core\PtokaX.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
