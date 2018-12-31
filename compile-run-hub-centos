@@ -1,10 +1,10 @@
 #-----------------------------------------------------
 # CentOS
-# sudo yum install tinyxml-devel.x86_64
+# sudo yum install tinyxml-devel.x86_64 libunwind-devel.x86_64
 
 git pull
 rm PtokaX
-make -f makefile-sqlite-centos centos
+make -B -f makefile-sqlite-centos centos
 ulimit -n 32768
 ulimit -c unlimited
 LANG=ru_RU.CP1251
