@@ -390,7 +390,7 @@ int main(int argc, char* argv[])
 				break;
 			}
 			
-			string str("Received signal ");
+			px_string str("Received signal ");
 			
 			if (iSignal == SIGINT)
 			{
