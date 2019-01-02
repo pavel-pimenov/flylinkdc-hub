@@ -41,8 +41,9 @@ using std::ostringstream;
 static bool bTerminatedBySignal = false;
 static int iSignal = 0;
 //---------------------------------------------------------------------------
+/*
 #ifndef _WIN32
-#define TODO_UNW_LOCAL_ONLY
+#define UNW_LOCAL_ONLY
 #include <libunwind.h>
 
 void show_backtrace (void) {
@@ -58,7 +59,7 @@ void show_backtrace (void) {
   }
 }
 #endif // _WIN32
-
+*/
 
 static void SigHandler(int iSig)
 {
