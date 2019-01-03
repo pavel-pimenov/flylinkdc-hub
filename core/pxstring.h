@@ -59,7 +59,13 @@ class px_string
 		px_string operator+(const char * sTxt) const;
 		px_string operator+(const px_string & sStr) const;
 		friend px_string operator+(const char * sTxt, const px_string & sStr);
-		
+        friend px_string operator+(const char * sTxt, const std::string & sStr)
+        {
+            px_string result(sTxt);
+            result  += sStr;
+            return result;
+        }
+
 		px_string & operator+=(const char * sTxt);
 		px_string & operator+=(const px_string & sStr);
         px_string & operator+=(const std::string & sStr)

@@ -263,7 +263,7 @@ bool ServerThread::Listen(const bool bSilent/* = false*/)
 #ifdef _WIN32
 			                             ("[ERR] Unable to create server socket for port " + px_string(m_ui16Port) + " ! ErrorCode " + px_string(WSAGetLastError())).c_str());
 #else
-			                             ("[ERR] Unable to create server socket for port " + string(m_ui16Port) + " ! ErrorCode " + string(errno)).c_str());
+			                             ("[ERR] Unable to create server socket for port " + string(m_ui16Port) + " ! ErrorCode " + px_string(errno)).c_str());
 #endif
 		}
 		else
@@ -271,7 +271,7 @@ bool ServerThread::Listen(const bool bSilent/* = false*/)
 #ifdef _BUILD_GUI
 			::MessageBox(NULL, (px_string(LanguageManager::m_Ptr->m_sTexts[LAN_UNB_CRT_SRVR_SCK], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_UNB_CRT_SRVR_SCK]) + " " + px_string(m_ui16Port) + " ! " + LanguageManager::m_Ptr->m_sTexts[LAN_ERROR_CODE] + " " + px_string(WSAGetLastError())).c_str(), g_sPtokaXTitle, MB_OK | MB_ICONERROR);
 #else
-			AppendLog(string(LanguageManager::m_Ptr->m_sTexts[LAN_UNB_CRT_SRVR_SCK], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_UNB_CRT_SRVR_SCK]) + " " + string(m_ui16Port) + " ! " + LanguageManager::m_Ptr->m_sTexts[LAN_ERROR_CODE] + " " + string(errno));
+			AppendLog(px_string(LanguageManager::m_Ptr->m_sTexts[LAN_UNB_CRT_SRVR_SCK], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_UNB_CRT_SRVR_SCK]) + " " + px_string(m_ui16Port) + " ! " + LanguageManager::m_Ptr->m_sTexts[LAN_ERROR_CODE] + " " + px_string(errno));
 #endif
 		}
 		return false;
@@ -284,13 +284,13 @@ bool ServerThread::Listen(const bool bSilent/* = false*/)
 		if (bSilent == true)
 		{
 			EventQueue::m_Ptr->AddThread(EventQueue::EVENT_SRVTHREAD_MSG,
-			                               ("[ERR] Server socket setsockopt error: " + string(errno) + " for port: " + string(m_ui16Port)).c_str());
+			                               ("[ERR] Server socket setsockopt error: " + px_string(errno) + " for port: " + px_string(m_ui16Port)).c_str());
 		}
 		else
 		{
 			AppendLog(string(LanguageManager::m_Ptr->m_sTexts[LAN_SRV_SCKOPT_ERR], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_SRV_SCKOPT_ERR]) +
-			          ": " + string(ErrnoStr(errno)) + " (" + string(errno) + ") " +
-			          string(LanguageManager::m_Ptr->m_sTexts[LAN_FOR_PORT_LWR], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FOR_PORT_LWR]) + ": " + string(m_ui16Port));
+			          ": " + string(ErrnoStr(errno)) + " (" + px_string(errno) + ") " +
+			          string(LanguageManager::m_Ptr->m_sTexts[LAN_FOR_PORT_LWR], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FOR_PORT_LWR]) + ": " + px_string(m_ui16Port));
 		}
 		close(m_Server);
 		return false;
@@ -363,7 +363,7 @@ bool ServerThread::Listen(const bool bSilent/* = false*/)
 #ifdef _WIN32
 			                               ("[ERR] Server socket bind error: " + px_string(WSErrorStr(err)) + " (" + px_string(err) + ") for port: " + px_string(m_ui16Port)).c_str());
 #else
-			                               ("[ERR] Server socket bind error: " + string(ErrnoStr(errno)) + " (" + string(errno) + ") for port: " + string(m_ui16Port)).c_str());
+			                               ("[ERR] Server socket bind error: " + px_string(ErrnoStr(errno)) + " (" + px_string(errno) + ") for port: " + px_string(m_ui16Port)).c_str());
 #endif
 		}
 		else
@@ -372,13 +372,13 @@ bool ServerThread::Listen(const bool bSilent/* = false*/)
 			::MessageBox(NULL, (px_string(LanguageManager::m_Ptr->m_sTexts[LAN_SRV_BIND_ERR], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_SRV_BIND_ERR]) + ": " + px_string(WSErrorStr(err)) + " (" + px_string(err) + ") " + LanguageManager::m_Ptr->m_sTexts[LAN_FOR_PORT_LWR] + ": " + px_string(m_ui16Port)).c_str(),
 			             g_sPtokaXTitle, MB_OK | MB_ICONERROR);
 #else
-			AppendLog(string(LanguageManager::m_Ptr->m_sTexts[LAN_SRV_BIND_ERR], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_SRV_BIND_ERR]) +
+			AppendLog(px_string(LanguageManager::m_Ptr->m_sTexts[LAN_SRV_BIND_ERR], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_SRV_BIND_ERR]) +
 #ifdef _WIN32
-			          ": " + string(WSErrorStr(err)) + " (" + string(err) + ") " +
+			          ": " + px_string(WSErrorStr(err)) + " (" + px_string(err) + ") " +
 #else
-			          ": " + string(ErrnoStr(errno)) + " (" + string(errno) + ") " +
+			          ": " + px_string(ErrnoStr(errno)) + " (" + px_string(errno) + ") " +
 #endif
-			          string(LanguageManager::m_Ptr->m_sTexts[LAN_FOR_PORT_LWR], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FOR_PORT_LWR]) + ": " + string(m_ui16Port));
+                px_string(LanguageManager::m_Ptr->m_sTexts[LAN_FOR_PORT_LWR], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FOR_PORT_LWR]) + ": " + px_string(m_ui16Port));
 #endif
 		}
 		safe_closesocket(m_Server);
@@ -400,7 +400,7 @@ bool ServerThread::Listen(const bool bSilent/* = false*/)
 #ifdef _WIN32
 			                             ("[ERR] Server socket listen() error: " + px_string(WSErrorStr(err)) + " (" + px_string(err) + ") for port: " + px_string(m_ui16Port)).c_str());
 #else
-			                             ("[ERR] Server socket listen() error: " + string(errno) + " for port: " + string(m_ui16Port)).c_str());
+			                             ("[ERR] Server socket listen() error: " + px_string(errno) + " for port: " + px_string(m_ui16Port)).c_str());
 #endif
 		}
 		else
@@ -409,7 +409,7 @@ bool ServerThread::Listen(const bool bSilent/* = false*/)
 			::MessageBox(NULL, (px_string(LanguageManager::m_Ptr->m_sTexts[LAN_SRV_LISTEN_ERR], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_SRV_LISTEN_ERR]) + ": " + px_string(WSErrorStr(err)) + " (" + px_string(err) + ") " + LanguageManager::m_Ptr->m_sTexts[LAN_FOR_PORT_LWR] + ": " + px_string(m_ui16Port)).c_str(),
 			             g_sPtokaXTitle, MB_OK | MB_ICONERROR);
 #else
-			AppendLog((string(LanguageManager::m_Ptr->m_sTexts[LAN_SRV_LISTEN_ERR], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_SRV_LISTEN_ERR]) + ": " + string(errno) + " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_FOR_PORT_LWR], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FOR_PORT_LWR]) + ": " + string(m_ui16Port)).c_str());
+			AppendLog(px_string(LanguageManager::m_Ptr->m_sTexts[LAN_SRV_LISTEN_ERR], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_SRV_LISTEN_ERR]) + ": " + px_string(errno) + " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_FOR_PORT_LWR], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FOR_PORT_LWR]) + ": " + px_string(m_ui16Port));
 #endif
 		}
 		safe_closesocket(m_Server);

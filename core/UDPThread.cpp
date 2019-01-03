@@ -125,7 +125,7 @@ bool UDPThread::Listen(const int iAddressFamily)
 #else
 	if (bind(m_Sock, (struct sockaddr *)&sas, sas_len) == -1)
 	{
-		AppendLog("[ERR] UDP Socket bind error: " + string(ErrnoStr(errno)) + " (" + string(errno) + ")");
+		AppendLog("[ERR] UDP Socket bind error: " + string(ErrnoStr(errno)) + " (" + px_string(errno) + ")");
 #endif
 		return false;
 	}
