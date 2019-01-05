@@ -9,6 +9,7 @@ rm -r ~/pvs/flylinkdc-hub.html
 rm ~/pvs/flylinkdc-hub.log
 pvs-studio-analyzer analyze -l ~/.config/PVS-Studio/PVS-Studio.lic -o ~/pvs/flylinkdc-hub.log
 plog-converter -a GA:1,2 -t fullhtml -o ~/pvs/flylinkdc-hub.html ~/pvs/flylinkdc-hub.log
+rm strace_out
 rm -r /var/www/pvs-studio/flylinkdc-hub/*
 cp -p -r ~/pvs/flylinkdc-hub.html/* /var/www/pvs-studio/flylinkdc-hub/
 cp pvs-analyse /var/www/pvs-studio/flylinkdc-hub
@@ -19,7 +20,6 @@ cd /var/www/pvs-studio/flylinkdc-hub/sources
 svn add *
 cd ..
 svn commit -m "* flylinkdc-hub"
-
 
 
 ulimit -n 32768

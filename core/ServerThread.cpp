@@ -263,7 +263,7 @@ bool ServerThread::Listen(const bool bSilent/* = false*/)
 #ifdef _WIN32
 			                             ("[ERR] Unable to create server socket for port " + px_string(m_ui16Port) + " ! ErrorCode " + px_string(WSAGetLastError())).c_str());
 #else
-			                             ("[ERR] Unable to create server socket for port " + string(m_ui16Port) + " ! ErrorCode " + px_string(errno)).c_str());
+			                             ("[ERR] Unable to create server socket for port " + px_string(m_ui16Port) + " ! ErrorCode " + px_string(errno)).c_str());
 #endif
 		}
 		else
@@ -288,9 +288,9 @@ bool ServerThread::Listen(const bool bSilent/* = false*/)
 		}
 		else
 		{
-			AppendLog(string(LanguageManager::m_Ptr->m_sTexts[LAN_SRV_SCKOPT_ERR], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_SRV_SCKOPT_ERR]) +
-			          ": " + string(ErrnoStr(errno)) + " (" + px_string(errno) + ") " +
-			          string(LanguageManager::m_Ptr->m_sTexts[LAN_FOR_PORT_LWR], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FOR_PORT_LWR]) + ": " + px_string(m_ui16Port));
+			AppendLog(px_string(LanguageManager::m_Ptr->m_sTexts[LAN_SRV_SCKOPT_ERR], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_SRV_SCKOPT_ERR]) +
+			          ": " + px_string(ErrnoStr(errno)) + " (" + px_string(errno) + ") " +
+			          px_string(LanguageManager::m_Ptr->m_sTexts[LAN_FOR_PORT_LWR], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FOR_PORT_LWR]) + ": " + px_string(m_ui16Port));
 		}
 		close(m_Server);
 		return false;
