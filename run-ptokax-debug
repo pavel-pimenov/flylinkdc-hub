@@ -1,0 +1,13 @@
+#!/bin/sh
+ulimit -n 50000
+ulimit -c unlimited
+#if [ -n "`locale -a|grep -i ru_RU.cp1251`" ]; then
+LANG=ru_RU.CP1251
+LC_ALL=ru_RU.CP1251
+export LUA_PATH='/home/dc/src/PtokaX/scripts/libs/?.lua;;'
+#valgrind --log-file=./valgrind.log --tool=callgrind --time-stamp=yes ./PtokaX
+valgrind --leak-check=full --leak-resolution=med --log-file=./valgrind.log --time-stamp=yes ./PtokaX
+#else
+#echo 'ERROR: run $sudo localedef -c -i ru_RU -f CP1251 ru_RU.CP1251'
+#fi
+
