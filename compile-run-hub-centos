@@ -21,18 +21,3 @@ svn add *
 cd ..
 svn commit -m "* flylinkdc-hub"
 
-
-ulimit -n 32768
-ulimit -c unlimited
-LANG=ru_RU.CP1251
-if [ -n `locale -a|grep -i ru_RU.cp1251` ]; then
-#export MALLOC_TRACE=/tmp/t
-./PtokaX
-#mtrace ./PtokaX $MALLOC_TRACE
-#LD_PRELOAD=../liblog-malloc2.so PtokaX 1022>/tmp/ptokax-malloc.log
-#export LD_PRELOAD
-else
-echo 'ERROR: run $sudo localedef -c -i ru_RU -f CP1251 ru_RU.CP1251'
-fi
-# valgrind --leak-check=full --leak-resolution=med --log-file=valgrind-log-file.log --time-stamp=yes ./PtokaX
-valgrind --tool=callgrind ./PtokaX
