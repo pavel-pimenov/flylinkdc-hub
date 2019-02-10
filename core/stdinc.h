@@ -31,7 +31,6 @@
 #ifdef _WIN32
 #include <malloc.h>
 #endif
-#include <string.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <math.h>
@@ -82,7 +81,6 @@
 #ifdef _WIN32
 #define TIXML_USE_STL
 #endif
-#include <tinyxml.h>
 #ifdef _WIN32
 #define PSAPI_VERSION 1 // [+]FlylinkDC++
 #include <psapi.h>
