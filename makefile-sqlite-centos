@@ -23,8 +23,8 @@ INSTDIR = /usr/local/bin
 #*******************************************************************************
 # Release flags
 #*******************************************************************************
-CXXFLAGS = -std=c++11 -O2 -g -Wall -Wextra -D_WITH_SQLITE -DFLYLINKDC_USE_DB -DxUSE_FLYLINKDC_EXT_JSON
-CCFLAGS = -O2 -g -Wall -Wextra
+CXXFLAGS = -std=c++11 -O0 -g -Wall -Wextra -D_WITH_SQLITE -DFLYLINKDC_USE_DB -DxUSE_FLYLINKDC_EXT_JSON
+CCFLAGS = -g -Wall -Wextra
 
 #*******************************************************************************
 # Include
@@ -69,10 +69,10 @@ lua51: $(OBJS)
 	cd skein; $(MAKE)
 	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -lz -llua5.1 -ltinyxml -ldl
 
-centos: CXXFLAGS = -std=c++11 -O2 -g -Wall -Wextra -DTIXML_USE_STL -D_WITH_SQLITE -DFLYLINKDC_USE_DB -DxUSE_FLYLINKDC_EXT_JSON
+centos: CXXFLAGS = -std=c++11 -O0 -g -Wall -Wextra -DTIXML_USE_STL -D_WITH_SQLITE -DFLYLINKDC_USE_DB -DxUSE_FLYLINKDC_EXT_JSON
 centos: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -lz -llua -ldl -ltinyxml -lunwind
+	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -lz -llua -ldl -ltinyxml
 
 fedora: INCLUDE = -Iskein/Optimized_32bit -I/usr/include
 fedora: $(OBJS)

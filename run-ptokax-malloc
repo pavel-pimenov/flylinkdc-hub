@@ -1,0 +1,4 @@
+rm PtokaX
+make -B -f makefile-sqlite-centos centos
+/home/dht/src-orig/log-malloc2/scripts/log-malloc.pl -o ptokax.log ./PtokaX
+/home/dht/src-orig/log-malloc2/scripts/log-malloc-findleak.pl ptokax.log > ptokax-malloc.log

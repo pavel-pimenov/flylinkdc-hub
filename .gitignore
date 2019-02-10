@@ -76,4 +76,5 @@ callgrind.out.*
 *.VC.db
 *.opendb
 strace_out
+*.log
 
