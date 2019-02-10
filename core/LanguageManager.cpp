@@ -26,6 +26,7 @@
 #include "SettingManager.h"
 #include "ServerManager.h"
 #include "utility.h"
+#include "tinyxml.h"
 //---------------------------------------------------------------------------
 #ifdef _WIN32
 #pragma hdrstop

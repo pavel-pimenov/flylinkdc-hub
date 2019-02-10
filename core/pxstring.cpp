@@ -30,7 +30,7 @@
 //---------------------------------------------------------------------------
 static const char * sEmpty = "";
 //---------------------------------------------------------------------------
-
+#define px_string string
 void px_string::stralloc(const char * sTxt, const size_t szLen)
 {
 	m_szDataLen = szLen;

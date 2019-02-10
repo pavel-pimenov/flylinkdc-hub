@@ -33,6 +33,7 @@
 #include "UdpDebug.h"
 #include "User.h"
 #include "utility.h"
+#include "tinyxml.h"
 //---------------------------------------------------------------------------
 #ifdef _WIN32
 #pragma hdrstop

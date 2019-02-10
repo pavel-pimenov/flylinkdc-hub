@@ -24,6 +24,7 @@
 struct BanItem;
 struct RangeBanItem;
 //---------------------------------------------------------------------------
+#define px_string string
 
 void Cout(const string & sMsg);
 //---------------------------------------------------------------------------
@@ -125,10 +126,10 @@ inline void AppendLog(const string & sData, const bool bScript = false)
 {
 	AppendLog(sData.c_str(), bScript);
 }
-inline void AppendLog(const px_string & sData, const bool bScript = false)
-{
-    AppendLog(sData.c_str(), bScript);
-}
+//inline void AppendLog(const px_string & sData, const bool bScript = false)
+//{
+//    AppendLog(sData.c_str(), bScript);
+//}
 void AppendDebugLog(const char * sData);
 void AppendDebugLogFormat(const char * sFormatMsg, ...);
 

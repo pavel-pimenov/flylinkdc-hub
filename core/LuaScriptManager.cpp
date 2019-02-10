@@ -27,6 +27,7 @@
 #include "SettingManager.h"
 #include "User.h"
 #include "utility.h"
+#include "tinyxml.h"
 //------------------------------------------------------------------------------
 #ifdef _WIN32
 #pragma hdrstop
@@ -57,9 +58,9 @@ void ScriptManager::LoadXML()
 			if (iMsgLen > 0)
 			{
 #ifdef _BUILD_GUI
-				::MessageBox(NULL, ServerManager::m_pGlobalBuffer, g_sPtokaXTitle, MB_OK | MB_ICONERROR);
+			::MessageBox(NULL, ServerManager::m_pGlobalBuffer, g_sPtokaXTitle, MB_OK | MB_ICONERROR);
 #else
-				AppendLog(ServerManager::m_pGlobalBuffer);
+			AppendLog(ServerManager::m_pGlobalBuffer);
 #endif
 			}
 			
@@ -140,9 +141,9 @@ ScriptManager::ScriptManager() : m_pRunningScriptE(NULL), m_pRunningScriptS(NULL
 		if (iMsgLen > 0)
 		{
 #ifdef _BUILD_GUI
-			::MessageBox(NULL, ServerManager::m_pGlobalBuffer, g_sPtokaXTitle, MB_OK | MB_ICONERROR);
+		::MessageBox(NULL, ServerManager::m_pGlobalBuffer, g_sPtokaXTitle, MB_OK | MB_ICONERROR);
 #else
-			AppendLog(ServerManager::m_pGlobalBuffer);
+		AppendLog(ServerManager::m_pGlobalBuffer);
 #endif
 		}
 		
@@ -989,7 +990,7 @@ bool ScriptManager::Arrival(DcCommand * pDcCommand, const uint8_t ui8Type)
 #else
 			//printf("ScriptManager::Arrival nick=%s uiType = %d\r\n", u->m_sNick, int(uiType));
 #endif
-			
+
 			lua_getglobal(cur->m_pLua, arrival[ui8Type]);
 			iTop = lua_gettop(cur->m_pLua);
 			if (lua_isfunction(cur->m_pLua, iTop) == 0)
@@ -1098,15 +1099,15 @@ bool ScriptManager::UserConnected(User * pUser)
 			{
 				switch (ui8Type)
 				{
-				case 0:
-					cur->m_ui16Functions &= ~Script::USERCONNECTED;
-					break;
-				case 1:
-					cur->m_ui16Functions &= ~Script::REGCONNECTED;
-					break;
-				case 2:
-					cur->m_ui16Functions &= ~Script::OPCONNECTED;
-					break;
+					case 0:
+						cur->m_ui16Functions &= ~Script::USERCONNECTED;
+						break;
+					case 1:
+						cur->m_ui16Functions &= ~Script::REGCONNECTED;
+						break;
+					case 2:
+						cur->m_ui16Functions &= ~Script::OPCONNECTED;
+						break;
 				}
 				
 				lua_settop(cur->m_pLua, 0);
@@ -1217,15 +1218,15 @@ void ScriptManager::UserDisconnected(User * pUser, Script * pScript/* = NULL*/)
 			{
 				switch (ui8Type)
 				{
-				case 0:
-					cur->m_ui16Functions &= ~Script::USERDISCONNECTED;
-					break;
-				case 1:
-					cur->m_ui16Functions &= ~Script::REGDISCONNECTED;
-					break;
-				case 2:
-					cur->m_ui16Functions &= ~Script::OPDISCONNECTED;
-					break;
+					case 0:
+						cur->m_ui16Functions &= ~Script::USERDISCONNECTED;
+						break;
+					case 1:
+						cur->m_ui16Functions &= ~Script::REGDISCONNECTED;
+						break;
+					case 2:
+						cur->m_ui16Functions &= ~Script::OPDISCONNECTED;
+						break;
 				}
 				
 				lua_settop(cur->m_pLua, 0);
