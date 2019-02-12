@@ -937,7 +937,7 @@ void RegManager::Save(const bool bSaveOnChange/* = false*/, const bool bSaveOnTi
 		curReg = next;
 		next = curReg->m_pNext;
 		
-		pxbRegs.m_ui16ItemLengths[0] = curReg->m_sNick.length();
+		pxbRegs.m_ui16ItemLengths[0] = uint16_t(curReg->m_sNick.length());
 		pxbRegs.m_pItemDatas[0] = (void *)curReg->m_sNick.c_str();
 		pxbRegs.m_ui8ItemValues[0] = PXBReader::PXB_STRING;
 		

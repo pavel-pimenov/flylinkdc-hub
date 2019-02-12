@@ -28,6 +28,8 @@ struct BanItem;
 struct RangeBanItem;
 //---------------------------------------------------------------------------
 #define px_string string
+#define PTOKAX_GLOBAL_BUFF_SIZE (131072*2)
+
 
 void Cout(const string & sMsg);
 //---------------------------------------------------------------------------

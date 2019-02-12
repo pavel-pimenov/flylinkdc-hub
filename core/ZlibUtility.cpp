@@ -30,7 +30,7 @@
 //---------------------------------------------------------------------------
 #include <zlib.h>
 //---------------------------------------------------------------------------
-static const uint32_t ZBUFFERLEN = 131072;
+static const uint32_t ZBUFFERLEN = PTOKAX_GLOBAL_BUFF_SIZE;
 static const uint32_t ZMINLEN = 128;
 #define Z_PTOKAX_COMPRESSION 8
 //---------------------------------------------------------------------------
