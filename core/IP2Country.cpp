@@ -158,7 +158,7 @@ void IpP2Country::LoadIPv4()
 	
 	if (m_ui32Size == 0)
 	{
-		m_ui32Size = 131072;
+		m_ui32Size = PTOKAX_GLOBAL_BUFF_SIZE;
 		
 		if (m_ui32RangeFrom == NULL)
 		{
