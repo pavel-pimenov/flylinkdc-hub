@@ -30,6 +30,7 @@
 #include "UdpDebug.h"
 #include "User.h"
 #include "utility.h"
+#include <cstring>
 //---------------------------------------------------------------------------
 #ifdef _WIN32
 #pragma hdrstop

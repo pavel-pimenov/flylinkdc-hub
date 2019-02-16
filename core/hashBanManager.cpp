@@ -27,6 +27,7 @@
 #include "UdpDebug.h"
 #include "User.h"
 #include "utility.h"
+#include "tinyxml.h"
 //---------------------------------------------------------------------------
 #ifdef _BUILD_GUI
 #include "../gui.win/BansDialog.h"

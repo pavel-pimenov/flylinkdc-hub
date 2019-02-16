@@ -323,4 +323,4 @@ clean:
 	cd skein; $(MAKE) clean
 	cd tinyxml; $(MAKE) clean
 	-rm $(OBJS) PtokaX
-	
+

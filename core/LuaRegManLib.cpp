@@ -48,7 +48,7 @@ static void PushReg(lua_State * pLua, RegUser * pReg)
 	int i = lua_gettop(pLua);
 	
 	lua_pushliteral(pLua, "sNick");
-	lua_pushstring(pLua, pReg->m_sNick);
+	lua_pushstring(pLua, pReg->m_sNick.c_str());
 	lua_rawset(pLua, i);
 	
 	lua_pushliteral(pLua, "sPassword");
@@ -363,7 +363,7 @@ static int AddReg(lua_State * pLua)
 			return 1;
 		}
 		
-		
+
 		
 		pUser->SetBuffer(ProfileManager::m_Ptr->m_ppProfilesTable[ui16Profile]->m_sName);
 		pUser->m_ui32BoolBits |= User::BIT_WAITING_FOR_PASS;

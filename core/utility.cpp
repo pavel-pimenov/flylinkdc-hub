@@ -1512,13 +1512,13 @@ bool GetMacAddress(const char * sIP, char * sMac)
 #ifdef _WIN32
 	uint32_t uiIP = ::inet_addr(sIP);
 	
-	MIB_IPNETTABLE * pINT = (MIB_IPNETTABLE *)new (std::nothrow) char[131072]; // TODO
+	MIB_IPNETTABLE * pINT = (MIB_IPNETTABLE *)new (std::nothrow) char[PTOKAX_GLOBAL_BUFF_SIZE]; // TODO
 	if (pINT == NULL)
 	{
 		return false;
 	}
 	
-	ULONG ulSize = 131072;
+	ULONG ulSize = PTOKAX_GLOBAL_BUFF_SIZE;
 	DWORD dwRes = ::GetIpNetTable(pINT, &ulSize, TRUE);
 	if (dwRes == NO_ERROR)
 	{
@@ -1590,7 +1590,7 @@ bool GetMacAddress(const char * sIP, char * sMac)
 
 void CreateGlobalBuffer()
 {
-	ServerManager::m_szGlobalBufferSize = 131072;
+	ServerManager::m_szGlobalBufferSize = PTOKAX_GLOBAL_BUFF_SIZE;
 	ServerManager::m_pGlobalBuffer = (char *)calloc(ServerManager::m_szGlobalBufferSize, 1);
 	if (ServerManager::m_pGlobalBuffer == NULL)
 	{
@@ -1635,7 +1635,7 @@ bool CheckAndResizeGlobalBuffer(const size_t szWantedSize)
 
 void ReduceGlobalBuffer()
 {
-	if (ServerManager::m_szGlobalBufferSize == 131072)
+	if (ServerManager::m_szGlobalBufferSize == PTOKAX_GLOBAL_BUFF_SIZE)
 	{
 		return;
 	}
@@ -1643,7 +1643,7 @@ void ReduceGlobalBuffer()
 	size_t szOldSize = ServerManager::m_szGlobalBufferSize;
 	char * sOldBuf = ServerManager::m_pGlobalBuffer;
 	
-	ServerManager::m_szGlobalBufferSize = 131072;
+	ServerManager::m_szGlobalBufferSize = PTOKAX_GLOBAL_BUFF_SIZE;
 	
 	ServerManager::m_pGlobalBuffer = (char *)realloc(sOldBuf, ServerManager::m_szGlobalBufferSize);
 	if (ServerManager::m_pGlobalBuffer == NULL)

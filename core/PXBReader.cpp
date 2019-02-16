@@ -74,7 +74,7 @@ bool PXBReader::OpenFileRead(const char * sFilename, const uint8_t ui8SubItems)
 	
 	fseek(m_pFile, 0, SEEK_SET);
 	
-	m_szRemainingSize = 131072;
+	m_szRemainingSize = PTOKAX_GLOBAL_BUFF_SIZE;
 	
 	if ((size_t)lFileLen < m_szRemainingSize)
 	{
@@ -98,9 +98,9 @@ void PXBReader::ReadNextFilePart()
 {
 	memmove(ServerManager::m_pGlobalBuffer, m_pActualPosition, m_szRemainingSize);
 	
-	size_t szReadSize = fread(ServerManager::m_pGlobalBuffer + m_szRemainingSize, 1, 131072 - m_szRemainingSize, m_pFile);
+	size_t szReadSize = fread(ServerManager::m_pGlobalBuffer + m_szRemainingSize, 1, PTOKAX_GLOBAL_BUFF_SIZE - m_szRemainingSize, m_pFile);
 	
-	if (szReadSize != (131072 - m_szRemainingSize))
+	if (szReadSize != (PTOKAX_GLOBAL_BUFF_SIZE - m_szRemainingSize))
 	{
 		m_bFullRead = true;
 	}
@@ -224,7 +224,7 @@ bool PXBReader::OpenFileSave(const char * sFilename, const uint8_t ui8Size)
 		return false;
 	}
 	
-	m_szRemainingSize = 131072;
+	m_szRemainingSize = PTOKAX_GLOBAL_BUFF_SIZE;
 	
 	m_pActualPosition = ServerManager::m_pGlobalBuffer;
 	
@@ -240,7 +240,7 @@ bool PXBReader::WriteNextItem(const uint32_t ui32Length, const uint8_t ui8SubIte
 	{
 		fwrite(ServerManager::m_pGlobalBuffer, 1, m_pActualPosition - ServerManager::m_pGlobalBuffer, m_pFile);
 		m_pActualPosition = ServerManager::m_pGlobalBuffer;
-		m_szRemainingSize = 131072;
+		m_szRemainingSize = PTOKAX_GLOBAL_BUFF_SIZE;
 	}
 	
 	(*((uint32_t *)m_pActualPosition)) = htonl(ui32ItemLength);
@@ -256,23 +256,23 @@ bool PXBReader::WriteNextItem(const uint32_t ui32Length, const uint8_t ui8SubIte
 		
 		switch (m_ui8ItemValues[ui8i])
 		{
-		case PXB_BYTE:
-			m_pActualPosition[4] = (m_pItemDatas[ui8i] == 0 ? '0' : '1');
-			break;
-		case PXB_TWO_BYTES:
-			(*((uint16_t *)(m_pActualPosition + 4))) = htons(*((uint16_t *)m_pItemDatas[ui8i]));
-			break;
-		case PXB_FOUR_BYTES:
-			(*((uint32_t *)(m_pActualPosition + 4))) = htonl(*((uint32_t *)m_pItemDatas[ui8i]));
-			break;
-		case PXB_EIGHT_BYTES:
-			(*((uint64_t *)(m_pActualPosition + 4))) = htobe64(*((uint64_t *)m_pItemDatas[ui8i]));
-			break;
-		case PXB_STRING:
-			memcpy(m_pActualPosition + 4, m_pItemDatas[ui8i], m_ui16ItemLengths[ui8i]);
-			break;
-		default:
-			break;
+			case PXB_BYTE:
+				m_pActualPosition[4] = (m_pItemDatas[ui8i] == 0 ? '0' : '1');
+				break;
+			case PXB_TWO_BYTES:
+				(*((uint16_t *)(m_pActualPosition + 4))) = htons(*((uint16_t *)m_pItemDatas[ui8i]));
+				break;
+			case PXB_FOUR_BYTES:
+				(*((uint32_t *)(m_pActualPosition + 4))) = htonl(*((uint32_t *)m_pItemDatas[ui8i]));
+				break;
+			case PXB_EIGHT_BYTES:
+				(*((uint64_t *)(m_pActualPosition + 4))) = htobe64(*((uint64_t *)m_pItemDatas[ui8i]));
+				break;
+			case PXB_STRING:
+				memcpy(m_pActualPosition + 4, m_pItemDatas[ui8i], m_ui16ItemLengths[ui8i]);
+				break;
+			default:
+				break;
 		}
 		
 		m_pActualPosition += m_ui16ItemLengths[ui8i] + 4;
