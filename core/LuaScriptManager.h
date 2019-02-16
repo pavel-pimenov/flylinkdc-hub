@@ -29,97 +29,92 @@ struct DcCommand;
 
 class ScriptManager
 {
-private:
-	Script * m_pRunningScriptE;
-	
-	DISALLOW_COPY_AND_ASSIGN(ScriptManager);
-	
-	void AddRunningScript(Script * pScript);
-	void RemoveRunningScript(Script * pScript);
-	
-	void LoadXML();
-public:
-	static ScriptManager * m_Ptr;
-	
-	Script * m_pRunningScriptS;
-	
-	Script ** m_ppScriptTable;
-	User * m_pActualUser;
-	
-	ScriptTimer * m_pTimerListS, * m_pTimerListE;
-	
-	uint8_t m_ui8ScriptCount, m_ui8BotsCount;
-	
-	volatile bool m_bMoved;
-	
-	enum LuaArrivals
-	{
-		CHAT_ARRIVAL,
-		KEY_ARRIVAL,
-		VALIDATENICK_ARRIVAL,
-		PASSWORD_ARRIVAL,
-		VERSION_ARRIVAL,
-		GETNICKLIST_ARRIVAL,
-		MYINFO_ARRIVAL,
-		GETINFO_ARRIVAL,
-		SEARCH_ARRIVAL,
-		TO_ARRIVAL,
-		CONNECTTOME_ARRIVAL,
-		MULTICONNECTTOME_ARRIVAL,
-		REVCONNECTTOME_ARRIVAL,
-		SR_ARRIVAL,
-		UDP_SR_ARRIVAL,
-		KICK_ARRIVAL,
-		OPFORCEMOVE_ARRIVAL,
-		SUPPORTS_ARRIVAL,
-		BOTINFO_ARRIVAL,
-		CLOSE_ARRIVAL,
-		UNKNOWN_ARRIVAL
+	private:
+		Script * m_pRunningScriptE;
+		
+		DISALLOW_COPY_AND_ASSIGN(ScriptManager);
+		
+		void AddRunningScript(Script * pScript);
+		void RemoveRunningScript(Script * pScript);
+		
+		void LoadXML();
+	public:
+		static ScriptManager * m_Ptr;
+		
+		Script * m_pRunningScriptS;
+		
+		Script ** m_ppScriptTable;
+		User * m_pActualUser;
+		
+		ScriptTimer * m_pTimerListS, * m_pTimerListE;
+		
+		uint8_t m_ui8ScriptCount, m_ui8BotsCount;
+		
+		volatile bool m_bMoved;
+		
+		enum LuaArrivals
+		{
+			CHAT_ARRIVAL,
+			KEY_ARRIVAL,
+			VALIDATENICK_ARRIVAL,
+			PASSWORD_ARRIVAL,
+			VERSION_ARRIVAL,
+			GETNICKLIST_ARRIVAL,
+			MYINFO_ARRIVAL,
+			GETINFO_ARRIVAL,
+			SEARCH_ARRIVAL,
+			TO_ARRIVAL,
+			CONNECTTOME_ARRIVAL,
+			MULTICONNECTTOME_ARRIVAL,
+			REVCONNECTTOME_ARRIVAL,
+			SR_ARRIVAL,
+			UDP_SR_ARRIVAL,
+			KICK_ARRIVAL,
+			OPFORCEMOVE_ARRIVAL,
+			SUPPORTS_ARRIVAL,
+			BOTINFO_ARRIVAL,
+			CLOSE_ARRIVAL,
+			UNKNOWN_ARRIVAL
 #ifdef USE_FLYLINKDC_EXT_JSON
-		, EXTJSON_ARRIVAL
+			, EXTJSON_ARRIVAL
 #endif
-		// alex82 ... More arrivals
-		, BAD_PASS_ARRIVAL
-		, VALIDATE_DENIDE_ARRIVAL
-	};
-	
-	ScriptManager();
-	~ScriptManager();
-	
-	void Start();
-	void Stop();
-	
-	void SaveScripts();
-	
-	void CheckForDeletedScripts();
-	void CheckForNewScripts();
-	
-	void Restart();
-	Script * FindScript(const char * sName);
-	Script * FindScript(const lua_State * pLua);
-	uint8_t FindScriptIdx(const char * sName);
-	
-	Script * FindScript(const std::string& sName)
-	{
-		return FindScript(sName.c_str());
-	}
-	
-	bool AddScript(const char * sName, const bool bEnabled, const bool bNew);
-	
-	bool StartScript(Script * pScript, const bool bEnable);
-	void StopScript(Script * pScript, const bool bDisable);
-	
-	void MoveScript(const uint8_t ui8ScriptPosInTbl, const bool bUp);
-	
-	void DeleteScript(const uint8_t ui8ScriptPosInTbl);
-	
-	void OnStartup();
-	void OnExit(const bool bForce = false);
-	bool Arrival(DcCommand * pDcCommand, const uint8_t ui8Type);
-	bool UserConnected(User * pUser);
-	void UserDisconnected(User * pUser, Script * pScript = NULL);
-	
-	void PrepareMove(lua_State * pLua);
+			// alex82 ... More arrivals
+			, BAD_PASS_ARRIVAL
+			, VALIDATE_DENIDE_ARRIVAL
+		};
+		
+		ScriptManager();
+		~ScriptManager();
+		
+		void Start();
+		void Stop();
+		
+		void SaveScripts();
+		
+		void CheckForDeletedScripts();
+		void CheckForNewScripts();
+		
+		void Restart();
+		Script * FindScript(const char * sName);
+		Script * FindScript(const lua_State * pLua);
+		uint8_t FindScriptIdx(const char * sName);
+
+		bool AddScript(const char * sName, const bool bEnabled, const bool bNew);
+		
+		bool StartScript(Script * pScript, const bool bEnable);
+		void StopScript(Script * pScript, const bool bDisable);
+		
+		void MoveScript(const uint8_t ui8ScriptPosInTbl, const bool bUp);
+		
+		void DeleteScript(const uint8_t ui8ScriptPosInTbl);
+		
+		void OnStartup();
+		void OnExit(const bool bForce = false);
+		bool Arrival(DcCommand * pDcCommand, const uint8_t ui8Type);
+		bool UserConnected(User * pUser);
+		void UserDisconnected(User * pUser, Script * pScript = NULL);
+		
+		void PrepareMove(lua_State * pLua);
 };
 //------------------------------------------------------------------------------
 

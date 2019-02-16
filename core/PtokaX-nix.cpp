@@ -41,7 +41,6 @@ using std::ostringstream;
 static bool bTerminatedBySignal = false;
 static int iSignal = 0;
 //---------------------------------------------------------------------------
-
 /*
 #ifndef _WIN32
 #define UNW_LOCAL_ONLY

@@ -22,12 +22,13 @@
 //---------------------------------------------------------------------------
 struct User;
 //---------------------------------------------------------------------------
+#include <string>
 
 struct RegUser
 {
 	time_t m_tLastBadPass;
 	
-	char * m_sNick;
+    std::string m_sNick;
 	
 	union
 	{

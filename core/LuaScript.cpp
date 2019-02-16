@@ -836,7 +836,6 @@ static bool ScriptOnError(Script * pScript, const char * sErrorMsg, const size_t
 		                    
 		if (SettingManager::m_Ptr->m_bBools[SETBOOL_LOG_SCRIPT_ERRORS] == true)
 		{
-			const string sMsg(stmp, szLen);
 			AppendLog(sMsg, true);
 		}
 		

@@ -204,7 +204,7 @@ void EventQueue::ProcessEvents()
 				break;
 			case EVENT_RSTSCRIPT:
 			{
-				Script * pScript = ScriptManager::m_Ptr->FindScript(cur->m_sMsg);
+				Script * pScript = ScriptManager::m_Ptr->FindScript(cur->m_sMsg.c_str());
 				if (pScript == NULL || pScript->m_bEnabled == false || pScript->m_pLua == NULL)
 				{
 					return;
@@ -218,7 +218,7 @@ void EventQueue::ProcessEvents()
 			}
 			case EVENT_STOPSCRIPT:
 			{
-				Script * pScript = ScriptManager::m_Ptr->FindScript(cur->m_sMsg);
+				Script * pScript = ScriptManager::m_Ptr->FindScript(cur->m_sMsg.c_str());
 				if (pScript == NULL || pScript->m_bEnabled == false || pScript->m_pLua == NULL)
 				{
 					return;
