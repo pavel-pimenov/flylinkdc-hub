@@ -29,9 +29,8 @@ distribution.
 #include <iostream>
 #endif
 
+#include <string.h>
 #include "tinyxml.h"
-
-#ifdef _WIN32
 
 FILE* TiXmlFOpen( const char* filename, const char* mode );
 
@@ -1884,4 +1883,3 @@ bool TiXmlPrinter::Visit( const TiXmlUnknown& unknown )
 	return true;
 }
 
-#endif // _WIN32

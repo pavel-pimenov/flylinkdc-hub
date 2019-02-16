@@ -26,8 +26,7 @@ distribution.
 #include <stddef.h>
 
 #include "tinyxml.h"
-
-#ifdef _WIN32
+#include <string.h>
 
 //#define DEBUG_PARSER
 #if defined( DEBUG_PARSER )
@@ -1637,4 +1636,3 @@ bool TiXmlText::Blank() const
 	return true;
 }
 
-#endif // _WIN32
