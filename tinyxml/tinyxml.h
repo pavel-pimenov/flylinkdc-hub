@@ -26,8 +26,6 @@ distribution.
 #ifndef TINYXML_INCLUDED
 #define TINYXML_INCLUDED
 
-#ifdef _WIN32
-
 #ifdef _MSC_VER
 #pragma warning( push )
 #pragma warning( disable : 4530 )
@@ -44,19 +42,14 @@ distribution.
 #define DEBUG
 #endif
 
-#ifdef _WIN32
-	#define TIXML_USE_STL // [+} FlylinkDC++
+#ifndef TIXML_USE_STL
+ #define TIXML_USE_STL
 #endif
 
-#ifdef TIXML_USE_STL
-	#include <string>
- 	#include <iostream>
-	#include <sstream>
-	#define TIXML_STRING		std::string
-#else
-	#include "tinystr.h"
-	#define TIXML_STRING		TiXmlString
-#endif
+#include <string>
+#include <iostream>
+#include <sstream>
+#define TIXML_STRING		std::string
 
 // Deprecated library function hell. Compilers want to use the
 // new safe versions. This probably doesn't fully address the problem,
@@ -1806,7 +1799,5 @@ private:
 #ifdef _MSC_VER
 #pragma warning( pop )
 #endif
-
-#endif // _WIN32
 
 #endif

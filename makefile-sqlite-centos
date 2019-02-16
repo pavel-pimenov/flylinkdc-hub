@@ -59,19 +59,6 @@ centos: $(OBJS)
 	cd skein; $(MAKE)
 	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -static -o PtokaX -lstdc++ -lpthread -lm -lrt -lz -llua -ldl -ltinyxml
 
-install:
-	@if test -d $(INSTDIR); then \
-		cp PtokaX $(INSTDIR) && echo cp PtokaX $(INSTDIR) && echo "PtokaX was installed to $(INSTDIR)"; \
-		setcap 'cap_net_bind_service=+ep' $(INSTDIR)/PtokaX && echo setcap 'cap_net_bind_service=+ep' $(INSTDIR)/PtokaX && \
-		echo "PtokaX executable was allowed to run on ports below 1025"; \
-	else \
-		echo "Can't install, because directory $(INSTDIR) don't exist"; \
-		false; \
-	fi
-
-uninstall:
-	-rm $(INSTDIR)/PtokaX
-
 
 #*******************************************************************************
 # Files to compile
