@@ -6,7 +6,6 @@ svn up
 rm PtokaX
 rm core.*
 
-
 gcc -std=c++11 -O3 -Wall -Wextra -o PtokaX \
  ./skein/Optimized_32bit/skein_block.c \
  ./skein/Optimized_32bit/skein.c \
