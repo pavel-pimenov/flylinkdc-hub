@@ -252,7 +252,7 @@ void RegisteredUserDialog::DoModal(HWND hWndParent, RegUser * pReg/* = nullptr*/
     UpdateProfiles();
 
     if(m_pRegToChange != nullptr) {
-        ::SetWindowText(m_hWndWindowItems[EDT_NICK], m_pRegToChange->m_sNick);
+        ::SetWindowText(m_hWndWindowItems[EDT_NICK], m_pRegToChange->m_sNick.c_str());
         ::EnableWindow(m_hWndWindowItems[EDT_NICK], FALSE);
 
         if(m_pRegToChange->m_bPassHash == false) {
