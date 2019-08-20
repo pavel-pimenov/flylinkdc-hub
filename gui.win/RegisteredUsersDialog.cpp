@@ -323,7 +323,7 @@ void RegisteredUsersDialog::AddReg(const RegUser * pReg) {
     LVITEM lvItem = { 0 };
     lvItem.mask = LVIF_PARAM | LVIF_TEXT;
     lvItem.iItem = ListViewGetInsertPosition(m_hWndWindowItems[LV_REGS], pReg, m_bSortAscending, CompareRegs);
-    lvItem.pszText = pReg->m_sNick;
+    lvItem.pszText = (char*) pReg->m_sNick.c_str();
     lvItem.lParam = (LPARAM)pReg;
 
     int i = (int)::SendMessage(m_hWndWindowItems[LV_REGS], LVM_INSERTITEM, 0, (LPARAM)&lvItem);
@@ -361,7 +361,7 @@ int RegisteredUsersDialog::CompareRegs(const void * pItem, const void * pOtherIt
 
     switch(RegisteredUsersDialog::m_Ptr->m_iSortColumn) {
         case 0:
-            return _stricmp(pFirstReg->m_sNick, pSecondReg->m_sNick);
+            return _stricmp(pFirstReg->m_sNick.c_str(), pSecondReg->m_sNick.c_str());
         case 1:
             return _stricmp(pFirstReg->m_sPass, pSecondReg->m_sPass);
         case 2:
@@ -448,7 +448,7 @@ void RegisteredUsersDialog::FilterRegs() {
 
             switch(m_iFilterColumn) {
                 case 0:
-                    if(stristr2(curReg->m_sNick, m_sFilterString.c_str()) == nullptr) {
+                    if(stristr2(curReg->m_sNick.c_str(), m_sFilterString.c_str()) == nullptr) {
                         continue;
                     }
                     break;
