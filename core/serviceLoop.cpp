@@ -739,7 +739,7 @@ void ServiceLoop::ReceiveLoop()
 				// check logon timeout for iState 1
 				if (ServerManager::m_ui64ActualTick - curUser->m_LogInOut.m_ui64LogonTick > 20)
 				{
-					UdpDebug::m_Ptr->BroadcastFormat("[SYS] Login timeout 1 for %s - user disconnected.", curUser->m_sIP);
+					UdpDebug::m_Ptr->BroadcastFormat("[SYS] Login timeout 1 for %s - user (%s) disconnected.", curUser->m_sIP, curUser->m_sNick);
 					
 					curUser->Close();
 					continue;
