@@ -3875,6 +3875,7 @@ bool DcCommands::ValidateUserNick(DcCommand * pDcCommand,User * pUser, char * sN
 				{
 					// alex82 ... добавили ValidateDenideArrival
 					ScriptManager::m_Ptr->Arrival(pDcCommand, ScriptManager::VALIDATE_DENIDE_ARRIVAL);
+#ifdef FLYLINKDC_USE_REMOVE_CLONE // пока вешается. отключил
 					if (// TODO OtherUser->m_ui64SharedSize == pUser->m_ui64SharedSize &&
 					    strcmp(OtherUser->m_sNick, pUser->m_sNick) == 0 && strcmp(OtherUser->m_sIP, pUser->m_sIP) == 0) //[+] FlylinkDC++
 					{
@@ -3887,6 +3888,7 @@ bool DcCommands::ValidateUserNick(DcCommand * pDcCommand,User * pUser, char * sN
 						return ValidateUserNickFinally(Reg == NULL, pUser, szNickLen, ValidateNick); // [+] FlylinkDC++
 					}
 					else
+#endif // FLYLINKDC_USE_REMOVE_CLONE 
 					{
 					pUser->SendFormat("DcCommands::ValidateUserNick7", false, "$ValidateDenide %s|", sNick);
 					
