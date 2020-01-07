@@ -25,16 +25,16 @@ class PXBReader
 {
 private:
 	FILE * m_pFile;
-	
+
 	char * m_pActualPosition;
-	
+
 	size_t m_szRemainingSize;
-	
+
 	uint8_t m_ui8AllocatedSize;
-	
+
 	bool m_bFullRead;
-	
-	
+
+
 	void ReadNextFilePart();
 	bool PrepareArrays(const uint8_t ui8Size);
 public:
@@ -46,21 +46,21 @@ public:
 		PXB_EIGHT_BYTES,
 		PXB_STRING
 	};
-	
+
 	void ** m_pItemDatas;
-	
+
 	uint16_t * m_ui16ItemLengths;
-	
+
 	char * m_sItemIdentifiers;
-	
+
 	uint8_t * m_ui8ItemValues;
-	
+
 	PXBReader();
 	~PXBReader();
-	
+
 	bool OpenFileRead(const char * sFilename, const uint8_t ui8SubItems);
 	bool ReadNextItem(const uint16_t * pExpectedIdentificators, const uint8_t ui8ExpectedSubItems, const uint8_t ui8ExtraSubItems = 0);
-	
+
 	bool OpenFileSave(const char * sFilename, const uint8_t ui8Size);
 	bool WriteNextItem(const uint32_t ui32Length, const uint8_t ui8SubItems);
 	void WriteRemaining();

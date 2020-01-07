@@ -91,7 +91,7 @@ Users::Users() : m_ui64ChatMsgsTick(0), m_ui64ChatLockFromTick(0), m_pRecTimeLis
 	}
 	m_ui32ZOpListLen = 0;
 	m_ui32ZOpListSize = ZLISTSIZE - 1;
-	
+
 	if (SettingManager::m_Ptr->m_ui8FullMyINFOOption != 0)
 	{
 		m_pMyInfos = (char *)calloc(MYINFOLISTSIZE, 1);
@@ -101,7 +101,7 @@ Users::Users() : m_ui64ChatMsgsTick(0), m_ui64ChatLockFromTick(0), m_pRecTimeLis
 			exit(EXIT_FAILURE);
 		}
 		m_ui32MyInfosSize = MYINFOLISTSIZE - 1;
-		
+
 		m_pZMyInfos = (char *)calloc(ZMYINFOLISTSIZE, 1);
 		if (m_pZMyInfos == NULL)
 		{
@@ -119,7 +119,7 @@ Users::Users() : m_ui64ChatMsgsTick(0), m_ui64ChatLockFromTick(0), m_pRecTimeLis
 	}
 	m_ui32MyInfosLen = 0;
 	m_ui32ZMyInfosLen = 0;
-	
+
 	if (SettingManager::m_Ptr->m_ui8FullMyINFOOption != 2)
 	{
 		m_pMyInfosTag = (char *)calloc(MYINFOLISTSIZE, 1);
@@ -129,7 +129,7 @@ Users::Users() : m_ui64ChatMsgsTick(0), m_ui64ChatLockFromTick(0), m_pRecTimeLis
 			exit(EXIT_FAILURE);
 		}
 		m_ui32MyInfosTagSize = MYINFOLISTSIZE - 1;
-		
+
 		m_pZMyInfosTag = (char *)calloc(ZMYINFOLISTSIZE, 1);
 		if (m_pZMyInfosTag == NULL)
 		{
@@ -147,7 +147,7 @@ Users::Users() : m_ui64ChatMsgsTick(0), m_ui64ChatLockFromTick(0), m_pRecTimeLis
 	}
 	m_ui32MyInfosTagLen = 0;
 	m_ui32ZMyInfosTagLen = 0;
-	
+
 	m_pUserIPList = (char *)calloc(IPLISTSIZE, 1);
 	if (m_pUserIPList == NULL)
 	{
@@ -158,7 +158,7 @@ Users::Users() : m_ui64ChatMsgsTick(0), m_ui64ChatLockFromTick(0), m_pRecTimeLis
 	m_pUserIPList[9] = '\0';
 	m_ui32UserIPListLen = 9;
 	m_ui32UserIPListSize = IPLISTSIZE - 1;
-	
+
 	m_pZUserIPList = (char *)calloc(ZLISTSIZE, 1);
 	if (m_pZUserIPList == NULL)
 	{
@@ -201,7 +201,7 @@ Users::~Users()
 	m_ui32ZMyInfosTagSize = 69578
 	m_ui32NickListLen = 31293
 	m_ui32OpListLen = 59
-	
+
 	m_ui32UserIPListSize = 86015
 	m_ui32ZUserIPListSize = 42587
 	m_ui32MyInfosSize = 327679
@@ -211,36 +211,36 @@ Users::~Users()
 	m_ui32NickListLen = 10672
 	m_ui32ZNickListLen = 0
 	m_ui32OpListLen = 17
-	
+
 	*/
 #endif
 	RecTime * cur = NULL,
 	          * next = m_pRecTimeList;
-	          
+
 	while (next != NULL)
 	{
 		cur = next;
 		next = cur->m_pNext;
-		
+
 		delete cur;
 	}
-	
+
 	free(m_pNickList);
-	
+
 	free(m_pZNickList);
-	
+
 	free(m_pOpList);
 	free(m_pZOpList);
-	
+
 	free(m_pMyInfos);
 	free(m_pZMyInfos);
 	free(m_pMyInfosTag);
-	
+
 	free(m_pZMyInfosTag);
-	
+
 	free(m_pUserIPList);
 	free(m_pZUserIPList);
-	
+
 }
 //---------------------------------------------------------------------------
 
@@ -291,24 +291,24 @@ void Users::RemUser(User * pUser)
 void Users::DisconnectAll()
 {
 	uint32_t iCloseLoops = 0;
-	
+
 #ifndef _WIN32
 	struct timespec sleeptime;
 	sleeptime.tv_sec = 0;
 	sleeptime.tv_nsec = 50000000;
 #endif
-	
+
 	User * u = NULL, * next = NULL;
-	
+
 	while (m_pUserListS != NULL && iCloseLoops <= 100)
 	{
 		next = m_pUserListS;
-		
+
 		while (next != NULL)
 		{
 			u = next;
 			next = u->m_pNext;
-			
+
 			if (((u->m_ui32BoolBits & User::BIT_ERROR) == User::BIT_ERROR) == true || u->m_ui32SendBufDataLen == 0)
 			{
 //              Memo("*** User " + string(u->Nick, u->NickLen) + " closed...");
@@ -334,7 +334,7 @@ void Users::DisconnectAll()
 					u->m_pNext->m_pPrev = u->m_pPrev;
 				}
 				shutdown_and_close(u->m_Socket, SHUT_RD);
-				
+
 				delete u;
 			}
 			else
@@ -349,9 +349,9 @@ void Users::DisconnectAll()
 		nanosleep(&sleeptime, NULL);
 #endif
 	}
-	
+
 	next = m_pUserListS;
-	
+
 	while (next != NULL)
 	{
 		u = next;
@@ -365,7 +365,7 @@ void Users::DisconnectAll()
 void Users::Add2NickList(User * pUser)
 {
 	// $NickList nick$$nick2$$|
-	
+
 	if (m_ui32NickListSize < m_ui32NickListLen + pUser->m_ui8NickLen + 2)
 	{
 		char * pOldBuf = m_pNickList;
@@ -375,30 +375,30 @@ void Users::Add2NickList(User * pUser)
 			m_pNickList = pOldBuf;
 			pUser->m_ui32BoolBits |= User::BIT_ERROR;
 			pUser->Close();
-			
+
 			AppendDebugLogFormat("Cannot reallocate %u bytes in Users::Add2NickList for m_pNickList\n", m_ui32NickListSize + NICKLISTSIZE + 1);
-			
+
 			return;
 		}
 		m_ui32NickListSize += NICKLISTSIZE;
 	}
-	
+
 	memcpy(m_pNickList + m_ui32NickListLen - 1, pUser->m_sNick, pUser->m_ui8NickLen);
 	m_ui32NickListLen += (uint32_t)(pUser->m_ui8NickLen + 2);
-	
+
 	m_pNickList[m_ui32NickListLen - 3] = '$';
 	m_pNickList[m_ui32NickListLen - 2] = '$';
 	m_pNickList[m_ui32NickListLen - 1] = '|';
 	m_pNickList[m_ui32NickListLen] = '\0';
-	
+
 	m_ui32ZNickListLen = 0;
-	
+
 	// alex82 ... HideUserKey / Прячем ключ юзера
 	if (((pUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == false || ((pUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == true)
 	{
 		return;
 	}
-	
+
 	if (m_ui32OpListSize < m_ui32OpListLen + pUser->m_ui8NickLen + 2)
 	{
 		char * pOldBuf = m_pOpList;
@@ -408,22 +408,22 @@ void Users::Add2NickList(User * pUser)
 			m_pOpList = pOldBuf;
 			pUser->m_ui32BoolBits |= User::BIT_ERROR;
 			pUser->Close();
-			
+
 			AppendDebugLogFormat("[MEM] Cannot reallocate %u bytes in Users::Add2NickList for m_pOpList\n", m_ui32OpListSize + OPLISTSIZE + 1);
-			
+
 			return;
 		}
 		m_ui32OpListSize += OPLISTSIZE;
 	}
-	
+
 	memcpy(m_pOpList + m_ui32OpListLen - 1, pUser->m_sNick, pUser->m_ui8NickLen);
 	m_ui32OpListLen += (uint32_t)(pUser->m_ui8NickLen + 2);
-	
+
 	m_pOpList[m_ui32OpListLen - 3] = '$';
 	m_pOpList[m_ui32OpListLen - 2] = '$';
 	m_pOpList[m_ui32OpListLen - 1] = '|';
 	m_pOpList[m_ui32OpListLen] = '\0';
-	
+
 	m_ui32ZOpListLen = 0;
 }
 //---------------------------------------------------------------------------
@@ -431,7 +431,7 @@ void Users::Add2NickList(User * pUser)
 void Users::AddBot2NickList(const char * sNick, const size_t szNickLen, const bool bIsOp)
 {
 	// $NickList nick$$nick2$$|
-	
+
 	if (m_ui32NickListSize < m_ui32NickListLen + szNickLen + 2)
 	{
 		char * pOldBuf = m_pNickList;
@@ -439,27 +439,27 @@ void Users::AddBot2NickList(const char * sNick, const size_t szNickLen, const bo
 		if (m_pNickList == NULL)
 		{
 			m_pNickList = pOldBuf;
-			
+
 			AppendDebugLogFormat("[MEM] Cannot reallocate %u bytes in Users::AddBot2NickList for m_pNickList\n", m_ui32NickListSize + NICKLISTSIZE + 1);
-			
+
 			return;
 		}
 		m_ui32NickListSize += NICKLISTSIZE;
 	}
-	
+
 	memcpy(m_pNickList + m_ui32NickListLen - 1, sNick, szNickLen);
 	m_ui32NickListLen += (uint32_t)(szNickLen + 2);
-	
+
 	m_pNickList[m_ui32NickListLen - 3] = '$';
 	m_pNickList[m_ui32NickListLen - 2] = '$';
 	m_pNickList[m_ui32NickListLen - 1] = '|';
 	m_pNickList[m_ui32NickListLen] = '\0';
-	
+
 	m_ui32ZNickListLen = 0;
-	
+
 	if (bIsOp == false)
 		return;
-		
+
 	if (m_ui32OpListSize < m_ui32OpListLen + szNickLen + 2)
 	{
 		char * pOldBuf = m_pOpList;
@@ -467,22 +467,22 @@ void Users::AddBot2NickList(const char * sNick, const size_t szNickLen, const bo
 		if (m_pOpList == NULL)
 		{
 			m_pOpList = pOldBuf;
-			
+
 			AppendDebugLogFormat("[MEM] Cannot reallocate %u bytes in Users::AddBot2NickList for m_pOpList\n", m_ui32OpListSize + OPLISTSIZE + 1);
-			
+
 			return;
 		}
 		m_ui32OpListSize += OPLISTSIZE;
 	}
-	
+
 	memcpy(m_pOpList + m_ui32OpListLen - 1, sNick, szNickLen);
 	m_ui32OpListLen += (uint32_t)(szNickLen + 2);
-	
+
 	m_pOpList[m_ui32OpListLen - 3] = '$';
 	m_pOpList[m_ui32OpListLen - 2] = '$';
 	m_pOpList[m_ui32OpListLen - 1] = '|';
 	m_pOpList[m_ui32OpListLen] = '\0';
-	
+
 	m_ui32ZOpListLen = 0;
 }
 //---------------------------------------------------------------------------
@@ -498,22 +498,22 @@ void Users::Add2OpList(User * pUser)
 			m_pOpList = pOldBuf;
 			pUser->m_ui32BoolBits |= User::BIT_ERROR;
 			pUser->Close();
-			
+
 			AppendDebugLogFormat("[MEM] Cannot reallocate %u bytes in Users::Add2OpList for m_pOpList\n", m_ui32OpListSize + OPLISTSIZE + 1);
-			
+
 			return;
 		}
 		m_ui32OpListSize += OPLISTSIZE;
 	}
-	
+
 	memcpy(m_pOpList + m_ui32OpListLen - 1, pUser->m_sNick, pUser->m_ui8NickLen);
 	m_ui32OpListLen += (uint32_t)(pUser->m_ui8NickLen + 2);
-	
+
 	m_pOpList[m_ui32OpListLen - 3] = '$';
 	m_pOpList[m_ui32OpListLen - 2] = '$';
 	m_pOpList[m_ui32OpListLen - 1] = '|';
 	m_pOpList[m_ui32OpListLen] = '\0';
-	
+
 	m_ui32ZOpListLen = 0;
 }
 //---------------------------------------------------------------------------
@@ -525,24 +525,24 @@ void Users::DelFromNickList(const char * sNick, const bool bIsOp)
 	{
 		return;
 	}
-	
+
 	m_pNickList[9] = '$';
 	char * sFound = strstr(m_pNickList, ServerManager::m_pGlobalBuffer);
 	m_pNickList[9] = ' ';
-	
+
 	if (sFound != NULL)
 	{
 		memmove(sFound + 1, sFound + (iRet + 1), m_ui32NickListLen - ((sFound + iRet) - m_pNickList));
 		m_ui32NickListLen -= iRet;
 		m_ui32ZNickListLen = 0;
 	}
-	
+
 	if (!bIsOp) return;
-	
+
 	m_pOpList[7] = '$';
 	sFound = strstr(m_pOpList, ServerManager::m_pGlobalBuffer);
 	m_pOpList[7] = ' ';
-	
+
 	if (sFound != NULL)
 	{
 		memmove(sFound + 1, sFound + (iRet + 1), m_ui32OpListLen - ((sFound + iRet) - m_pOpList));
@@ -559,11 +559,11 @@ void Users::DelFromOpList(const char * sNick)
 	{
 		return;
 	}
-	
+
 	m_pOpList[7] = '$';
 	char * sFound = strstr(m_pOpList, ServerManager::m_pGlobalBuffer);
 	m_pOpList[7] = ' ';
-	
+
 	if (sFound != NULL)
 	{
 		memmove(sFound + 1, sFound + (iRet + 1), m_ui32OpListLen - ((sFound + iRet) - m_pOpList));
@@ -577,7 +577,7 @@ void Users::DelFromOpList(const char * sNick)
 void Users::SendChat2All(User * pUser, const char * sData, const size_t szChatLen, void * pQueueItem)
 {
 	UdpDebug::m_Ptr->Broadcast(sData, szChatLen);
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pUser, ProfileManager::NODEFLOODMAINCHAT) == false && SettingManager::m_Ptr->m_i16Shorts[SETSHORT_GLOBAL_MAIN_CHAT_ACTION] != 0)
 	{
 		if (m_ui16ChatMsgs == 0)
@@ -592,9 +592,9 @@ void Users::SendChat2All(User * pUser, const char * sData, const size_t szChatLe
 			m_ui64ChatMsgsTick = ServerManager::m_ui64ActualTick;
 			m_ui16ChatMsgs = 0;
 		}
-		
+
 		m_ui16ChatMsgs++;
-		
+
 		if (m_ui16ChatMsgs > (uint16_t)SettingManager::m_Ptr->m_i16Shorts[SETSHORT_GLOBAL_MAIN_CHAT_MESSAGES])
 		{
 			m_ui64ChatLockFromTick = ServerManager::m_ui64ActualTick;
@@ -604,11 +604,11 @@ void Users::SendChat2All(User * pUser, const char * sData, const size_t szChatLe
 				{
 					GlobalDataQueue::m_Ptr->StatusMessageFormat("Users::SendChat2All", "<%s> *** %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_GLOBAL_CHAT_FLOOD_DETECTED]);
 				}
-				
+
 				m_bChatLocked = true;
 			}
 		}
-		
+
 		if (m_bChatLocked == true)
 		{
 			if ((m_ui64ChatLockFromTick + SettingManager::m_Ptr->m_i16Shorts[SETSHORT_GLOBAL_MAIN_CHAT_TIMEOUT]) > ServerManager::m_ui64ActualTick)
@@ -626,7 +626,7 @@ void Users::SendChat2All(User * pUser, const char * sData, const size_t szChatLe
 					szLen += szChatLen;
 					ServerManager::m_pGlobalBuffer[szLen] = '\0';
 					GlobalDataQueue::m_Ptr->AddQueueItem(ServerManager::m_pGlobalBuffer, szLen, NULL, 0, GlobalDataQueue::CMD_OPS);
-					
+
 					return;
 				}
 			}
@@ -636,7 +636,7 @@ void Users::SendChat2All(User * pUser, const char * sData, const size_t szChatLe
 			}
 		}
 	}
-	
+
 	if (pQueueItem == NULL)
 	{
 		GlobalDataQueue::m_Ptr->AddQueueItem(sData, szChatLen, NULL, 0, GlobalDataQueue::CMD_CHAT);
@@ -659,19 +659,19 @@ void Users::Add2MyInfos(User * pUser)
 			m_pMyInfos = pOldBuf;
 			pUser->m_ui32BoolBits |= User::BIT_ERROR;
 			pUser->Close();
-			
+
 			AppendDebugLogFormat("[MEM] Cannot reallocate %u bytes in Users::Add2MyInfos\n", m_ui32MyInfosSize + MYINFOLISTSIZE + 1);
-			
+
 			return;
 		}
 		m_ui32MyInfosSize += MYINFOLISTSIZE;
 	}
-	
+
 	memcpy(m_pMyInfos + m_ui32MyInfosLen, pUser->m_sMyInfoShort, pUser->m_ui16MyInfoShortLen);
 	m_ui32MyInfosLen += pUser->m_ui16MyInfoShortLen;
-	
+
 	m_pMyInfos[m_ui32MyInfosLen] = '\0';
-	
+
 	m_ui32ZMyInfosLen = 0;
 #ifdef USE_FLYLINKDC_EXT_JSON
 	Add2ExtJSON(pUser);
@@ -742,19 +742,19 @@ void Users::Add2MyInfosTag(User * pUser)
 			m_pMyInfosTag = pOldBuf;
 			pUser->m_ui32BoolBits |= User::BIT_ERROR;
 			pUser->Close();
-			
+
 			AppendDebugLogFormat("[MEM] Cannot reallocate %u bytes in Users::Add2MyInfosTag\n", m_ui32MyInfosTagSize + MYINFOLISTSIZE + 1);
-			
+
 			return;
 		}
 		m_ui32MyInfosTagSize += MYINFOLISTSIZE;
 	}
-	
+
 	memcpy(m_pMyInfosTag + m_ui32MyInfosTagLen, pUser->m_sMyInfoLong, pUser->m_ui16MyInfoLongLen);
 	m_ui32MyInfosTagLen += pUser->m_ui16MyInfoLongLen;
-	
+
 	m_pMyInfosTag[m_ui32MyInfosTagLen] = '\0';
-	
+
 	m_ui32ZMyInfosTagLen = 0;
 #ifdef USE_FLYLINKDC_EXT_JSON
 	Add2ExtJSON(pUser);
@@ -792,9 +792,9 @@ void Users::AddBot2MyInfos(const char * sMyInfo)
 				if (m_pMyInfosTag == NULL)
 				{
 					m_pMyInfosTag = pOldBuf;
-					
+
 					AppendDebugLogFormat("[MEM] Cannot reallocate %u bytes for m_pMyInfosTag in Users::AddBot2MyInfos\n", m_ui32MyInfosTagSize + MYINFOLISTSIZE + 1);
-					
+
 					return;
 				}
 				m_ui32MyInfosTagSize += MYINFOLISTSIZE;
@@ -805,7 +805,7 @@ void Users::AddBot2MyInfos(const char * sMyInfo)
 			m_ui32ZMyInfosLen = 0;
 		}
 	}
-	
+
 	if (m_pMyInfos != NULL)
 	{
 		if (strstr(m_pMyInfos, sMyInfo) == NULL)
@@ -817,9 +817,9 @@ void Users::AddBot2MyInfos(const char * sMyInfo)
 				if (m_pMyInfos == NULL)
 				{
 					m_pMyInfos = pOldBuf;
-					
+
 					AppendDebugLogFormat("[MEM] Cannot reallocate %u bytes for m_pMyInfos in Users::AddBot2MyInfos\n", m_ui32MyInfosSize + MYINFOLISTSIZE + 1);
-					
+
 					return;
 				}
 				m_ui32MyInfosSize += MYINFOLISTSIZE;
@@ -846,7 +846,7 @@ void Users::DelBotFromMyInfos(const char * sMyInfo)
 			m_ui32ZMyInfosTagLen = 0;
 		}
 	}
-	
+
 	if (m_pMyInfos)
 	{
 		char * sMatch = strstr(m_pMyInfos,  sMyInfo);
@@ -867,7 +867,7 @@ void Users::Add2UserIP(User * pUser)
 	{
 		return;
 	}
-	
+
 	if (m_ui32UserIPListSize < m_ui32UserIPListLen + iRet)
 	{
 		char * pOldBuf = m_pUserIPList;
@@ -877,21 +877,21 @@ void Users::Add2UserIP(User * pUser)
 			m_pUserIPList = pOldBuf;
 			pUser->m_ui32BoolBits |= User::BIT_ERROR;
 			pUser->Close();
-			
+
 			AppendDebugLogFormat("[MEM] Cannot reallocate %u bytes in Users::Add2UserIP\n", m_ui32UserIPListSize + IPLISTSIZE + 1);
-			
+
 			return;
 		}
 		m_ui32UserIPListSize += IPLISTSIZE;
 	}
-	
+
 	memcpy(m_pUserIPList + m_ui32UserIPListLen - 1, ServerManager::m_pGlobalBuffer + 1, iRet - 1);
 	m_ui32UserIPListLen += iRet;
-	
+
 	m_pUserIPList[m_ui32UserIPListLen - 2] = '$';
 	m_pUserIPList[m_ui32UserIPListLen - 1] = '|';
 	m_pUserIPList[m_ui32UserIPListLen] = '\0';
-	
+
 	m_ui32ZUserIPListLen = 0;
 }
 //---------------------------------------------------------------------------
@@ -903,11 +903,11 @@ void Users::DelFromUserIP(User * pUser)
 	{
 		return;
 	}
-	
+
 	m_pUserIPList[7] = '$';
 	char * sFound = strstr(m_pUserIPList, ServerManager::m_pGlobalBuffer);
 	m_pUserIPList[7] = ' ';
-	
+
 	if (sFound != NULL)
 	{
 		memmove(sFound + 1, sFound + (iRet + 1), m_ui32UserIPListLen - ((sFound + iRet) - m_pUserIPList));
@@ -921,34 +921,34 @@ void Users::Add2RecTimes(User * pUser)
 {
 	time_t tmAccTime;
 	time(&tmAccTime);
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pUser, ProfileManager::NOUSRSAMEIP) == true || (tmAccTime - pUser->m_tLoginTime) >= SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MIN_RECONN_TIME])
 	{
 		return;
 	}
-	
+
 	RecTime * pNewRecTime = new (std::nothrow) RecTime(pUser->m_ui128IpHash);
-	
+
 	if (pNewRecTime == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot allocate pNewRecTime in Users::Add2RecTimes\n");
 		return;
 	}
-	
+
 	if (pUser->m_sNick)
 	{
 		pNewRecTime->m_sNick = pUser->m_sNick;
 	}
 	pNewRecTime->m_ui64DisConnTick = ServerManager::m_ui64ActualTick - (tmAccTime - pUser->m_tLoginTime);
 	pNewRecTime->m_ui32NickHash = pUser->m_ui32NickHash;
-	
+
 	pNewRecTime->m_pNext = m_pRecTimeList;
-	
+
 	if (m_pRecTimeList != NULL)
 	{
 		m_pRecTimeList->m_pPrev = pNewRecTime;
 	}
-	
+
 	m_pRecTimeList = pNewRecTime;
 }
 //---------------------------------------------------------------------------
@@ -957,12 +957,12 @@ bool Users::CheckRecTime(User * pUser)
 {
 	RecTime * pCur = NULL,
 	          * pNext = m_pRecTimeList;
-	          
+
 	while (pNext != NULL)
 	{
 		pCur = pNext;
 		pNext = pCur->m_pNext;
-		
+
 		// check expires...
 		if (pCur->m_ui64DisConnTick + SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MIN_RECONN_TIME] <= ServerManager::m_ui64ActualTick)
 		{
@@ -987,20 +987,20 @@ bool Users::CheckRecTime(User * pUser)
 				pCur->m_pPrev->m_pNext = pCur->m_pNext;
 				pCur->m_pNext->m_pPrev = pCur->m_pPrev;
 			}
-			
+
 			delete pCur;
 			continue;
 		}
-		
+
 		if (pCur->m_ui32NickHash == pUser->m_ui32NickHash && memcmp(pCur->m_ui128IpHash, pUser->m_ui128IpHash, 16) == 0 && strcasecmp(pCur->m_sNick.c_str(), pUser->m_sNick) == 0)
 		{
 			pUser->SendFormat("Users::CheckRecTime", false, "<%s> %s %" PRIu64 " %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_PLEASE_WAIT],
 			                  (pCur->m_ui64DisConnTick + SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MIN_RECONN_TIME]) - ServerManager::m_ui64ActualTick, LanguageManager::m_Ptr->m_sTexts[LAN_SECONDS_BEFORE_RECONN]);
-			                  
+
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 //---------------------------------------------------------------------------

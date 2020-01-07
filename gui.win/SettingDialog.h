@@ -25,32 +25,32 @@
 
 class SettingDialog {
 public:
-    static SettingDialog * m_Ptr;
+	static SettingDialog * m_Ptr;
 
-    HWND m_hWndWindowItems[4];
+	HWND m_hWndWindowItems[4];
 
-    enum enmWindowItems {
-        WINDOW_HANDLE,
-        TV_TREE,
-        BTN_OK,
-        BTN_CANCEL
-    };
+	enum enmWindowItems {
+		WINDOW_HANDLE,
+		TV_TREE,
+		BTN_OK,
+		BTN_CANCEL
+	};
 
-    SettingDialog();
-    ~SettingDialog();
+	SettingDialog();
+	~SettingDialog();
 
-    static LRESULT CALLBACK StaticSettingDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK StaticSettingDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	void DoModal(HWND hWndParent);
 private:
-    SettingPage * m_SettingPages[12];
+	SettingPage * m_SettingPages[12];
 
-    SettingDialog(const SettingDialog&) = delete;
-    const SettingDialog& operator=(const SettingDialog&) = delete;
+	SettingDialog(const SettingDialog&) = delete;
+	const SettingDialog& operator=(const SettingDialog&) = delete;
 
-    LRESULT SettingDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT SettingDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-    void OnSelChanged();
+	void OnSelChanged();
 };
 //------------------------------------------------------------------------------
 

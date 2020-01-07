@@ -44,7 +44,7 @@ static int GetCountryCode(lua_State * pLua)
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	if (lua_type(pLua, 1) != LUA_TSTRING)
 	{
 		luaL_error(pLua, "bad argument to 'GetCountryCode' (string expected, got %s)", lua_typename(pLua, lua_type(pLua, 1)));
@@ -52,25 +52,25 @@ static int GetCountryCode(lua_State * pLua)
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	size_t szLen;
 	const char * sIP = lua_tolstring(pLua, 1, &szLen);
-	
+
 	Hash128 ui128Hash;
-	
+
 	if (szLen == 0 || HashIP(sIP, ui128Hash) == false)
 	{
 		lua_settop(pLua, 0);
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	const char * sCountry = IpP2Country::m_Ptr->Find(ui128Hash, false);
-	
+
 	lua_settop(pLua, 0);
-	
+
 	lua_pushlstring(pLua, sCountry, 2);
-	
+
 	return 1;
 }
 //------------------------------------------------------------------------------
@@ -84,22 +84,22 @@ static int GetCountryName(lua_State * pLua)
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	const char * sCountry;
-	
+
 	if (lua_type(pLua, 1) == LUA_TSTRING)
 	{
 		size_t szLen;
 		const char * sIP = lua_tolstring(pLua, 1, &szLen);
-		
+
 		Hash128 ui128Hash;
-		
+
 		// alex82 ... Определяем страну по коду
 		if (szLen == 2)
 		{
 			lua_settop(pLua, 0);
 			lua_pushstring(pLua, IpP2Country::m_Ptr->GetCountryName(sIP));
-			
+
 			return 1;
 		}
 		else if (szLen == 0 || HashIP(sIP, ui128Hash) == false)
@@ -108,7 +108,7 @@ static int GetCountryName(lua_State * pLua)
 			lua_pushnil(pLua);
 			return 1;
 		}
-		
+
 		sCountry = IpP2Country::m_Ptr->Find(ui128Hash, true);
 	}
 	else if (lua_type(pLua, 1) == LUA_TTABLE)
@@ -120,7 +120,7 @@ static int GetCountryName(lua_State * pLua)
 			lua_pushnil(pLua);
 			return 1;
 		}
-		
+
 		sCountry = IpP2Country::m_Ptr->GetCountry(u->m_ui8Country, true);
 	}
 	else
@@ -130,11 +130,11 @@ static int GetCountryName(lua_State * pLua)
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	lua_settop(pLua, 0);
-	
+
 	lua_pushstring(pLua, sCountry);
-	
+
 	return 1;
 }
 //------------------------------------------------------------------------------
@@ -147,9 +147,9 @@ static int Reload(lua_State * pLua)
 		lua_settop(pLua, 0);
 		return 0;
 	}
-	
+
 	IpP2Country::m_Ptr->Reload();
-	
+
 	return 0;
 }
 //------------------------------------------------------------------------------

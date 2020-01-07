@@ -24,30 +24,30 @@
 
 class AboutDialog {
 public:
-    AboutDialog();
-    ~AboutDialog();
+	AboutDialog();
+	~AboutDialog();
 
-    static LRESULT CALLBACK StaticAboutDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK StaticAboutDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	void DoModal(HWND hWndParent);
 private:
-    HICON m_hSpider, m_hLua;
+	HICON m_hSpider, m_hLua;
 
-    HFONT m_hBigFont;
+	HFONT m_hBigFont;
 
-    HWND m_hWndWindowItems[4];
+	HWND m_hWndWindowItems[4];
 
-    enum enmWindowItems {
-        WINDOW_HANDLE,
-        LBL_PTOKAX_VERSION,
-        LBL_LUA_VERSION,
-        REDT_ABOUT
-    };
+	enum enmWindowItems {
+		WINDOW_HANDLE,
+		LBL_PTOKAX_VERSION,
+		LBL_LUA_VERSION,
+		REDT_ABOUT
+	};
 
-    AboutDialog(const AboutDialog&) = delete;
-    const AboutDialog& operator=(const AboutDialog&) = delete;
+	AboutDialog(const AboutDialog&) = delete;
+	const AboutDialog& operator=(const AboutDialog&) = delete;
 
-    LRESULT AboutDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT AboutDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 };
 //------------------------------------------------------------------------------
 

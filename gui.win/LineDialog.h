@@ -23,27 +23,27 @@
 
 class LineDialog {
 public:
-    explicit LineDialog(void (*pOnOkFunction)(char * sLine, const int iLen));
-    ~LineDialog();
+	explicit LineDialog(void (*pOnOkFunction)(char * sLine, const int iLen));
+	~LineDialog();
 
-    static LRESULT CALLBACK StaticLineDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK StaticLineDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	void DoModal(HWND hWndParent, char * sCaption, char * sLine);
 private:
-    HWND m_hWndWindowItems[5];
+	HWND m_hWndWindowItems[5];
 
-    enum enmWindowItems {
-        WINDOW_HANDLE,
-        GB_LINE,
-        EDT_LINE,
-        BTN_OK,
-        BTN_CANCEL
-    };
+	enum enmWindowItems {
+		WINDOW_HANDLE,
+		GB_LINE,
+		EDT_LINE,
+		BTN_OK,
+		BTN_CANCEL
+	};
 
-    LineDialog(const LineDialog&) = delete;
-    const LineDialog& operator=(const LineDialog&) = delete;
+	LineDialog(const LineDialog&) = delete;
+	const LineDialog& operator=(const LineDialog&) = delete;
 
-    LRESULT LineDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT LineDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 };
 //------------------------------------------------------------------------------
 

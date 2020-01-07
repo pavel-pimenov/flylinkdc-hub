@@ -27,35 +27,35 @@ private:
 	struct ReservedNick
 	{
 		ReservedNick * m_pPrev, * m_pNext;
-		
+
 		char * m_sNick;
-		
+
 		uint32_t m_ui32Hash;
-		
+
 		bool m_bFromScript;
-		
+
 		ReservedNick();
 		~ReservedNick();
-		
+
 		static ReservedNick * CreateReservedNick(const char * sNewNick, uint32_t m_ui32NickHash);
-		
+
 		DISALLOW_COPY_AND_ASSIGN(ReservedNick);
 	};
-	
+
 	ReservedNick * m_pReservedNicks;
-	
+
 	DISALLOW_COPY_AND_ASSIGN(ReservedNicksManager);
-	
-	
+
+
 	void Load();
 	void Save() const;
 	void LoadXML();
 public:
 	static ReservedNicksManager * m_Ptr;
-	
+
 	ReservedNicksManager();
 	~ReservedNicksManager();
-	
+
 	bool CheckReserved(const char * sNick, const uint32_t ui32Hash) const;
 	void AddReservedNick(const char * sNick, const bool bFromScript = false);
 	void DelReservedNick(const char * sNick, const bool bFromScript = false);

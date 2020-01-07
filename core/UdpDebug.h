@@ -29,61 +29,61 @@ extern bool g_isUseSyslog;
 
 class UdpDebug
 {
-	private:
-		char * sDebugBuffer, * sDebugHead;
-		
-		struct UdpDbgItem
-		{
-			sockaddr_storage sas_to;
-			
-			UdpDbgItem * m_pPrev, * m_pNext;
-			
-			std::string m_sNick;
+private:
+	char * sDebugBuffer, * sDebugHead;
+
+	struct UdpDbgItem
+	{
+		sockaddr_storage sas_to;
+
+		UdpDbgItem * m_pPrev, * m_pNext;
+
+		std::string m_sNick;
 #ifdef _WIN32
-			SOCKET s;
+		SOCKET s;
 #else
-			int s;
+		int s;
 #endif
-			
-			int sas_len;
-			
-			uint32_t ui32Hash;
-			
-			bool bIsScript, bAllData;
-			
-			UdpDbgItem();
-			~UdpDbgItem();
-			DISALLOW_COPY_AND_ASSIGN(UdpDbgItem);
-		};
-		DISALLOW_COPY_AND_ASSIGN(UdpDebug);
-		
-		void CreateBuffer();
-		void DeleteBuffer();
-	public:
-		static UdpDebug * m_Ptr;
-		
-		UdpDbgItem * pDbgItemList;
-		
-		UdpDebug();
-		~UdpDebug();
-		
-		void Broadcast(const std::string& p_msg) const
+
+		int sas_len;
+
+		uint32_t ui32Hash;
+
+		bool bIsScript, bAllData;
+
+		UdpDbgItem();
+		~UdpDbgItem();
+		DISALLOW_COPY_AND_ASSIGN(UdpDbgItem);
+	};
+	DISALLOW_COPY_AND_ASSIGN(UdpDebug);
+
+	void CreateBuffer();
+	void DeleteBuffer();
+public:
+	static UdpDebug * m_Ptr;
+
+	UdpDbgItem * pDbgItemList;
+
+	UdpDebug();
+	~UdpDebug();
+
+	void Broadcast(const std::string& p_msg) const
+	{
+		if (!p_msg.empty())
 		{
-			if (!p_msg.empty())
-			{
-				Broadcast(p_msg.c_str(), p_msg.size());
-			}
+			Broadcast(p_msg.c_str(), p_msg.size());
 		}
-		void Broadcast(const char * sMsg, const size_t szMsgLen) const;
-		void BroadcastFormat(const char * sFormatMsg, ...) const;
-		bool New(User * pUser, const uint16_t ui16Port);
-		bool New(const char * sIP, const uint16_t ui16Port, const bool bAllData, const char * sScriptName);
-		bool Remove(User * pUser);
-		void Remove(const char * sScriptName);
-		bool CheckUdpSub(User * pUser, const bool bSendMsg = false) const;
-		void Send(const char * sScriptName, const char * sMessage, const size_t szMsgLen) const;
-		void Cleanup();
-		void UpdateHubName();
+	}
+	void Broadcast(const char * sMsg, const size_t szMsgLen) const;
+	void BroadcastFormat(const char * sFormatMsg, ...) const;
+	bool New(User * pUser, const uint16_t ui16Port);
+	bool New(const char * sIP, const uint16_t ui16Port, const bool bAllData, const char * sScriptName);
+	bool Remove(User * pUser);
+	void Remove(const char * sScriptName);
+	bool CheckUdpSub(User * pUser, const bool bSendMsg = false) const;
+	void Send(const char * sScriptName, const char * sMessage, const size_t szMsgLen) const;
+	void Cleanup();
+	void UpdateHubName();
 };
 //---------------------------------------------------------------------------
 

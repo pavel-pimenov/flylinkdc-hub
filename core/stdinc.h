@@ -112,7 +112,7 @@
 #define ModString " / Alex82 Mod's support v.04 (part.)"
 
 #ifndef USE_FLYLINKDC_EXT_JSON
-  #define USE_FLYLINKDC_EXT_JSON
+#define USE_FLYLINKDC_EXT_JSON
 #endif
 
 #ifdef USE_FLYLINKDC_EXT_JSON
@@ -120,7 +120,7 @@ const char g_sPtokaXTitle[] = "PtokaX + JSON DC Hub for FlylinkDC++ " PtokaXVers
 #else
 const char g_sPtokaXTitle[] = "PtokaX DC Hub for FlylinkDC++" PtokaXVersionString
 #endif // USE_FLYLINKDC_EXT_JSON
-			" [build " BUILD_NUMBER "] " ModString;
+                              " [build " BUILD_NUMBER "] " ModString;
 #ifdef _WIN32
 #define strcasecmp stricmp
 #define strncasecmp strnicmp
@@ -129,9 +129,9 @@ const char g_sPtokaXTitle[] = "PtokaX DC Hub for FlylinkDC++" PtokaXVersionStrin
 // http://stackoverflow.com/questions/20026445/editing-googles-c-disallow-copy-and-assign-preprocessor-macro-for-c11-move
 //
 #define DISALLOW_COPY_AND_ASSIGN(TypeName) \
-	private:                   \
-	TypeName(const TypeName&);                 \
-	void operator=(const TypeName&)
+    private:                   \
+    TypeName(const TypeName&);                 \
+    void operator=(const TypeName&)
 
 /*
 //---------------------------------------------------------------------------

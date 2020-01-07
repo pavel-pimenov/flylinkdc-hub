@@ -31,9 +31,9 @@ struct User; // needed for next struct, and next struct must be defined before u
 struct DcCommand
 {
 	User * m_pUser;
-	
+
 	char * m_sCommand;
-	
+
 	uint32_t m_ui32CommandLen;
 };
 //---------------------------------------------------------------------------
@@ -42,13 +42,13 @@ struct UserBan
 {
 	UserBan();
 	~UserBan();
-	
+
 	char * m_sMessage;
-	
+
 	uint32_t m_ui32Len, m_ui32NickHash;
-	
+
 	static UserBan * CreateUserBan(const char * sMess, const uint32_t ui32MessLen, const uint32_t ui32Hash);
-	
+
 	DISALLOW_COPY_AND_ASSIGN(UserBan);
 };
 //---------------------------------------------------------------------------
@@ -58,13 +58,13 @@ struct LoginLogout
 	LoginLogout();
 	~LoginLogout();
 	void Clean();
-	
+
 	uint64_t m_ui64LogonTick, m_ui64IPv4CheckTick;
-	
+
 	UserBan * m_pBan;
-	
+
 	char * m_pBuffer;
-	
+
 	uint32_t m_ui32ToCloseLoops, m_ui32UserConnectedLen;
 	DISALLOW_COPY_AND_ASSIGN(LoginLogout);
 };
@@ -103,16 +103,16 @@ struct PrcsdUsrCmd
 		CHAT,
 		TO_OP_CHAT
 	};
-	
+
 	PrcsdUsrCmd * m_pNext;
-	
+
 	void * m_pPtr;
-	
+
 	char * m_sCommand;
-	
+
 	uint32_t m_ui32Len;
 	uint8_t m_ui8Type;
-	
+
 #ifdef FLYLINKDC_USE_STAT_RELOCATION
 	uint32_t m_ui32LenMax;
 	uint32_t m_ui32CountRelocation;
@@ -127,7 +127,7 @@ struct PrcsdUsrCmd
 #else
 	void stat() {}
 #endif
-	
+
 	DISALLOW_COPY_AND_ASSIGN(PrcsdUsrCmd);
 };
 //---------------------------------------------------------------------------
@@ -139,14 +139,14 @@ struct User; // needed for next struct, and next struct must be defined before u
 struct PrcsdToUsrCmd
 {
 	PrcsdToUsrCmd() : m_pNext(NULL), m_pToUser(NULL), m_sCommand(NULL), m_ui32Len(0), m_ui32PmCount(0), m_ui32Loops(0) { }
-	
+
 	PrcsdToUsrCmd * m_pNext;
-	
+
 	User * m_pToUser;
-	
+
 	char * m_sCommand;
 	std::string m_nick;
-	
+
 	uint32_t m_ui32Len, m_ui32PmCount, m_ui32Loops;
 	DISALLOW_COPY_AND_ASSIGN(PrcsdToUsrCmd);
 };
@@ -157,44 +157,44 @@ struct QzBuf; // for send queue
 struct User;
 class ExtJSONInfo
 {
-		std::string m_ExtJSON;
-		std::string m_ExtJSONOriginal;
-		uint64_t    m_iLastExtJSONSendTick;
-	public:
-		ExtJSONInfo() : m_iLastExtJSONSendTick(0)
+	std::string m_ExtJSON;
+	std::string m_ExtJSONOriginal;
+	uint64_t    m_iLastExtJSONSendTick;
+public:
+	ExtJSONInfo() : m_iLastExtJSONSendTick(0)
+	{
+	}
+	explicit ExtJSONInfo(const char* p_info) : m_iLastExtJSONSendTick(0)
+	{
+		if (p_info)
 		{
+			m_ExtJSON = p_info;
 		}
-		explicit ExtJSONInfo(const char* p_info) : m_iLastExtJSONSendTick(0)
-		{
-			if (p_info)
-			{
-				m_ExtJSON = p_info;
-			}
-		}
-		uint64_t   getLastExtJSONSendTick() const
-		{
-			return m_iLastExtJSONSendTick;
-		}
-		void   setLastExtJSONSendTick(uint64_t p_tick)
-		{
-			m_iLastExtJSONSendTick = p_tick;
-		}
-		bool ComparExtJSON(const char * sNewExtJSON, const uint16_t ui16NewExtJSONLen) const
-		{
-			if (!m_ExtJSONOriginal.empty())
-				return m_ExtJSONOriginal == std::string(sNewExtJSON, ui16NewExtJSONLen);
-			else
-				return m_ExtJSON == std::string(sNewExtJSON, ui16NewExtJSONLen);
-		}
-		void SetJSONOriginal(const std::string& p_json)
-		{
-			m_ExtJSON = p_json;
-			m_ExtJSONOriginal = p_json;
-		}
-		const std::string& GetExtJSONCommand() const
-		{
-			return m_ExtJSON;
-		}
+	}
+	uint64_t   getLastExtJSONSendTick() const
+	{
+		return m_iLastExtJSONSendTick;
+	}
+	void   setLastExtJSONSendTick(uint64_t p_tick)
+	{
+		m_iLastExtJSONSendTick = p_tick;
+	}
+	bool ComparExtJSON(const char * sNewExtJSON, const uint16_t ui16NewExtJSONLen) const
+	{
+		if (!m_ExtJSONOriginal.empty())
+			return m_ExtJSONOriginal == std::string(sNewExtJSON, ui16NewExtJSONLen);
+		else
+			return m_ExtJSON == std::string(sNewExtJSON, ui16NewExtJSONLen);
+	}
+	void SetJSONOriginal(const std::string& p_json)
+	{
+		m_ExtJSON = p_json;
+		m_ExtJSONOriginal = p_json;
+	}
+	const std::string& GetExtJSONCommand() const
+	{
+		return m_ExtJSON;
+	}
 };
 #endif
 
@@ -208,14 +208,14 @@ struct User
 	bool m_is_max_int8;
 	bool m_is_max_ip_len;
 	bool m_is_invalid_json;
-	
+
 	bool m_is_json_user;
-	
+
 	bool isBlockSearch() const
 	{
 		return m_is_bad_len_port || m_is_ddos_udp || m_is_bad_len_number_myinfo; // TODO || m_is_max_int8 + m_is_max_ip_len;
 	}
-	
+
 	uint64_t m_ui64SharedSize, m_ui64ChangedSharedSizeShort, m_ui64ChangedSharedSizeLong;
 	uint64_t m_ui64GetNickListsTick, m_ui64MyINFOsTick, m_ui64SearchsTick, m_ui64ChatMsgsTick;
 	uint64_t m_ui64PMsTick, m_ui64SameSearchsTick, m_ui64SamePMsTick, m_ui64SameChatsTick;
@@ -224,15 +224,15 @@ struct User
 	uint64_t m_ui64CTMsTick2, m_ui64RCTMsTick, m_ui64RCTMsTick2, m_ui64SRsTick;
 	uint64_t m_ui64SRsTick2, m_ui64RecvsTick, m_ui64RecvsTick2, m_ui64ChatIntMsgsTick;
 	uint64_t m_ui64PMsIntTick, m_ui64SearchsIntTick;
-	
+
 	time_t m_tLoginTime;
 	LoginLogout m_LogInOut;
-	
+
 	PrcsdToUsrCmd * m_pCmdToUserStrt, * m_pCmdToUserEnd;
-	
+
 	PrcsdUsrCmd * m_pCmdStrt, * m_pCmdEnd,
 	            * m_pCmdActive4Search, *m_pCmdActive6Search, *m_pCmdPassiveSearch;
-	            
+
 #ifdef USE_FLYLINKDC_EXT_JSON
 	void SendCharDelayedExtJSON();
 	void SetExtJSONOriginal(const char * sNewExtJSON, const uint16_t ui16NewExtJSONLen);
@@ -248,7 +248,7 @@ struct User
 		return m_is_json_user; // (m_ui32SupportBits & SUPPORTBIT_EXTJSON2) == SUPPORTBIT_EXTJSON2;
 	}
 #endif
-	
+
 
 
 
@@ -260,11 +260,11 @@ struct User
 
 
 	User * m_pPrev, * m_pNext, * m_pHashTablePrev, * m_pHashTableNext, * m_pHashIpTablePrev, * m_pHashIpTableNext;
-	
+
 	char * m_sNick;
-	
+
 #ifdef FLYLINKDC_USE_VERSION
-    char * m_sVersion;
+	char * m_sVersion;
 #endif
 	char * m_sMyInfoOriginal, * m_sMyInfoShort, * m_sMyInfoLong;
 	char * m_sDescription, * m_sTag, * m_sConnection, * m_sEmail;
@@ -273,27 +273,27 @@ struct User
 	char * m_pSendBuf, * m_pRecvBuf, * m_pSendBufHead;
 	char * m_sChangedDescriptionShort, * m_sChangedDescriptionLong, * m_sChangedTagShort, * m_sChangedTagLong;
 	char * m_sChangedConnectionShort, * m_sChangedConnectionLong, * m_sChangedEmailShort, * m_sChangedEmailLong;
-	
+
 	uint32_t m_ui32Recvs, m_ui32Recvs2;
-	
+
 	uint32_t m_ui32Hubs, m_ui32Slots, m_ui32OLimit, m_ui32LLimit, m_ui32DLimit, m_ui32NormalHubs, m_ui32RegHubs, m_ui32OpHubs;
 	uint32_t m_ui32SendCalled, m_ui32RecvCalled, m_ui32ReceivedPmCount, m_ui32SR, m_ui32DefloodWarnings;
 	uint32_t m_ui32BoolBits, m_ui32InfoBits, m_ui32SupportBits;
-	
+
 	uint32_t m_ui32SendBufLen, m_ui32RecvBufLen, m_ui32SendBufDataLen, m_ui32RecvBufDataLen;
-	
+
 	uint32_t m_ui32NickHash;
-	
+
 	int32_t m_i32Profile;
 
 	std::string m_LastSearch;
-	
+
 #ifdef _WIN32
 	SOCKET m_Socket;
 #else
 	int m_Socket;
 #endif
-	
+
 	uint16_t m_ui16MyInfoOriginalLen, m_ui16MyInfoShortLen, m_ui16MyInfoLongLen;
 	uint16_t m_ui16GetNickLists, m_ui16MyINFOs, m_ui16Searchs, m_ui16ChatMsgs, m_ui16PMs;
 	uint16_t m_ui16SameSearchs, m_ui16LastSearchLen, m_ui16SamePMs, m_ui16LastPMLen;
@@ -303,9 +303,9 @@ struct User
 	uint16_t m_ui16RCTMs, m_ui16RCTMs2, m_ui16SRs, m_ui16SRs2;
 	uint16_t m_ui16ChatIntMsgs, m_ui16PMsInt, m_ui16SearchsInt;
 	uint16_t m_ui16IpTableIdx;
-	
+
 	uint8_t m_ui8MagicByte;
-	
+
 	uint8_t m_ui8NickLen;
 	uint8_t m_ui8IpLen, m_ui8ConnectionLen, m_ui8DescriptionLen, m_ui8EmailLen, m_ui8TagLen, m_ui8ClientLen, m_ui8TagVersionLen;
 	uint8_t m_ui8Country, m_ui8State, m_ui8IPv4Len;
@@ -313,13 +313,13 @@ struct User
 	uint8_t m_ui8ChangedConnectionShortLen, m_ui8ChangedConnectionLongLen, m_ui8ChangedEmailShortLen, m_ui8ChangedEmailLongLen;
 
 	uint64_t m_last_recv_tick;
-	
+
 	uint8_t m_ui128IpHash[16];
-	
+
 	char m_sIP[40], m_sIPv4[16];
-	
+
 	char m_sModes[3];
-	
+
 	enum UserStates
 	{
 		STATE_SOCKET_ACCEPTED,
@@ -335,11 +335,11 @@ struct User
 		STATE_CLOSING,
 		STATE_REMME
 	};
-	
-    //  u->ui32BoolBits |= BIT_PRCSD_MYINFO;   <- set to 1
-    //  u->ui32BoolBits &= ~BIT_PRCSD_MYINFO;  <- set to 0
-    //  (u->ui32BoolBits & BIT_PRCSD_MYINFO) == BIT_PRCSD_MYINFO    <- test if is 1/true
-    enum UserBits {
+
+	//  u->ui32BoolBits |= BIT_PRCSD_MYINFO;   <- set to 1
+	//  u->ui32BoolBits &= ~BIT_PRCSD_MYINFO;  <- set to 0
+	//  (u->ui32BoolBits & BIT_PRCSD_MYINFO) == BIT_PRCSD_MYINFO    <- test if is 1/true
+	enum UserBits {
 		BIT_HASHED                     = 0x1,
 		BIT_ERROR                      = 0x2,
 		BIT_OPERATOR                   = 0x4,
@@ -369,7 +369,7 @@ struct User
 		BIT_PRCSD_EXT_JSON             = 0x20000000
 #endif
 	};
-	
+
 	enum UserInfoBits
 	{
 		INFOBIT_DESCRIPTION_CHANGED        = 0x1,
@@ -395,7 +395,7 @@ struct User
 		INFOBIT_HIDE_KEY                   = 0x20000,
 		// alex82 feature...
 	};
-	
+
 	enum UserSupportBits
 	{
 		SUPPORTBIT_NOGETINFO               = 0x1,
@@ -418,12 +418,12 @@ struct User
 		return (m_ui32SupportBits & SUPPORTBIT_ZPIPE) == SUPPORTBIT_ZPIPE;
 	}
 	void SendTextDelayed(const string & sText);
-	
+
 	void logInvalidUser(int p_id, const char * p_buffer, int p_len, bool p_is_send);
 
 #ifdef USE_FLYLINKDC_EXT_JSON
 	ExtJSONInfo * m_user_ext_info;
-	
+
 	void initExtJSON(const char* p_json)
 	{
 		if (m_user_ext_info == NULL)
@@ -432,7 +432,7 @@ struct User
 			m_ui32BoolBits |= User::BIT_PRCSD_EXT_JSON;
 		}
 	}
-	
+
 	uint64_t   getLastExtJSONSendTick() const
 	{
 		return m_user_ext_info ? m_user_ext_info->getLastExtJSONSendTick() : 0;
@@ -452,10 +452,10 @@ struct User
 	}
 	User();
 	~User();
-	
+
 	bool MakeLock();
 	bool DoRecv();
-	
+
 	void SendChar(const char * sText, const size_t szTextLen);
 	void SendCharDelayed(const std::string& p_Text)
 	{
@@ -464,14 +464,14 @@ struct User
 			SendCharDelayed(p_Text.c_str(), p_Text.size());
 		}
 	}
-	
+
 	void SendCharDelayed(const char * sText, const size_t szTextLen);
 	void SendFormat(const char * sFrom, const bool bDelayed, const char * sFormatMsg, ...);
 	void SendFormatCheckPM(const char * sFrom, const char * sOtherNick, const bool bDelayed, const char * sFormatMsg, ...);
-	
+
 	bool PutInSendBuf(const char * sText, const size_t szTxtLen);
 	bool Try2Send();
-	
+
 	void SetIP(const char * sIP);
 	void SetNick(const char * sNick, const uint8_t ui8NickLen);
 	void SetMyInfoOriginal(const char * sMyInfo, const uint16_t ui16MyInfoLen);
@@ -481,15 +481,15 @@ struct User
 	void SetLastSearch(const char * sData, const size_t szLen);
 	void SetBuffer(const char * sKickMsg, size_t szLen = 0);
 	void FreeBuffer();
-	
+
 	void Close(const bool bNoQuit = false);
-	
+
 	void Add2Userlist();
 	void AddUserList();
-	
+
 	bool GenerateMyInfoLong();
 	bool GenerateMyInfoShort();
-	
+
 	inline static void FreeInfo(char *& sInfo, uint8_t& p_len)
 	{
 		if (sInfo)
@@ -499,21 +499,21 @@ struct User
 		}
 		p_len = 0;
 	}
-	
+
 	void HasSuspiciousTag();
-	
+
 	bool ProcessRules();
-	
+
 	void AddPrcsdCmd(const uint8_t ui8Type, const char * sCommand, const size_t szCommandLen, User * pToUser, const bool bIsPm = false);
-	
+
 	void AddMeOrIPv4Check();
-	
+
 	static char * SetUserInfo(char * sOldData, uint8_t &ui8OldDataLen, const char * sNewData, const size_t szNewDataLen, const char * sDataName);
-	
+
 	void RemFromSendBuf(const char * sData, const uint32_t ui32Len, const uint32_t ui32SendBufLen);
-	
+
 	static void DeletePrcsdUsrCmd(PrcsdUsrCmd *& pCommand); //[+]FlylinkDC++
-	
+
 	DISALLOW_COPY_AND_ASSIGN(User);
 };
 //---------------------------------------------------------------------------

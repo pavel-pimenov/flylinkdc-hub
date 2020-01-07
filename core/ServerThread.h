@@ -28,51 +28,51 @@ private:
 	struct AntiConFlood
 	{
 		uint64_t m_ui64Time;
-		
+
 		AntiConFlood * m_pPrev, * m_pNext;
-		
+
 		int16_t m_ui16Hits;
-		
+
 		uint8_t m_ui128IpHash[16];
-		
+
 		explicit AntiConFlood(const uint8_t * pIpHash);
-		
+
 		DISALLOW_COPY_AND_ASSIGN(AntiConFlood);
 	};
-	
+
 	AntiConFlood * m_pAntiFloodList;
-	
+
 	CriticalSection m_csServerThread;
-	
+
 #ifdef _WIN32
 	HANDLE m_hThreadHandle;
-	
-	
+
+
 	SOCKET m_Server;
 #else
 	pthread_t m_ThreadId;
-	
+
 	pthread_mutex_t m_mtxServerThread;
-	
+
 	int m_Server;
 #endif
 	uint32_t m_ui32SuspendTime;
-	
+
 	int m_iAdressFamily;
-	
+
 	bool m_bTerminated;
-	
+
 	DISALLOW_COPY_AND_ASSIGN(ServerThread);
 public:
 	ServerThread * m_pPrev, * m_pNext;
-	
+
 	uint16_t m_ui16Port;
-	
+
 	bool m_bActive, m_bSuspended;
-	
+
 	ServerThread(const int iAddrFamily, const uint16_t ui16PortNumber);
 	~ServerThread();
-	
+
 	void Resume();
 	void Run();
 	void Close();

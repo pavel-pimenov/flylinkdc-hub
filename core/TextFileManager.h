@@ -29,24 +29,24 @@ private:
 	struct TextFile
 	{
 		TextFile * m_pPrev, * m_pNext;
-		
+
 		char * m_sCommand, *m_sText;
-		
+
 		TextFile();
 		~TextFile();
-		
+
 		DISALLOW_COPY_AND_ASSIGN(TextFile);
 	};
-	
+
 	TextFile * m_pTextFiles;
-	
+
 	DISALLOW_COPY_AND_ASSIGN(TextFilesManager);
 public:
 	static TextFilesManager * m_Ptr;
-	
+
 	TextFilesManager();
 	~TextFilesManager();
-	
+
 	bool ProcessTextFilesCmd(User * pUser, char * sCommand, const bool bFromPM = false) const;
 	void RefreshTextFiles();
 };

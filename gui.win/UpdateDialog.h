@@ -23,28 +23,28 @@
 
 class UpdateDialog {
 public:
-    static UpdateDialog * m_Ptr;
+	static UpdateDialog * m_Ptr;
 
-    UpdateDialog();
-    ~UpdateDialog();
+	UpdateDialog();
+	~UpdateDialog();
 
-    static LRESULT CALLBACK StaticUpdateDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK StaticUpdateDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	void DoModal(HWND hWndParent);
 	void Message(char * sData);
 	bool ParseData(char * sData, HWND hWndParent);
 private:
-    HWND m_hWndWindowItems[2];
+	HWND m_hWndWindowItems[2];
 
-    enum enmWindowItems {
-        WINDOW_HANDLE,
-        REDT_UPDATE
-    };
+	enum enmWindowItems {
+		WINDOW_HANDLE,
+		REDT_UPDATE
+	};
 
-    UpdateDialog(const UpdateDialog&) = delete;
-    const UpdateDialog& operator=(const UpdateDialog&) = delete;
+	UpdateDialog(const UpdateDialog&) = delete;
+	const UpdateDialog& operator=(const UpdateDialog&) = delete;
 
-    LRESULT UpdateDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT UpdateDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 };
 //------------------------------------------------------------------------------
 

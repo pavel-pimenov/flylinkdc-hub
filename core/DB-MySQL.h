@@ -29,24 +29,24 @@ class DBMySQL
 {
 private:
 	MYSQL * pDBHandle;
-	
+
 	bool bConnected;
-	
+
 	DBMySQL(const DBMySQL&);
 	const DBMySQL& operator=(const DBMySQL&);
-	
+
 	bool SendQueryResults(User * pUser, const bool &bFromPM, MYSQL_RES * pResult, uint64_t &ui64Rows);
 public:
 	static DBMySQL * mPtr;
-	
+
 	DBMySQL();
 	~DBMySQL();
-	
+
 	void UpdateRecord(User * pUser);
-	
+
 	bool SearchNick(char * sNick, const uint8_t &ui8NickLen, User * pUser, const bool &bFromPM);
 	bool SearchIP(char * sIP, User * pUser, const bool &bFromPM);
-	
+
 	void RemoveOldRecords(const uint16_t &ui16Days);
 };
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

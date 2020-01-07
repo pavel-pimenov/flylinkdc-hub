@@ -51,7 +51,7 @@ UDPThread::UDPThread() :
 bool UDPThread::Listen(const int iAddressFamily)
 {
 	m_Sock = socket(iAddressFamily, SOCK_DGRAM, IPPROTO_UDP);
-	
+
 #ifdef _WIN32
 	if (m_Sock == INVALID_SOCKET)
 	{
@@ -62,22 +62,22 @@ bool UDPThread::Listen(const int iAddressFamily)
 		AppendLog("[ERR] UDP Socket creation error.");
 		return false;
 	}
-	
+
 #ifndef _WIN32
 	int on = 1;
 	setsockopt(m_Sock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
 #endif
-	
+
 	sockaddr_storage sas;
 	memset(&sas, 0, sizeof(sockaddr_storage));
 	socklen_t sas_len;
-	
+
 	if (iAddressFamily == AF_INET6)
 	{
 		((struct sockaddr_in6 *)&sas)->sin6_family = AF_INET6;
 		((struct sockaddr_in6 *)&sas)->sin6_port = htons((unsigned short)atoi(SettingManager::m_Ptr->m_sTexts[SETTXT_UDP_PORT]));
 		sas_len = sizeof(struct sockaddr_in6);
-		
+
 		if (SettingManager::m_Ptr->m_bBools[SETBOOL_BIND_ONLY_SINGLE_IP] == true && ServerManager::m_sHubIP6[0] != '\0')
 		{
 #if defined(_WIN32) && !defined(_WIN64) && !defined(_WIN_IOT)
@@ -89,7 +89,7 @@ bool UDPThread::Listen(const int iAddressFamily)
 		else
 		{
 			((struct sockaddr_in6 *)&sas)->sin6_addr = in6addr_any;
-			
+
 			if (iAddressFamily == AF_INET6 && ServerManager::m_bIPv6DualStack == true)
 			{
 #ifdef _WIN32
@@ -107,7 +107,7 @@ bool UDPThread::Listen(const int iAddressFamily)
 		((struct sockaddr_in *)&sas)->sin_family = AF_INET;
 		((struct sockaddr_in *)&sas)->sin_port = htons((unsigned short)atoi(SettingManager::m_Ptr->m_sTexts[SETTXT_UDP_PORT]));
 		sas_len = sizeof(struct sockaddr_in);
-		
+
 		if (SettingManager::m_Ptr->m_bBools[SETBOOL_BIND_ONLY_SINGLE_IP] == true && ServerManager::m_sHubIP[0] != '\0')
 		{
 			((struct sockaddr_in *)&sas)->sin_addr.s_addr = inet_addr(ServerManager::m_sHubIP);
@@ -117,7 +117,7 @@ bool UDPThread::Listen(const int iAddressFamily)
 			((struct sockaddr_in *)&sas)->sin_addr.s_addr = INADDR_ANY;
 		}
 	}
-	
+
 #ifdef _WIN32
 	if (bind(m_Sock, (struct sockaddr *)&sas, sas_len) == SOCKET_ERROR)
 	{
@@ -129,7 +129,7 @@ bool UDPThread::Listen(const int iAddressFamily)
 #endif
 		return false;
 	}
-	
+
 	return true;
 }
 //---------------------------------------------------------------------------
@@ -138,7 +138,7 @@ UDPThread::~UDPThread()
 {
 #ifdef _WIN32
 	safe_closesocket(m_Sock);
-	
+
 	if (hThreadHandle != INVALID_HANDLE_VALUE)
 	{
 		CloseHandle(hThreadHandle);
@@ -160,7 +160,7 @@ static void* ExecuteUDP(void * pThread)
 {
 #endif
 	(reinterpret_cast<UDPThread *>(pThread))->Run();
-	
+
 	return 0;
 }
 //---------------------------------------------------------------------------
@@ -185,18 +185,18 @@ void UDPThread::Run()
 {
 	sockaddr_storage sas;
 	socklen_t sas_len = sizeof(sockaddr_storage);
-	
+
 	while (m_bTerminated == false)
 	{
 		int len = recvfrom(m_Sock, rcvbuf, sizeof(rcvbuf) - 1, 0, (struct sockaddr *)&sas, &sas_len);
-		
+
 		if (len < 5 || strncmp(rcvbuf, "$SR ", 4) != 0)
 		{
 			continue;
 		}
-		
+
 		rcvbuf[len] = '\0';
-		
+
 		// added ip check, we don't want fake $SR causing kick of innocent user...
 		EventQueue::m_Ptr->AddThread(EventQueue::EVENT_UDP_SR, rcvbuf, &sas);
 	}
@@ -236,7 +236,7 @@ UDPThread * UDPThread::Create(const int iAddressFamily)
 		AppendDebugLog("%s - [MEM] Cannot allocate pUDPThread in UDPThread::Create\n");
 		return NULL;
 	}
-	
+
 	if (pUDPThread->Listen(iAddressFamily) == true)
 	{
 		pUDPThread->Resume();

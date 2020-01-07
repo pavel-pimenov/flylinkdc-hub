@@ -25,54 +25,54 @@
 
 class SettingPageMyINFO : public SettingPage {
 public:
-    bool m_bUpdateNoTagMessage;
+	bool m_bUpdateNoTagMessage;
 
-    SettingPageMyINFO();
-    ~SettingPageMyINFO() { };
+	SettingPageMyINFO();
+	~SettingPageMyINFO() { };
 
-    bool CreateSettingPage(HWND hOwner);
+	bool CreateSettingPage(HWND hOwner);
 
-    void Save();
-    void GetUpdates(bool & /*bUpdatedHubNameWelcome*/, bool & /*bUpdatedHubName*/, bool & /*bUpdatedTCPPorts*/, bool & /*bUpdatedUDPPort*/,
-        bool & /*bUpdatedAutoReg*/, bool & /*bUpdatedMOTD*/, bool & /*bUpdatedHubSec*/, bool & /*bUpdatedRegOnlyMessage*/, bool & /*bUpdatedShareLimitMessage*/,
-        bool & /*bUpdatedSlotsLimitMessage*/, bool & /*bUpdatedHubSlotRatioMessage*/, bool & /*bUpdatedMaxHubsLimitMessage*/, bool & bUpdatedNoTagMessage,
-        bool & /*bUpdatedNickLimitMessage*/, bool & /*bUpdatedBotsSameNick*/, bool & /*bUpdatedBotNick*/, bool & /*bUpdatedBot*/, bool & /*bUpdatedOpChatNick*/,
-        bool & /*bUpdatedOpChat*/, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
-        bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/);
+	void Save();
+	void GetUpdates(bool & /*bUpdatedHubNameWelcome*/, bool & /*bUpdatedHubName*/, bool & /*bUpdatedTCPPorts*/, bool & /*bUpdatedUDPPort*/,
+	                bool & /*bUpdatedAutoReg*/, bool & /*bUpdatedMOTD*/, bool & /*bUpdatedHubSec*/, bool & /*bUpdatedRegOnlyMessage*/, bool & /*bUpdatedShareLimitMessage*/,
+	                bool & /*bUpdatedSlotsLimitMessage*/, bool & /*bUpdatedHubSlotRatioMessage*/, bool & /*bUpdatedMaxHubsLimitMessage*/, bool & bUpdatedNoTagMessage,
+	                bool & /*bUpdatedNickLimitMessage*/, bool & /*bUpdatedBotsSameNick*/, bool & /*bUpdatedBotNick*/, bool & /*bUpdatedBot*/, bool & /*bUpdatedOpChatNick*/,
+	                bool & /*bUpdatedOpChat*/, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
+	                bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/);
 
-    char * GetPageName();
-    void FocusLastItem();
+	char * GetPageName();
+	void FocusLastItem();
 private:
-    HWND m_hWndPageItems[21];
-    
-    enum enmPageItems {
-        GB_DESCRIPTION_TAG,
-        BTN_REPORT_SUSPICIOUS_TAG,
-        GB_NO_TAG_ACTION,
-        CB_NO_TAG_ACTION,
-        GB_NO_TAG_MESSAGE,
-        EDT_NO_TAG_MESSAGE,
-        GB_NO_TAG_REDIRECT,
-        EDT_NO_TAG_REDIRECT,
-        GB_MYINFO_PROCESSING,
-        LBL_ORIGINAL_MYINFO,
-        CB_ORIGINAL_MYINFO_ACTION,
-        GB_MODIFIED_MYINFO_OPTIONS,
-        BTN_REMOVE_DESCRIPTION,
-        BTN_REMOVE_TAG,
-        BTN_REMOVE_CONNECTION,
-        BTN_REMOVE_EMAIL,
-        BTN_MODE_TO_MYINFO,
-        BTN_MODE_TO_DESCRIPTION,
-        LBL_MINUTES_BEFORE_ACCEPT_NEW_MYINFO,
-        EDT_MINUTES_BEFORE_ACCEPT_NEW_MYINFO,
-        UD_MINUTES_BEFORE_ACCEPT_NEW_MYINFO
-    };
+	HWND m_hWndPageItems[21];
 
-    SettingPageMyINFO(const SettingPageMyINFO&) = delete;
-    const SettingPageMyINFO& operator=(const SettingPageMyINFO&) = delete;
+	enum enmPageItems {
+		GB_DESCRIPTION_TAG,
+		BTN_REPORT_SUSPICIOUS_TAG,
+		GB_NO_TAG_ACTION,
+		CB_NO_TAG_ACTION,
+		GB_NO_TAG_MESSAGE,
+		EDT_NO_TAG_MESSAGE,
+		GB_NO_TAG_REDIRECT,
+		EDT_NO_TAG_REDIRECT,
+		GB_MYINFO_PROCESSING,
+		LBL_ORIGINAL_MYINFO,
+		CB_ORIGINAL_MYINFO_ACTION,
+		GB_MODIFIED_MYINFO_OPTIONS,
+		BTN_REMOVE_DESCRIPTION,
+		BTN_REMOVE_TAG,
+		BTN_REMOVE_CONNECTION,
+		BTN_REMOVE_EMAIL,
+		BTN_MODE_TO_MYINFO,
+		BTN_MODE_TO_DESCRIPTION,
+		LBL_MINUTES_BEFORE_ACCEPT_NEW_MYINFO,
+		EDT_MINUTES_BEFORE_ACCEPT_NEW_MYINFO,
+		UD_MINUTES_BEFORE_ACCEPT_NEW_MYINFO
+	};
 
-    LRESULT SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	SettingPageMyINFO(const SettingPageMyINFO&) = delete;
+	const SettingPageMyINFO& operator=(const SettingPageMyINFO&) = delete;
+
+	LRESULT SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 };
 //------------------------------------------------------------------------------
 

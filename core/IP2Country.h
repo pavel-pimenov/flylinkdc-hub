@@ -27,26 +27,26 @@ private:
 	uint32_t * m_ui32RangeFrom, * m_ui32RangeTo;
 	uint8_t * m_ui8RangeCI, * m_ui8IPv6RangeCI;
 	uint8_t * m_ui128IPv6RangeFrom, * m_ui128IPv6RangeTo;
-	
+
 	uint32_t m_ui32Size, m_ui32IPv6Size;
-	
+
 	DISALLOW_COPY_AND_ASSIGN(IpP2Country);
 	void LoadIPv4();
 	void LoadIPv6();
 public:
 	static IpP2Country * m_Ptr;
-	
+
 	uint32_t m_ui32Count, m_ui32IPv6Count;
-	
+
 	IpP2Country();
 	~IpP2Country();
-	
+
 	const char * Find(const uint8_t * ui128IpHash, const bool bCountryName);
 	uint8_t Find(const uint8_t * ui128IpHash);
-	
+
 	static const char * GetCountry(const uint8_t ui8dx, const bool bCountryName);
 	static const char * GetCountryName(const char * sCode);
-	
+
 	void Reload();
 };
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

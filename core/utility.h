@@ -64,31 +64,31 @@ uint32_t HashNick(const char * sNick, const size_t szNickLen);
 
 class Hash128
 {
-		uint8_t m_ui128Hash[16];
-	public:
-		// Hash128(int ) // Fast;
-		// {
-		// }
-		Hash128()
-		{
-			memset(m_ui128Hash, 0, sizeof(m_ui128Hash));
-		}
-		void init(const uint8_t * ui128Hash)
-		{
-			memcpy(m_ui128Hash, ui128Hash, sizeof(m_ui128Hash));
-		}
-        operator uint8_t* ()
-		{
-			return m_ui128Hash;
-		}
-		const uint8_t* data() const
-		{
-			return m_ui128Hash;
-		}
-		bool compare(const uint8_t * ui128Hash) const
-		{
-			return memcmp(m_ui128Hash, ui128Hash, sizeof(m_ui128Hash)) == 0;
-		}
+	uint8_t m_ui128Hash[16];
+public:
+	// Hash128(int ) // Fast;
+	// {
+	// }
+	Hash128()
+	{
+		memset(m_ui128Hash, 0, sizeof(m_ui128Hash));
+	}
+	void init(const uint8_t * ui128Hash)
+	{
+		memcpy(m_ui128Hash, ui128Hash, sizeof(m_ui128Hash));
+	}
+	operator uint8_t* ()
+	{
+		return m_ui128Hash;
+	}
+	const uint8_t* data() const
+	{
+		return m_ui128Hash;
+	}
+	bool compare(const uint8_t * ui128Hash) const
+	{
+		return memcmp(m_ui128Hash, ui128Hash, sizeof(m_ui128Hash)) == 0;
+	}
 };
 
 bool HashIP(const char * sIP, uint8_t * ui128IpHash);

@@ -50,83 +50,83 @@ private:
 	struct QueueItem
 	{
 		QueueItem * m_pNext;
-		
+
 		std::string m_pCommand[2];
-		
+
 		uint8_t m_ui8CommandType;
-		
+
 		QueueItem() : m_pNext(NULL), m_ui8CommandType(0) { }
-		
+
 		DISALLOW_COPY_AND_ASSIGN(QueueItem);
 	};
-	
+
 	struct GlobalQueue : public CFlyBuffer
 	{
 		GlobalQueue * m_pNext;
-		
+
 		bool m_bCreated, m_bZlined;
 		char * m_pZbuffer;
-		
+
 		uint32_t m_szZlen, m_szZsize;
-		
+
 		GlobalQueue() : m_pNext(NULL), m_bCreated(false), m_bZlined(false),m_pZbuffer(NULL),m_szZlen(0), m_szZsize(0) { }
-		
+
 		DISALLOW_COPY_AND_ASSIGN(GlobalQueue);
 	};
-	
+
 	struct OpsQueue : public CFlyBuffer
 	{
 	};
-	
+
 	struct IPsQueue : public CFlyBuffer
 	{
 		bool m_bHaveDollars;
-		
+
 		IPsQueue() : m_bHaveDollars(false) { }
-		
+
 		DISALLOW_COPY_AND_ASSIGN(IPsQueue);
 	};
-	
+
 	struct SingleDataItem
 	{
 		SingleDataItem * m_pPrev, * m_pNext;
-		
+
 		User * m_pFromUser;
-		
+
 		char * m_pData;
-		
+
 		size_t m_szDataLen;
-		
+
 		int32_t m_i32Profile;
-		
+
 		uint8_t m_ui8Type;
-		
+
 		SingleDataItem() : m_pPrev(NULL), m_pNext(NULL), m_pFromUser(NULL), m_pData(NULL), m_szDataLen(0), m_i32Profile(0), m_ui8Type(0) { }
-		
+
 		DISALLOW_COPY_AND_ASSIGN(SingleDataItem);
 	};
-	
+
 	GlobalQueue m_GlobalQueues[144];
-	
+
 	OpsQueue m_OpListQueue;
 	IPsQueue m_UserIPQueue;
-	
+
 	GlobalQueue * m_pCreatedGlobalQueues;
-	
+
 	QueueItem * m_pNewQueueItems[2], * m_pQueueItems;
 	SingleDataItem * m_pNewSingleItems[2];
-	
+
 	DISALLOW_COPY_AND_ASSIGN(GlobalDataQueue);
-	
+
 	static void AddDataToQueue(GlobalQueue &pQueue, const char * sData, const size_t szLen);
 	static void AddDataToQueue(GlobalQueue &pQueue, const std::string& sData);
 public:
 	static GlobalDataQueue * m_Ptr;
-	
+
 	SingleDataItem * m_pSingleItems;
-	
+
 	bool m_bHaveItems;
-	
+
 	enum
 	{
 		CMD_HUBNAME,
@@ -148,7 +148,7 @@ public:
 		CMD_EXTJSON
 #endif
 	};
-	
+
 	enum
 	{
 		BIT_LONG_MYINFO                     = 0x1,
@@ -164,7 +164,7 @@ public:
 		BIT_ALL_SEARCHES_IPV6_ACTIVE_IPV4   = 0x400,
 		BIT_ACTIVE_SEARCHES_IPV6_ALL_IPV4   = 0x800,
 	};
-	
+
 	enum
 	{
 		SI_PM2ALL,
@@ -173,10 +173,10 @@ public:
 		SI_TOPROFILE,
 		SI_PM2PROFILE,
 	};
-	
+
 	GlobalDataQueue();
 	~GlobalDataQueue();
-	
+
 	void AddQueueItem(const char * sCommand1, const size_t szLen1, const char * sCommand2, const size_t szLen2, const uint8_t ui8CmdType);
 	void OpListStore(const char * sNick);
 	void UserIPStore(User * pUser);

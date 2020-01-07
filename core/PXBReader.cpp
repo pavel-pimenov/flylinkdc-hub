@@ -41,7 +41,7 @@ PXBReader::~PXBReader()
 	free(m_ui16ItemLengths);
 	free(m_sItemIdentifiers);
 	free(m_ui8ItemValues);
-	
+
 	if (m_pFile != NULL)
 	{
 		fclose(m_pFile);
@@ -56,40 +56,40 @@ bool PXBReader::OpenFileRead(const char * sFilename, const uint8_t ui8SubItems)
 	{
 		return false;
 	}
-	
+
 	m_pFile = fopen(sFilename, "rb");
-	
+
 	if (m_pFile == NULL)
 	{
 		return false;
 	}
-	
+
 	fseek(m_pFile, 0, SEEK_END);
 	long lFileLen = ftell(m_pFile);
-	
+
 	if (lFileLen <= 0)
 	{
 		return false;
 	}
-	
+
 	fseek(m_pFile, 0, SEEK_SET);
-	
+
 	m_szRemainingSize = PTOKAX_GLOBAL_BUFF_SIZE;
-	
+
 	if ((size_t)lFileLen < m_szRemainingSize)
 	{
 		m_szRemainingSize = lFileLen;
-		
+
 		m_bFullRead = true;
 	}
-	
+
 	if (fread(ServerManager::m_pGlobalBuffer, 1, m_szRemainingSize, m_pFile) != m_szRemainingSize)
 	{
 		return false;
 	}
-	
+
 	m_pActualPosition = ServerManager::m_pGlobalBuffer;
-	
+
 	return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -97,14 +97,14 @@ bool PXBReader::OpenFileRead(const char * sFilename, const uint8_t ui8SubItems)
 void PXBReader::ReadNextFilePart()
 {
 	memmove(ServerManager::m_pGlobalBuffer, m_pActualPosition, m_szRemainingSize);
-	
+
 	size_t szReadSize = fread(ServerManager::m_pGlobalBuffer + m_szRemainingSize, 1, PTOKAX_GLOBAL_BUFF_SIZE - m_szRemainingSize, m_pFile);
-	
+
 	if (szReadSize != (PTOKAX_GLOBAL_BUFF_SIZE - m_szRemainingSize))
 	{
 		m_bFullRead = true;
 	}
-	
+
 	m_pActualPosition = ServerManager::m_pGlobalBuffer;
 	m_szRemainingSize += szReadSize;
 }
@@ -116,10 +116,10 @@ bool PXBReader::ReadNextItem(const uint16_t * pExpectedIdentificators, const uin
 	{
 		return false;
 	}
-	
+
 	memset(m_pItemDatas, 0, m_ui8AllocatedSize * sizeof(void *));
 	memset(m_ui16ItemLengths, 0, m_ui8AllocatedSize * sizeof(uint16_t));
-	
+
 	if (m_szRemainingSize < 4)
 	{
 		if (m_bFullRead == true)
@@ -129,16 +129,16 @@ bool PXBReader::ReadNextItem(const uint16_t * pExpectedIdentificators, const uin
 		else     // read next part of file
 		{
 			ReadNextFilePart();
-			
+
 			if (m_szRemainingSize < 4)
 			{
 				return false;
 			}
 		}
 	}
-	
+
 	uint32_t ui32ItemSize = ntohl(*((uint32_t *)m_pActualPosition));
-	
+
 	if (ui32ItemSize > m_szRemainingSize)
 	{
 		if (m_bFullRead == true)
@@ -148,36 +148,36 @@ bool PXBReader::ReadNextItem(const uint16_t * pExpectedIdentificators, const uin
 		else     // read next part of file
 		{
 			ReadNextFilePart();
-			
+
 			if (ui32ItemSize > m_szRemainingSize)
 			{
 				return false;
 			}
 		}
 	}
-	
+
 	m_pActualPosition += 4;
 	m_szRemainingSize -= 4;
 	ui32ItemSize -= 4;
-	
+
 	uint8_t ui8ActualItem = 0;
-	
+
 	uint16_t ui16SubItemSize = 0;
-	
+
 	while (ui32ItemSize > 0)
 	{
 		ui16SubItemSize = ntohs(*((uint16_t *)m_pActualPosition));
-		
+
 		if (ui16SubItemSize > ui32ItemSize)
 		{
 			return false;
 		}
-		
+
 		if (ui8ActualItem < ui8ExpectedSubItems && pExpectedIdentificators[ui8ActualItem] == *((uint16_t *)(m_pActualPosition + 2)))
 		{
 			m_ui16ItemLengths[ui8ActualItem] = (ui16SubItemSize - 4);
 			m_pItemDatas[ui8ActualItem] = (m_pActualPosition + 4);
-			
+
 			ui8ActualItem++;
 		}
 		else     // for compatibility with newer versions...
@@ -188,17 +188,17 @@ bool PXBReader::ReadNextItem(const uint16_t * pExpectedIdentificators, const uin
 				{
 					m_ui16ItemLengths[ui8i] = (ui16SubItemSize - 4);
 					m_pItemDatas[ui8i] = (m_pActualPosition + 4);
-					
+
 					ui8ActualItem++;
 				}
 			}
 		}
-		
+
 		m_pActualPosition += ui16SubItemSize;
 		m_szRemainingSize -= ui16SubItemSize;
 		ui32ItemSize -= ui16SubItemSize;
 	}
-	
+
 	if (ui8ActualItem != ui8ExpectedSubItems)
 	{
 		return false;
@@ -216,18 +216,18 @@ bool PXBReader::OpenFileSave(const char * sFilename, const uint8_t ui8Size)
 	{
 		return false;
 	}
-	
+
 	m_pFile = fopen(sFilename, "wb");
-	
+
 	if (m_pFile == NULL)
 	{
 		return false;
 	}
-	
+
 	m_szRemainingSize = PTOKAX_GLOBAL_BUFF_SIZE;
-	
+
 	m_pActualPosition = ServerManager::m_pGlobalBuffer;
-	
+
 	return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -235,50 +235,50 @@ bool PXBReader::OpenFileSave(const char * sFilename, const uint8_t ui8Size)
 bool PXBReader::WriteNextItem(const uint32_t ui32Length, const uint8_t ui8SubItems)
 {
 	uint32_t ui32ItemLength = ui32Length + 4 + (4 * ui8SubItems);
-	
+
 	if (ui32ItemLength > m_szRemainingSize)
 	{
 		fwrite(ServerManager::m_pGlobalBuffer, 1, m_pActualPosition - ServerManager::m_pGlobalBuffer, m_pFile);
 		m_pActualPosition = ServerManager::m_pGlobalBuffer;
 		m_szRemainingSize = PTOKAX_GLOBAL_BUFF_SIZE;
 	}
-	
+
 	(*((uint32_t *)m_pActualPosition)) = htonl(ui32ItemLength);
 	m_pActualPosition += 4;
 	m_szRemainingSize -= 4;
-	
+
 	for (uint8_t ui8i = 0; ui8i < ui8SubItems; ui8i++)
 	{
 		(*((uint16_t *)(m_pActualPosition))) = htons(m_ui16ItemLengths[ui8i] + 4);
-		
+
 		m_pActualPosition[2] = m_sItemIdentifiers[(ui8i * 2)];
 		m_pActualPosition[3] = m_sItemIdentifiers[(ui8i * 2) + 1];
-		
+
 		switch (m_ui8ItemValues[ui8i])
 		{
-			case PXB_BYTE:
-				m_pActualPosition[4] = (m_pItemDatas[ui8i] == 0 ? '0' : '1');
-				break;
-			case PXB_TWO_BYTES:
-				(*((uint16_t *)(m_pActualPosition + 4))) = htons(*((uint16_t *)m_pItemDatas[ui8i]));
-				break;
-			case PXB_FOUR_BYTES:
-				(*((uint32_t *)(m_pActualPosition + 4))) = htonl(*((uint32_t *)m_pItemDatas[ui8i]));
-				break;
-			case PXB_EIGHT_BYTES:
-				(*((uint64_t *)(m_pActualPosition + 4))) = htobe64(*((uint64_t *)m_pItemDatas[ui8i]));
-				break;
-			case PXB_STRING:
-				memcpy(m_pActualPosition + 4, m_pItemDatas[ui8i], m_ui16ItemLengths[ui8i]);
-				break;
-			default:
-				break;
+		case PXB_BYTE:
+			m_pActualPosition[4] = (m_pItemDatas[ui8i] == 0 ? '0' : '1');
+			break;
+		case PXB_TWO_BYTES:
+			(*((uint16_t *)(m_pActualPosition + 4))) = htons(*((uint16_t *)m_pItemDatas[ui8i]));
+			break;
+		case PXB_FOUR_BYTES:
+			(*((uint32_t *)(m_pActualPosition + 4))) = htonl(*((uint32_t *)m_pItemDatas[ui8i]));
+			break;
+		case PXB_EIGHT_BYTES:
+			(*((uint64_t *)(m_pActualPosition + 4))) = htobe64(*((uint64_t *)m_pItemDatas[ui8i]));
+			break;
+		case PXB_STRING:
+			memcpy(m_pActualPosition + 4, m_pItemDatas[ui8i], m_ui16ItemLengths[ui8i]);
+			break;
+		default:
+			break;
 		}
-		
+
 		m_pActualPosition += m_ui16ItemLengths[ui8i] + 4;
 		m_szRemainingSize -= m_ui16ItemLengths[ui8i] + 4;
 	}
-	
+
 	return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -289,7 +289,7 @@ void PXBReader::WriteRemaining()
 	{
 		fwrite(ServerManager::m_pGlobalBuffer, 1, m_pActualPosition - ServerManager::m_pGlobalBuffer, m_pFile);
 	}
-	
+
 	fclose(m_pFile);
 	m_pFile = NULL;
 }
@@ -303,28 +303,28 @@ bool PXBReader::PrepareArrays(const uint8_t ui8Size)
 		AppendDebugLog("%s - [MEM] Cannot create m_pItemDatas in PXBReader::PrepareArrays\n");
 		return false;
 	}
-	
+
 	m_ui16ItemLengths = (uint16_t *)calloc(ui8Size, sizeof(uint16_t));
 	if (m_ui16ItemLengths == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot create m_ui16ItemLengths in PXBReader::PrepareArrays\n");
 		return false;
 	}
-	
+
 	m_sItemIdentifiers = (char *)calloc(ui8Size, sizeof(char) * 2);
 	if (m_sItemIdentifiers == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot create m_sItemIdentifiers in PXBReader::PrepareArrays\n");
 		return false;
 	}
-	
+
 	m_ui8ItemValues = (uint8_t *)calloc(ui8Size, sizeof(uint8_t));
 	if (m_ui8ItemValues == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot create m_ui8ItemValues in PXBReader::PrepareArrays\n");
 		return false;
 	}
-	
+
 	m_ui8AllocatedSize = ui8Size;
 	return true;
 }

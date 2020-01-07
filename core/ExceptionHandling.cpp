@@ -51,22 +51,22 @@ static char sDebugBuf[szDebugBufLen];
 void AppendLog(const char * sData)
 {
 	FILE * fw  = fopen((sLogPath + "system.log").c_str(), "a");
-	
+
 	if (fw == NULL)
 	{
 		return;
 	}
-	
+
 	time_t acc_time;
 	time(&acc_time);
-	
+
 	struct tm * acc_tm;
 	acc_tm = localtime(&acc_time);
-	
+
 	strftime(sDebugBuf, szDebugBufLen, "%d.%m.%Y %H:%M:%S", acc_tm);
-	
+
 	fprintf(fw, "%s - %s\n", sDebugBuf, sData);
-	
+
 	fclose(fw);
 }
 //---------------------------------------------------------------------------
@@ -81,7 +81,7 @@ FARPROC WINAPI PtokaX_FailHook(unsigned /*dliNotify*/, PDelayLoadInfo /*pdli*/)
 	AppendLog("Something bad happen and PtokaX crashed. PtokaX was not able to collect any information why this happen because your operating system"
 	          " don't support functionality needed for that. If you know why this crash happen then please report it as bug to PPK@PtokaX.org!");
 #endif
-	             
+
 	exit(EXIT_FAILURE);
 }
 
@@ -92,9 +92,9 @@ void GetSourceFileInfo(DWORD64 dw64Address, FILE * pFile)
 	IMAGEHLP_LINE64 il64LineInfo;
 	memset(&il64LineInfo, 0, sizeof(IMAGEHLP_LINE64));
 	il64LineInfo.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
-	
+
 	DWORD dwDisplacement = 0;
-	
+
 	if (SymGetLineFromAddr64(GetCurrentProcess(), dw64Address, &dwDisplacement, &il64LineInfo) != FALSE)  // V676 It is incorrect to compare the variable of BOOL type with TRUE. http://www.viva64.com/en/d/0310/print/
 	{
 		// We have sourcefile and linenumber info, write it.
@@ -103,11 +103,11 @@ void GetSourceFileInfo(DWORD64 dw64Address, FILE * pFile)
 	else
 	{
 		// We don't have sourcefile and linenumber info, let's try module name
-		
+
 		IMAGEHLP_MODULE64 im64ModuleInfo;
 		memset(&im64ModuleInfo, 0, sizeof(IMAGEHLP_MODULE64));
 		im64ModuleInfo.SizeOfStruct = sizeof(IMAGEHLP_MODULE64);
-		
+
 		if (SymGetModuleInfo64(GetCurrentProcess(), dw64Address, &im64ModuleInfo))
 		{
 			// We found module name, write module name and address
@@ -125,13 +125,13 @@ void GetSourceFileInfo(DWORD64 dw64Address, FILE * pFile)
 void GetFunctionInfo(DWORD64 dw64Address, FILE * pFile)
 {
 	DWORD64 dw64Displacement = 0;
-	
+
 	char buffer[sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(wchar_t)] = { 0 };
 	PSYMBOL_INFO pSym = (PSYMBOL_INFO)buffer;
-	
+
 	pSym->SizeOfStruct = sizeof(SYMBOL_INFO);
 	pSym->MaxNameLen = MAX_SYM_NAME;
-	
+
 	if (SymFromAddr(GetCurrentProcess(), dw64Address, &dw64Displacement, pSym) != FALSE)  // V676 It is incorrect to compare the variable of BOOL type with TRUE. http://www.viva64.com/en/d/0310/print/
 	{
 		// We have decorated name, try to make it readable
@@ -143,7 +143,7 @@ void GetFunctionInfo(DWORD64 dw64Address, FILE * pFile)
 			return;
 		}
 	}
-	
+
 	// We don't found any info, write '?'
 	fprintf(pFile, "?\n");
 }
@@ -152,16 +152,16 @@ void GetFunctionInfo(DWORD64 dw64Address, FILE * pFile)
 LONG WINAPI PtokaX_UnhandledExceptionFilter(LPEXCEPTION_POINTERS ExceptionInfo)
 {
 	static volatile LONG PermLock = 0;
-	
+
 	// When unhandled exception happen then permanently 'lock' here. We terminate after first exception.
 	while (InterlockedExchange(&PermLock, 1) == 1)
 	{
 		::Sleep(10);
 	}
-	
+
 	// Set failure hook
 	__pfnDliFailureHook2 = PtokaX_FailHook;
-	
+
 	// Check if we have debug symbols
 	if (FileExist(sDebugSymbolsFile.c_str()) == false)
 	{
@@ -173,12 +173,12 @@ LONG WINAPI PtokaX_UnhandledExceptionFilter(LPEXCEPTION_POINTERS ExceptionInfo)
 		AppendLog("Something bad happen and PtokaX crashed. PtokaX was not able to collect any information why this happen because file with debug symbols"
 		          " (PtokaX.pdb) is missing. If you know why this crash happen then please report it as bug to PPK@PtokaX.org!");
 #endif
-		             
+
 		ExceptionHandlingUnitialize();
-		
+
 		exit(EXIT_FAILURE);
 	}
-	
+
 	// Initialize debug symbols
 	SymSetOptions(SYMOPT_DEFERRED_LOADS | SYMOPT_FAIL_CRITICAL_ERRORS | SYMOPT_LOAD_LINES);
 	if (SymInitialize(GetCurrentProcess(), ServerManager::m_sPath.c_str(), TRUE) == FALSE)
@@ -191,19 +191,19 @@ LONG WINAPI PtokaX_UnhandledExceptionFilter(LPEXCEPTION_POINTERS ExceptionInfo)
 		AppendLog("Something bad happen and PtokaX crashed. PtokaX was not able to collect any information why this happen because initializatin of"
 		          " debug symbols failed. If you know why this crash happen then please report it as bug to PPK@PtokaX.org!");
 #endif
-		             
+
 		ExceptionHandlingUnitialize();
-		
+
 		exit(EXIT_FAILURE);
 	}
-	
+
 	// Generate crash log filename
 	time_t acc_time;
 	time(&acc_time);
-	
+
 	struct tm *tm = localtime(&acc_time);
 	strftime(sDebugBuf, szDebugBufLen, "Crash-%d.%m.%Y-%H.%M.%S.log", tm);
-	
+
 	// Open crash file
 	FILE * pFile = fopen((sLogPath + sDebugBuf).c_str(), "w");
 	if (pFile == NULL)
@@ -216,17 +216,17 @@ LONG WINAPI PtokaX_UnhandledExceptionFilter(LPEXCEPTION_POINTERS ExceptionInfo)
 		AppendLog("Something bad happen and PtokaX crashed. PtokaX was not able to create file with information why this crash happen."
 		          " If you know why this crash happen then please report it as bug to PPK@PtokaX.org!");
 #endif
-		             
+
 		ExceptionHandlingUnitialize();
 		SymCleanup(GetCurrentProcess());
-		
+
 		exit(EXIT_FAILURE);
 	}
-	
+
 	string sCrashMsg("Something bad happen and PtokaX crashed. PtokaX collected information why this crash happen to file ");
 	sCrashMsg += string(sDebugBuf);
 	sCrashMsg += ", please send that file to PPK@PtokaX.org!";
-	
+
 	// Write PtokaX version, build and exception code
 	fprintf(pFile, "PtokaX version: " PtokaXVersionString " [build " BUILD_NUMBER "]"
 #ifdef _M_X64
@@ -249,33 +249,33 @@ LONG WINAPI PtokaX_UnhandledExceptionFilter(LPEXCEPTION_POINTERS ExceptionInfo)
 	        PQlibVersion(),
 #endif
 	        pExceptionInfo->ExceptionRecord->ExceptionCode);
-	        
+
 	{
 		// Write windoze version where we crashed if is possible
 		OSVERSIONINFOEX ver;
 		memset(&ver, 0, sizeof(OSVERSIONINFOEX));
 		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-		
+
 		if (GetVersionEx((OSVERSIONINFO*)&ver) != 0)
 		{
 			fprintf(pFile, "Windows version: %lu.%lu SP: %hu\n", ver.dwMajorVersion, ver.dwMinorVersion, ver.wServicePackMajor);
 		}
 	}
-	
+
 	// Write date and time when crash happen
 	size_t szLen = strftime(sDebugBuf, szDebugBufLen, "Date and time: %d.%m.%Y %H:%M:%S\n\n", tm);
 	if (szLen > 0)
 	{
 		fwrite(sDebugBuf, 1, szLen, pFile);
 	}
-	
+
 	STACKFRAME64 sf64CallStack;
 	memset(&sf64CallStack, 0, sizeof(STACKFRAME64));
-	
+
 	sf64CallStack.AddrPC.Mode      = AddrModeFlat;
 	sf64CallStack.AddrStack.Mode   = AddrModeFlat;
 	sf64CallStack.AddrFrame.Mode   = AddrModeFlat;
-	
+
 #ifdef _M_X64
 	sf64CallStack.AddrPC.Offset    = pExceptionInfo->ContextRecord->Rip;
 	sf64CallStack.AddrStack.Offset = pExceptionInfo->ContextRecord->Rsp;
@@ -285,16 +285,16 @@ LONG WINAPI PtokaX_UnhandledExceptionFilter(LPEXCEPTION_POINTERS ExceptionInfo)
 	sf64CallStack.AddrStack.Offset = pExceptionInfo->ContextRecord->Esp;
 	sf64CallStack.AddrFrame.Offset = pExceptionInfo->ContextRecord->Ebp;
 #endif
-	
+
 	// Write where crash happen
 	fprintf(pFile, "Exception location:\n");
-	
+
 	GetSourceFileInfo(sf64CallStack.AddrPC.Offset, pFile);
 	GetFunctionInfo(sf64CallStack.AddrPC.Offset, pFile);
-	
+
 	// Try to write callstack
 	fprintf(pFile, "\nCall stack:\n");
-	
+
 	// We don't want it like never ending story, limit call stack to 100 lines
 	for (uint32_t ui32i = 0; ui32i < 100; ui32i++)
 	{
@@ -309,22 +309,22 @@ LONG WINAPI PtokaX_UnhandledExceptionFilter(LPEXCEPTION_POINTERS ExceptionInfo)
 		{
 			break;
 		}
-		
+
 		GetSourceFileInfo(sf64CallStack.AddrPC.Offset, pFile);
 		GetFunctionInfo(sf64CallStack.AddrPC.Offset, pFile);
 	}
-	
+
 	fclose(pFile);
-	
+
 #ifdef _BUILD_GUI
 	::MessageBox(NULL, sCrashMsg.c_str(), "PtokaX crashed!", MB_OK | MB_ICONERROR);
 #else
 	AppendLog(sCrashMsg.c_str());
 #endif
-	
+
 	ExceptionHandlingUnitialize();
 	SymCleanup(GetCurrentProcess());
-	
+
 	exit(EXIT_FAILURE);
 }
 //---------------------------------------------------------------------------
@@ -332,7 +332,7 @@ LONG WINAPI PtokaX_UnhandledExceptionFilter(LPEXCEPTION_POINTERS ExceptionInfo)
 void ExceptionHandlingInitialize(const string &sPath, const char * sAppPath)
 {
 	sLogPath = sPath + "\\logs\\";
-	
+
 	size_t szBufLen = strlen(sAppPath);
 	if (szBufLen > 3  && tolower(sAppPath[szBufLen - 3]) == 'e' && tolower(sAppPath[szBufLen - 2]) == 'x' && tolower(sAppPath[szBufLen - 1]) == 'e')
 	{
@@ -340,9 +340,9 @@ void ExceptionHandlingInitialize(const string &sPath, const char * sAppPath)
 		sAppPath[szBufLen - 2] = 'd';
 		sAppPath[szBufLen - 1] = 'b';
 	}
-	
+
 	sDebugSymbolsFile = sAppPath;
-	
+
 	// Set PtokaX unhandled exception filter
 	pOldTLEF = SetUnhandledExceptionFilter(&PtokaX_UnhandledExceptionFilter);
 }

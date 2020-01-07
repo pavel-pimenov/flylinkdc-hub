@@ -25,40 +25,40 @@ struct RegUser;
 
 class RegisteredUserDialog {
 public:
-    static RegisteredUserDialog * m_Ptr;
+	static RegisteredUserDialog * m_Ptr;
 
-    HWND m_hWndWindowItems[9];
+	HWND m_hWndWindowItems[9];
 
-    enum enmWindowItems {
-        WINDOW_HANDLE,
-        GB_NICK,
-        EDT_NICK,
-        GB_PASSWORD,
-        EDT_PASSWORD,
-        GB_PROFILE,
-        CB_PROFILE,
-        BTN_ACCEPT,
-        BTN_DISCARD
-    };
+	enum enmWindowItems {
+		WINDOW_HANDLE,
+		GB_NICK,
+		EDT_NICK,
+		GB_PASSWORD,
+		EDT_PASSWORD,
+		GB_PROFILE,
+		CB_PROFILE,
+		BTN_ACCEPT,
+		BTN_DISCARD
+	};
 
-    RegisteredUserDialog();
-    ~RegisteredUserDialog();
+	RegisteredUserDialog();
+	~RegisteredUserDialog();
 
-    static LRESULT CALLBACK StaticRegisteredUserDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK StaticRegisteredUserDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	void DoModal(HWND hWndParent, RegUser * pReg = nullptr, char * sNick = nullptr);
 	void UpdateProfiles();
 	void RegChanged(RegUser * pReg);
 	void RegDeleted(RegUser * pReg);
 private:
-    RegUser * m_pRegToChange;
+	RegUser * m_pRegToChange;
 
-    RegisteredUserDialog(const RegisteredUserDialog&) = delete;
-    const RegisteredUserDialog& operator=(const RegisteredUserDialog&) = delete;
+	RegisteredUserDialog(const RegisteredUserDialog&) = delete;
+	const RegisteredUserDialog& operator=(const RegisteredUserDialog&) = delete;
 
-    LRESULT RegisteredUserDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT RegisteredUserDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-    bool OnAccept();
+	bool OnAccept();
 };
 //------------------------------------------------------------------------------
 

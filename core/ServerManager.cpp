@@ -150,44 +150,44 @@ void ServerManager::OnSecTimer()
 	m_dCpuUsages[m_ui8MinTick] = dcpuSec;
 #else
 	struct rusage rs;
-	
+
 	getrusage(RUSAGE_SELF, &rs);
-	
+
 	double dcpuSec = double(rs.ru_utime.tv_sec) + (double(rs.ru_utime.tv_usec) / 1000000) +
-	                       double(rs.ru_stime.tv_sec) + (double(rs.ru_stime.tv_usec) / 1000000);
+	                 double(rs.ru_stime.tv_sec) + (double(rs.ru_stime.tv_usec) / 1000000);
 	m_dCpuUsage = dcpuSec - m_dCpuUsages[m_ui8MinTick];
 	m_dCpuUsages[m_ui8MinTick] = dcpuSec;
 #endif
 #endif
-	
+
 	if (++m_ui8MinTick == 60)
 	{
 		m_ui8MinTick = 0;
 	}
-	
+
 #ifdef _WIN32
 	if (m_bServerRunning == false)
 	{
 		return;
 	}
 #endif
-	
+
 	m_ui64ActualTick++;
-	
+
 	m_ui32ActualBytesRead = (uint32_t)(m_ui64BytesRead - m_ui64LastBytesRead);
 	m_ui32ActualBytesSent = (uint32_t)(m_ui64BytesSent - m_ui64LastBytesSent);
 	m_ui64LastBytesRead = m_ui64BytesRead;
 	m_ui64LastBytesSent = m_ui64BytesSent;
-	
+
 	m_ui32AverageBytesSent -= m_ui32UploadSpeed[m_ui8MinTick];
 	m_ui32AverageBytesRead -= m_ui32DownloadSpeed[m_ui8MinTick];
-	
+
 	m_ui32UploadSpeed[m_ui8MinTick] = m_ui32ActualBytesSent;
 	m_ui32DownloadSpeed[m_ui8MinTick] = m_ui32ActualBytesRead;
-	
+
 	m_ui32AverageBytesSent += m_ui32UploadSpeed[m_ui8MinTick];
 	m_ui32AverageBytesRead += m_ui32DownloadSpeed[m_ui8MinTick];
-	
+
 #ifdef _BUILD_GUI
 	MainWindow::m_Ptr->UpdateStats();
 	MainWindowPageScripts::m_Ptr->UpdateMemUsage();
@@ -206,7 +206,7 @@ void ServerManager::m_OnRegTimer()
 			RegisterThread::m_Ptr->WaitFor();
 			safe_delete(RegisterThread::m_Ptr);
 		}
-		
+
 		// Create hublist reg thread
 		RegisterThread::m_Ptr = new (std::nothrow) RegisterThread();
 		if (RegisterThread::m_Ptr == NULL)
@@ -214,10 +214,10 @@ void ServerManager::m_OnRegTimer()
 			AppendDebugLog("%s - [MEM] Cannot allocate RegisterThread::m_Ptr in ServerOnRegTimer\n");
 			return;
 		}
-		
+
 		// Setup hublist reg thread
 		RegisterThread::m_Ptr->Setup(SettingManager::m_Ptr->m_sTexts[SETTXT_REGISTER_SERVERS], SettingManager::m_Ptr->m_ui16TextsLens[SETTXT_REGISTER_SERVERS]);
-		
+
 		// Start the hublist reg thread
 		RegisterThread::m_Ptr->Resume();
 	}
@@ -228,15 +228,15 @@ void ServerManager::m_OnRegTimer()
 void ServerManager::Initialize()
 {
 	setlocale(LC_ALL, "");
-	
+
 	time_t acctime;
 	time(&acctime);
 #ifdef _WIN32
 	srand((uint32_t)acctime);
-	
+
 	WSADATA wsaData;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
-	
+
 	if (DirExist((ServerManager::m_sPath + "\\cfg").c_str()) == false)
 	{
 		CreateDirectory((ServerManager::m_sPath + "\\cfg").c_str(), NULL);
@@ -253,11 +253,11 @@ void ServerManager::Initialize()
 	{
 		CreateDirectory((ServerManager::m_sPath + "\\texts").c_str(), NULL);
 	}
-	
+
 	ServerManager::m_sScriptPath = ServerManager::m_sPath + "\\scripts\\";
-	
+
 	ServerManager::m_sLuaPath = ServerManager::m_sPath + "/";
-	
+
 	char * sTempLuaPath = (char *)ServerManager::m_sLuaPath.c_str();
 	for (size_t szi = 0; szi < ServerManager::m_sPath.size(); szi++)
 	{
@@ -266,11 +266,11 @@ void ServerManager::Initialize()
 			sTempLuaPath[szi] = '/';
 		}
 	}
-	
+
 	SetupOsVersion();
 #else
 	srandom(acctime);
-	
+
 	if (DirExist((ServerManager::m_sPath + "/logs").c_str()) == false)
 	{
 		if (mkdir((ServerManager::m_sPath + "/logs").c_str(), 0755) == -1)
@@ -306,9 +306,9 @@ void ServerManager::Initialize()
 			AppendLog("Creating of texts directory failed!");
 		}
 	}
-	
+
 	ServerManager::m_sScriptPath = ServerManager::m_sPath + "/scripts/";
-	
+
 	// get cpu count
 	FILE *fp = fopen("/proc/cpuinfo", "r");
 	if (fp != NULL)
@@ -321,64 +321,64 @@ void ServerManager::Initialize()
 				m_ui32CpuCount++;
 			}
 		}
-	
+
 		fclose(fp);
 	}
-	
+
 	if (m_ui32CpuCount == 0)
 	{
 		m_ui32CpuCount = 1;
 	}
 #endif
 	CreateGlobalBuffer();
-	
+
 	CheckForIPv6();
-	
+
 #ifdef __MACH__
 	mach_port_t mpMachHost = mach_host_self();
 	host_get_clock_service(mpMachHost, SYSTEM_CLOCK, &ServerManager::m_csMachClock);
 	mach_port_deallocate(mach_task_self(), mpMachHost);
 #endif
-	
+
 	ReservedNicksManager::m_Ptr = new (std::nothrow) ReservedNicksManager();
 	if (ReservedNicksManager::m_Ptr == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot allocate ReservedNicksManager::m_Ptr in ServerInitialize\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	m_ui64ActualTick = m_ui64TotalShare = 0;
 	m_ui64BytesRead = m_ui64BytesSent = m_ui64BytesSentSaved = 0;
-	
+
 	m_ui32ActualBytesRead = m_ui32ActualBytesSent = m_ui32AverageBytesRead = m_ui32AverageBytesSent = 0;
-	
+
 	m_ui32Joins = m_ui32Parts = m_ui32Logged = m_ui32Peak = 0;
-	
+
 	m_pServersS = NULL;
 	m_pServersE = NULL;
-	
+
 	m_tStartTime = 0;
-	
+
 	m_ui64Mins = m_ui64Hours = m_ui64Days = 0;
-	
+
 	m_bServerRunning = m_bIsRestart = m_bIsClose = false;
-	
+
 	m_sHubIP[0] = '\0';
 	m_sHubIP6[0] = '\0';
-	
+
 	m_ui8SrCntr = 0;
-	
+
 	ZlibUtility::m_Ptr = new (std::nothrow) ZlibUtility();
 	if (ZlibUtility::m_Ptr == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot allocate ZlibUtility::m_Ptr in ServerInitialize\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	m_ui8MinTick = 0;
-	
+
 	m_ui64LastBytesRead = m_ui64LastBytesSent = 0;
-	
+
 	for (uint8_t ui8i = 0 ; ui8i < 60; ui8i++)
 	{
 #ifdef FLYLINKDC_USE_CPU_STAT
@@ -387,11 +387,11 @@ void ServerManager::Initialize()
 		m_ui32UploadSpeed[ui8i] = 0;
 		m_ui32DownloadSpeed[ui8i] = 0;
 	}
-	
+
 #ifdef FLYLINKDC_USE_CPU_STAT
 	m_dCpuUsage = 0.0;
 #endif
-	
+
 	SettingManager::m_Ptr = new (std::nothrow) SettingManager();
 	if (SettingManager::m_Ptr == NULL)
 	{
@@ -399,97 +399,97 @@ void ServerManager::Initialize()
 		exit(EXIT_FAILURE);
 	}
 #ifdef FLYLINKDC_USE_DB
-#if defined(_WITH_SQLITE)	
-	
+#if defined(_WITH_SQLITE)
+
 	TextConverter::m_Ptr = new (std::nothrow) TextConverter();
 	if (TextConverter::m_Ptr == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot allocate TextConverter::m_Ptr in ServerInitialize\n");
 		exit(EXIT_FAILURE);
 	}
-#endif	
 #endif
-	
+#endif
+
 	LanguageManager::m_Ptr = new (std::nothrow) LanguageManager();
 	if (LanguageManager::m_Ptr == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot allocate LanguageManager::m_Ptr in ServerInitialize\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	LanguageManager::m_Ptr->Load();
-	
+
 	ProfileManager::m_Ptr = new (std::nothrow) ProfileManager();
 	if (ProfileManager::m_Ptr == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot allocate ProfileManager::m_Ptr in ServerInitialize\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	RegManager::m_Ptr = new (std::nothrow) RegManager();
 	if (RegManager::m_Ptr == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot allocate RegManager::m_Ptr in ServerInitialize\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	// Load registered users
 	RegManager::m_Ptr->Load();
-	
+
 	BanManager::m_Ptr = new (std::nothrow) BanManager();
 	if (BanManager::m_Ptr == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot allocate BanManager::m_Ptr in ServerInitialize\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	// load banlist
 	BanManager::m_Ptr->Load();
-	
+
 	TextFilesManager::m_Ptr = new (std::nothrow) TextFilesManager();
 	if (TextFilesManager::m_Ptr == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot allocate TextFilesManager::m_Ptr in ServerInitialize\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	UdpDebug::m_Ptr = new (std::nothrow) UdpDebug();
 	if (UdpDebug::m_Ptr == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot allocate UdpDebug::m_Ptr in ServerInitialize\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	ScriptManager::m_Ptr = new (std::nothrow) ScriptManager();
 	if (ScriptManager::m_Ptr == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot allocate ScriptManager::m_Ptr in ServerInitialize\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 #ifdef _BUILD_GUI
 	MainWindow::m_Ptr = new (std::nothrow) MainWindow();
-	
+
 	if (MainWindow::m_Ptr == NULL || MainWindow::m_Ptr->CreateEx() == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot allocate MainWindow::m_Ptr in ServerInitialize\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	m_hMainWindow = MainWindow::m_Ptr->m_hWnd;
 #endif
-	
+
 	SettingManager::m_Ptr->UpdateAll();
-	
+
 #if defined(_WIN32) && !defined(_WIN_IOT)
 	m_upSecTimer = SetTimer(NULL, 0, 1000, NULL);
-	
+
 	if (m_upSecTimer == 0)
 	{
 		AppendDebugLog("%s - [ERR] Cannot startsectimer in ServerInitialize\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 #ifdef FLYLINKDC_REMOVE_REGISTER_THREAD
 	m_upRegTimer = 0;
 #endif
@@ -500,30 +500,30 @@ void ServerManager::Initialize()
 bool ServerManager::Start()
 {
 	time(&m_tStartTime);
-	
+
 	SettingManager::m_Ptr->UpdateAll();
-	
+
 	TextFilesManager::m_Ptr->RefreshTextFiles();
-	
+
 #ifdef _BUILD_GUI
 	MainWindow::m_Ptr->EnableStartButton(FALSE);
 #endif
-	
+
 	m_ui64ActualTick = m_ui64TotalShare = 0;
-	
+
 	m_ui64BytesRead = m_ui64BytesSent = m_ui64BytesSentSaved = 0;
-	
+
 	m_ui32ActualBytesRead = m_ui32ActualBytesSent = m_ui32AverageBytesRead = m_ui32AverageBytesSent = 0;
-	
+
 	m_ui32Joins = m_ui32Parts = m_ui32Logged = m_ui32Peak = 0;
-	
+
 	m_ui64Mins = m_ui64Hours = m_ui64Days = 0;
-	
+
 	m_ui8SrCntr = 0;
-	
+
 	m_sHubIP[0] = '\0';
 	m_sHubIP6[0] = '\0';
-	
+
 #ifdef _BUILD_GUI
 	if (ResolveHubAddress() == false)
 	{
@@ -533,28 +533,28 @@ bool ServerManager::Start()
 #else
 	ResolveHubAddress();
 #endif
-	
+
 	for (uint8_t ui8i = 0; ui8i < 25; ui8i++)
 	{
 		if (SettingManager::m_Ptr->m_ui16PortNumbers[ui8i] == 0)
 		{
 			break;
 		}
-		
+
 		if(m_bUseIPv6 == false)
-			{
+		{
 			CreateServerThread(AF_INET, SettingManager::m_Ptr->m_ui16PortNumbers[ui8i]);
 			continue;
 		}
-		
+
 		CreateServerThread(AF_INET6, SettingManager::m_Ptr->m_ui16PortNumbers[ui8i]);
-		
+
 		if(SettingManager::m_Ptr->m_bBools[SETBOOL_BIND_ONLY_SINGLE_IP] == true || m_bIPv6DualStack == false)
 		{
 			CreateServerThread(AF_INET, SettingManager::m_Ptr->m_ui16PortNumbers[ui8i]);
 		}
 	}
-	
+
 	if (m_pServersS == NULL)
 	{
 #ifdef _BUILD_GUI
@@ -565,9 +565,9 @@ bool ServerManager::Start()
 #endif
 		return false;
 	}
-	
+
 	AppendLog("Serving started");
-	
+
 //  if(tlsenabled == true) {
 	/*        TLSManager = new (std::nothrow) TLSMan();
 	        if(TLSManager == NULL) {
@@ -606,52 +606,52 @@ bool ServerManager::Start()
 		AppendDebugLog("%s - [MEM] Cannot allocate IpP2Country::m_Ptr in ServerStart\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	EventQueue::m_Ptr = new (std::nothrow) EventQueue();
 	if (EventQueue::m_Ptr == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot allocate EventQueue::m_Ptr in ServerStart\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	HashManager::m_Ptr = new (std::nothrow) HashManager();
 	if (HashManager::m_Ptr == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot allocate HashManager::m_Ptr in ServerStart\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	Users::m_Ptr = new (std::nothrow) Users();
 	if (Users::m_Ptr == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot allocate Users::m_Ptr in ServerStart\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	GlobalDataQueue::m_Ptr = new (std::nothrow) GlobalDataQueue();
 	if (GlobalDataQueue::m_Ptr == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot allocate GlobalDataQueue::m_Ptr in ServerStart\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	DcCommands::m_Ptr = new (std::nothrow) DcCommands();
 	if (DcCommands::m_Ptr == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot allocate DcCommands::m_Ptr in ServerStart\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	// add botname to reserved nicks
 	ReservedNicksManager::m_Ptr->AddReservedNick(SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_NICK]);
 	SettingManager::m_Ptr->UpdateBot();
-	
+
 	// add opchat botname to reserved nicks
 	ReservedNicksManager::m_Ptr->AddReservedNick(SettingManager::m_Ptr->m_sTexts[SETTXT_OP_CHAT_NICK]);
 	SettingManager::m_Ptr->UpdateOpChat();
-	
+
 	ReservedNicksManager::m_Ptr->AddReservedNick(SettingManager::m_Ptr->m_sTexts[SETTXT_ADMIN_NICK]);
-	
+
 #ifdef FLYLINKDC_USE_UDP_THREAD
 	if ((uint16_t)atoi(SettingManager::m_Ptr->m_sTexts[SETTXT_UDP_PORT]) != 0)
 	{
@@ -660,61 +660,61 @@ bool ServerManager::Start()
 			UDPThread::m_PtrIPv6 = UDPThread::Create(AF_INET);
 		}
 		else
-			{
-				UDPThread::m_PtrIPv6 = UDPThread::Create(AF_INET6);
-			
-			if(SettingManager::m_Ptr->m_bBools[SETBOOL_BIND_ONLY_SINGLE_IP] == true || m_bIPv6DualStack == false)
 		{
+			UDPThread::m_PtrIPv6 = UDPThread::Create(AF_INET6);
+
+			if(SettingManager::m_Ptr->m_bBools[SETBOOL_BIND_ONLY_SINGLE_IP] == true || m_bIPv6DualStack == false)
+			{
 				UDPThread::m_PtrIPv6 = UDPThread::Create(AF_INET);
 			}
 		}
 	}
 #endif
-	
+
 	if (SettingManager::m_Ptr->m_bBools[SETBOOL_ENABLE_SCRIPTING] == true)
 	{
 		ScriptManager::m_Ptr->Start();
 	}
-	
+
 	ServiceLoop::m_Ptr = new (std::nothrow) ServiceLoop();
 	if (ServiceLoop::m_Ptr == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot allocate ServiceLoop::m_Ptr in ServerStart\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	// Start the server socket threads
 	ServerThread * cur = NULL,
 	               * next = m_pServersS;
-	               
+
 	while (next != NULL)
 	{
 		cur = next;
 		next = cur->m_pNext;
-		
+
 		cur->Resume();
 	}
-	
+
 	m_bServerRunning = true;
-	
+
 	// Call lua_Main
 	ScriptManager::m_Ptr->OnStartup();
-	
+
 #ifdef _BUILD_GUI
 	MainWindow::m_Ptr->SetStatusValue((string(LanguageManager::m_Ptr->m_sTexts[LAN_RUNNING], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RUNNING]) + "...").c_str());
 	MainWindow::m_Ptr->SetStartButtonText(LanguageManager::m_Ptr->m_sTexts[LAN_STOP_HUB]);
 	MainWindow::m_Ptr->EnableStartButton(TRUE);
 	MainWindow::m_Ptr->EnableGuiItems(TRUE);
 #endif
-	
+
 #if defined(_WIN32) && !defined(_WIN_IOT)
 	//Start the HubRegistration timer
 	if (SettingManager::m_Ptr->m_bBools[SETBOOL_AUTO_REG] == true)
 	{
 #ifdef FLYLINKDC_REMOVE_REGISTER_THREAD
 		m_upRegTimer = SetTimer(NULL, 0, 901000, NULL);
-		
-		
+
+
 		if (m_upRegTimer == 0)
 		{
 			AppendDebugLog("%s - [ERR] Cannot start regtimer in ServerStart\n");
@@ -722,14 +722,14 @@ bool ServerManager::Start()
 		}
 #endif
 	}
-	
+
 	if (::SetEvent(ServiceLoop::m_Ptr->m_hLoopEvents[0]) == 0)
 	{
 		AppendDebugLog("%s - [ERR] Cannot set m_hLoopEvent in ServerManager::Start\n");
 		exit(EXIT_FAILURE);
 	}
 #endif
-	
+
 	return true;
 }
 //---------------------------------------------------------------------------
@@ -739,13 +739,13 @@ void ServerManager::Stop()
 #ifdef _BUILD_GUI
 	MainWindow::m_Ptr->EnableStartButton(FALSE);
 #endif
-	
+
 	int iRet = snprintf(m_pGlobalBuffer, m_szGlobalBufferSize, "Serving stopped (UL: %" PRIu64 " [%" PRIu64 "], DL: %" PRIu64 ")", m_ui64BytesSent, m_ui64BytesSentSaved, m_ui64BytesRead);
 	if (iRet > 0)
 	{
 		AppendLog(m_pGlobalBuffer);
 	}
-	
+
 #ifdef FLYLINKDC_REMOVE_REGISTER_THREAD
 #if defined(_WIN32) && !defined(_WIN_IOT)
 	//Stop the HubRegistration timer
@@ -759,24 +759,24 @@ void ServerManager::Stop()
 	}
 #endif
 #endif
-	
+
 	ServerThread * cur = NULL,
 	               * next = m_pServersS;
-	               
+
 	while (next != NULL)
 	{
 		cur = next;
 		next = cur->m_pNext;
-		
+
 		cur->Close();
 		cur->WaitFor();
-		
+
 		delete cur;
 	}
-	
+
 	m_pServersS = nullptr;
 	m_pServersE = nullptr;
-	
+
 	// stop the main hub loop
 	if (ServiceLoop::m_Ptr != NULL)
 	{
@@ -795,33 +795,33 @@ void ServerManager::FinalStop(const bool bDeleteServiceLoop)
 	{
 		safe_delete(ServiceLoop::m_Ptr);
 	}
-	
+
 	if (SettingManager::m_Ptr->m_bBools[SETBOOL_ENABLE_SCRIPTING] == true)
 	{
 		ScriptManager::m_Ptr->Stop();
 	}
-	
+
 #ifdef FLYLINKDC_USE_UDP_THREAD
 #ifdef FLYLINKDC_USE_UDP_THREAD_IP6
 	UDPThread::Destroy(UDPThread::m_PtrIPv6);
 #endif
-	
+
 	UDPThread::Destroy(UDPThread::m_PtrIPv4);
 #endif
-	
+
 	// delete userlist field
 	if (Users::m_Ptr != NULL)
 	{
 		Users::m_Ptr->DisconnectAll();
 		safe_delete(Users::m_Ptr);
 	}
-	
+
 	safe_delete(DcCommands::m_Ptr);
-	
+
 	// delete hashed userlist manager
 	safe_delete(HashManager::m_Ptr);
-	
-	
+
+
 	safe_delete(GlobalDataQueue::m_Ptr);
 #ifdef FLYLINKDC_REMOVE_REGISTER_THREAD
 	if (RegisterThread::m_Ptr != NULL)
@@ -832,9 +832,9 @@ void ServerManager::FinalStop(const bool bDeleteServiceLoop)
 	}
 #endif
 	safe_delete(EventQueue::m_Ptr);
-	
+
 	safe_delete(IpP2Country::m_Ptr);
-	
+
 #ifdef FLYLINKDC_USE_DB
 #ifdef _WITH_SQLITE
 	safe_delete(DBSQLite::m_Ptr);
@@ -844,11 +844,11 @@ void ServerManager::FinalStop(const bool bDeleteServiceLoop)
 	safe_delete(DBMySQL::m_Ptr);
 #endif
 #endif // FLYLINKDC_USE_DB
-	
+
 	/*  if(TLSManager != NULL) {
 	        safe_delete(TLSManager);
 	    }*/
-	
+
 	//userstat  // better here ;)
 //    sqldb->FinalizeAllVisits();
 
@@ -858,18 +858,18 @@ void ServerManager::FinalStop(const bool bDeleteServiceLoop)
 	MainWindow::m_Ptr->EnableStartButton(TRUE);
 	MainWindow::m_Ptr->EnableGuiItems(FALSE);
 #endif
-	
+
 	m_ui8SrCntr = 0;
 	m_ui32Joins = m_ui32Parts = m_ui32Logged = 0;
-	
+
 	UdpDebug::m_Ptr->Cleanup();
-	
+
 	m_bServerRunning = false;
-	
+
 	if (m_bIsRestart == true)
 	{
 		m_bIsRestart = false;
-		
+
 		// start hub
 #ifdef _BUILD_GUI
 		if (Start() == false)
@@ -896,17 +896,17 @@ void ServerManager::FinalClose()
 #if defined(_WIN32) && !defined(_WIN_IOT)
 	KillTimer(NULL, m_upSecTimer);
 #endif
-	
+
 	BanManager::m_Ptr->Save(true);
-	
+
 	ProfileManager::m_Ptr->SaveProfiles();
-	
+
 	RegManager::m_Ptr->Save();
-	
+
 	ScriptManager::m_Ptr->SaveScripts();
-	
+
 	SettingManager::m_Ptr->Save();
-	
+
 	safe_delete(ScriptManager::m_Ptr);
 	safe_delete(TextFilesManager::m_Ptr);
 	safe_delete(ProfileManager::m_Ptr);
@@ -916,27 +916,27 @@ void ServerManager::FinalClose()
 	safe_delete(ZlibUtility::m_Ptr);
 	safe_delete(LanguageManager::m_Ptr);
 #ifdef FLYLINKDC_USE_DB
-#if defined(_WITH_SQLITE)	
+#if defined(_WITH_SQLITE)
 	safe_delete(TextConverter::m_Ptr);
 #endif
 #endif
 	safe_delete(SettingManager::m_Ptr);
 	safe_delete(ReservedNicksManager::m_Ptr);
-	
+
 #ifdef _BUILD_GUI
 	MainWindow::m_Ptr->SaveGuiSettings();
 #endif
-	
+
 #ifdef __MACH__
 	mach_port_deallocate(mach_task_self(), csMachClock);
 #endif
-	
+
 	DeleteGlobalBuffer();
-	
+
 #ifdef _WIN32
-	
+
 	WSACleanup();
-	
+
 #ifndef _WIN_IOT
 	::PostQuitMessage(0);
 #endif
@@ -947,32 +947,32 @@ void ServerManager::FinalClose()
 void ServerManager::UpdateServers()
 {
 	bool bFound = false;
-	
+
 	// Remove servers for ports we don't want use anymore
 	ServerThread * pCur = NULL,
 	               * pNext = m_pServersS;
-	               
+
 	while (pNext != NULL)
 	{
 		pCur = pNext;
 		pNext = pCur->m_pNext;
-		
+
 		bFound = false;
-		
+
 		for (uint8_t ui8i = 0; ui8i < 25; ui8i++)
 		{
 			if (SettingManager::m_Ptr->m_ui16PortNumbers[ui8i] == 0)
 			{
 				break;
 			}
-			
+
 			if (pCur->m_ui16Port == SettingManager::m_Ptr->m_ui16PortNumbers[ui8i])
 			{
 				bFound = true;
 				break;
 			}
 		}
-		
+
 		if (bFound == false)
 		{
 			if (pCur->m_pPrev == NULL)
@@ -998,14 +998,14 @@ void ServerManager::UpdateServers()
 				pCur->m_pPrev->m_pNext = pCur->m_pNext;
 				pCur->m_pNext->m_pPrev = pCur->m_pPrev;
 			}
-			
+
 			pCur->Close();
 			pCur->WaitFor();
-			
+
 			delete pCur;
 		}
 	}
-	
+
 	// Add servers for ports that not running
 	for (uint8_t ui8i = 0; ui8i < 25; ui8i++)
 	{
@@ -1013,34 +1013,34 @@ void ServerManager::UpdateServers()
 		{
 			break;
 		}
-		
+
 		bFound = false;
-		
+
 		pCur = NULL,
 		pNext = m_pServersS;
-		
+
 		while (pNext != NULL)
 		{
 			pCur = pNext;
 			pNext = pCur->m_pNext;
-			
+
 			if (pCur->m_ui16Port == SettingManager::m_Ptr->m_ui16PortNumbers[ui8i])
 			{
 				bFound = true;
 				break;
 			}
 		}
-		
+
 		if (bFound == false)
 		{
 			if (m_bUseIPv6 == false)
-				{
+			{
 				CreateServerThread(AF_INET, SettingManager::m_Ptr->m_ui16PortNumbers[ui8i]);
 				continue;
 			}
-			
+
 			CreateServerThread(AF_INET6, SettingManager::m_Ptr->m_ui16PortNumbers[ui8i]);
-			
+
 			if (SettingManager::m_Ptr->m_bBools[SETBOOL_BIND_ONLY_SINGLE_IP] == true || m_bIPv6DualStack == false)
 			{
 				CreateServerThread(AF_INET, SettingManager::m_Ptr->m_ui16PortNumbers[ui8i]);
@@ -1056,15 +1056,15 @@ void ServerManager::ResumeAccepts()
 	{
 		return;
 	}
-	
+
 	ServerThread * cur = NULL,
 	               * next = m_pServersS;
-	               
+
 	while (next != NULL)
 	{
 		cur = next;
 		next = cur->m_pNext;
-		
+
 		cur->ResumeSck();
 	}
 }
@@ -1076,7 +1076,7 @@ void ServerManager::SuspendAccepts(const uint32_t ui32Time)
 	{
 		return;
 	}
-	
+
 	if (ui32Time != 0)
 	{
 		UdpDebug::m_Ptr->BroadcastFormat("[SYS] Suspending listening threads to %u seconds.", ui32Time);
@@ -1086,15 +1086,15 @@ void ServerManager::SuspendAccepts(const uint32_t ui32Time)
 		const char sSuspendMsg[] = "[SYS] Suspending listening threads.";
 		UdpDebug::m_Ptr->Broadcast(sSuspendMsg, sizeof(sSuspendMsg) - 1);
 	}
-	
+
 	ServerThread * cur = NULL,
 	               * next = m_pServersS;
-	               
+
 	while (next != NULL)
 	{
 		cur = next;
 		next = cur->m_pNext;
-		
+
 		cur->SuspendSck(ui32Time);
 	}
 }
@@ -1106,12 +1106,12 @@ void ServerManager::UpdateAutoRegState()
 	{
 		return;
 	}
-	
+
 	if (SettingManager::m_Ptr->m_bBools[SETBOOL_AUTO_REG] == true)
 	{
 #if defined(_WIN32) && !defined(_WIN_IOT)
 		m_upRegTimer = SetTimer(NULL, 0, 901000, NULL);
-		
+
 		if (m_upRegTimer == 0)
 		{
 			AppendDebugLog("%s - [ERR] Cannot start regtimer in ServerUpdateAutoRegState\n");
@@ -1153,7 +1153,7 @@ void ServerManager::CreateServerThread(const int iAddrFamily, const uint16_t ui1
 		AppendDebugLog("%s - [MEM] Cannot allocate pServer in ServerCreateServerThread\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	if (pServer->Listen() == true)
 	{
 		if (m_pServersE == NULL)
@@ -1171,9 +1171,9 @@ void ServerManager::CreateServerThread(const int iAddrFamily, const uint16_t ui1
 	else
 	{
 		delete pServer;
-        pServer = NULL;
+		pServer = NULL;
 	}
-	
+
 	if (bResume == true && pServer)
 	{
 		pServer->Resume();
@@ -1185,47 +1185,47 @@ void ServerManager::CommandLineSetup()
 {
 	printf("%s built on %s %s\n\n", g_sPtokaXTitle, __DATE__, __TIME__);
 	printf("Welcome to PtokaX configuration setup.\nDirectory for PtokaX configuration is: %s\nWhen this directory is wrong, then exit this setup.\nTo specify correct configuration directory start PtokaX with -c configdir parameter.", m_sPath.c_str());
-	
+
 	const char sMenu[] = "\n\nAvailable options:\n"
 	                     "1. Basic setup. Only few things required for PtokaX run.\n"
 	                     "2. Complete setup. Long setup, where you can change all PtokaX setings.\n"
 	                     "3. Add registered user.\n"
 	                     "4. Exit this setup.\n\n"
 	                     "Your choice: ";
-	                     
+
 	printf("%s", sMenu);
-	
+
 	while (true)
 	{
 		int iChar = getchar();
-		
+
 		while (getchar() != '\n')
 		{
 			// boredom...
 		};
-		
+
 		switch (iChar)
 		{
-			case '1':
-				SettingManager::m_Ptr->CmdLineBasicSetup();
-				printf("%s", sMenu);
-				continue;
-			case '2':
-				SettingManager::m_Ptr->CmdLineCompleteSetup();
-				printf("%s", sMenu);
-				continue;
-			case '3':
-				RegManager::m_Ptr->AddRegCmdLine();
-				printf("%s", sMenu);
-				continue;
-			case '4':
-				printf("%s ending...\n", g_sPtokaXTitle);
-				break;
-			default:
-				printf("Unknown option: %c\nYour choice: ", iChar);
-				continue;
+		case '1':
+			SettingManager::m_Ptr->CmdLineBasicSetup();
+			printf("%s", sMenu);
+			continue;
+		case '2':
+			SettingManager::m_Ptr->CmdLineCompleteSetup();
+			printf("%s", sMenu);
+			continue;
+		case '3':
+			RegManager::m_Ptr->AddRegCmdLine();
+			printf("%s", sMenu);
+			continue;
+		case '4':
+			printf("%s ending...\n", g_sPtokaXTitle);
+			break;
+		default:
+			printf("Unknown option: %c\nYour choice: ", iChar);
+			continue;
 		}
-		
+
 		break;
 	}
 }
@@ -1240,10 +1240,10 @@ bool ServerManager::ResolveHubAddress(const bool bSilent/* = false*/)
 #ifdef _BUILD_GUI
 			MainWindow::m_Ptr->SetStatusValue((string(LanguageManager::m_Ptr->m_sTexts[LAN_RESOLVING_HUB_ADDRESS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RESOLVING_HUB_ADDRESS]) + "...").c_str());
 #endif
-			
+
 			struct addrinfo hints;
 			memset(&hints, 0, sizeof(addrinfo));
-			
+
 			if (m_bUseIPv6 == true)
 			{
 				hints.ai_family = AF_UNSPEC;
@@ -1252,9 +1252,9 @@ bool ServerManager::ResolveHubAddress(const bool bSilent/* = false*/)
 			{
 				hints.ai_family = AF_INET;
 			}
-			
+
 			struct addrinfo *res;
-			
+
 			if (::getaddrinfo(SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS], NULL, &hints, &res) != 0 || (res->ai_family != AF_INET && res->ai_family != AF_INET6))
 			{
 				if (bSilent == false)
@@ -1263,8 +1263,8 @@ bool ServerManager::ResolveHubAddress(const bool bSilent/* = false*/)
 					int err = WSAGetLastError();
 #ifdef _BUILD_GUI
 					::MessageBox(MainWindow::m_Ptr->m_hWnd, (px_string(LanguageManager::m_Ptr->m_sTexts[LAN_RESOLVING_OF_HOSTNAME], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RESOLVING_OF_HOSTNAME]) + " '" + px_string(SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS]) + "' " +
-					                                           px_string(LanguageManager::m_Ptr->m_sTexts[LAN_HAS_FAILED], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_HAS_FAILED]) + ".\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_ERROR_CODE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_ERROR_CODE]) + ": " + px_string(WSErrorStr(err)) + " (" + px_string(err) + ")\n\n" +
-					                                           px_string(LanguageManager::m_Ptr->m_sTexts[LAN_CHECK_THE_ADDRESS_PLEASE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_CHECK_THE_ADDRESS_PLEASE]) + ".").c_str(), LanguageManager::m_Ptr->m_sTexts[LAN_ERROR], MB_OK | MB_ICONERROR);
+					             px_string(LanguageManager::m_Ptr->m_sTexts[LAN_HAS_FAILED], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_HAS_FAILED]) + ".\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_ERROR_CODE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_ERROR_CODE]) + ": " + px_string(WSErrorStr(err)) + " (" + px_string(err) + ")\n\n" +
+					             px_string(LanguageManager::m_Ptr->m_sTexts[LAN_CHECK_THE_ADDRESS_PLEASE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_CHECK_THE_ADDRESS_PLEASE]) + ".").c_str(), LanguageManager::m_Ptr->m_sTexts[LAN_ERROR], MB_OK | MB_ICONERROR);
 #else
 					AppendLog(px_string(LanguageManager::m_Ptr->m_sTexts[LAN_RESOLVING_OF_HOSTNAME], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RESOLVING_OF_HOSTNAME]) +
 					          " '" + px_string(SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS]) + "' " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_HAS_FAILED], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_HAS_FAILED]) + ".\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_ERROR_CODE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_ERROR_CODE]) +
@@ -1276,13 +1276,13 @@ bool ServerManager::ResolveHubAddress(const bool bSilent/* = false*/)
 					                  (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_CHECK_THE_ADDRESS_PLEASE]) + ".");
 #endif
 				}
-				
+
 				return false;
 			}
 			else
 			{
 				Memo("*** " + string(SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS], (size_t)SettingManager::m_Ptr->m_ui16TextsLens[SETTXT_HUB_ADDRESS]) + " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_RESOLVED_SUCCESSFULLY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RESOLVED_SUCCESSFULLY]) + ".");
-				
+
 				if (m_bUseIPv6 == true)
 				{
 					struct addrinfo *next = res;
@@ -1303,7 +1303,7 @@ bool ServerManager::ResolveHubAddress(const bool bSilent/* = false*/)
 							inet_ntop(AF_INET6, &((struct sockaddr_in6 *)next->ai_addr)->sin6_addr, m_sHubIP6, 40);
 #endif
 						}
-						
+
 						next = next->ai_next;
 					}
 				}
@@ -1311,7 +1311,7 @@ bool ServerManager::ResolveHubAddress(const bool bSilent/* = false*/)
 				{
 					strcpy(m_sHubIP, inet_ntoa(((sockaddr_in *)(res->ai_addr))->sin_addr));
 				}
-				
+
 				if (m_sHubIP[0] != '\0')
 				{
 					string msg = "*** " + string(m_sHubIP);
@@ -1327,7 +1327,7 @@ bool ServerManager::ResolveHubAddress(const bool bSilent/* = false*/)
 							SettingManager::m_Ptr->SetBool(SETBOOL_AUTO_REG, false);
 						}
 					}
-					
+
 					Memo(msg);
 				}
 				else if (m_sHubIP6[0] != '\0')
@@ -1338,7 +1338,7 @@ bool ServerManager::ResolveHubAddress(const bool bSilent/* = false*/)
 						SettingManager::m_Ptr->SetBool(SETBOOL_AUTO_REG, false);
 					}
 				}
-				
+
 				freeaddrinfo(res);
 			}
 		}
@@ -1361,7 +1361,7 @@ bool ServerManager::ResolveHubAddress(const bool bSilent/* = false*/)
 		{
 			m_sHubIP[0] = '\0';
 		}
-		
+
 		if (SettingManager::m_Ptr->m_sTexts[SETTXT_IPV6_ADDRESS] != NULL)
 		{
 			strcpy(m_sHubIP6, SettingManager::m_Ptr->m_sTexts[SETTXT_IPV6_ADDRESS]);
@@ -1370,7 +1370,7 @@ bool ServerManager::ResolveHubAddress(const bool bSilent/* = false*/)
 		{
 			m_sHubIP6[0] = '\0';
 		}
-		
+
 		if (isIP(SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS]) == true)
 		{
 			if (IsPrivateIP(SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS]) == true)
@@ -1379,7 +1379,7 @@ bool ServerManager::ResolveHubAddress(const bool bSilent/* = false*/)
 			}
 		}
 	}
-	
+
 	return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

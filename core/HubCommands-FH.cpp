@@ -53,17 +53,17 @@ bool HubCommands::FullBan(ChatCommand * pChatCommand)   // !fullban nick reason
 		SendNoPermission(pChatCommand);
 		return true;
 	}
-	
+
 	if (pChatCommand->m_ui32CommandLen < 9)
 	{
 		pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::FullBan", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s %cfullban <%s> <%s>. %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_NO_PARAM_GIVEN]);
+		        LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_NO_PARAM_GIVEN]);
 		return true;
 	}
-	
+
 	pChatCommand->m_sCommand += 8;
 	pChatCommand->m_ui32CommandLen -= 8;
-	
+
 	return Ban(pChatCommand, true);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -75,17 +75,17 @@ bool HubCommands::FullBanIp(ChatCommand * pChatCommand)   // !fullbanip ip reaso
 		SendNoPermission(pChatCommand);
 		return true;
 	}
-	
+
 	if (pChatCommand->m_ui32CommandLen < 16)
 	{
 		pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::FullBanIp", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s %cfullbanip <%s> <%s>. %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_IP], LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_NO_PARAM_GIVEN]);
+		        LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_IP], LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_NO_PARAM_GIVEN]);
 		return true;
 	}
-	
+
 	pChatCommand->m_sCommand += 10;
 	pChatCommand->m_ui32CommandLen -= 10;
-	
+
 	return BanIp(pChatCommand, true);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -97,18 +97,18 @@ bool HubCommands::FullTempBan(ChatCommand * pChatCommand)   // !fulltempban nick
 		SendNoPermission(pChatCommand);
 		return true;
 	}
-	
+
 	if (pChatCommand->m_ui32CommandLen < 16)
 	{
 		pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::FullTempBan", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s %cfulltempban <%s> <%s> <%s>. %s!|",
-		                                         SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_TIME_LWR],
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_NO_PARAM_GIVEN]);
+		        SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_TIME_LWR],
+		        LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_NO_PARAM_GIVEN]);
 		return true;
 	}
-	
+
 	pChatCommand->m_sCommand += 12;
 	pChatCommand->m_ui32CommandLen -= 12;
-	
+
 	return TempBan(pChatCommand, true);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -120,18 +120,18 @@ bool HubCommands::FullTempBanIp(ChatCommand * pChatCommand)   // !fulltempbanip 
 		SendNoPermission(pChatCommand);
 		return true;
 	}
-	
+
 	if (pChatCommand->m_ui32CommandLen < 24)
 	{
 		pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::FullTempBanIp", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s %cfulltempbanip <%s> <%s> <%s>. %s!|",
-		                                         SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_IP], LanguageManager::m_Ptr->m_sTexts[LAN_TIME_LWR],
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_NO_PARAM_GIVEN]);
+		        SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_IP], LanguageManager::m_Ptr->m_sTexts[LAN_TIME_LWR],
+		        LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_NO_PARAM_GIVEN]);
 		return true;
 	}
-	
+
 	pChatCommand->m_sCommand += 14;
 	pChatCommand->m_ui32CommandLen -= 14;
-	
+
 	return TempBanIp(pChatCommand, true);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -143,18 +143,18 @@ bool HubCommands::FullRangeBan(ChatCommand * pChatCommand)   // !fullrangeban fr
 		SendNoPermission(pChatCommand);
 		return true;
 	}
-	
+
 	if (pChatCommand->m_ui32CommandLen < 28)
 	{
 		pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::FullRangeBan", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s %cfullrangeban <%s> <%s> <%s>. %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_FROMIP], LanguageManager::m_Ptr->m_sTexts[LAN_TOIP], LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR],
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_NO_PARAM_GIVEN]);
+		        LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_FROMIP], LanguageManager::m_Ptr->m_sTexts[LAN_TOIP], LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR],
+		        LanguageManager::m_Ptr->m_sTexts[LAN_NO_PARAM_GIVEN]);
 		return true;
 	}
-	
+
 	pChatCommand->m_sCommand += 13;
 	pChatCommand->m_ui32CommandLen -= 13;
-	
+
 	return RangeBan(pChatCommand, true);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -166,18 +166,18 @@ bool HubCommands::FullRangeTempBan(ChatCommand * pChatCommand)   // !fullrangete
 		SendNoPermission(pChatCommand);
 		return true;
 	}
-	
+
 	if (pChatCommand->m_ui32CommandLen < 35)
 	{
 		pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::FullRangeTempBan", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s %cfullrangetempban <%s> <%s> <%s> <%s>. %s!|",
-		                                         SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_FROMIP], LanguageManager::m_Ptr->m_sTexts[LAN_TOIP],
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_TIME_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_NO_PARAM_GIVEN]);
+		        SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_FROMIP], LanguageManager::m_Ptr->m_sTexts[LAN_TOIP],
+		        LanguageManager::m_Ptr->m_sTexts[LAN_TIME_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_NO_PARAM_GIVEN]);
 		return true;
 	}
-	
+
 	pChatCommand->m_sCommand += 17;
 	pChatCommand->m_ui32CommandLen -= 17;
-	
+
 	return RangeTempBan(pChatCommand, true);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -189,52 +189,52 @@ bool HubCommands::GetBans(ChatCommand * pChatCommand)   // !getbans
 		SendNoPermission(pChatCommand);
 		return true;
 	}
-	
+
 	UncountDeflood(pChatCommand);
-	
+
 	int iMsgLen = CheckFromPm(pChatCommand);
-	
+
 	int iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "<%s> ", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC]);
 	if (iRet <= 0)
 	{
 		return true;
 	}
 	iMsgLen += iRet;
-	
+
 	px_string BanList(ServerManager::m_pGlobalBuffer, iMsgLen);
 	bool bIsEmpty = true;
-	
+
 	if (BanManager::m_Ptr->m_pTempBanListS != NULL)
 	{
 		uint32_t ui32BanNum = 0;
-		
+
 		time_t acc_time;
 		time(&acc_time);
-		
+
 		BanItem * curBan = NULL,
 		          * nextBan = BanManager::m_Ptr->m_pTempBanListS;
-		          
+
 		while (nextBan != NULL)
 		{
 			curBan = nextBan;
 			nextBan = curBan->m_pNext;
-			
+
 			if (acc_time > curBan->m_tTempBanExpire)
 			{
 				BanManager::m_Ptr->Rem(curBan);
 				delete curBan;
-				
+
 				continue;
 			}
-			
+
 			if (ui32BanNum == 0)
 			{
 				BanList += string(LanguageManager::m_Ptr->m_sTexts[LAN_TEMP_BANS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_TEMP_BANS]) + ":\n\n";
 			}
-			
+
 			ui32BanNum++;
 			BanList += "[ " + px_string(ui32BanNum) + " ]";
-			
+
 			if (curBan->m_sIp[0] != '\0')
 			{
 				if (((curBan->m_ui8Bits & BanManager::IP) == BanManager::IP) == true)
@@ -247,7 +247,7 @@ bool HubCommands::GetBans(ChatCommand * pChatCommand)   // !getbans
 					BanList += " (" + string(LanguageManager::m_Ptr->m_sTexts[LAN_FULL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FULL]) + ")";
 				}
 			}
-			
+
 			if (curBan->m_sNick != NULL)
 			{
 				if (((curBan->m_ui8Bits & BanManager::NICK) == BanManager::NICK) == true)
@@ -256,48 +256,48 @@ bool HubCommands::GetBans(ChatCommand * pChatCommand)   // !getbans
 				}
 				BanList += " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_NICK], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_NICK]) + ": " + string(curBan->m_sNick);
 			}
-			
+
 			if (curBan->m_sBy != NULL)
 			{
 				BanList += " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_BY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_BY]) + ": " + string(curBan->m_sBy);
 			}
-			
+
 			if (curBan->m_sReason != NULL)
 			{
 				BanList += " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_REASON], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_REASON]) + ": " + string(curBan->m_sReason);
 			}
-			
+
 			struct tm *tm = localtime(&curBan->m_tTempBanExpire);
 			strftime(ServerManager::m_pGlobalBuffer, 256, "%c\n", tm);
-			
+
 			BanList += " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_EXPIRE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_EXPIRE]) + ": " + string(ServerManager::m_pGlobalBuffer);
 		}
-		
+
 		if (ui32BanNum != 0)
 		{
 			bIsEmpty = false;
 			BanList += "\n\n";
 		}
 	}
-	
+
 	if (BanManager::m_Ptr->m_pPermBanListS != NULL)
 	{
 		bIsEmpty = false;
-		
+
 		BanList += string(LanguageManager::m_Ptr->m_sTexts[LAN_PERM_BANS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_PERM_BANS]) + ":\n\n";
-		
+
 		uint32_t iBanNum = 0;
 		BanItem * curBan = NULL,
 		          * nextBan = BanManager::m_Ptr->m_pPermBanListS;
-		          
+
 		while (nextBan != NULL)
 		{
 			curBan = nextBan;
 			nextBan = curBan->m_pNext;
-			
+
 			iBanNum++;
 			BanList += "[ " + px_string(iBanNum) + " ]";
-			
+
 			if (curBan->m_sIp[0] != '\0')
 			{
 				if (((curBan->m_ui8Bits & BanManager::IP) == BanManager::IP) == true)
@@ -310,7 +310,7 @@ bool HubCommands::GetBans(ChatCommand * pChatCommand)   // !getbans
 					BanList += " (" + string(LanguageManager::m_Ptr->m_sTexts[LAN_FULL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FULL]) + ")";
 				}
 			}
-			
+
 			if (curBan->m_sNick != NULL)
 			{
 				if (((curBan->m_ui8Bits & BanManager::NICK) == BanManager::NICK) == true)
@@ -319,21 +319,21 @@ bool HubCommands::GetBans(ChatCommand * pChatCommand)   // !getbans
 				}
 				BanList += " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_NICK], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_NICK]) + ": " + string(curBan->m_sNick);
 			}
-			
+
 			if (curBan->m_sBy != NULL)
 			{
 				BanList += " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_BY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_BY]) + ": " + string(curBan->m_sBy);
 			}
-			
+
 			if (curBan->m_sReason != NULL)
 			{
 				BanList += " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_REASON], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_REASON]) + ": " + string(curBan->m_sReason);
 			}
-			
+
 			BanList += "\n";
 		}
 	}
-	
+
 	if (bIsEmpty == true)
 	{
 		BanList += string(LanguageManager::m_Ptr->m_sTexts[LAN_NO_BANS_FOUND], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_NO_BANS_FOUND]) + "...|";
@@ -342,9 +342,9 @@ bool HubCommands::GetBans(ChatCommand * pChatCommand)   // !getbans
 	{
 		BanList += "|";
 	}
-	
+
 	pChatCommand->m_pUser->SendCharDelayed(BanList.c_str(), BanList.size());
-	
+
 	return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -356,70 +356,70 @@ bool HubCommands::Gag(ChatCommand * pChatCommand)   // !gag nick
 		SendNoPermission(pChatCommand);
 		return true;
 	}
-	
+
 	if (pChatCommand->m_ui32CommandLen < 5 || pChatCommand->m_sCommand[4] == '\0')
 	{
 		pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::Gag1", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s %cgag <%s>. %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_NO_PARAM_GIVEN]);
+		        LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_NO_PARAM_GIVEN]);
 		return true;
 	}
-	
+
 	if (pChatCommand->m_ui32CommandLen > 100)
 	{
 		pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::Gag2", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s %cgag <%s>. %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_MAX_ALWD_NICK_LEN_64_CHARS]);
+		        LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_MAX_ALWD_NICK_LEN_64_CHARS]);
 		return true;
 	}
-	
+
 	pChatCommand->m_sCommand += 4;
-	
+
 	// Self-gag ?
 	if (strcasecmp(pChatCommand->m_sCommand, pChatCommand->m_pUser->m_sNick) == 0)
 	{
 		pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::Gag3", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_YOU_CANT_GAG_YOURSELF]);
+		        LanguageManager::m_Ptr->m_sTexts[LAN_YOU_CANT_GAG_YOURSELF]);
 		return true;
 	}
-	
+
 	User * pOtherUser = HashManager::m_Ptr->FindUser(pChatCommand->m_sCommand, pChatCommand->m_ui32CommandLen - 4);
 	if (pOtherUser == NULL)
 	{
 		pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::Gag4", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s: %s %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_ERROR], pChatCommand->m_sCommand,  LanguageManager::m_Ptr->m_sTexts[LAN_IS_NOT_IN_USERLIST]);
+		        LanguageManager::m_Ptr->m_sTexts[LAN_ERROR], pChatCommand->m_sCommand,  LanguageManager::m_Ptr->m_sTexts[LAN_IS_NOT_IN_USERLIST]);
 		return true;
 	}
-	
+
 	if (((pOtherUser->m_ui32BoolBits & User::BIT_GAGGED) == User::BIT_GAGGED) == true)
 	{
 		pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::Gag5", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s: %s %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_ERROR], pOtherUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_IS_ALREDY_GAGGED]);
+		        LanguageManager::m_Ptr->m_sTexts[LAN_ERROR], pOtherUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_IS_ALREDY_GAGGED]);
 		return true;
 	}
-	
+
 	// PPK don't gag user with higher profile
 	if (pOtherUser->m_i32Profile != -1 && pChatCommand->m_pUser->m_i32Profile > pOtherUser->m_i32Profile)
 	{
 		pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::Gag6", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> %s %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_NOT_ALW_TO_GAG], pOtherUser->m_sNick);
+		        LanguageManager::m_Ptr->m_sTexts[LAN_NOT_ALW_TO_GAG], pOtherUser->m_sNick);
 		return true;
 	}
-	
+
 	UncountDeflood(pChatCommand);
-	
+
 	pOtherUser->m_ui32BoolBits |= User::BIT_GAGGED;
 	pOtherUser->SendFormat("HubCommands::Gag7", true, "<%s> %s %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_GAGGED_BY], pChatCommand->m_pUser->m_sNick);
-	
+
 	if (SettingManager::m_Ptr->m_bBools[SETBOOL_SEND_STATUS_MESSAGES] == true)
 	{
 		GlobalDataQueue::m_Ptr->StatusMessageFormat("HubCommands::Gag8", "<%s> *** %s %s %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], pChatCommand->m_pUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_HAS_GAGGED], pOtherUser->m_sNick);
 	}
-	
+
 	if (SettingManager::m_Ptr->m_bBools[SETBOOL_SEND_STATUS_MESSAGES] == false || ((pChatCommand->m_pUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == false)
 	{
 		pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::Gag9", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> %s %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], pOtherUser->m_sNick,
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_HAS_GAGGED]);
+		        LanguageManager::m_Ptr->m_sTexts[LAN_HAS_GAGGED]);
 	}
-	
+
 	return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -431,24 +431,24 @@ bool HubCommands::GetInfo(ChatCommand * pChatCommand)   // !getinfo nick
 		SendNoPermission(pChatCommand);
 		return true;
 	}
-	
+
 	if (pChatCommand->m_ui32CommandLen < 9 || pChatCommand->m_sCommand[8] == 0)
 	{
 		pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::GetInfo1", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s %cgetinfo <%s>. %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0],  LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_NO_PARAM_GIVEN]);
+		        LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0],  LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_NO_PARAM_GIVEN]);
 		return true;
 	}
-	
+
 	if (pChatCommand->m_ui32CommandLen > 100)
 	{
 		pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::GetInfo2", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s %cgetinfo <%s>. %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0],  LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_MAX_ALWD_NICK_LEN_64_CHARS]);
+		        LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0],  LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_MAX_ALWD_NICK_LEN_64_CHARS]);
 		return true;
 	}
-	
+
 	pChatCommand->m_sCommand += 8;
 	pChatCommand->m_ui32CommandLen -= 8;
-	
+
 	User * pOtherUser = HashManager::m_Ptr->FindUser(pChatCommand->m_sCommand, pChatCommand->m_ui32CommandLen);
 	if (pOtherUser == NULL)
 	{
@@ -474,21 +474,21 @@ bool HubCommands::GetInfo(ChatCommand * pChatCommand)   // !getinfo nick
 #endif
 #endif
 		pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::GetInfo3", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s: %s %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_ERROR], pChatCommand->m_sCommand, LanguageManager::m_Ptr->m_sTexts[LAN_NOT_FOUND]);
+		        LanguageManager::m_Ptr->m_sTexts[LAN_ERROR], pChatCommand->m_sCommand, LanguageManager::m_Ptr->m_sTexts[LAN_NOT_FOUND]);
 		return true;
 	}
-	
+
 	UncountDeflood(pChatCommand);
-	
+
 	int iMsgLen = CheckFromPm(pChatCommand);
-	
+
 	int iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "<%s> \n%s: %s", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_NICK], pOtherUser->m_sNick);
 	if (iRet <= 0)
 	{
 		return true;
 	}
 	iMsgLen += iRet;
-	
+
 	if (pOtherUser->m_i32Profile != -1)
 	{
 		iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_PROFILE], ProfileManager::m_Ptr->m_ppProfilesTable[pOtherUser->m_i32Profile]->m_sName);
@@ -498,14 +498,14 @@ bool HubCommands::GetInfo(ChatCommand * pChatCommand)   // !getinfo nick
 		}
 		iMsgLen += iRet;
 	}
-	
+
 	iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s ", LanguageManager::m_Ptr->m_sTexts[LAN_STATUS], LanguageManager::m_Ptr->m_sTexts[LAN_ONLINE_FROM]);
 	if (iRet <= 0)
 	{
 		return true;
 	}
 	iMsgLen += iRet;
-	
+
 	struct tm *tm = localtime(&pOtherUser->m_tLoginTime);
 	iRet = (int)strftime(ServerManager::m_pGlobalBuffer + iMsgLen, 256, "%c", tm);
 	if (iRet <= 0)
@@ -513,7 +513,7 @@ bool HubCommands::GetInfo(ChatCommand * pChatCommand)   // !getinfo nick
 		return true;
 	}
 	iMsgLen += iRet;
-	
+
 	if (pOtherUser->m_sIPv4[0] != '\0')
 	{
 		iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s / %s\n%s: %0.02f %s", LanguageManager::m_Ptr->m_sTexts[LAN_IP], pOtherUser->m_sIP, pOtherUser->m_sIPv4, LanguageManager::m_Ptr->m_sTexts[LAN_SHARE_SIZE], (double)pOtherUser->m_ui64SharedSize / 1073741824,
@@ -534,7 +534,7 @@ bool HubCommands::GetInfo(ChatCommand * pChatCommand)   // !getinfo nick
 		}
 		iMsgLen += iRet;
 	}
-	
+
 	if (pOtherUser->m_sDescription != NULL)
 	{
 		iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: ", LanguageManager::m_Ptr->m_sTexts[LAN_DESCRIPTION]);
@@ -546,7 +546,7 @@ bool HubCommands::GetInfo(ChatCommand * pChatCommand)   // !getinfo nick
 		memcpy(ServerManager::m_pGlobalBuffer + iMsgLen, pOtherUser->m_sDescription, pOtherUser->m_ui8DescriptionLen);
 		iMsgLen += pOtherUser->m_ui8DescriptionLen;
 	}
-	
+
 	if (pOtherUser->m_sTag != NULL)
 	{
 		iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: ", LanguageManager::m_Ptr->m_sTexts[LAN_TAG]);
@@ -558,7 +558,7 @@ bool HubCommands::GetInfo(ChatCommand * pChatCommand)   // !getinfo nick
 		memcpy(ServerManager::m_pGlobalBuffer + iMsgLen, pOtherUser->m_sTag, pOtherUser->m_ui8TagLen);
 		iMsgLen += (int)pOtherUser->m_ui8TagLen;
 	}
-	
+
 	if (pOtherUser->m_sConnection != NULL)
 	{
 		iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: ", LanguageManager::m_Ptr->m_sTexts[LAN_CONNECTION]);
@@ -570,7 +570,7 @@ bool HubCommands::GetInfo(ChatCommand * pChatCommand)   // !getinfo nick
 		memcpy(ServerManager::m_pGlobalBuffer + iMsgLen, pOtherUser->m_sConnection, pOtherUser->m_ui8ConnectionLen);
 		iMsgLen += pOtherUser->m_ui8ConnectionLen;
 	}
-	
+
 	if (pOtherUser->m_sEmail != NULL)
 	{
 		iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: ", LanguageManager::m_Ptr->m_sTexts[LAN_EMAIL]);
@@ -582,7 +582,7 @@ bool HubCommands::GetInfo(ChatCommand * pChatCommand)   // !getinfo nick
 		memcpy(ServerManager::m_pGlobalBuffer + iMsgLen, pOtherUser->m_sEmail, pOtherUser->m_ui8EmailLen);
 		iMsgLen += pOtherUser->m_ui8EmailLen;
 	}
-	
+
 	if (IpP2Country::m_Ptr->m_ui32Count != 0)
 	{
 		iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: ", LanguageManager::m_Ptr->m_sTexts[LAN_COUNTRY]);
@@ -594,12 +594,12 @@ bool HubCommands::GetInfo(ChatCommand * pChatCommand)   // !getinfo nick
 		memcpy(ServerManager::m_pGlobalBuffer + iMsgLen, IpP2Country::m_Ptr->GetCountry(pOtherUser->m_ui8Country, false), 2);
 		iMsgLen += 2;
 	}
-	
+
 	ServerManager::m_pGlobalBuffer[iMsgLen] = '|';
 	ServerManager::m_pGlobalBuffer[iMsgLen + 1] = '\0';
-	
+
 	pChatCommand->m_pUser->SendCharDelayed(ServerManager::m_pGlobalBuffer, iMsgLen + 1);
-	
+
 	return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -614,28 +614,28 @@ bool HubCommands::GetIpInfo(ChatCommand * pChatCommand)   // !getipinfo ip
 		SendNoPermission(pChatCommand);
 		return true;
 	}
-	
+
 	if (pChatCommand->m_ui32CommandLen < 11 || pChatCommand->m_sCommand[10] == 0)
 	{
 		pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::GetIpInfo1", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s %cgetipinfo <%s>. %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_IP], LanguageManager::m_Ptr->m_sTexts[LAN_NO_PARAM_GIVEN]);
+		        LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_IP], LanguageManager::m_Ptr->m_sTexts[LAN_NO_PARAM_GIVEN]);
 		return true;
 	}
-	
+
 	if (pChatCommand->m_ui32CommandLen > 102)
 	{
 		pChatCommand->m_pUser->SendFormatCheckPM("HHubCommands::GetIpInfo2", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s %cgetipinfo <%s>. %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0],  LanguageManager::m_Ptr->m_sTexts[LAN_IP], LanguageManager::m_Ptr->m_sTexts[LAN_MAX_ALWD_IP_LEN_39_CHARS]);
+		        LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0],  LanguageManager::m_Ptr->m_sTexts[LAN_IP], LanguageManager::m_Ptr->m_sTexts[LAN_MAX_ALWD_IP_LEN_39_CHARS]);
 		return true;
 	}
-	
+
 	pChatCommand->m_sCommand += 10;
 	pChatCommand->m_ui32CommandLen -= 10;
-	
+
 	if (isIP(pChatCommand->m_sCommand) == false)
 	{
 		pChatCommand->m_pUser->SendFormatCheckPM("HHubCommands::GetIpInfo3", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s %cgetipinfo <%s>. %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],
-		                                         LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0],  LanguageManager::m_Ptr->m_sTexts[LAN_IP], LanguageManager::m_Ptr->m_sTexts[LAN_NO_VALID_IP_SPECIFIED]);
+		        LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0],  LanguageManager::m_Ptr->m_sTexts[LAN_IP], LanguageManager::m_Ptr->m_sTexts[LAN_NO_VALID_IP_SPECIFIED]);
 		return true;
 	}
 #ifdef FLYLINKDC_USE_DB
@@ -660,8 +660,8 @@ bool HubCommands::GetIpInfo(ChatCommand * pChatCommand)   // !getipinfo ip
 #endif
 #endif
 	pChatCommand->m_pUser->SendFormatCheckPM("HubCommands::GetIpInfo4", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s: %s %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],
-	                                         LanguageManager::m_Ptr->m_sTexts[LAN_ERROR], pChatCommand->m_sCommand, LanguageManager::m_Ptr->m_sTexts[LAN_NOT_FOUND]);
-	                                         
+	        LanguageManager::m_Ptr->m_sTexts[LAN_ERROR], pChatCommand->m_sCommand, LanguageManager::m_Ptr->m_sTexts[LAN_NOT_FOUND]);
+
 	return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -673,51 +673,51 @@ bool HubCommands::GetTempBans(ChatCommand * pChatCommand)   // !gettempbans
 		SendNoPermission(pChatCommand);
 		return true;
 	}
-	
+
 	UncountDeflood(pChatCommand);
-	
+
 	int iMsgLen = CheckFromPm(pChatCommand);
-	
+
 	int iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "<%s> ", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC]);
 	if (iRet <= 0)
 	{
 		return true;
 	}
 	iMsgLen += iRet;
-	
+
 	px_string BanList = px_string(ServerManager::m_pGlobalBuffer, iMsgLen);
-	
+
 	if (BanManager::m_Ptr->m_pTempBanListS != NULL)
 	{
 		uint32_t ui32BanNum = 0;
-		
+
 		time_t acc_time;
 		time(&acc_time);
-		
+
 		BanItem * curBan = NULL,
 		          * nextBan = BanManager::m_Ptr->m_pTempBanListS;
-		          
+
 		while (nextBan != NULL)
 		{
 			curBan = nextBan;
 			nextBan = curBan->m_pNext;
-			
+
 			if (acc_time > curBan->m_tTempBanExpire)
 			{
 				BanManager::m_Ptr->Rem(curBan);
 				delete curBan;
-				
+
 				continue;
 			}
-			
+
 			if (ui32BanNum == 0)
 			{
 				BanList += string(LanguageManager::m_Ptr->m_sTexts[LAN_TEMP_BANS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_TEMP_BANS]) + ":\n\n";
 			}
-			
+
 			ui32BanNum++;
 			BanList += "[ " + px_string(ui32BanNum) + " ]";
-			
+
 			if (curBan->m_sIp[0] != '\0')
 			{
 				if (((curBan->m_ui8Bits & BanManager::IP) == BanManager::IP) == true)
@@ -730,7 +730,7 @@ bool HubCommands::GetTempBans(ChatCommand * pChatCommand)   // !gettempbans
 					BanList += " (" + string(LanguageManager::m_Ptr->m_sTexts[LAN_FULL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FULL]) + ")";
 				}
 			}
-			
+
 			if (curBan->m_sNick != NULL)
 			{
 				if (((curBan->m_ui8Bits & BanManager::NICK) == BanManager::NICK) == true)
@@ -739,23 +739,23 @@ bool HubCommands::GetTempBans(ChatCommand * pChatCommand)   // !gettempbans
 				}
 				BanList += " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_NICK], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_NICK]) + ": " + string(curBan->m_sNick);
 			}
-			
+
 			if (curBan->m_sBy != NULL)
 			{
 				BanList += " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_BY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_BY]) + ": " + string(curBan->m_sBy);
 			}
-			
+
 			if (curBan->m_sReason != NULL)
 			{
 				BanList += " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_REASON], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_REASON]) + ": " + string(curBan->m_sReason);
 			}
-			
+
 			struct tm *tm = localtime(&curBan->m_tTempBanExpire);
 			strftime(ServerManager::m_pGlobalBuffer, 256, "%c\n", tm);
-			
+
 			BanList += " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_EXPIRE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_EXPIRE]) + ": " + string(ServerManager::m_pGlobalBuffer);
 		}
-		
+
 		if (ui32BanNum > 0)
 		{
 			BanList += "|";
@@ -769,9 +769,9 @@ bool HubCommands::GetTempBans(ChatCommand * pChatCommand)   // !gettempbans
 	{
 		BanList += string(LanguageManager::m_Ptr->m_sTexts[LAN_NO_TEMP_BANS_FOUND], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_NO_TEMP_BANS_FOUND]) + "...|";
 	}
-	
+
 	pChatCommand->m_pUser->SendCharDelayed(BanList.c_str(), BanList.size());
-	
+
 	return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -783,27 +783,27 @@ bool HubCommands::GetScripts(ChatCommand * pChatCommand)   // !getscripts
 		SendNoPermission(pChatCommand);
 		return true;
 	}
-	
+
 	UncountDeflood(pChatCommand);
-	
+
 	int iMsgLen = CheckFromPm(pChatCommand);
-	
+
 	int iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "<%s> ", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC]);
 	if (iRet <= 0)
 	{
 		return true;
 	}
 	iMsgLen += iRet;
-	
-    px_string ScriptList(ServerManager::m_pGlobalBuffer, iMsgLen);
-	
+
+	px_string ScriptList(ServerManager::m_pGlobalBuffer, iMsgLen);
+
 	ScriptList += string(LanguageManager::m_Ptr->m_sTexts[LAN_SCRIPTS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_SCRIPTS]) + ":\n\n";
-	
+
 	for (uint8_t ui8i = 0; ui8i < ScriptManager::m_Ptr->m_ui8ScriptCount; ui8i++)
 	{
 		ScriptList += "[ " + string(ScriptManager::m_Ptr->m_ppScriptTable[ui8i]->m_bEnabled == true ? "1" : "0") +
 		              " ] " + string(ScriptManager::m_Ptr->m_ppScriptTable[ui8i]->m_sName);
-		              
+
 		if (ScriptManager::m_Ptr->m_ppScriptTable[ui8i]->m_bEnabled == true)
 		{
 			ScriptList += " (" + px_string(ScriptGetGC(ScriptManager::m_Ptr->m_ppScriptTable[ui8i])) + " kB)\n";
@@ -813,10 +813,10 @@ bool HubCommands::GetScripts(ChatCommand * pChatCommand)   // !getscripts
 			ScriptList += "\n";
 		}
 	}
-	
+
 	ScriptList += "|";
 	pChatCommand->m_pUser->SendCharDelayed(ScriptList.c_str(), ScriptList.size());
-	
+
 	return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -828,37 +828,37 @@ bool HubCommands::GetPermBans(ChatCommand * pChatCommand)   // !getpermbans
 		SendNoPermission(pChatCommand);
 		return true;
 	}
-	
+
 	UncountDeflood(pChatCommand);
-	
+
 	int iMsgLen = CheckFromPm(pChatCommand);
-	
+
 	int iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "<%s> ", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC]);
 	if (iRet <= 0)
 	{
 		return true;
 	}
 	iMsgLen += iRet;
-	
-    px_string BanList(ServerManager::m_pGlobalBuffer, iMsgLen);
-	
+
+	px_string BanList(ServerManager::m_pGlobalBuffer, iMsgLen);
+
 	if (BanManager::m_Ptr->m_pPermBanListS != NULL)
 	{
 		BanList += string(LanguageManager::m_Ptr->m_sTexts[LAN_PERM_BANS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_PERM_BANS]) + ":\n\n";
-		
+
 		uint32_t ui32BanNum = 0;
-		
+
 		BanItem * curBan = NULL,
 		          * nextBan = BanManager::m_Ptr->m_pPermBanListS;
-		          
+
 		while (nextBan != NULL)
 		{
 			curBan = nextBan;
 			nextBan = curBan->m_pNext;
-			
+
 			ui32BanNum++;
 			BanList += "[ " + px_string(ui32BanNum) + " ]";
-			
+
 			if (curBan->m_sIp[0] != '\0')
 			{
 				if (((curBan->m_ui8Bits & BanManager::IP) == BanManager::IP) == true)
@@ -871,7 +871,7 @@ bool HubCommands::GetPermBans(ChatCommand * pChatCommand)   // !getpermbans
 					BanList += " (" + string(LanguageManager::m_Ptr->m_sTexts[LAN_FULL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FULL]) + ")";
 				}
 			}
-			
+
 			if (curBan->m_sNick != NULL)
 			{
 				if (((curBan->m_ui8Bits & BanManager::NICK) == BanManager::NICK) == true)
@@ -880,29 +880,29 @@ bool HubCommands::GetPermBans(ChatCommand * pChatCommand)   // !getpermbans
 				}
 				BanList += " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_NICK], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_NICK]) + ": " + string(curBan->m_sNick);
 			}
-			
+
 			if (curBan->m_sBy != NULL)
 			{
 				BanList += " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_BY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_BY]) + ": " + string(curBan->m_sBy);
 			}
-			
+
 			if (curBan->m_sReason != NULL)
 			{
 				BanList += " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_REASON], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_REASON]) + ": " + string(curBan->m_sReason);
 			}
-			
+
 			BanList += "\n";
 		}
-		
+
 		BanList += "|";
 	}
 	else
 	{
 		BanList += string(LanguageManager::m_Ptr->m_sTexts[LAN_NO_PERM_BANS_FOUND], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_NO_PERM_BANS_FOUND]) + "...|";
 	}
-	
+
 	pChatCommand->m_pUser->SendCharDelayed(BanList.c_str(), BanList.size());
-	
+
 	return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -914,128 +914,128 @@ bool HubCommands::GetRangeBans(ChatCommand * pChatCommand)   // !getrangebans
 		SendNoPermission(pChatCommand);
 		return true;
 	}
-	
+
 	UncountDeflood(pChatCommand);
-	
+
 	int iMsgLen = CheckFromPm(pChatCommand);
-	
+
 	int iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "<%s> ", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC]);
 	if (iRet <= 0)
 	{
 		return true;
 	}
 	iMsgLen += iRet;
-	
-    px_string BanList(ServerManager::m_pGlobalBuffer, iMsgLen);
+
+	px_string BanList(ServerManager::m_pGlobalBuffer, iMsgLen);
 	bool bIsEmpty = true;
-	
+
 	if (BanManager::m_Ptr->m_pRangeBanListS != NULL)
 	{
 		uint32_t ui32BanNum = 0;
-		
+
 		time_t acc_time;
 		time(&acc_time);
-		
+
 		RangeBanItem * curBan = NULL,
 		               * nextBan = BanManager::m_Ptr->m_pRangeBanListS;
-		               
+
 		while (nextBan != NULL)
 		{
 			curBan = nextBan;
 			nextBan = curBan->m_pNext;
-			
+
 			if (((curBan->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == false)
 				continue;
-				
+
 			if (acc_time > curBan->m_tTempBanExpire)
 			{
 				BanManager::m_Ptr->RemRange(curBan);
 				delete curBan;
-				
+
 				continue;
 			}
-			
+
 			if (ui32BanNum == 0)
 			{
 				BanList += string(LanguageManager::m_Ptr->m_sTexts[LAN_TEMP_RANGE_BANS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_TEMP_RANGE_BANS]) + ":\n\n";
 			}
-			
+
 			ui32BanNum++;
-			
+
 			BanList += "[ " + px_string(ui32BanNum) + " ]";
-			BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_RANGE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RANGE]) + ": " 
-                + px_string(curBan->m_sIpFrom) + "-" + px_string(curBan->m_sIpTo);
-			
+			BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_RANGE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RANGE]) + ": "
+			           + px_string(curBan->m_sIpFrom) + "-" + px_string(curBan->m_sIpTo);
+
 			if (((curBan->m_ui8Bits & BanManager::FULL) == BanManager::FULL) == true)
 			{
 				BanList += " (" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_FULL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FULL]) + ")";
 			}
-			
+
 			if (curBan->m_sBy != NULL)
 			{
 				BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_BY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_BY]) + ": " + px_string(curBan->m_sBy);
 			}
-			
+
 			if (curBan->m_sReason != NULL)
 			{
 				BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_REASON], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_REASON]) +
 				           ": " + px_string(curBan->m_sReason);
 			}
-			
+
 			struct tm *tm = localtime(&curBan->m_tTempBanExpire);
 			strftime(ServerManager::m_pGlobalBuffer, 256, "%c\n", tm);
-			
+
 			BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_EXPIRE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_EXPIRE]) + ": " + px_string(ServerManager::m_pGlobalBuffer);
 		}
-		
+
 		if (ui32BanNum > 0)
 		{
 			bIsEmpty = false;
 			BanList += "\n\n";
 		}
-		
+
 		ui32BanNum = 0;
 		nextBan = BanManager::m_Ptr->m_pRangeBanListS;
-		
+
 		while (nextBan != NULL)
 		{
 			curBan = nextBan;
 			nextBan = curBan->m_pNext;
-			
+
 			if (((curBan->m_ui8Bits & BanManager::PERM) == BanManager::PERM) == false)
 				continue;
-				
+
 			if (ui32BanNum == 0)
 			{
 				bIsEmpty = false;
 				BanList += px_string(LanguageManager::m_Ptr->m_sTexts[LAN_PERM_RANGE_BANS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_PERM_RANGE_BANS]) + ":\n\n";
 			}
-			
+
 			ui32BanNum++;
-			
+
 			BanList += "[ " + px_string(ui32BanNum) + " ]";
 			BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_RANGE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RANGE]) + ": " + px_string(curBan->m_sIpFrom) + "-" + px_string(curBan->m_sIpTo);
-			
+
 			if (((curBan->m_ui8Bits & BanManager::FULL) == BanManager::FULL) == true)
 			{
 				BanList += " (" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_FULL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FULL]) + ")";
 			}
-			
+
 			if (curBan->m_sBy != NULL)
 			{
 				BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_BY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_BY]) + ": " + px_string(curBan->m_sBy);
 			}
-			
+
 			if (curBan->m_sReason != NULL)
 			{
 				BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_REASON], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_REASON]) +
 				           ": " + px_string(curBan->m_sReason);
 			}
-			
+
 			BanList += "\n";
 		}
 	}
-	
+
 	if (bIsEmpty == true)
 	{
 		BanList += px_string(LanguageManager::m_Ptr->m_sTexts[LAN_NO_RANGE_BANS_FOUND], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_NO_RANGE_BANS_FOUND]) + "...|";
@@ -1044,9 +1044,9 @@ bool HubCommands::GetRangeBans(ChatCommand * pChatCommand)   // !getrangebans
 	{
 		BanList += "|";
 	}
-	
+
 	pChatCommand->m_pUser->SendCharDelayed(BanList.c_str(), BanList.size());
-	
+
 	return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1058,69 +1058,69 @@ bool HubCommands::GetRangePermBans(ChatCommand * pChatCommand)   // !getrangeper
 		SendNoPermission(pChatCommand);
 		return true;
 	}
-	
+
 	UncountDeflood(pChatCommand);
-	
+
 	int iMsgLen = CheckFromPm(pChatCommand);
-	
+
 	int iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "<%s> ", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC]);
 	if (iRet <= 0)
 	{
 		return true;
 	}
 	iMsgLen += iRet;
-	
-    px_string BanList(ServerManager::m_pGlobalBuffer, iMsgLen);
+
+	px_string BanList(ServerManager::m_pGlobalBuffer, iMsgLen);
 	bool bIsEmpty = true;
-	
+
 	if (BanManager::m_Ptr->m_pRangeBanListS != NULL)
 	{
 		uint32_t ui32BanNum = 0;
-		
+
 		RangeBanItem * curBan = NULL,
 		               * nextBan = BanManager::m_Ptr->m_pRangeBanListS;
-		               
+
 		while (nextBan != NULL)
 		{
 			curBan = nextBan;
 			nextBan = curBan->m_pNext;
-			
+
 			if (((curBan->m_ui8Bits & BanManager::PERM) == BanManager::PERM) == false)
 				continue;
-				
+
 			if (ui32BanNum == 0)
 			{
 				bIsEmpty = false;
-				
+
 				BanList += px_string(LanguageManager::m_Ptr->m_sTexts[LAN_PERM_RANGE_BANS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_PERM_RANGE_BANS]) + ":\n\n";
 			}
-			
+
 			ui32BanNum++;
-			
+
 			BanList += "[ " + px_string(ui32BanNum) + " ]";
 			BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_RANGE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RANGE]) +
 			           ": " + px_string(curBan->m_sIpFrom) + "-" + px_string(curBan->m_sIpTo);
-			           
+
 			if (((curBan->m_ui8Bits & BanManager::FULL) == BanManager::FULL) == true)
 			{
 				BanList += " (" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_FULL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FULL]) + ")";
 			}
-			
+
 			if (curBan->m_sBy != NULL)
 			{
 				BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_BY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_BY]) + ": " + px_string(curBan->m_sBy);
 			}
-			
+
 			if (curBan->m_sReason != NULL)
 			{
 				BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_REASON], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_REASON]) +
 				           ": " + px_string(curBan->m_sReason);
 			}
-			
+
 			BanList += "\n";
 		}
 	}
-	
+
 	if (bIsEmpty == true)
 	{
 		BanList += string(LanguageManager::m_Ptr->m_sTexts[LAN_NO_RANGE_PERM_BANS_FOUND], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_NO_RANGE_PERM_BANS_FOUND]) + "...|";
@@ -1129,9 +1129,9 @@ bool HubCommands::GetRangePermBans(ChatCommand * pChatCommand)   // !getrangeper
 	{
 		BanList += "|";
 	}
-	
+
 	pChatCommand->m_pUser->SendCharDelayed(BanList.c_str(), BanList.size());
-	
+
 	return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1143,86 +1143,86 @@ bool HubCommands::GetRangeTempBans(ChatCommand * pChatCommand)   // !getrangetem
 		SendNoPermission(pChatCommand);
 		return true;
 	}
-	
+
 	UncountDeflood(pChatCommand);
-	
+
 	int iMsgLen = CheckFromPm(pChatCommand);
-	
+
 	int iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "<%s> ", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC]);
 	if (iRet <= 0)
 	{
 		return true;
 	}
 	iMsgLen += iRet;
-	
-    px_string BanList(ServerManager::m_pGlobalBuffer, iMsgLen);
+
+	px_string BanList(ServerManager::m_pGlobalBuffer, iMsgLen);
 	bool bIsEmpty = true;
-	
+
 	if (BanManager::m_Ptr->m_pRangeBanListS != NULL)
 	{
 		uint32_t ui32BanNum = 0;
-		
+
 		time_t acc_time;
 		time(&acc_time);
-		
+
 		RangeBanItem * curBan = NULL,
 		               * nextBan = BanManager::m_Ptr->m_pRangeBanListS;
-		               
+
 		while (nextBan != NULL)
 		{
 			curBan = nextBan;
 			nextBan = curBan->m_pNext;
-			
+
 			if (((curBan->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == false)
 				continue;
-				
+
 			if (acc_time > curBan->m_tTempBanExpire)
 			{
 				BanManager::m_Ptr->RemRange(curBan);
 				delete curBan;
-				
+
 				continue;
 			}
-			
+
 			if (ui32BanNum == 0)
 			{
 				BanList += px_string(LanguageManager::m_Ptr->m_sTexts[LAN_TEMP_RANGE_BANS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_TEMP_RANGE_BANS]) + ":\n\n";
 			}
-			
+
 			ui32BanNum++;
-			
+
 			BanList += "[ " + px_string(ui32BanNum) + " ]";
 			BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_RANGE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RANGE]) +
 			           ": " + px_string(curBan->m_sIpFrom) + "-" + px_string(curBan->m_sIpTo);
-			           
+
 			if (((curBan->m_ui8Bits & BanManager::FULL) == BanManager::FULL) == true)
 			{
 				BanList += " (" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_FULL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FULL]) + ")";
 			}
-			
+
 			if (curBan->m_sBy != NULL)
 			{
 				BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_BY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_BY]) + ": " + px_string(curBan->m_sBy);
 			}
-			
+
 			if (curBan->m_sReason != NULL)
 			{
 				BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_REASON], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_REASON]) +
 				           ": " + px_string(curBan->m_sReason);
 			}
-			
+
 			struct tm *tm = localtime(&curBan->m_tTempBanExpire);
 			strftime(ServerManager::m_pGlobalBuffer, 256, "%c\n", tm);
-			
+
 			BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_EXPIRE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_EXPIRE]) + ": " + px_string(ServerManager::m_pGlobalBuffer);
 		}
-		
+
 		if (ui32BanNum != 0)
 		{
 			bIsEmpty = false;
 		}
 	}
-	
+
 	if (bIsEmpty == true)
 	{
 		BanList += px_string(LanguageManager::m_Ptr->m_sTexts[LAN_NO_RANGE_TEMP_BANS_FOUND], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_NO_RANGE_TEMP_BANS_FOUND]) + "...|";
@@ -1231,9 +1231,9 @@ bool HubCommands::GetRangeTempBans(ChatCommand * pChatCommand)   // !getrangetem
 	{
 		BanList += "|";
 	}
-	
+
 	pChatCommand->m_pUser->SendCharDelayed(BanList.c_str(), BanList.size());
-	
+
 	return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1241,25 +1241,25 @@ bool HubCommands::GetRangeTempBans(ChatCommand * pChatCommand)   // !getrangetem
 bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 {
 	int iMsgLen = CheckFromPm(pChatCommand);
-	
+
 	int iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize + iMsgLen, "<%s> ", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC]);
 	if (iRet <= 0)
 	{
 		return true;
 	}
 	iMsgLen += iRet;
-	
+
 	string help(ServerManager::m_pGlobalBuffer, iMsgLen);
 	bool bFull = false;
 	bool bTemp = false;
-	
+
 	iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "%s:\n", LanguageManager::m_Ptr->m_sTexts[LAN_FOLOW_COMMANDS_AVAILABLE_TO_YOU]);
 	if (iMsgLen <= 0)
 	{
 		return true;
 	}
 	help += ServerManager::m_pGlobalBuffer;
-	
+
 	if (pChatCommand->m_pUser->m_i32Profile != -1)
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\n%s:\n", LanguageManager::m_Ptr->m_sTexts[LAN_PROFILE_SPECIFIC_CMDS]);
@@ -1268,7 +1268,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cpasswd <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NEW_PASSWORD], LanguageManager::m_Ptr->m_sTexts[LAN_CHANGE_YOUR_PASSWORD]);
 		if (iMsgLen <= 0)
 		{
@@ -1276,11 +1276,11 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::BAN))
 	{
 		bFull = true;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cban <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR],
 		                   LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_PERM_BAN_USER_GIVEN_NICK_DISCONNECT]);
 		if (iMsgLen <= 0)
@@ -1288,7 +1288,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cbanip <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_IP],
 		                   LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_PERM_BAN_IP_ADDRESS]);
 		if (iMsgLen <= 0)
@@ -1296,7 +1296,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cfullban <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR],
 		                   LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_PERM_BAN_USER_GIVEN_NICK_DISCONNECT]);
 		if (iMsgLen <= 0)
@@ -1304,7 +1304,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cfullbanip <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_IP],
 		                   LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_PERM_BAN_IP_ADDRESS]);
 		if (iMsgLen <= 0)
@@ -1312,7 +1312,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cnickban <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR],
 		                   LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_BAN_USERS_NICK_IFCONN_THENDISCONN]);
 		if (iMsgLen <= 0)
@@ -1321,12 +1321,12 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::TEMP_BAN))
 	{
 		bFull = true;
 		bTemp = true;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%ctempban <%s> <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR],
 		                   LanguageManager::m_Ptr->m_sTexts[LAN_TIME_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_TEMP_BAN_USER_GIVEN_NICK_DISCONNECT]);
 		if (iMsgLen <= 0)
@@ -1334,7 +1334,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%ctempbanip <%s> <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_IP],
 		                   LanguageManager::m_Ptr->m_sTexts[LAN_TIME_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_TEMP_BAN_IP_ADDRESS]);
 		if (iMsgLen <= 0)
@@ -1342,7 +1342,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cfulltempban <%s> <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR],
 		                   LanguageManager::m_Ptr->m_sTexts[LAN_TIME_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_TEMP_BAN_USER_GIVEN_NICK_DISCONNECT]);
 		if (iMsgLen <= 0)
@@ -1350,7 +1350,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cfulltempbanip <%s> <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_IP],
 		                   LanguageManager::m_Ptr->m_sTexts[LAN_TIME_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_TEMP_BAN_IP_ADDRESS]);
 		if (iMsgLen <= 0)
@@ -1358,7 +1358,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cnicktempban <%s> <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR],
 		                   LanguageManager::m_Ptr->m_sTexts[LAN_TIME_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_TEMP_BAN_USERS_NICK_IFCONN_THENDISCONN]);
 		if (iMsgLen <= 0)
@@ -1367,7 +1367,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::UNBAN) || ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::TEMP_UNBAN))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cunban <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_IP_OR_NICK],
@@ -1378,7 +1378,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::UNBAN))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cpermunban <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_IP_OR_NICK],
@@ -1389,7 +1389,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::TEMP_UNBAN))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%ctempunban <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_IP_OR_NICK],
@@ -1400,7 +1400,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::GETBANLIST))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cgetbans - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_DISPLAY_LIST_OF_BANS]);
@@ -1409,14 +1409,14 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cgetpermbans - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_DISPLAY_LIST_OF_PERM_BANS]);
 		if (iMsgLen <= 0)
 		{
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cgettempbans - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_DISPLAY_LIST_OF_TEMP_BANS]);
 		if (iMsgLen <= 0)
 		{
@@ -1424,7 +1424,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::CLRPERMBAN))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cclrpermbans - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_CLEAR_PERM_BANS_LWR]);
@@ -1434,7 +1434,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::CLRTEMPBAN))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cclrtempbans - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_CLEAR_TEMP_BANS_LWR]);
@@ -1444,11 +1444,11 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::RANGE_BAN))
 	{
 		bFull = true;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%crangeban <%s> <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_FROMIP],
 		                   LanguageManager::m_Ptr->m_sTexts[LAN_TOIP], LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_PERM_BAN_GIVEN_IP_RANGE]);
 		if (iMsgLen <= 0)
@@ -1456,7 +1456,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cfullrangeban <%s> <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_FROMIP],
 		                   LanguageManager::m_Ptr->m_sTexts[LAN_TOIP], LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_PERM_BAN_GIVEN_IP_RANGE]);
 		if (iMsgLen <= 0)
@@ -1465,12 +1465,12 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::RANGE_TBAN))
 	{
 		bFull = true;
 		bTemp = true;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%crangetempban <%s> <%s> <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_FROMIP], LanguageManager::m_Ptr->m_sTexts[LAN_TOIP],
 		                   LanguageManager::m_Ptr->m_sTexts[LAN_TIME_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_TEMP_BAN_GIVEN_IP_RANGE]);
 		if (iMsgLen <= 0)
@@ -1478,7 +1478,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cfullrangetempban <%s> <%s> <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_FROMIP], LanguageManager::m_Ptr->m_sTexts[LAN_TOIP],
 		                   LanguageManager::m_Ptr->m_sTexts[LAN_TIME_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_TEMP_BAN_GIVEN_IP_RANGE]);
 		if (iMsgLen <= 0)
@@ -1487,7 +1487,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::RANGE_UNBAN) || ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::RANGE_TUNBAN))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%crangeunban <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_FROMIP],
@@ -1498,7 +1498,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::RANGE_UNBAN))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%crangepermunban <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_FROMIP],
@@ -1509,7 +1509,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::RANGE_TUNBAN))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%crangetempunban <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_FROMIP],
@@ -1520,25 +1520,25 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::GET_RANGE_BANS))
 	{
 		bFull = true;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cgetrangebans - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_DISPLAY_LIST_OF_RANGE_BANS]);
 		if (iMsgLen <= 0)
 		{
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cgetrangepermbans - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_DISPLAY_LIST_OF_RANGE_PERM_BANS]);
 		if (iMsgLen <= 0)
 		{
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cgetrangetempbans - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_DISPLAY_LIST_OF_RANGE_TEMP_BANS]);
 		if (iMsgLen <= 0)
 		{
@@ -1546,7 +1546,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::CLR_RANGE_BANS))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cclrrangepermbans - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_CLEAR_PERM_RANGE_BANS_LWR]);
@@ -1556,7 +1556,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::CLR_RANGE_TBANS))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cclrrangetempbans - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_CLEAR_TEMP_RANGE_BANS_LWR]);
@@ -1566,7 +1566,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::GETBANLIST))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cchecknickban <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_DISPLAY_BAN_FOUND_FOR_GIVEN_NICK]);
@@ -1575,7 +1575,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%ccheckipban <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_IP], LanguageManager::m_Ptr->m_sTexts[LAN_DISPLAY_BANS_FOUND_FOR_GIVEN_IP]);
 		if (iMsgLen <= 0)
 		{
@@ -1583,7 +1583,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::GET_RANGE_BANS))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%ccheckrangeban <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_FROMIP], LanguageManager::m_Ptr->m_sTexts[LAN_TOIP],
@@ -1594,7 +1594,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::DROP))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cdrop <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_REASON_LWR],
@@ -1605,7 +1605,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::GETINFO))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cgetinfo <%s> - %s."
@@ -1622,7 +1622,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 #if defined(_WITH_SQLITE) || defined(_WITH_POSTGRES) || defined(_WITH_MYSQL)
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cgetipinfo <%s> - %s. %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_IP],
 		                   LanguageManager::m_Ptr->m_sTexts[LAN_DISPLAY_INFO_GIVEN_IP], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_CAN_USE_SQL_WILDCARDS]);
@@ -1633,7 +1633,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		help += ServerManager::m_pGlobalBuffer;
 #endif
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::TEMPOP))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cop <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_GIVE_TEMP_OP]);
@@ -1643,7 +1643,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::GAG))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cgag <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_DISALLOW_USER_TO_POST_IN_MAIN]);
@@ -1652,7 +1652,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cungag <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_USER_CAN_POST_IN_MAIN_AGAIN]);
 		if (iMsgLen <= 0)
 		{
@@ -1660,7 +1660,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::RSTHUB))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%crestart - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_RESTART_HUB_LWR]);
@@ -1670,7 +1670,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::RSTSCRIPTS))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cstartscript <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_FILENAME_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_START_SCRIPT_GIVEN_FILENAME]);
@@ -1679,28 +1679,28 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cstopscript <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_FILENAME_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_STOP_SCRIPT_GIVEN_FILENAME]);
 		if (iMsgLen <= 0)
 		{
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%crestartscript <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_FILENAME_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_RESTART_SCRIPT_GIVEN_FILENAME]);
 		if (iMsgLen <= 0)
 		{
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%crestartscripts - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_RESTART_SCRIPTING_PART_OF_THE_HUB]);
 		if (iMsgLen <= 0)
 		{
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cgetscripts - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_DISPLAY_LIST_OF_SCRIPTS]);
 		if (iMsgLen <= 0)
 		{
@@ -1708,7 +1708,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::REFRESHTXT))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%creloadtxt - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_RELOAD_ALL_TEXT_FILES]);
@@ -1718,7 +1718,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::ADDREGUSER))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%creguser <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR],
@@ -1728,7 +1728,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%caddreguser <%s> <%s> <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_PASSWORD_LWR],
 		                   LanguageManager::m_Ptr->m_sTexts[LAN_PROFILENAME_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_ADD_REG_USER_WITH_PROFILE]);
 		if (iMsgLen <= 0)
@@ -1737,7 +1737,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::DELREGUSER))
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cdelreguser <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NICK_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_REMOVE_REG_USER]);
@@ -1747,7 +1747,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::TOPIC) == true)
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%ctopic <%s> - %s %ctopic <off> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_NEW_TOPIC], LanguageManager::m_Ptr->m_sTexts[LAN_SET_NEW_TOPIC_OR],
@@ -1758,7 +1758,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(pChatCommand->m_pUser, ProfileManager::MASSMSG) == true)
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cmassmsg <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_MESSAGE_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_SEND_MSG_TO_ALL_USERS]);
@@ -1767,7 +1767,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%copmassmsg <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_MESSAGE_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_SEND_MSG_TO_ALL_OPS]);
 		if (iMsgLen <= 0)
 		{
@@ -1775,7 +1775,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (bFull == true)
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "*** %s.\n", LanguageManager::m_Ptr->m_sTexts[LAN_REASON_IS_ALWAYS_OPTIONAL]);
@@ -1784,7 +1784,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 			return true;
 		}
 		help += ServerManager::m_pGlobalBuffer;
-		
+
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "*** %s.\n", LanguageManager::m_Ptr->m_sTexts[LAN_FULLBAN_HELP_TXT]);
 		if (iMsgLen <= 0)
 		{
@@ -1792,7 +1792,7 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	if (bTemp == true)
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "*** %s: m = %s, h = %s, d = %s, w = %s, M = %s, Y = %s.\n", LanguageManager::m_Ptr->m_sTexts[LAN_TEMPBAN_TIME_VALUES], LanguageManager::m_Ptr->m_sTexts[LAN_MINUTES_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_HOURS_LWR],
@@ -1803,30 +1803,30 @@ bool HubCommands::Help(ChatCommand * pChatCommand)   // !help
 		}
 		help += ServerManager::m_pGlobalBuffer;
 	}
-	
+
 	iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\n%s:\n", LanguageManager::m_Ptr->m_sTexts[LAN_GLOBAL_COMMANDS]);
 	if (iMsgLen <= 0)
 	{
 		return true;
 	}
 	help += ServerManager::m_pGlobalBuffer;
-	
+
 	iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cme <%s> - %s.\n", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_MESSAGE_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_SPEAK_IN_3RD_PERSON]);
 	if (iMsgLen <= 0)
 	{
 		return true;
 	}
 	help += ServerManager::m_pGlobalBuffer;
-	
+
 	iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "\t%cmyip - %s.|", SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0], LanguageManager::m_Ptr->m_sTexts[LAN_SHOW_YOUR_IP]);
 	if (iMsgLen <= 0)
 	{
 		return true;
 	}
 	help += ServerManager::m_pGlobalBuffer;
-	
+
 	pChatCommand->m_pUser->SendCharDelayed(help.c_str(), help.size());
-	
+
 	return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

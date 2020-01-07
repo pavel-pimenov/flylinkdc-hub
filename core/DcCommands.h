@@ -36,21 +36,21 @@ private:
 	struct PassBf
 	{
 		PassBf * m_pPrev, * m_pNext;
-		
+
 		int m_iCount;
-		
+
 		Hash128 m_ui128IpHash;
-		
+
 		explicit PassBf(const uint8_t * ui128Hash);
 		~PassBf(void) { }
-		
+
 		DISALLOW_COPY_AND_ASSIGN(PassBf);
 	};
-	
+
 	PassBf * m_pPasswdBfCheck;
-	
+
 	DISALLOW_COPY_AND_ASSIGN(DcCommands);
-	
+
 	static void BotINFO(DcCommand * pDcCommand);
 	static void ConnectToMe(DcCommand * pDcCommand, const bool bMulti);
 	void GetINFO(DcCommand * pDcCommand);
@@ -72,47 +72,47 @@ private:
 	static bool ChatDeflood(DcCommand * pDcCommand);
 	static void Chat(DcCommand * pDcCommand);
 	static void Close(DcCommand * pDcCommand);
-	
+
 	void Unknown(DcCommand * pDcCommand, const bool bMyNick = false);
 	void MyNick(DcCommand * pDcCommand);
-	
+
 	static bool ValidateUserNick(DcCommand * pDcCommand,User * pUser, char * sNick, const size_t szNickLen, const bool ValidateNick);
-	
+
 	PassBf * Find(const uint8_t * ui128IpHash);
 	void Remove(PassBf * pPassBfItem);
-	
+
 	static uint16_t CheckAndGetPort(char * pPort, const uint8_t ui8PortLen, uint32_t &ui32PortLen);
 	static void SendIPFixedMsg(User * pUser, char * pBadIP, char * pRealIP);
-	
+
 	static PrcsdUsrCmd * AddSearch(User * pUser, PrcsdUsrCmd * pCmdSearch, char * sSearch, const size_t szLen, const bool bActive);
-	
+
 #ifdef USE_FLYLINKDC_EXT_JSON
 	bool ExtJSONDeflood(User * pUser, const char * sData, const uint32_t ui32Len, const bool bCheck);
 	static bool SetExtJSON(User * pUser, const char * sData, const uint32_t ui32Len);
 	static bool CheckExtJSON(User * pUser, const char * sData, const uint32_t ui32Len);
 #endif
 	static bool ValidateUserNickFinally(bool pIsNotReg, User * pUser, const size_t szNickLen, const bool ValidateNick); // [+] FlylinkDC++
-	
+
 public:
 	static DcCommands * m_Ptr;
-	
+
 	uint32_t m_ui32StatChat, m_ui32StatCmdUnknown, m_ui32StatCmdTo, m_ui32StatCmdMyInfo;
 	uint32_t m_ui32StatCmdSearch, m_ui32StatCmdSR, m_ui32StatCmdRevCTM, m_ui32StatCmdOpForceMove;
 	uint32_t m_ui32StatCmdMyPass, m_ui32StatCmdValidate, m_ui32StatCmdKey, m_ui32StatCmdGetInfo;
 	uint32_t m_ui32StatCmdGetNickList, m_ui32StatCmdConnectToMe, m_ui32StatCmdVersion, m_ui32StatCmdKick;
 	uint32_t m_ui32StatCmdSupports, m_ui32StatBotINFO, m_ui32StatZPipe, m_ui32StatCmdMultiSearch;
 	uint32_t m_ui32StatCmdMultiConnectToMe, m_ui32StatCmdClose;
-	
+
 	DcCommands();
 	~DcCommands();
-	
+
 	void PreProcessData(DcCommand * pDcCommand);
 	void ProcessCmds(User * pUser);
-	
+
 #ifdef FLYLINKDC_USE_UDP_THREAD
 	static void SRFromUDP(DcCommand * pDcCommand);
 #endif
-	
+
 #ifdef USE_FLYLINKDC_EXT_JSON
 	uint32_t m_iStatCmdExtJSON;
 #endif
