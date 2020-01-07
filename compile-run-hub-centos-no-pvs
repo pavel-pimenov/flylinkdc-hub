@@ -112,7 +112,7 @@ gcc -std=c++11 -O3 -Wall -Wextra -o PtokaX \
  -D_NDEBUG \
  -D_WITH_SQLITE \
  -DFLYLINKDC_USE_DB \
- -DxUSE_FLYLINKDC_EXT_JSON \
+ -DUSE_FLYLINKDC_EXT_JSON \
  -DTIXML_USE_STL \
  -lstdc++ -pthread -ldl -lm
 

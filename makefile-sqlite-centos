@@ -18,12 +18,12 @@ INSTDIR = /usr/local/bin
 #*******************************************************************************
 # Debug flags
 #*******************************************************************************
-#CXXFLAGS = -static -std=c++11 -g -Wall -Wextra -std=c++11 -DxUSE_FLYLINKDC_EXT_JSON
+#CXXFLAGS = -static -std=c++11 -g -Wall -Wextra -std=c++11 -DUSE_FLYLINKDC_EXT_JSON
 
 #*******************************************************************************
 # Release flags
 #*******************************************************************************
-CXXFLAGS = -static -std=c++11 -O0 -g -Wall -Wextra -D_WITH_SQLITE -DFLYLINKDC_USE_DB -DxUSE_FLYLINKDC_EXT_JSON
+CXXFLAGS = -static -std=c++11 -O0 -g -Wall -Wextra -D_WITH_SQLITE -DFLYLINKDC_USE_DB -DUSE_FLYLINKDC_EXT_JSON
 CCFLAGS = -g -Wall -Wextra
 
 #*******************************************************************************
@@ -54,7 +54,7 @@ OBJS = $(CURDIR)/obj/colUsers.o $(CURDIR)/obj/DB-SQLite.o $(CURDIR)/obj/DcComman
 # then remove -llua5.1 and after tinyxml/tinyxml.a add /usr/local/lib/liblua.a (default path when is Lua compiled from sources).
 #*******************************************************************************
 
-centos: CXXFLAGS = -std=c++11 -static -O0 -g -Wall -Wextra -DTIXML_USE_STL -D_WITH_SQLITE -DFLYLINKDC_USE_DB -DxUSE_FLYLINKDC_EXT_JSON
+centos: CXXFLAGS = -std=c++11 -static -O0 -g -Wall -Wextra -DTIXML_USE_STL -D_WITH_SQLITE -DFLYLINKDC_USE_DB -DUSE_FLYLINKDC_EXT_JSON
 centos: $(OBJS)
 	cd skein; $(MAKE)
 	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -static -o PtokaX -lstdc++ -lpthread -lm -lrt -lz -llua -ldl -ltinyxml
