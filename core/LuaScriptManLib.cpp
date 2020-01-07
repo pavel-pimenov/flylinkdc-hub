@@ -48,7 +48,7 @@ static int GetScript(lua_State * pLua)
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	Script * cur = ScriptManager::m_Ptr->FindScript(pLua);
 	if (cur == NULL)
 	{
@@ -56,28 +56,28 @@ static int GetScript(lua_State * pLua)
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	lua_newtable(pLua);
 	int s = lua_gettop(pLua);
-	
+
 	lua_pushliteral(pLua, "sName");
 	lua_pushstring(pLua, cur->m_sName);
 	lua_rawset(pLua, s);
-	
+
 	lua_pushliteral(pLua, "bEnabled");
 	lua_pushboolean(pLua, 1);
 	lua_rawset(pLua, s);
-	
+
 	lua_pushliteral(pLua, "iMemUsage");
-	
+
 #if LUA_VERSION_NUM < 503
 	lua_pushnumber(pLua, lua_gc(cur->m_pLua, LUA_GCCOUNT, 0));
 #else
 	lua_pushinteger(pLua, lua_gc(cur->m_pLua, LUA_GCCOUNT, 0));
 #endif
-	
+
 	lua_rawset(pLua, s);
-	
+
 	return 1;
 }
 //------------------------------------------------------------------------------
@@ -91,11 +91,11 @@ static int GetScripts(lua_State * pLua)
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	lua_newtable(pLua);
-	
+
 	int t = lua_gettop(pLua), n = 0;
-	
+
 	for (uint8_t ui8i = 0; ui8i < ScriptManager::m_Ptr->m_ui8ScriptCount; ui8i++)
 	{
 #if LUA_VERSION_NUM < 503
@@ -103,18 +103,18 @@ static int GetScripts(lua_State * pLua)
 #else
 		lua_pushinteger(pLua, ++n);
 #endif
-		
+
 		lua_newtable(pLua);
 		int s = lua_gettop(pLua);
-		
+
 		lua_pushliteral(pLua, "sName");
 		lua_pushstring(pLua, ScriptManager::m_Ptr->m_ppScriptTable[ui8i]->m_sName);
 		lua_rawset(pLua, s);
-		
+
 		lua_pushliteral(pLua, "bEnabled");
 		ScriptManager::m_Ptr->m_ppScriptTable[ui8i]->m_bEnabled == true ? lua_pushboolean(pLua, 1) : lua_pushnil(pLua);
 		lua_rawset(pLua, s);
-		
+
 		lua_pushliteral(pLua, "iMemUsage");
 		ScriptManager::m_Ptr->m_ppScriptTable[ui8i]->m_pLua == NULL ? lua_pushnil(pLua) :
 #if LUA_VERSION_NUM < 503
@@ -122,12 +122,12 @@ static int GetScripts(lua_State * pLua)
 #else
 		lua_pushinteger(pLua, lua_gc(ScriptManager::m_Ptr->m_ppScriptTable[ui8i]->m_pLua, LUA_GCCOUNT, 0));
 #endif
-		
+
 		lua_rawset(pLua, s);
-		
+
 		lua_rawset(pLua, t);
 	}
-	
+
 	return 1;
 }
 //------------------------------------------------------------------------------
@@ -141,7 +141,7 @@ static int Move(lua_State * pLua, const bool bUp)
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	if (lua_type(pLua, 1) != LUA_TSTRING)
 	{
 		luaL_checktype(pLua, 1, LUA_TSTRING);
@@ -149,17 +149,17 @@ static int Move(lua_State * pLua, const bool bUp)
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	size_t szLen;
 	const char *sName = lua_tolstring(pLua, 1, &szLen);
-	
+
 	if (szLen == 0)
 	{
 		lua_settop(pLua, 0);
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	uint8_t ui8idx = ScriptManager::m_Ptr->FindScriptIdx(sName);
 	if (ui8idx == ScriptManager::m_Ptr->m_ui8ScriptCount || (bUp == true && ui8idx == 0) ||
 	        (bUp == false && ui8idx == ScriptManager::m_Ptr->m_ui8ScriptCount - 1))
@@ -168,15 +168,15 @@ static int Move(lua_State * pLua, const bool bUp)
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	ScriptManager::m_Ptr->PrepareMove(pLua);
-	
+
 	ScriptManager::m_Ptr->MoveScript(ui8idx, bUp);
-	
+
 #ifdef _BUILD_GUI
 	MainWindowPageScripts::m_Ptr->MoveScript(ui8idx, bUp);
 #endif
-	
+
 	lua_settop(pLua, 0);
 	lua_pushboolean(pLua, 1);
 	return 1;
@@ -204,7 +204,7 @@ static int StartScript(lua_State * pLua)
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	if (lua_type(pLua, 1) != LUA_TSTRING)
 	{
 		luaL_checktype(pLua, 1, LUA_TSTRING);
@@ -212,52 +212,52 @@ static int StartScript(lua_State * pLua)
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	size_t szLen;
 	const char * sName = lua_tolstring(pLua, 1, &szLen);
-	
+
 	if (szLen == 0)
 	{
 		lua_settop(pLua, 0);
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	if (FileExist((ServerManager::m_sScriptPath + sName).c_str()) == false)
 	{
 		lua_settop(pLua, 0);
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	Script * curScript = ScriptManager::m_Ptr->FindScript(sName);
 	if (curScript != NULL)
 	{
 		lua_settop(pLua, 0);
-		
+
 		if (curScript->m_pLua != NULL)
 		{
 			lua_pushnil(pLua);
 			return 1;
 		}
-		
+
 		if (ScriptManager::m_Ptr->StartScript(curScript, true) == false)
 		{
 			lua_pushnil(pLua);
 			return 1;
 		}
-		
+
 		lua_pushboolean(pLua, 1);
 		return 1;
 	}
-	
+
 	if (ScriptManager::m_Ptr->AddScript(sName, true, true) == true && ScriptManager::m_Ptr->StartScript(ScriptManager::m_Ptr->m_ppScriptTable[ScriptManager::m_Ptr->m_ui8ScriptCount - 1], false) == true)
 	{
 		lua_settop(pLua, 0);
 		lua_pushboolean(pLua, 1);
 		return 1;
 	}
-	
+
 	lua_settop(pLua, 0);
 	lua_pushnil(pLua);
 	return 1;
@@ -273,7 +273,7 @@ static int RestartScript(lua_State * pLua)
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	if (lua_type(pLua, 1) != LUA_TSTRING)
 	{
 		luaL_checktype(pLua, 1, LUA_TSTRING);
@@ -281,17 +281,17 @@ static int RestartScript(lua_State * pLua)
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	size_t szLen;
 	const char *sName = lua_tolstring(pLua, 1, &szLen);
-	
+
 	if (szLen == 0)
 	{
 		lua_settop(pLua, 0);
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	Script * curScript = ScriptManager::m_Ptr->FindScript(sName);
 	if (curScript == NULL || curScript->m_pLua == NULL)
 	{
@@ -299,25 +299,25 @@ static int RestartScript(lua_State * pLua)
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	lua_settop(pLua, 0);
-	
+
 	if (curScript->m_pLua == pLua)
 	{
 		EventQueue::m_Ptr->AddNormal(EventQueue::EVENT_RSTSCRIPT, curScript->m_sName);
-		
+
 		lua_pushboolean(pLua, 1);
 		return 1;
 	}
-	
+
 	ScriptManager::m_Ptr->StopScript(curScript, false);
-	
+
 	if (ScriptManager::m_Ptr->StartScript(curScript, false) == true)
 	{
 		lua_pushboolean(pLua, 1);
 		return 1;
 	}
-	
+
 	lua_pushnil(pLua);
 	return 1;
 }
@@ -332,7 +332,7 @@ static int StopScript(lua_State * pLua)
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	if (lua_type(pLua, 1) != LUA_TSTRING)
 	{
 		luaL_checktype(pLua, 1, LUA_TSTRING);
@@ -340,17 +340,17 @@ static int StopScript(lua_State * pLua)
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	size_t szLen;
 	const char * sName = lua_tolstring(pLua, 1, &szLen);
-	
+
 	if (szLen == 0)
 	{
 		lua_settop(pLua, 0);
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	Script * curScript = ScriptManager::m_Ptr->FindScript(sName);
 	if (curScript == NULL || curScript->m_pLua == NULL)
 	{
@@ -358,19 +358,19 @@ static int StopScript(lua_State * pLua)
 		lua_pushnil(pLua);
 		return 1;
 	}
-	
+
 	lua_settop(pLua, 0);
-	
+
 	if (curScript->m_pLua == pLua)
 	{
 		EventQueue::m_Ptr->AddNormal(EventQueue::EVENT_STOPSCRIPT, curScript->m_sName);
-		
+
 		lua_pushboolean(pLua, 1);
 		return 1;
 	}
-	
+
 	ScriptManager::m_Ptr->StopScript(curScript, true);
-	
+
 	lua_pushboolean(pLua, 1);
 	return 1;
 }
@@ -384,9 +384,9 @@ static int Restart(lua_State * pLua)
 		lua_settop(pLua, 0);
 		return 0;
 	}
-	
+
 	EventQueue::m_Ptr->AddNormal(EventQueue::EVENT_RSTSCRIPTS, NULL);
-	
+
 	return 0;
 }
 //------------------------------------------------------------------------------
@@ -399,14 +399,14 @@ static int Refresh(lua_State * pLua)
 		lua_settop(pLua, 0);
 		return 0;
 	}
-	
+
 	ScriptManager::m_Ptr->CheckForDeletedScripts();
 	ScriptManager::m_Ptr->CheckForNewScripts();
-	
+
 #ifdef _BUILD_GUI
 	MainWindowPageScripts::m_Ptr->AddScriptsToList(true);
 #endif
-	
+
 	return 0;
 }
 //------------------------------------------------------------------------------

@@ -25,50 +25,50 @@ struct BanItem;
 
 class BansDialog {
 public:
-    static BansDialog * m_Ptr;
+	static BansDialog * m_Ptr;
 
-    HWND m_hWndWindowItems[8];
+	HWND m_hWndWindowItems[8];
 
-    enum enmWindowItems {
-        WINDOW_HANDLE,
-        BTN_ADD_BAN,
-        LV_BANS,
-        GB_FILTER,
-        EDT_FILTER,
-        CB_FILTER,
-        BTN_CLEAR_TEMP_BANS,
-        BTN_CLEAR_PERM_BANS
-    };
+	enum enmWindowItems {
+		WINDOW_HANDLE,
+		BTN_ADD_BAN,
+		LV_BANS,
+		GB_FILTER,
+		EDT_FILTER,
+		CB_FILTER,
+		BTN_CLEAR_TEMP_BANS,
+		BTN_CLEAR_PERM_BANS
+	};
 
-    BansDialog();
-    ~BansDialog();
+	BansDialog();
+	~BansDialog();
 
-    static LRESULT CALLBACK StaticBansDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-    static int CompareBans(const void * pItem, const void * pOtherItem);
-    static int CALLBACK SortCompareBans(LPARAM lParam1, LPARAM lParam2, LPARAM /*lParamSort*/);
+	static LRESULT CALLBACK StaticBansDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	static int CompareBans(const void * pItem, const void * pOtherItem);
+	static int CALLBACK SortCompareBans(LPARAM lParam1, LPARAM lParam2, LPARAM /*lParamSort*/);
 
 	void DoModal(HWND hWndParent);
 	void FilterBans();
 	void AddBan(const BanItem * pBan);
 	void RemoveBan(const BanItem * pBan);
 private:
-    string m_sFilterString;
+	string m_sFilterString;
 
-    int m_iFilterColumn, m_iSortColumn;
+	int m_iFilterColumn, m_iSortColumn;
 
-    bool m_bSortAscending;
+	bool m_bSortAscending;
 
-    BansDialog(const BansDialog&) = delete;
-    const BansDialog& operator=(const BansDialog&) = delete;
+	BansDialog(const BansDialog&) = delete;
+	const BansDialog& operator=(const BansDialog&) = delete;
 
-    LRESULT BansDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT BansDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-    void AddAllBans();
-    void OnColumnClick(const LPNMLISTVIEW pListView);
-    void RemoveBans();
-    void OnContextMenu(HWND hWindow, LPARAM lParam);
-    bool FilterBan(const BanItem * pBan);
-    void ChangeBan();
+	void AddAllBans();
+	void OnColumnClick(const LPNMLISTVIEW pListView);
+	void RemoveBans();
+	void OnContextMenu(HWND hWindow, LPARAM lParam);
+	bool FilterBan(const BanItem * pBan);
+	void ChangeBan();
 };
 //------------------------------------------------------------------------------
 

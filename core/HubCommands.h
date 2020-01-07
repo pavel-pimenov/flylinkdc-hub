@@ -27,11 +27,11 @@ struct User;
 struct ChatCommand
 {
 	User * m_pUser;
-	
+
 	char * m_sCommand;
-	
+
 	uint32_t m_ui32CommandLen;
-	
+
 	bool m_bFromPM;
 };
 
@@ -39,7 +39,7 @@ class HubCommands
 {
 private:
 	static ChatCommand m_ChatCommand;
-	
+
 	static bool AddRegUser(ChatCommand * pChatCommand);
 	static bool Ban(ChatCommand * pChatCommand);
 	static bool BanIp(ChatCommand * pChatCommand);
@@ -53,7 +53,7 @@ private:
 	static bool Drop(ChatCommand * pChatCommand);
 	static bool DelRegUser(ChatCommand * pChatCommand);
 	static bool Debug(ChatCommand * pChatCommand);
-	
+
 	static bool FullBan(ChatCommand * pChatCommand);
 	static bool FullBanIp(ChatCommand * pChatCommand);
 	static bool FullTempBan(ChatCommand * pChatCommand);
@@ -71,7 +71,7 @@ private:
 	static bool GetRangePermBans(ChatCommand * pChatCommand);
 	static bool GetRangeTempBans(ChatCommand * pChatCommand);
 	static bool Help(ChatCommand * pChatCommand);
-	
+
 	static bool MyIp(ChatCommand * pChatCommand);
 	static bool MassMsg(ChatCommand * pChatCommand);
 	static bool NickBan(ChatCommand * pChatCommand);
@@ -80,7 +80,7 @@ private:
 	static bool OpMassMsg(ChatCommand * pChatCommand);
 	static bool Passwd(ChatCommand * pChatCommand);
 	static bool PermUnban(ChatCommand * pChatCommand);
-	
+
 	static bool RestartScripts(ChatCommand * pChatCommand);
 	static bool Restart(ChatCommand * pChatCommand);
 	static bool ReloadTxt(ChatCommand * pChatCommand);
@@ -100,7 +100,7 @@ private:
 	static bool Topic(ChatCommand * pChatCommand);
 	static bool Unban(ChatCommand * pChatCommand);
 	static bool Ungag(ChatCommand * pChatCommand);
-	
+
 	static bool Ban(ChatCommand * pChatCommand, const bool bFull);
 	static bool BanIp(ChatCommand * pChatCommand, const bool bFull);
 	static bool NickBan(ChatCommand * pChatCommand, char * sReason);
@@ -111,7 +111,7 @@ private:
 	static bool RangeTempBan(ChatCommand * pChatCommand, const bool bFull);
 	static bool RangeUnban(ChatCommand * pChatCommand);
 	static bool RangeUnban(ChatCommand * pChatCommand, const uint8_t ui8Type);
-	
+
 	static void SendNoPermission(ChatCommand * pChatCommand);
 	static int CheckFromPm(ChatCommand * pChatCommand);
 	static void UncountDeflood(ChatCommand * pChatCommand);

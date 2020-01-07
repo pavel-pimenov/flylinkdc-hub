@@ -25,47 +25,47 @@ struct BanItem;
 
 class BanDialog {
 public:
-    HWND m_hWndWindowItems[20];
+	HWND m_hWndWindowItems[20];
 
-    enum enmWindowItems {
-        WINDOW_HANDLE,
-        GB_NICK,
-        EDT_NICK,
-        BTN_NICK_BAN,
-        GB_IP,
-        EDT_IP,
-        BTN_IP_BAN,
-        BTN_FULL_BAN,
-        GB_REASON,
-        EDT_REASON,
-        GB_BY,
-        EDT_BY,
-        GB_BAN_TYPE,
-        RB_PERM_BAN,
-        GB_TEMP_BAN,
-        RB_TEMP_BAN,
-        DT_TEMP_BAN_EXPIRE_DATE,
-        DT_TEMP_BAN_EXPIRE_TIME,
-        BTN_ACCEPT,
-        BTN_DISCARD
-    };
+	enum enmWindowItems {
+		WINDOW_HANDLE,
+		GB_NICK,
+		EDT_NICK,
+		BTN_NICK_BAN,
+		GB_IP,
+		EDT_IP,
+		BTN_IP_BAN,
+		BTN_FULL_BAN,
+		GB_REASON,
+		EDT_REASON,
+		GB_BY,
+		EDT_BY,
+		GB_BAN_TYPE,
+		RB_PERM_BAN,
+		GB_TEMP_BAN,
+		RB_TEMP_BAN,
+		DT_TEMP_BAN_EXPIRE_DATE,
+		DT_TEMP_BAN_EXPIRE_TIME,
+		BTN_ACCEPT,
+		BTN_DISCARD
+	};
 
-    BanDialog();
-    ~BanDialog();
+	BanDialog();
+	~BanDialog();
 
-    static LRESULT CALLBACK StaticBanDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK StaticBanDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	void DoModal(HWND hWndParent, BanItem * pBan = nullptr);
 	void BanDeleted(BanItem * pBan);
 private:
-    BanItem * m_pBanToChange;
+	BanItem * m_pBanToChange;
 
-    BanDialog(const BanDialog&) = delete;
-    const BanDialog& operator=(const BanDialog&) = delete;
+	BanDialog(const BanDialog&) = delete;
+	const BanDialog& operator=(const BanDialog&) = delete;
 
-    LRESULT BanDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT BanDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-    bool OnAccept();
+	bool OnAccept();
 };
 //------------------------------------------------------------------------------
 

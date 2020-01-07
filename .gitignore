@@ -77,4 +77,6 @@ callgrind.out.*
 *.opendb
 strace_out
 *.log
+*.h.orig
+*.cpp.orig
 

@@ -29,15 +29,15 @@ private:
 	iconv_t m_iconvUtfCheck;
 	iconv_t m_iconvAsciiToUtf;
 #endif
-	
+
 	bool CheckUtf8Validity(const char * sInput, const uint8_t ui8InputLen, char * sOutput, const uint8_t ui8OutputSize);
-	
+
 public:
 	static TextConverter * m_Ptr;
-	
+
 	TextConverter();
 	~TextConverter();
-	
+
 	size_t CheckUtf8AndConvert(const char * sInput, const uint8_t ui8InputLen, char * sOutput, const uint8_t ui8OutputSize);
 	DISALLOW_COPY_AND_ASSIGN(TextConverter);
 };

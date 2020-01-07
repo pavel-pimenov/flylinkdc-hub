@@ -29,17 +29,17 @@
 
 class MainWindow {
 public:
-    static MainWindow * m_Ptr;
+	static MainWindow * m_Ptr;
 
-    HWND m_hWnd;
+	HWND m_hWnd;
 
-    HWND m_hWndWindowItems[1];
+	HWND m_hWndWindowItems[1];
 
-    enum enmWindowItems {
-        TC_TABS
-    };
+	enum enmWindowItems {
+		TC_TABS
+	};
 
-    enum enmMenuItems {
+	enum enmMenuItems {
 		IDC_SETTINGS = 100,
 		IDC_EXIT,
 		IDC_REG_USERS,
@@ -53,37 +53,37 @@ public:
 		IDC_UPDATE_CHECK,
 		IDC_SAVE_SETTINGS,
 		IDC_RELOAD_TXTS
-    };
+	};
 
-    MainWindow();
-    ~MainWindow();
+	MainWindow();
+	~MainWindow();
 
-    static LRESULT CALLBACK StaticMainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK StaticMainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-    HWND CreateEx();
+	HWND CreateEx();
 
-    void UpdateSysTray() const;
-    void UpdateStats() const;
-    void UpdateTitleBar();
-    void UpdateLanguage();
-    void EnableStartButton(const BOOL bEnable) const;
-    void SetStartButtonText(const char * sText) const;
-    void SetStatusValue(const char * sText) const;
-    void EnableGuiItems(const BOOL bEnable) const;
-    static void SaveGuiSettings();
+	void UpdateSysTray() const;
+	void UpdateStats() const;
+	void UpdateTitleBar();
+	void UpdateLanguage();
+	void EnableStartButton(const BOOL bEnable) const;
+	void SetStartButtonText(const char * sText) const;
+	void SetStatusValue(const char * sText) const;
+	void EnableGuiItems(const BOOL bEnable) const;
+	static void SaveGuiSettings();
 private:
 	uint64_t m_ui64LastTrayMouseMove;
 
-    MainWindowPage * m_MainWindowPages[3];
+	MainWindowPage * m_MainWindowPages[3];
 
-    UINT m_uiTaskBarCreated;
+	UINT m_uiTaskBarCreated;
 
-    MainWindow(const MainWindow&) = delete;
-    const MainWindow& operator=(const MainWindow&) = delete;
+	MainWindow(const MainWindow&) = delete;
+	const MainWindow& operator=(const MainWindow&) = delete;
 
-    LRESULT MainWindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT MainWindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-    void OnSelChanged();
+	void OnSelChanged();
 };
 //------------------------------------------------------------------------------
 

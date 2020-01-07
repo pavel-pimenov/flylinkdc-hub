@@ -60,8 +60,8 @@ crash_rpt::ApplicationInfo* GetApplicationInfo()
 	static crash_rpt::ApplicationInfo appInfo;
 	appInfo.ApplicationInfoSize = sizeof(appInfo);
 	appInfo.ApplicationGUID = "11B2CC9B-B1E9-4894-9AE6-6C4CB3DFDECA";
-	
-	
+
+
 #ifdef _WIN64
 	appInfo.Prefix = "ptokax-console-x64";             // Prefix that will be used with the dump name: YourPrefix_v1.v2.v3.v4_YYYYMMDD_HHMMSS.mini.dmp.
 	appInfo.AppName = L"PtokaX++ console x64";         // Application name that will be used in message box.
@@ -125,27 +125,27 @@ crash_rpt::CrashRpt g_crashRpt(
 static int InstallService(const char * sServiceName, const char * sPath)
 {
 	SC_HANDLE schSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
-	
+
 	if (schSCManager == NULL)
 	{
 		printf("OpenSCManager failed (%lu)!", GetLastError());
 		return EXIT_FAILURE;
 	}
-	
+
 	char sBuf[MAX_PATH + 1];
 	::GetModuleFileName(NULL, sBuf, MAX_PATH);
-	
+
 	string sCmdLine = "\"" + string(sBuf) + "\" -s " + string(sServiceName);
-	
+
 	if (sPath != NULL)
 	{
 		sCmdLine += " -c " + string(sPath);
 	}
-	
+
 	SC_HANDLE schService = CreateService(schSCManager, sServiceName, sServiceName, 0, SERVICE_WIN32_OWN_PROCESS,
 	                                     SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, sCmdLine.c_str(),
 	                                     NULL, NULL, NULL, NULL, NULL);
-	                                     
+
 	if (schService == NULL)
 	{
 		printf("CreateService failed (%lu)!", GetLastError());
@@ -156,10 +156,10 @@ static int InstallService(const char * sServiceName, const char * sPath)
 	{
 		printf("PtokaX service '%s' installed successfully.", sServiceName);
 	}
-	
+
 	CloseServiceHandle(schService);
 	CloseServiceHandle(schSCManager);
-	
+
 	return EXIT_SUCCESS;
 }
 //---------------------------------------------------------------------------
@@ -167,25 +167,25 @@ static int InstallService(const char * sServiceName, const char * sPath)
 static int UninstallService(const char * sServiceName)
 {
 	SC_HANDLE schSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
-	
+
 	if (schSCManager == NULL)
 	{
 		printf("OpenSCManager failed (%lu)!", GetLastError());
 		return EXIT_FAILURE;
 	}
-	
+
 	SC_HANDLE schService = OpenService(schSCManager, sServiceName, SERVICE_QUERY_STATUS | SERVICE_STOP | DELETE);
-	
+
 	if (schService == NULL)
 	{
 		printf("OpenService failed (%lu)!", GetLastError());
 		CloseServiceHandle(schSCManager);
 		return EXIT_FAILURE;
 	}
-	
+
 	SERVICE_STATUS_PROCESS ssp;
 	DWORD dwBytesNeeded;
-	
+
 	if (QueryServiceStatusEx(schService, SC_STATUS_PROCESS_INFO, (LPBYTE)&ssp, sizeof(SERVICE_STATUS_PROCESS), &dwBytesNeeded) != 0)
 	{
 		if (ssp.dwCurrentState != SERVICE_STOPPED && ssp.dwCurrentState != SERVICE_STOP_PENDING)
@@ -193,7 +193,7 @@ static int UninstallService(const char * sServiceName)
 			ControlService(schService, SERVICE_CONTROL_STOP, (LPSERVICE_STATUS)&ssp);
 		}
 	}
-	
+
 	if (DeleteService(schService) == false)
 	{
 		printf("DeleteService failed (%lu)!", GetLastError());
@@ -229,7 +229,7 @@ static void WINAPI CtrlHandler(DWORD dwCtrl)
 	default:
 		break;
 	}
-	
+
 	if (SetServiceStatus(ssh, &ss) == false)
 	{
 		AppendLog("CtrlHandler::SetServiceStatus failed (" + px_string((uint32_t)GetLastError()) + ")!");
@@ -243,18 +243,18 @@ static void MainLoop()
 	while (true)
 	{
 		ServiceLoop::m_Ptr->Looper();
-		
+
 		if (ServerManager::m_bServerTerminated == true)
 		{
 			break;
 		}
-		
+
 		::Sleep(100);
 	}
 #else
 	MSG msg = { 0 };
 	BOOL bRet = -1;
-	
+
 	while ((bRet = ::GetMessage(&msg, NULL, 0, 0)) != 0)
 	{
 		if (bRet == -1)
@@ -285,12 +285,12 @@ static void MainLoop()
 					ScriptOnTimer(msg.wParam);
 				}
 			}
-	
+
 			::TranslateMessage(&msg);
 			::DispatchMessage(&msg);
 		}
 	}
-	
+
 	ExceptionHandlingUnitialize();
 #endif
 }
@@ -299,28 +299,28 @@ static void MainLoop()
 static void WINAPI StartService(DWORD /*argc*/, char* argv[])
 {
 	ssh = RegisterServiceCtrlHandler(argv[0], CtrlHandler);
-	
+
 	if (ssh == NULL)
 	{
 		AppendLog("RegisterServiceCtrlHandler failed (" + px_string((uint32_t)GetLastError()) + ")!");
 		return;
 	}
-	
+
 	ss.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
 	ss.dwCurrentState = SERVICE_START_PENDING;
 	ss.dwControlsAccepted = SERVICE_ACCEPT_SHUTDOWN | SERVICE_ACCEPT_STOP;
 	ss.dwWin32ExitCode = NO_ERROR;
 	ss.dwCheckPoint = 0;
 	ss.dwWaitHint = 10 * 1000;
-	
+
 	if (SetServiceStatus(ssh, &ss) == false)
 	{
 		AppendLog("StartService::SetServiceStatus failed (" + px_string((uint32_t)GetLastError()) + ")!");
 		return;
 	}
-	
+
 	ServerManager::Initialize();
-	
+
 	if (ServerManager::Start() == false)
 	{
 		AppendLog("Server start failed!");
@@ -328,17 +328,17 @@ static void WINAPI StartService(DWORD /*argc*/, char* argv[])
 		SetServiceStatus(ssh, &ss);
 		return;
 	}
-	
+
 	ss.dwCurrentState = SERVICE_RUNNING;
-	
+
 	if (SetServiceStatus(ssh, &ss) == false)
 	{
 		AppendLog("StartService::SetServiceStatus1 failed (" + px_string((uint32_t)GetLastError()) + ")!");
 		return;
 	}
-	
+
 	MainLoop();
-	
+
 	ss.dwCurrentState = SERVICE_STOPPED;
 	SetServiceStatus(ssh, &ss);
 }
@@ -364,25 +364,25 @@ int __cdecl main(int argc, char* argv[])
 #ifndef _WIN32
 	CSyslogInit g_syslog;
 #endif;
-	
+
 #ifndef _WIN_IOT
 	::SetDllDirectory("");
 #endif
-	
+
 #if !defined(_WIN64) && !defined(_WIN_IOT)
 	HINSTANCE hKernel32 = ::LoadLibrary("Kernel32.dll");
-	
+
 	typedef BOOL (WINAPI * SPDEPP)(DWORD);
 	SPDEPP pSPDEPP = (SPDEPP)::GetProcAddress(hKernel32, "SetProcessDEPPolicy");
-	
+
 	if (pSPDEPP != NULL)
 	{
 		pSPDEPP(PROCESS_DEP_ENABLE);
 	}
-	
+
 	::FreeLibrary(hKernel32);
 #endif
-	
+
 #ifdef _DEBUG
 //    AllocConsole();
 //    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -400,11 +400,11 @@ int __cdecl main(int argc, char* argv[])
 	{
 		ServerManager::m_sPath = sBuf;
 	}
-	
+
 	char * sServiceName = NULL;
-	
+
 	bool bInstallService = false, bSetup = false;
-	
+
 	for (int i = 1; i < argc; i++)
 	{
 		if (stricmp(argv[i], "-s") == NULL || stricmp(argv[i], "/service") == NULL)
@@ -424,7 +424,7 @@ int __cdecl main(int argc, char* argv[])
 				printf("Missing config directory!");
 				return EXIT_FAILURE;
 			}
-			
+
 			size_t szLen = strlen(argv[i]);
 			if (szLen >= 1 && argv[i][0] != '\\' && argv[i][0] != '/')
 			{
@@ -434,7 +434,7 @@ int __cdecl main(int argc, char* argv[])
 					return EXIT_FAILURE;
 				}
 			}
-			
+
 			if (argv[i][szLen - 1] == '/' || argv[i][szLen - 1] == '\\')
 			{
 				ServerManager::m_sPath = string(argv[i], szLen - 1);
@@ -443,7 +443,7 @@ int __cdecl main(int argc, char* argv[])
 			{
 				ServerManager::m_sPath = string(argv[i], szLen);
 			}
-			
+
 			if (DirExist(ServerManager::m_sPath.c_str()) == false)
 			{
 				if (CreateDirectory(ServerManager::m_sPath.c_str(), NULL) == 0)
@@ -516,18 +516,18 @@ int __cdecl main(int argc, char* argv[])
 			return EXIT_SUCCESS;
 		}
 	}
-	
+
 	if (bSetup == true)
 	{
 		ServerManager::Initialize();
-		
+
 		ServerManager::CommandLineSetup();
-		
+
 		ServerManager::FinalClose();
-		
+
 		return EXIT_SUCCESS;
 	}
-	
+
 	if (bInstallService == true)
 	{
 		if (sPath == NULL && strcmp(ServerManager::m_sPath.c_str(), sBuf) == 0)
@@ -539,15 +539,15 @@ int __cdecl main(int argc, char* argv[])
 			return InstallService(sServiceName, ServerManager::m_sPath.c_str());
 		}
 	}
-	
+
 #ifndef _WIN_IOT
 	ExceptionHandlingInitialize(ServerManager::m_sPath, sBuf);
 #endif
-	
+
 	if (ServerManager::m_bService == false)
 	{
 		ServerManager::Initialize();
-		
+
 		if (ServerManager::Start() == false)
 		{
 			printf("Server start failed!");
@@ -561,7 +561,7 @@ int __cdecl main(int argc, char* argv[])
 			printf("%s running...\n", g_sPtokaXTitle);
 			printf("Fork: https://github.com/pavel-pimenov/PtokaX\n");
 		}
-		
+
 		MainLoop();
 	}
 	else
@@ -571,7 +571,7 @@ int __cdecl main(int argc, char* argv[])
 			{ sServiceName, StartService },
 			{ NULL, NULL }
 		};
-		
+
 		if (StartServiceCtrlDispatcher(DispatchTable) == false)
 		{
 			AppendLog("StartServiceCtrlDispatcher failed (" + px_string((uint32_t)GetLastError()) + ")!");
@@ -581,7 +581,7 @@ int __cdecl main(int argc, char* argv[])
 			return EXIT_FAILURE;
 		}
 	}
-	
+
 	return EXIT_SUCCESS;
 }
 //---------------------------------------------------------------------------

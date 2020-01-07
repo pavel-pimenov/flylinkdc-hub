@@ -34,27 +34,27 @@ typedef struct sqlite3 sqlite3;
 
 class DBSQLite
 {
-	private:
-		sqlite3 * m_pSqliteDB;
-		
-		bool m_bConnected;
-		
-	public:
-		static DBSQLite * m_Ptr;
-		
-		DBSQLite();
-		~DBSQLite();
-		
-		void UpdateRecord(User * pUser);
-		void IncMessageCount(User * pUser);
-		
-		bool SearchNick(ChatCommand * pChatCommand);
-		bool SearchIP(ChatCommand * pChatCommand);
-		
+private:
+	sqlite3 * m_pSqliteDB;
+
+	bool m_bConnected;
+
+public:
+	static DBSQLite * m_Ptr;
+
+	DBSQLite();
+	~DBSQLite();
+
+	void UpdateRecord(User * pUser);
+	void IncMessageCount(User * pUser);
+
+	bool SearchNick(ChatCommand * pChatCommand);
+	bool SearchIP(ChatCommand * pChatCommand);
+
 #ifdef FLYLINKDC_USE_SQLITE_REMOVE_OLD_RECORD
-		void RemoveOldRecords(const uint16_t ui16Days);
+	void RemoveOldRecords(const uint16_t ui16Days);
 #endif
-		DISALLOW_COPY_AND_ASSIGN(DBSQLite);
+	DISALLOW_COPY_AND_ASSIGN(DBSQLite);
 };
 #endif // FLYLINKDC_USE_DB
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

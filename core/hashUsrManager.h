@@ -40,37 +40,37 @@ class HashManager
 {
 private:
 	std::unordered_map<std::string, User*> m_NickTable;
-	
+
 	struct IpTableItem
 	{
 		IpTableItem * m_pPrev, * m_pNext;
-		
+
 		User * m_pFirstUser;
-		
+
 		uint16_t m_ui16Count;
-		
+
 		IpTableItem() : m_pPrev(NULL), m_pNext(NULL), m_pFirstUser(NULL), m_ui16Count(0) { }
-		
+
 		DISALLOW_COPY_AND_ASSIGN(IpTableItem);
 	};
-	
+
 	IpTableItem * m_pIpTable[65536];
-	
+
 	DISALLOW_COPY_AND_ASSIGN(HashManager);
 public:
 	static HashManager * m_Ptr;
-	
+
 	HashManager();
 	~HashManager();
-	
+
 	bool Add(User * pUser);
 	void Remove(User * pUser);
-	
+
 	User * FindUser(const char * sNick, const size_t szNickLen)  const;
 	User * FindUser(const std::string& sNick) const;
 	User * FindUser(const User * pUser)  const;
 	User * FindUser(const uint8_t * m_ui128IpHash) const;
-	
+
 	uint32_t GetUserIpCount(const User * pUser) const;
 };
 //---------------------------------------------------------------------------

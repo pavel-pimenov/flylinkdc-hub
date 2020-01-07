@@ -66,7 +66,7 @@ DcCommand ActualDcCommand;
 static bool UserProcessLines(User * pUser, const uint32_t ui32NewDataStart)
 {
 	char c = 0;
-	
+
 	char * pBuffer = pUser->m_pRecvBuf;
 	char * buffer = pUser->m_pRecvBuf;
 	static int g_id = 0;
@@ -79,7 +79,7 @@ static bool UserProcessLines(User * pUser, const uint32_t ui32NewDataStart)
 		{
 			c = pUser->m_pRecvBuf[ui32i + 1];
 			pUser->m_pRecvBuf[ui32i + 1] = '\0';
-			
+
 			const uint32_t ui32CommandLen = (uint32_t)(((pUser->m_pRecvBuf + ui32i) - pBuffer) + 1);
 			if (pBuffer[0] == '|')
 			{
@@ -91,13 +91,13 @@ static bool UserProcessLines(User * pUser, const uint32_t ui32NewDataStart)
 				ActualDcCommand.m_pUser = pUser;
 				ActualDcCommand.m_sCommand = pBuffer;
 				ActualDcCommand.m_ui32CommandLen = ui32CommandLen;
-				
+
 				DcCommands::m_Ptr->PreProcessData(&ActualDcCommand);
 				extern bool g_isUseLog;
 				if (pUser->m_is_proxy_user || pUser->m_is_invalid_json || g_isUseLog ||
 				        pUser->m_is_bad_len_port || pUser->m_is_bad_port || pUser->m_is_ddos_udp ||
 				        pUser->m_is_bad_len_number_myinfo || pUser->m_is_max_int8 || pUser->m_is_max_ip_len)
-				{  
+				{
 					pUser->logInvalidUser(g_id, buffer, ui32CommandLen, false);
 				}
 			}
@@ -105,12 +105,12 @@ static bool UserProcessLines(User * pUser, const uint32_t ui32NewDataStart)
 			{
 				pUser->SendFormat("UserProcessLines1", false, "<%s> %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_CMD_TOO_LONG]);
 				pUser->Close();
-				
+
 				UdpDebug::m_Ptr->BroadcastFormat("[SYS] %s (%s): Received command too long. User disconnected.", pUser->m_sNick, pUser->m_sIP);
-				
+
 				return false;
 			}
-			
+
 			pUser->m_pRecvBuf[ui32i + 1] = c;
 			pBuffer += ui32CommandLen;
 			if (pUser->m_ui8State >= User::STATE_CLOSING)
@@ -125,24 +125,24 @@ static bool UserProcessLines(User * pUser, const uint32_t ui32NewDataStart)
 			continue;
 		}
 	}
-	
+
 	pUser->m_ui32RecvBufDataLen -= (uint32_t)(pBuffer - pUser->m_pRecvBuf);
-	
+
 	if (pUser->m_ui32RecvBufDataLen == 0)
 	{
 		DcCommands::m_Ptr->ProcessCmds(pUser);
-		
+
 		pUser->m_pRecvBuf[0] = '\0';
-		
+
 		return false;
 	}
 	else if (pUser->m_ui32RecvBufDataLen == 1)
 	{
 		DcCommands::m_Ptr->ProcessCmds(pUser);
-		
+
 		pUser->m_pRecvBuf[0] = pBuffer[0];
 		pUser->m_pRecvBuf[1] = '\0';
-		
+
 		return true;
 	}
 	else
@@ -152,20 +152,20 @@ static bool UserProcessLines(User * pUser, const uint32_t ui32NewDataStart)
 			// PPK ... we don't want commands longer than 64 kB, drop this user !
 			pUser->SendFormat("UserProcessLines2", false, "<%s> %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_CMD_TOO_LONG]);
 			pUser->Close();
-			
+
 			UdpDebug::m_Ptr->BroadcastFormat("[SYS] %s (%s): RecvBuffer overflow. User disconnected.", pUser->m_sNick, pUser->m_sIP);
-			
+
 			return false;
 		}
-		
+
 		DcCommands::m_Ptr->ProcessCmds(pUser);
-		
+
 		memmove(pUser->m_pRecvBuf, pBuffer, pUser->m_ui32RecvBufDataLen);
 		pUser->m_pRecvBuf[pUser->m_ui32RecvBufDataLen] = '\0';
-		
-			return true;
-		}
+
+		return true;
 	}
+}
 //------------------------------------------------------------------------------
 
 static void UserSetBadTag(User * pUser, char * sDesc, const uint8_t ui8DescLen)
@@ -173,23 +173,23 @@ static void UserSetBadTag(User * pUser, char * sDesc, const uint8_t ui8DescLen)
 	// PPK ... clear all tag related things
 	pUser->m_sTagVersion = NULL;
 	pUser->m_ui8TagVersionLen = 0;
-	
+
 	pUser->m_sModes[0] = '\0';
 	pUser->m_ui32Hubs = pUser->m_ui32Slots = pUser->m_ui32OLimit = pUser->m_ui32LLimit = pUser->m_ui32DLimit = pUser->m_ui32NormalHubs = pUser->m_ui32RegHubs = pUser->m_ui32OpHubs = 0;
 	pUser->m_ui32BoolBits |= User::BIT_OLDHUBSTAG;
 	pUser->m_ui32BoolBits |= User::BIT_HAVE_BADTAG;
-	
+
 	pUser->m_sDescription = sDesc;
 	pUser->m_ui8DescriptionLen = ui8DescLen;
-	
+
 	// PPK ... clear (fake) tag
 	pUser->m_sTag = NULL;
 	pUser->m_ui8TagLen = 0;
-	
+
 	// PPK ... set bad tag
 	pUser->m_sClient = (char *)sBadTag;
 	pUser->m_ui8ClientLen = 8;
-	
+
 	// PPK ... send report to udp debug
 	UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) have bad TAG (%s) ?!?", pUser->m_sNick, pUser->m_sIP, pUser->m_sMyInfoOriginal);
 }
@@ -198,54 +198,54 @@ static void UserSetBadTag(User * pUser, char * sDesc, const uint8_t ui8DescLen)
 static void UserParseMyInfo(User * pUser)
 {
 	memcpy(ServerManager::m_pGlobalBuffer, pUser->m_sMyInfoOriginal, pUser->m_ui16MyInfoOriginalLen);
-	
+
 	char *sMyINFOParts[] = { NULL, NULL, NULL, NULL, NULL };
 	uint16_t iMyINFOPartsLen[] = { 0, 0, 0, 0, 0 };
-	
+
 	unsigned char cPart = 0;
-	
+
 	sMyINFOParts[cPart] = ServerManager::m_pGlobalBuffer + 14 + pUser->m_ui8NickLen; // desription start
-	
-	
+
+
 	for (uint32_t ui32i = 14 + pUser->m_ui8NickLen; ui32i < pUser->m_ui16MyInfoOriginalLen - 1u; ui32i++)
 	{
 		if (ServerManager::m_pGlobalBuffer[ui32i] == '$')
 		{
 			ServerManager::m_pGlobalBuffer[ui32i] = '\0';
 			iMyINFOPartsLen[cPart] = (uint16_t)((ServerManager::m_pGlobalBuffer + ui32i) - sMyINFOParts[cPart]);
-			
+
 			// are we on end of myinfo ???
 			if (cPart == 4)
 				break;
-				
+
 			cPart++;
 			sMyINFOParts[cPart] = ServerManager::m_pGlobalBuffer + ui32i + 1;
 		}
 	}
-	
+
 	// check if we have all myinfo parts, connection and sharesize must have length more than 0 !
 	if (sMyINFOParts[0] == NULL || sMyINFOParts[1] == NULL || iMyINFOPartsLen[1] != 1 || sMyINFOParts[2] == NULL || iMyINFOPartsLen[2] == 0 || sMyINFOParts[3] == NULL || sMyINFOParts[4] == NULL || iMyINFOPartsLen[4] == 0)
 	{
 		pUser->SendFormat("UserParseMyInfo1", false, "<%s> %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_MyINFO_IS_CORRUPTED]);
-		
+
 		UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) with bad MyINFO (%s) disconnected.", pUser->m_sNick, pUser->m_sIP, pUser->m_sMyInfoOriginal);
-		
+
 		pUser->Close();
 		return;
 	}
-	
+
 	// connection
 	pUser->m_ui8MagicByte = sMyINFOParts[2][iMyINFOPartsLen[2] - 1];
 	pUser->m_sConnection = pUser->m_sMyInfoOriginal + (sMyINFOParts[2] - ServerManager::m_pGlobalBuffer);
 	pUser->m_ui8ConnectionLen = (uint8_t)(iMyINFOPartsLen[2] - 1);
-	
+
 	// email
 	if (iMyINFOPartsLen[3] != 0)
 	{
 		pUser->m_sEmail = pUser->m_sMyInfoOriginal + (sMyINFOParts[3] - ServerManager::m_pGlobalBuffer);
 		pUser->m_ui8EmailLen = (uint8_t)iMyINFOPartsLen[3];
 	}
-	
+
 	// share
 	// PPK ... check for valid numeric share, kill fakers !
 	if (HaveOnlyNumbers(sMyINFOParts[4], iMyINFOPartsLen[4]) == false)
@@ -254,7 +254,7 @@ static void UserParseMyInfo(User * pUser)
 		pUser->Close();
 		return;
 	}
-	
+
 	if (((pUser->m_ui32BoolBits & User::BIT_HAVE_SHARECOUNTED) == User::BIT_HAVE_SHARECOUNTED) == true)
 	{
 		ServerManager::m_ui64TotalShare -= pUser->m_ui64SharedSize;
@@ -273,7 +273,7 @@ static void UserParseMyInfo(User * pUser)
 		pUser->m_ui64SharedSize = strtoull(sMyINFOParts[4], NULL, 10);
 #endif
 	}
-	
+
 	// Reset all tag infos...
 	pUser->m_sModes[0] = '\0';
 	pUser->m_ui32Hubs = 0;
@@ -284,7 +284,7 @@ static void UserParseMyInfo(User * pUser)
 	pUser->m_ui32OLimit = 0;
 	pUser->m_ui32LLimit = 0;
 	pUser->m_ui32DLimit = 0;
-	
+
 	// description
 	if (iMyINFOPartsLen[0] != 0)
 	{
@@ -295,25 +295,25 @@ static void UserParseMyInfo(User * pUser)
 			{
 				pUser->m_sDescription = pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer);
 				pUser->m_ui8DescriptionLen = (uint8_t)iMyINFOPartsLen[0];
-				
+
 				pUser->m_sClient = (char*)sOtherNoTag;
 				pUser->m_ui8ClientLen = 14;
 				return;
 			}
-			
+
 			pUser->m_sTag = pUser->m_sMyInfoOriginal + (DCTag - ServerManager::m_pGlobalBuffer);
 			pUser->m_ui8TagLen = (uint8_t)(iMyINFOPartsLen[0] - (DCTag - sMyINFOParts[0]));
-			
+
 			static const uint16_t ui16plusplus = *((uint16_t *)"++");
 			if (DCTag[3] == ' ' && *((uint16_t *)(DCTag + 1)) == ui16plusplus)
 			{
 				pUser->m_ui32SupportBits |= User::SUPPORTBIT_NOHELLO;
 			}
-			
+
 			static const uint16_t ui16V = *((uint16_t *)"V:");
-			
+
 			char * sTemp = strchr(DCTag, ' ');
-			
+
 			if (sTemp != NULL && *((uint16_t *)(sTemp + 1)) == ui16V)
 			{
 				sTemp[0] = '\0';
@@ -331,14 +331,14 @@ static void UserParseMyInfo(User * pUser)
 				pUser->m_ui8DescriptionLen = (uint8_t)iMyINFOPartsLen[0];
 				return;
 			}
-			
+
 			size_t szTagPattLen = ((sTemp - DCTag) + 1);
-			
+
 			sMyINFOParts[0][iMyINFOPartsLen[0] - 1] = ','; // terminate tag end with ',' for easy tag parsing
-			
+
 			uint32_t reqVals = 0;
 			char * sTagPart = DCTag + szTagPattLen;
-			
+
 			for (size_t szi = szTagPattLen; szi < (size_t)(iMyINFOPartsLen[0] - (DCTag - sMyINFOParts[0])); szi++)
 			{
 				if (DCTag[szi] == ',')
@@ -349,226 +349,226 @@ static void UserParseMyInfo(User * pUser)
 						UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
 						return;
 					}
-					
+
 					switch (sTagPart[0])
 					{
-						case 'V':
-							// PPK ... fix for potencial memory leak with fake tag
-							if (sTagPart[2] == '\0' || pUser->m_sTagVersion)
+					case 'V':
+						// PPK ... fix for potencial memory leak with fake tag
+						if (sTagPart[2] == '\0' || pUser->m_sTagVersion)
+						{
+							UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
+							return;
+						}
+						pUser->m_sTagVersion = pUser->m_sMyInfoOriginal + ((sTagPart + 2) - ServerManager::m_pGlobalBuffer);
+						pUser->m_ui8TagVersionLen = (uint8_t)((DCTag + szi) - (sTagPart + 2));
+						reqVals++;
+						break;
+					case 'M':
+						if ((pUser->m_ui32BoolBits & User::BIT_IPV6) == User::BIT_IPV6 && (pUser->m_ui32SupportBits & User::SUPPORTBIT_IP64) == User::SUPPORTBIT_IP64)
+						{
+							if (sTagPart[2] == '\0' || sTagPart[3] == '\0' || sTagPart[4] != '\0')
 							{
 								UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
 								return;
 							}
-							pUser->m_sTagVersion = pUser->m_sMyInfoOriginal + ((sTagPart + 2) - ServerManager::m_pGlobalBuffer);
-							pUser->m_ui8TagVersionLen = (uint8_t)((DCTag + szi) - (sTagPart + 2));
-							reqVals++;
-							break;
-						case 'M':
-							if ((pUser->m_ui32BoolBits & User::BIT_IPV6) == User::BIT_IPV6 && (pUser->m_ui32SupportBits & User::SUPPORTBIT_IP64) == User::SUPPORTBIT_IP64)
+							pUser->m_sModes[0] = sTagPart[2];
+							pUser->m_sModes[1] = sTagPart[3];
+							pUser->m_sModes[2] = '\0';
+
+							if (toupper(sTagPart[3]) == 'A')
 							{
-								if (sTagPart[2] == '\0' || sTagPart[3] == '\0' || sTagPart[4] != '\0')
+								pUser->m_ui32BoolBits |= User::BIT_IPV6_ACTIVE;
+							}
+							else
+							{
+								pUser->m_ui32BoolBits &= ~User::BIT_IPV6_ACTIVE;
+							}
+						}
+						else
+						{
+							if (sTagPart[2] == '\0' || sTagPart[3] != '\0')
+							{
+								UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
+								return;
+							}
+							pUser->m_sModes[0] = sTagPart[2];
+							pUser->m_sModes[1] = '\0';
+						}
+
+						if (toupper(sTagPart[2]) == 'A')
+						{
+							pUser->m_ui32BoolBits |= User::BIT_IPV4_ACTIVE;
+						}
+						else
+						{
+							pUser->m_ui32BoolBits &= ~User::BIT_IPV4_ACTIVE;
+						}
+
+						reqVals++;
+						break;
+					case 'H':
+					{
+						if (sTagPart[2] == '\0')
+						{
+							UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
+							return;
+						}
+
+						DCTag[szi] = '/';
+
+						char *sHubsParts[] = { NULL, NULL, NULL };
+						uint16_t iHubsPartsLen[] = { 0, 0, 0 };
+
+						uint8_t ui8Part = 0;
+
+						sHubsParts[ui8Part] = sTagPart + 2;
+
+
+						for (uint32_t ui32j = 3; ui32j < (uint32_t)((DCTag + szi + 1) - sTagPart); ui32j++)
+						{
+							if (sTagPart[ui32j] == '/')
+							{
+								sTagPart[ui32j] = '\0';
+								iHubsPartsLen[ui8Part] = (uint16_t)((sTagPart + ui32j) - sHubsParts[ui8Part]);
+
+								// are we on end of hubs tag part ???
+								if (ui8Part == 2)
+									break;
+
+								ui8Part++;
+								sHubsParts[ui8Part] = sTagPart + ui32j + 1;
+							}
+						}
+
+						if (sHubsParts[0] != NULL && sHubsParts[1] != NULL && sHubsParts[2] != NULL)
+						{
+							if (iHubsPartsLen[0] != 0 && iHubsPartsLen[1] != 0 && iHubsPartsLen[2] != 0)
+							{
+								if (HaveOnlyNumbers(sHubsParts[0], iHubsPartsLen[0]) == false ||
+								        HaveOnlyNumbers(sHubsParts[1], iHubsPartsLen[1]) == false ||
+								        HaveOnlyNumbers(sHubsParts[2], iHubsPartsLen[2]) == false)
 								{
 									UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
 									return;
 								}
-								pUser->m_sModes[0] = sTagPart[2];
-								pUser->m_sModes[1] = sTagPart[3];
-								pUser->m_sModes[2] = '\0';
-								
-								if (toupper(sTagPart[3]) == 'A')
+								pUser->m_ui32NormalHubs = atoi(sHubsParts[0]);
+								pUser->m_ui32RegHubs = atoi(sHubsParts[1]);
+								pUser->m_ui32OpHubs = atoi(sHubsParts[2]);
+								pUser->m_ui32Hubs = pUser->m_ui32NormalHubs + pUser->m_ui32RegHubs + pUser->m_ui32OpHubs;
+								// PPK ... kill LAM3R with fake hubs
+								if (pUser->m_ui32Hubs != 0)
 								{
-									pUser->m_ui32BoolBits |= User::BIT_IPV6_ACTIVE;
-								}
-								else
-								{
-									pUser->m_ui32BoolBits &= ~User::BIT_IPV6_ACTIVE;
+									pUser->m_ui32BoolBits &= ~User::BIT_OLDHUBSTAG;
+									reqVals++;
+									break;
 								}
 							}
-							else
-							{
-								if (sTagPart[2] == '\0' || sTagPart[3] != '\0')
-								{
-									UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
-									return;
-								}
-								pUser->m_sModes[0] = sTagPart[2];
-								pUser->m_sModes[1] = '\0';
-							}
-							
-							if (toupper(sTagPart[2]) == 'A')
-							{
-								pUser->m_ui32BoolBits |= User::BIT_IPV4_ACTIVE;
-							}
-							else
-							{
-								pUser->m_ui32BoolBits &= ~User::BIT_IPV4_ACTIVE;
-							}
-							
-							reqVals++;
-							break;
-						case 'H':
+						}
+						else if (sHubsParts[1] == DCTag + szi + 1 && sHubsParts[2] == NULL)
 						{
-							if (sTagPart[2] == '\0')
-							{
-								UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
-								return;
-							}
-							
-							DCTag[szi] = '/';
-							
-							char *sHubsParts[] = { NULL, NULL, NULL };
-							uint16_t iHubsPartsLen[] = { 0, 0, 0 };
-							
-							uint8_t ui8Part = 0;
-							
-							sHubsParts[ui8Part] = sTagPart + 2;
-							
-							
-							for (uint32_t ui32j = 3; ui32j < (uint32_t)((DCTag + szi + 1) - sTagPart); ui32j++)
-							{
-								if (sTagPart[ui32j] == '/')
-								{
-									sTagPart[ui32j] = '\0';
-									iHubsPartsLen[ui8Part] = (uint16_t)((sTagPart + ui32j) - sHubsParts[ui8Part]);
-									
-									// are we on end of hubs tag part ???
-									if (ui8Part == 2)
-										break;
-										
-									ui8Part++;
-									sHubsParts[ui8Part] = sTagPart + ui32j + 1;
-								}
-							}
-							
-							if (sHubsParts[0] != NULL && sHubsParts[1] != NULL && sHubsParts[2] != NULL)
-							{
-								if (iHubsPartsLen[0] != 0 && iHubsPartsLen[1] != 0 && iHubsPartsLen[2] != 0)
-								{
-									if (HaveOnlyNumbers(sHubsParts[0], iHubsPartsLen[0]) == false ||
-									        HaveOnlyNumbers(sHubsParts[1], iHubsPartsLen[1]) == false ||
-									        HaveOnlyNumbers(sHubsParts[2], iHubsPartsLen[2]) == false)
-									{
-										UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
-										return;
-									}
-									pUser->m_ui32NormalHubs = atoi(sHubsParts[0]);
-									pUser->m_ui32RegHubs = atoi(sHubsParts[1]);
-									pUser->m_ui32OpHubs = atoi(sHubsParts[2]);
-									pUser->m_ui32Hubs = pUser->m_ui32NormalHubs + pUser->m_ui32RegHubs + pUser->m_ui32OpHubs;
-									// PPK ... kill LAM3R with fake hubs
-									if (pUser->m_ui32Hubs != 0)
-									{
-										pUser->m_ui32BoolBits &= ~User::BIT_OLDHUBSTAG;
-										reqVals++;
-										break;
-									}
-								}
-							}
-							else if (sHubsParts[1] == DCTag + szi + 1 && sHubsParts[2] == NULL)
-							{
-								DCTag[szi] = '\0';
-								pUser->m_ui32Hubs = atoi(sHubsParts[0]);
-								reqVals++;
-								pUser->m_ui32BoolBits |= User::BIT_OLDHUBSTAG;
-								break;
-							}
-							
-							pUser->SendFormat("UserParseMyInfo2", false, "<%s> %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_FAKE_TAG]);
-							
-							pUser->m_sTag[pUser->m_ui8TagLen] = '\0';
-							UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) with fake Tag disconnected: %s", pUser->m_sNick, pUser->m_sIP, pUser->m_sTag);
-							
-							//
-							// [-] FlylinkDC++ fix User JuniorSD_R166 (178.68.64.129) with fake Tag disconnected: <FlylinkDC++ V:r503-x64-19807,M ,H:0/0/0,S:15>
-
-
-							// pUser->Close();
-							// return;
-							//
-							pUser->m_ui32NormalHubs = 1; // [+]FlylinkDC++
-							if (pUser->m_ui32Hubs == 0)
-							{
-								pUser->m_ui32Hubs = 1;
-							}
+							DCTag[szi] = '\0';
+							pUser->m_ui32Hubs = atoi(sHubsParts[0]);
+							reqVals++;
+							pUser->m_ui32BoolBits |= User::BIT_OLDHUBSTAG;
 							break;
 						}
-						case 'S':
+
+						pUser->SendFormat("UserParseMyInfo2", false, "<%s> %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_FAKE_TAG]);
+
+						pUser->m_sTag[pUser->m_ui8TagLen] = '\0';
+						UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) with fake Tag disconnected: %s", pUser->m_sNick, pUser->m_sIP, pUser->m_sTag);
+
+						//
+						// [-] FlylinkDC++ fix User JuniorSD_R166 (178.68.64.129) with fake Tag disconnected: <FlylinkDC++ V:r503-x64-19807,M ,H:0/0/0,S:15>
+
+
+						// pUser->Close();
+						// return;
+						//
+						pUser->m_ui32NormalHubs = 1; // [+]FlylinkDC++
+						if (pUser->m_ui32Hubs == 0)
 						{
-							if (sTagPart[2] == '\0')
-							{
-								UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
-								return;
-							}
-							const uint16_t l_slot_len = uint16_t(strlen(sTagPart + 2));
-							if (l_slot_len > 12)
-							{
-								pUser->m_is_bad_len_number_myinfo = true;
-							}
-							if (HaveOnlyNumbers(sTagPart + 2, l_slot_len) == false)
-							{
-								UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
-								return;
-							}
-							pUser->m_ui32Slots = atoi(sTagPart + 2);
-							reqVals++;
-							break;
+							pUser->m_ui32Hubs = 1;
 						}
-						case 'O':
-							if (sTagPart[2] == '\0')
-							{
-								UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
-								return;
-							}
-							if (strlen(sTagPart) > 12)
-							{
-								pUser->m_is_bad_len_number_myinfo = true;
-							}
-							pUser->m_ui32OLimit = atoi(sTagPart + 2);
-							break;
-						case 'B':
-							if (sTagPart[2] == '\0')
-							{
-								UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
-								return;
-							}
-							if (strlen(sTagPart) > 12)
-							{
-								pUser->m_is_bad_len_number_myinfo = true;
-							}
-							pUser->m_ui32LLimit = atoi(sTagPart + 2);
-							break;
-						case 'L':
-							if (sTagPart[2] == '\0')
-							{
-								UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
-								return;
-							}
-							if (strlen(sTagPart) > 12)
-							{
-								pUser->m_is_bad_len_number_myinfo = true;
-							}
-							pUser->m_ui32LLimit = atoi(sTagPart + 2);
-							break;
-						case 'D':
-							if (sTagPart[2] == '\0')
-							{
-								UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
-								return;
-							}
-							if (strlen(sTagPart) > 12)
-							{
-								pUser->m_is_bad_len_number_myinfo = true;
-							}
-							pUser->m_ui32DLimit = atoi(sTagPart + 2);
-							break;
-						default:
-							//UdpDebug::m_Ptr->BroadcastFormat("[SYS] %s (%s): Extra info in DC tag: %s", pUser->Nick, pUser->m_sIP, sTag);
-							break;
+						break;
+					}
+					case 'S':
+					{
+						if (sTagPart[2] == '\0')
+						{
+							UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
+							return;
+						}
+						const uint16_t l_slot_len = uint16_t(strlen(sTagPart + 2));
+						if (l_slot_len > 12)
+						{
+							pUser->m_is_bad_len_number_myinfo = true;
+						}
+						if (HaveOnlyNumbers(sTagPart + 2, l_slot_len) == false)
+						{
+							UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
+							return;
+						}
+						pUser->m_ui32Slots = atoi(sTagPart + 2);
+						reqVals++;
+						break;
+					}
+					case 'O':
+						if (sTagPart[2] == '\0')
+						{
+							UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
+							return;
+						}
+						if (strlen(sTagPart) > 12)
+						{
+							pUser->m_is_bad_len_number_myinfo = true;
+						}
+						pUser->m_ui32OLimit = atoi(sTagPart + 2);
+						break;
+					case 'B':
+						if (sTagPart[2] == '\0')
+						{
+							UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
+							return;
+						}
+						if (strlen(sTagPart) > 12)
+						{
+							pUser->m_is_bad_len_number_myinfo = true;
+						}
+						pUser->m_ui32LLimit = atoi(sTagPart + 2);
+						break;
+					case 'L':
+						if (sTagPart[2] == '\0')
+						{
+							UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
+							return;
+						}
+						if (strlen(sTagPart) > 12)
+						{
+							pUser->m_is_bad_len_number_myinfo = true;
+						}
+						pUser->m_ui32LLimit = atoi(sTagPart + 2);
+						break;
+					case 'D':
+						if (sTagPart[2] == '\0')
+						{
+							UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
+							return;
+						}
+						if (strlen(sTagPart) > 12)
+						{
+							pUser->m_is_bad_len_number_myinfo = true;
+						}
+						pUser->m_ui32DLimit = atoi(sTagPart + 2);
+						break;
+					default:
+						//UdpDebug::m_Ptr->BroadcastFormat("[SYS] %s (%s): Extra info in DC tag: %s", pUser->Nick, pUser->m_sIP, sTag);
+						break;
 					}
 					sTagPart = DCTag + szi + 1;
 				}
 			}
-			
+
 			if (reqVals < 4)
 			{
 				UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
@@ -587,16 +587,16 @@ static void UserParseMyInfo(User * pUser)
 			pUser->m_ui8DescriptionLen = (uint8_t)iMyINFOPartsLen[0];
 		}
 	}
-	
+
 	pUser->m_sClient = (char *)sOtherNoTag;
 	pUser->m_ui8ClientLen = 14;
-	
+
 	pUser->m_sTag = NULL;
 	pUser->m_ui8TagLen = 0;
-	
+
 	pUser->m_sTagVersion = NULL;
 	pUser->m_ui8TagVersionLen = 0;
-	
+
 	pUser->m_sModes[0] = '\0';
 	pUser->m_ui32Hubs = 0;
 	pUser->m_ui32NormalHubs = 0;
@@ -624,29 +624,29 @@ UserBan::~UserBan()
 UserBan * UserBan::CreateUserBan(const char * sMess, const uint32_t ui32MessLen, const uint32_t ui32Hash)
 {
 	UserBan * pUserBan = new (std::nothrow) UserBan();
-	
+
 	if (pUserBan == NULL)
 	{
 		AppendDebugLog("%s - [MEM] Cannot allocate new pUserBan in UserBan::CreateUserBan\n");
-		
+
 		return NULL;
 	}
-	
+
 	pUserBan->m_sMessage = (char *)malloc(ui32MessLen + 1);
 	if (pUserBan->m_sMessage == NULL)
 	{
 		AppendDebugLogFormat("[MEM] UserBan::CreateUserBan cannot allocate %u bytes for sMessage\n", ui32MessLen + 1);
-		
+
 		delete pUserBan;
 		return NULL;
 	}
-	
+
 	memcpy(pUserBan->m_sMessage, sMess, ui32MessLen);
 	pUserBan->m_sMessage[ui32MessLen] = '\0';
-	
+
 	pUserBan->m_ui32Len = ui32MessLen;
 	pUserBan->m_ui32NickHash = ui32Hash;
-	
+
 	return pUserBan;
 }
 //---------------------------------------------------------------------------
@@ -700,7 +700,7 @@ User::User() : m_ui64SharedSize(0), m_ui64ChangedSharedSizeShort(0), m_ui64Chang
 	m_ui8Country(246), m_ui8State(User::STATE_SOCKET_ACCEPTED), m_ui8IPv4Len(0),
 	m_ui8ChangedDescriptionShortLen(0), m_ui8ChangedDescriptionLongLen(0), m_ui8ChangedTagShortLen(0), m_ui8ChangedTagLongLen(0),
 	m_ui8ChangedConnectionShortLen(0), m_ui8ChangedConnectionLongLen(0), m_ui8ChangedEmailShortLen(0), m_ui8ChangedEmailLongLen(0),
-    m_last_recv_tick(0),m_is_invalid_json(false), m_is_json_user(false)
+	m_last_recv_tick(0),m_is_invalid_json(false), m_is_json_user(false)
 
 #ifdef FLYLINKDC_USE_VERSION
 	,m_sVersion(NULL)
@@ -708,11 +708,11 @@ User::User() : m_ui64SharedSize(0), m_ui64ChangedSharedSizeShort(0), m_ui64Chang
 {
 	m_ui32BoolBits |= User::BIT_IPV4_ACTIVE;
 	m_ui32BoolBits |= User::BIT_OLDHUBSTAG;
-	
+
 	time(&m_tLoginTime);
-	
+
 	memset(&m_ui128IpHash, 0, 16);
-	
+
 	m_sIP[0] = '\0';
 	m_sIPv4[0] = '\0';
 	m_sModes[0] = '\0';
@@ -751,55 +751,55 @@ User::~User()
 	free(m_sChangedConnectionLong);
 	free(m_sChangedEmailShort);
 	free(m_sChangedEmailLong);
-	
+
 	if (((m_ui32SupportBits & User::SUPPORTBIT_ZPIPE) == User::SUPPORTBIT_ZPIPE) == true)
 		DcCommands::m_Ptr->m_ui32StatZPipe--;
-		
+
 	ServerManager::m_ui32Parts++;
-	
+
 #ifdef _BUILD_GUI
 	if (::SendMessage(MainWindowPageUsersChat::m_Ptr->m_hWndPageItems[MainWindowPageUsersChat::BTN_SHOW_COMMANDS], BM_GETCHECK, 0, 0) == BST_CHECKED)
 	{
 		RichEditAppendText(MainWindowPageUsersChat::m_Ptr->m_hWndPageItems[MainWindowPageUsersChat::REDT_CHAT], ("x User removed: " + px_string(m_sNick, m_ui8NickLen) + " (Socket " + px_string(m_Socket) + ")").c_str());
 	}
 #endif
-	
+
 	if (m_sNick != sDefaultNick)
 	{
 		free(m_sNick);
 	}
-	
+
 	User::DeletePrcsdUsrCmd(m_pCmdActive4Search);
 	User::DeletePrcsdUsrCmd(m_pCmdActive6Search);
 	User::DeletePrcsdUsrCmd(m_pCmdPassiveSearch);
-	
+
 	PrcsdUsrCmd * cur = NULL,
 	              * next = m_pCmdStrt;
-	              
+
 	while (next != NULL)
 	{
 		cur = next;
 		next = cur->m_pNext;
-		
+
 		safe_free(cur->m_sCommand);
-		
+
 		delete cur;
 	}
-	
+
 	PrcsdToUsrCmd * curto = NULL,
 	                * nextto = m_pCmdToUserStrt;
-	                
+
 	while (nextto != NULL)
 	{
 		curto = nextto;
 		nextto = curto->m_pNext;
-		
+
 		safe_free(curto->m_sCommand);
-		
+
 		delete curto;
 	}
-	
-	
+
+
 	m_pCmdToUserStrt = nullptr;
 	m_pCmdToUserEnd = nullptr;
 #ifdef USE_FLYLINKDC_EXT_JSON
@@ -817,7 +817,7 @@ bool User::MakeLock()
 	// checked. If overflow occurs then the overflowed value is added to the
 	// ascii 48 value ("0") and continues.
 	// The lock has fixed length 63 bytes
-	
+
 #ifdef _WIN32
 #ifdef _BUILD_GUI
 #ifndef _M_X64
@@ -838,28 +838,28 @@ bool User::MakeLock()
 	static const char sLock[] = "$Lock EXTENDEDPROTOCOL                           nix Pk=PtokaX|";
 #endif
 	static const size_t szLockLen = sizeof(sLock) - 1;
-	
+
 	size_t szAllignLen = Allign1024(m_ui32SendBufDataLen + szLockLen);
-	
+
 	char * pOldBuf = m_pSendBuf;
 	m_pSendBuf = (char *)realloc(pOldBuf, szAllignLen);
 	if (m_pSendBuf == NULL)
 	{
 		m_pSendBuf = pOldBuf;
 		m_ui32BoolBits |= BIT_ERROR;
-		
+
 		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes in User::MakeLock\n", szAllignLen);
-		
+
 		return false;
 	}
 	m_ui32SendBufLen = (uint32_t)(szAllignLen - 1);
 	m_pSendBufHead = m_pSendBuf;
-	
+
 	// append data to the buffer
 	memcpy(m_pSendBuf, sLock, szLockLen);
 	m_ui32SendBufDataLen += szLockLen;
 	m_pSendBuf[m_ui32SendBufDataLen] = '\0';
-	
+
 	for (uint8_t ui8i = 22; ui8i < 49; ui8i++)
 	{
 #ifdef _WIN32
@@ -868,7 +868,7 @@ bool User::MakeLock()
 		m_pSendBuf[ui8i] = (char)((random() % 74) + 48);
 #endif
 	}
-	
+
 //	Memo(string(m_pSendBuf, m_ui32SendBufDataLen));
 
 	m_LogInOut.m_pBuffer = (char *)malloc(64);
@@ -877,10 +877,10 @@ bool User::MakeLock()
 		AppendDebugLog("%s - [MEM] Cannot allocate 64 bytes for pBuffer in User::MakeLock\n");
 		return false;
 	}
-	
+
 	memcpy(m_LogInOut.m_pBuffer, m_pSendBuf, szLockLen);
 	m_LogInOut.m_pBuffer[szLockLen] = '\0';
-	
+
 	return true;
 }
 //---------------------------------------------------------------------------
@@ -889,7 +889,7 @@ bool User::DoRecv()
 {
 	if ((m_ui32BoolBits & BIT_ERROR) == BIT_ERROR || m_ui8State >= STATE_CLOSING)
 		return false;
-		
+
 #ifdef _WIN32
 	u_long iAvailBytes = 0;
 	if (ioctlsocket(m_Socket, FIONREAD, &iAvailBytes) == SOCKET_ERROR)
@@ -902,15 +902,15 @@ bool User::DoRecv()
 #endif
 		UdpDebug::m_Ptr->BroadcastFormat("[ERR] %s (%s): ioctlsocket(FIONREAD) error %s (%d). User is being closed.", m_sNick, m_sIP,
 #ifdef _WIN32
-		                                   WSErrorStr(iError), iError);
+		                                 WSErrorStr(iError), iError);
 #else
-		                                   ErrnoStr(errno), errno);
+		                                 ErrnoStr(errno), errno);
 #endif
 		m_ui32BoolBits |= BIT_ERROR;
 		Close();
 		return false;
 	}
-	
+
 	// PPK ... check flood ...
 	if (iAvailBytes != 0 && ProfileManager::m_Ptr->IsAllowed(this, ProfileManager::NODEFLOODRECV) == false)
 	{
@@ -920,45 +920,45 @@ bool User::DoRecv()
 			{
 				m_ui64RecvsTick = ServerManager::m_ui64ActualTick;
 			}
-			
+
 			m_ui32Recvs += iAvailBytes;
-			
+
 			if (DeFloodCheckForDataFlood(this, DEFLOOD_MAX_DOWN, SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_DOWN_ACTION],
 			                             m_ui32Recvs, m_ui64RecvsTick, SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_DOWN_KB],
 			                             (uint32_t)SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_DOWN_TIME]) == true)
 			{
 				return false;
 			}
-			
+
 			if (m_ui32Recvs != 0)
 			{
 				m_ui32Recvs -= iAvailBytes;
 			}
 		}
-		
+
 		if (SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_DOWN_ACTION2] != 0)
 		{
 			if (m_ui32Recvs2 == 0)
 			{
 				m_ui64RecvsTick2 = ServerManager::m_ui64ActualTick;
 			}
-			
+
 			m_ui32Recvs2 += iAvailBytes;
-			
+
 			if (DeFloodCheckForDataFlood(this, DEFLOOD_MAX_DOWN, SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_DOWN_ACTION2],
 			                             m_ui32Recvs2, m_ui64RecvsTick2, SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_DOWN_KB2],
 			                             (uint32_t)SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_DOWN_TIME2]) == true)
 			{
 				return false;
 			}
-			
+
 			if (m_ui32Recvs2 != 0)
 			{
 				m_ui32Recvs2 -= iAvailBytes;
 			}
 		}
 	}
-	
+
 	if (iAvailBytes == 0)
 	{
 		const int64_t l_delta = ServerManager::m_ui64ActualTick - m_last_recv_tick;
@@ -981,9 +981,9 @@ bool User::DoRecv()
 		// receive max. 8k bytes to receive buffer
 		iAvailBytes = 8 * 1024;
 	}
-	
+
 	size_t szAllignLen = 0;
-	
+
 	if (m_ui32RecvBufLen < m_ui32RecvBufDataLen + iAvailBytes)
 	{
 		szAllignLen = Allign512(m_ui32RecvBufDataLen + iAvailBytes);
@@ -995,33 +995,33 @@ bool User::DoRecv()
 		{
 			szAllignLen = 0;
 		}
-		
+
 		m_ui32RecvCalled = 0;
 	}
-	
+
 	if (szAllignLen != 0)
 	{
 		char * pOldBuf = m_pRecvBuf;
-		
+
 		m_pRecvBuf = (char *)realloc(pOldBuf, szAllignLen);
 		if (m_pRecvBuf == NULL)
 		{
 			m_pRecvBuf = pOldBuf;
 			m_ui32BoolBits |= BIT_ERROR;
 			Close();
-			
+
 			AppendDebugLogFormat("[MEM] Cannot (re)allocate %zu bytes for pRecvBuf in User::DoRecv\n", szAllignLen);
-			
+
 			return false;
 		}
-		
+
 		m_ui32RecvBufLen = (uint32_t)(szAllignLen - 1);
 	}
-	
+
 	// receive new data to pRecvBuf
 	int recvlen = recv(m_Socket, m_pRecvBuf + m_ui32RecvBufDataLen, m_ui32RecvBufLen - m_ui32RecvBufDataLen, 0);
 	m_ui32RecvCalled++;
-	
+
 #ifdef _WIN32
 //#ifdef _DEBUG
 	//printf("[%5d] recv %d recvlen = %d\r\n", GetTickCount(), m_Socket, recvlen);
@@ -1039,9 +1039,9 @@ bool User::DoRecv()
 #endif
 			UdpDebug::m_Ptr->BroadcastFormat("[ERR] %s (%s): recv() error %s (%d). User is being closed.", m_sNick, m_sIP,
 #ifdef _WIN32
-			                                   WSErrorStr(iError), iError);
+			                                 WSErrorStr(iError), iError);
 #else
-			                                   ErrnoStr(errno), errno);
+			                                 ErrnoStr(errno), errno);
 #endif
 			m_ui32BoolBits |= BIT_ERROR;
 			Close();
@@ -1066,12 +1066,12 @@ bool User::DoRecv()
 		}
 #endif
 #endif
-		
+
 		m_ui32BoolBits |= BIT_ERROR;
 		Close();
 		return false;
 	}
-	
+
 	m_ui32Recvs += recvlen;
 	m_ui32Recvs2 += recvlen;
 	ServerManager::m_ui64BytesRead += recvlen;
@@ -1081,7 +1081,7 @@ bool User::DoRecv()
 	{
 		return true;
 	}
-	
+
 	return false;
 }
 //---------------------------------------------------------------------------
@@ -1090,7 +1090,7 @@ void User::SendChar(const char * sText, const size_t szTextLen)
 {
 	if (m_ui8State >= STATE_CLOSING || szTextLen == 0)
 		return;
-		
+
 	if (((m_ui32SupportBits & SUPPORTBIT_ZPIPE) == SUPPORTBIT_ZPIPE) == false || szTextLen < ZMINDATALEN)
 	{
 		if (PutInSendBuf(sText, szTextLen))
@@ -1102,7 +1102,7 @@ void User::SendChar(const char * sText, const size_t szTextLen)
 	{
 		uint32_t iLen = 0;
 		char *sData = ZlibUtility::m_Ptr->CreateZPipe(sText, szTextLen, iLen);
-		
+
 		if (iLen == 0)
 		{
 			if (PutInSendBuf(sText, szTextLen))
@@ -1215,11 +1215,11 @@ void User::logInvalidUser(int p_id, const char * p_buffer, int p_len, bool p_is_
 		sBuf[0] = 0;
 		strftime(sBuf, 64, "\r\n%c :::::", acc_tm);
 		l_file_out << sBuf << " Nick = [ " << m_sNick <<
-			" ] RecvBufDataLen = " << m_ui32RecvBufDataLen <<
-			" RecvBufLen = " << m_ui32RecvBufLen <<
-			" ] SendBufDataLen = " << m_ui32SendBufDataLen <<
-			" SendBufLen = " << m_ui32SendBufLen <<
-			" Command: " << p_id << ": ";
+		           " ] RecvBufDataLen = " << m_ui32RecvBufDataLen <<
+		           " RecvBufLen = " << m_ui32RecvBufLen <<
+		           " ] SendBufDataLen = " << m_ui32SendBufDataLen <<
+		           " SendBufLen = " << m_ui32SendBufLen <<
+		           " Command: " << p_id << ": ";
 		l_file_out.write(p_buffer, p_len);
 		//l_file_out << std::endl;
 	}
@@ -1233,7 +1233,7 @@ void User::SendCharDelayed(const char * sText, const size_t szTextLen)
 	{
 		return;
 	}
-	
+
 	if (((m_ui32SupportBits & SUPPORTBIT_ZPIPE) == SUPPORTBIT_ZPIPE) == false || szTextLen < ZMINDATALEN)
 	{
 		PutInSendBuf(sText, szTextLen);
@@ -1242,7 +1242,7 @@ void User::SendCharDelayed(const char * sText, const size_t szTextLen)
 	{
 		uint32_t iLen = 0;
 		char *sPipeData = ZlibUtility::m_Ptr->CreateZPipe(sText, szTextLen, iLen);
-		
+
 		if (iLen == 0)
 		{
 			PutInSendBuf(sText, szTextLen);
@@ -1267,21 +1267,21 @@ void User::SendFormat(const char * sFrom, const bool bDelayed, const char * sFor
 	{
 		return;
 	}
-	
+
 	va_list vlArgs;
 	va_start(vlArgs, sFormatMsg);
-	
+
 	int iRet = vsnprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, sFormatMsg, vlArgs);
-	
+
 	va_end(vlArgs);
-	
+
 	if (iRet <= 0)
 	{
 		AppendDebugLogFormat("[ERR] vsnprintf wrong value %d in User::SendFormatDelayed from: %s\n", iRet, sFrom);
-		
+
 		return;
 	}
-	
+
 	if (((m_ui32SupportBits & SUPPORTBIT_ZPIPE) == SUPPORTBIT_ZPIPE) == false || (size_t)iRet < ZMINDATALEN)
 	{
 		if (PutInSendBuf(ServerManager::m_pGlobalBuffer, iRet) == true && bDelayed == false)
@@ -1293,7 +1293,7 @@ void User::SendFormat(const char * sFrom, const bool bDelayed, const char * sFor
 	{
 		uint32_t iLen = 0;
 		char *sData = ZlibUtility::m_Ptr->CreateZPipe(ServerManager::m_pGlobalBuffer, iRet, iLen);
-		
+
 		if (iLen == 0)
 		{
 			if (PutInSendBuf(ServerManager::m_pGlobalBuffer, iRet) == true && bDelayed == false)
@@ -1319,36 +1319,36 @@ void User::SendFormatCheckPM(const char * sFrom, const char * sOtherNick, const 
 	{
 		return;
 	}
-	
+
 	int iMsgLen = 0;
-	
+
 	if (sOtherNick != NULL)
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "$To: %s From: %s $", m_sNick, sOtherNick);
 		if (iMsgLen <= 0)
 		{
 			AppendDebugLogFormat("[ERR] snprintf wrong value %d in User::SendFormatCheckPM from: %s\n", iMsgLen, sFrom);
-			
+
 			return;
 		}
 	}
-	
+
 	va_list vlArgs;
 	va_start(vlArgs, sFormatMsg);
-	
+
 	int iRet = vsnprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, sFormatMsg, vlArgs);
-	
+
 	va_end(vlArgs);
-	
+
 	if (iRet <= 0)
 	{
 		AppendDebugLogFormat("[ERR] vsnprintf wrong value %d in User::SendFormatCheckPM from: %s\n", iRet, sFrom);
-		
+
 		return;
 	}
-	
+
 	iMsgLen += iRet;
-	
+
 	if (((m_ui32SupportBits & SUPPORTBIT_ZPIPE) == SUPPORTBIT_ZPIPE) == false || (size_t)iMsgLen < ZMINDATALEN)
 	{
 		if (PutInSendBuf(ServerManager::m_pGlobalBuffer, iMsgLen) == true && bDelayed == false)
@@ -1360,7 +1360,7 @@ void User::SendFormatCheckPM(const char * sFrom, const char * sOtherNick, const 
 	{
 		uint32_t iLen = 0;
 		char *sData = ZlibUtility::m_Ptr->CreateZPipe(ServerManager::m_pGlobalBuffer, iMsgLen, iLen);
-		
+
 		if (iLen == 0)
 		{
 			if (PutInSendBuf(ServerManager::m_pGlobalBuffer, iMsgLen) == true && bDelayed == false)
@@ -1383,7 +1383,7 @@ void User::SendFormatCheckPM(const char * sFrom, const char * sOtherNick, const 
 bool User::PutInSendBuf(const char * sText, const size_t szTxtLen)
 {
 	m_ui32SendCalled++;
-	
+
 	size_t szAllignLen = 0;
 #ifdef _DEBUG
 	if (strstr(Text, "$ExtJSON ") != NULL)
@@ -1392,7 +1392,7 @@ bool User::PutInSendBuf(const char * sText, const size_t szTxtLen)
 		a++;
 	}
 #endif
-	
+
 	if (m_ui32SendBufLen < m_ui32SendBufDataLen + szTxtLen)
 	{
 		if (m_pSendBuf == NULL)
@@ -1413,17 +1413,17 @@ bool User::PutInSendBuf(const char * sText, const size_t szTxtLen)
 				szAllignLen = Allign1024(m_ui32SendBufDataLen + szTxtLen);
 				size_t szMaxBufLen = (size_t)(((m_ui32BoolBits & BIT_BIG_SEND_BUFFER) == BIT_BIG_SEND_BUFFER) == true ?
 				                              ((Users::m_Ptr->m_ui32MyInfosTagLen > Users::m_Ptr->m_ui32MyInfosLen ? Users::m_Ptr->m_ui32MyInfosTagLen : Users::m_Ptr->m_ui32MyInfosLen) * 2) :
-				                              (Users::m_Ptr->m_ui32MyInfosTagLen > Users::m_Ptr->m_ui32MyInfosLen ? Users::m_Ptr->m_ui32MyInfosTagLen : Users::m_Ptr->m_ui32MyInfosLen));
+					                              (Users::m_Ptr->m_ui32MyInfosTagLen > Users::m_Ptr->m_ui32MyInfosLen ? Users::m_Ptr->m_ui32MyInfosTagLen : Users::m_Ptr->m_ui32MyInfosLen));
 				szMaxBufLen = szMaxBufLen < 262144 ? 262144 : szMaxBufLen;
 				if (szAllignLen > szMaxBufLen)
-				{
+			{
 					// does the buffer size reached the maximum
 					if (SettingManager::m_Ptr->m_bBools[SETBOOL_KEEP_SLOW_USERS] == false || (m_ui32SupportBits & SUPPORTBIT_ZPIPE) == SUPPORTBIT_ZPIPE)
 					{
 						// we want to drop the slow user
 						m_ui32BoolBits |= BIT_ERROR;
 						Close();
-						
+
 						UdpDebug::m_Ptr->BroadcastFormat("[SYS] %s (%s) SendBuffer overflow (AL:%zu[SL:%u|NL:%zu|FL:%zu]/ML:%zu). User disconnected.",
 						                                 m_sNick, m_sIP, szAllignLen, m_ui32SendBufDataLen, szTxtLen, m_pSendBufHead-m_pSendBuf, szMaxBufLen);
 						return false;
@@ -1433,21 +1433,21 @@ bool User::PutInSendBuf(const char * sText, const size_t szTxtLen)
 						UdpDebug::m_Ptr->BroadcastFormat("[SYS] %s (%s) SendBuffer overflow (AL:%zu[SL:%u|NL:%zu|FL:%zu]/ML:%zu). Buffer cleared - user stays online.",
 						                                 m_sNick, m_sIP, szAllignLen, m_ui32SendBufDataLen, szTxtLen, m_pSendBufHead-m_pSendBuf, szMaxBufLen);
 					}
-					
+
 					// we want to keep the slow user online
 					// PPK ... i don't want to corrupt last command, get rest of it and add to new buffer ;)
 					char *sTemp = (char *)memchr(m_pSendBufHead, '|', m_ui32SendBufDataLen - (m_pSendBufHead - m_pSendBuf));
 					if (sTemp != NULL)
 					{
 						uint32_t iOldSBDataLen = m_ui32SendBufDataLen;
-						
+
 						uint32_t iRestCommandLen = (uint32_t)((sTemp - m_pSendBufHead) + 1);
 						if (m_pSendBuf != m_pSendBufHead)
 						{
 							memmove(m_pSendBuf, m_pSendBufHead, iRestCommandLen);
 						}
 						m_ui32SendBufDataLen = iRestCommandLen;
-						
+
 						// If is not needed then don't lost all data, try to find some space with removing only few oldest commands
 						if (szTxtLen < szMaxBufLen && iOldSBDataLen > (uint32_t)((sTemp + 1) - m_pSendBuf) && (iOldSBDataLen - ((sTemp + 1) - m_pSendBuf)) > (uint32_t)szTxtLen)
 						{
@@ -1461,7 +1461,7 @@ bool User::PutInSendBuf(const char * sText, const size_t szTxtLen)
 							{
 								sTemp1 = (char *)memchr(sTemp + 1 + szTxtLen, '|', iOldSBDataLen - ((sTemp + 1 + szTxtLen) - m_pSendBuf));
 							}
-							
+
 							if (sTemp1 != NULL)
 							{
 								iRestCommandLen = (uint32_t)(iOldSBDataLen - ((sTemp1 + 1) - m_pSendBuf));
@@ -1476,9 +1476,9 @@ bool User::PutInSendBuf(const char * sText, const size_t szTxtLen)
 						m_pSendBuf[1] = '\0';
 						m_ui32SendBufDataLen = 1;
 					}
-					
+
 					size_t szAllignTxtLen = Allign1024(szTxtLen + m_ui32SendBufDataLen);
-					
+
 					char * pOldBuf = m_pSendBuf;
 					m_pSendBuf = (char *)realloc(pOldBuf, szAllignTxtLen);
 					if (m_pSendBuf == NULL)
@@ -1486,14 +1486,14 @@ bool User::PutInSendBuf(const char * sText, const size_t szTxtLen)
 						m_pSendBuf = pOldBuf;
 						m_ui32BoolBits |= BIT_ERROR;
 						Close();
-						
+
 						AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in User::PutInSendBuf-keepslow\n", szAllignLen);
-						
+
 						return false;
 					}
 					m_ui32SendBufLen = (uint32_t)(szAllignTxtLen - 1);
 					m_pSendBufHead = m_pSendBuf;
-					
+
 					szAllignLen = 0;
 				}
 				else
@@ -1510,14 +1510,14 @@ bool User::PutInSendBuf(const char * sText, const size_t szTxtLen)
 		{
 			szAllignLen = 0;
 		}
-		
+
 		m_ui32SendCalled = 0;
 	}
-	
+
 	if (szAllignLen != 0)
 	{
 		const uint32_t offset = (m_pSendBuf == NULL ? 0 : (uint32_t)(m_pSendBufHead - m_pSendBuf));
-		
+
 		char * pOldBuf = m_pSendBuf;
 		m_pSendBuf = (char *)realloc(pOldBuf, szAllignLen);
 		if (m_pSendBuf == NULL)
@@ -1525,21 +1525,21 @@ bool User::PutInSendBuf(const char * sText, const size_t szTxtLen)
 			m_pSendBuf = pOldBuf;
 			m_ui32BoolBits |= BIT_ERROR;
 			Close();
-			
+
 			AppendDebugLogFormat("[MEM] Cannot (re)allocate %zu bytes for new pSendBuf in User::PutInSendBuf\n", szAllignLen);
-			
+
 			return false;
 		}
-		
+
 		m_ui32SendBufLen = (uint32_t)(szAllignLen - 1);
 		m_pSendBufHead = m_pSendBuf + offset;
 	}
-	
+
 	// append data to the buffer
 	memcpy(m_pSendBuf + m_ui32SendBufDataLen, sText, szTxtLen);
 	m_ui32SendBufDataLen += (uint32_t)szTxtLen;
 	m_pSendBuf[m_ui32SendBufDataLen] = '\0';
-	
+
 	return true;
 }
 //---------------------------------------------------------------------------
@@ -1550,18 +1550,18 @@ bool User::Try2Send()
 	{
 		return false;
 	}
-	
+
 	// compute length of unsent data
 	int32_t offset = (int32_t)(m_pSendBufHead - m_pSendBuf);
 	int32_t len = m_ui32SendBufDataLen - offset;
-	
+
 	if (offset < 0 || len < 0)
 	{
 		AppendDebugLogFormat("[ERR] Negative send values!\nSendBuf: %p\nPlayHead: %p\nDataLen: %u\n", m_pSendBuf, m_pSendBufHead, m_ui32SendBufDataLen);
-		
+
 		m_ui32BoolBits |= BIT_ERROR;
 		Close();
-		
+
 		return false;
 	}
 #ifdef _DEBUG
@@ -1571,9 +1571,9 @@ bool User::Try2Send()
 		a++;
 	}
 #endif
-	
+
 	const int n = send(m_Socket, m_pSendBufHead, len < 32768 ? len : 32768, 0);
-	
+
 #ifdef _WIN32
 	if (n == SOCKET_ERROR)
 	{
@@ -1588,9 +1588,9 @@ bool User::Try2Send()
 #endif
 			UdpDebug::m_Ptr->BroadcastFormat("[ERR] %s (%s): send() error %s (%d). User is being closed.", m_sNick, m_sIP,
 #ifdef _WIN32
-			                                   WSErrorStr(iError), iError);
+			                                 WSErrorStr(iError), iError);
 #else
-			                                   ErrnoStr(errno), errno);
+			                                 ErrnoStr(errno), errno);
 #endif
 			m_ui32BoolBits |= BIT_ERROR;
 			Close();
@@ -1601,7 +1601,7 @@ bool User::Try2Send()
 			return true;
 		}
 	}
-	
+
 	ServerManager::m_ui64BytesSent += n;
 	static int g_id = 0;
 	extern bool g_isUseLog;
@@ -1609,7 +1609,7 @@ bool User::Try2Send()
 	{
 		logInvalidUser(++g_id, m_pSendBufHead, len, true);
 	}
-	
+
 	// if buffer is sent then mark it as empty (first byte = 0)
 	// else move remaining data on new place and free old buffer
 	if (n < len)
@@ -1658,16 +1658,16 @@ void User::SetNick(const char * sNick, const uint8_t ui8NickLen)
 	{
 		safe_free(m_sNick);
 	}
-	
+
 	m_sNick = (char *)malloc(ui8NickLen + 1);
 	if (m_sNick == NULL)
 	{
 		m_sNick = (char *)sDefaultNick;
 		m_ui32BoolBits |= BIT_ERROR;
 		Close();
-		
+
 		AppendDebugLogFormat("[MEM] Cannot allocate %" PRIu8 " bytes for m_sNick in User::SetNick\n", m_ui8NickLen + 1);
-		
+
 		return;
 	}
 	memcpy(m_sNick, sNick, ui8NickLen);
@@ -1693,60 +1693,60 @@ void User::SetExtJSONOriginal(const char * sNewExtJSON, const uint16_t ui16NewEx
 void User::SetMyInfoOriginal(const char * sMyInfo, const uint16_t ui16MyInfoLen)
 {
 	char * sOldMyInfo = m_sMyInfoOriginal;
-	
+
 	const char * sOldDescription = m_sDescription;
 	uint8_t ui8OldDescriptionLen = m_ui8DescriptionLen;
-	
+
 	char * sOldTag = m_sTag;
 	uint8_t ui8OldTagLen = m_ui8TagLen;
-	
+
 	char * sOldConnection = m_sConnection;
 	uint8_t ui8OldConnectionLen = m_ui8ConnectionLen;
-	
+
 	char * sOldEmail = m_sEmail;
 	uint8_t ui8OldEmailLen = m_ui8EmailLen;
-	
+
 	uint64_t ui64OldShareSize = m_ui64SharedSize;
-	
+
 	if (m_sMyInfoOriginal != NULL)
 	{
 		m_sConnection = NULL;
 		m_ui8ConnectionLen = 0;
-		
+
 		m_sDescription = NULL;
 		m_ui8DescriptionLen = 0;
-		
+
 		m_sEmail = NULL;
 		m_ui8EmailLen = 0;
-		
+
 		m_sTag = NULL;
 		m_ui8TagLen = 0;
-		
+
 		m_sClient = NULL;
 		m_ui8ClientLen = 0;
-		
+
 		m_sTagVersion = NULL;
 		m_ui8TagVersionLen = 0;
-		
+
 		m_sMyInfoOriginal = NULL;
 	}
-	
+
 	m_sMyInfoOriginal = (char *)malloc(ui16MyInfoLen + 1);
 	if (m_sMyInfoOriginal == NULL)
 	{
 		m_ui32BoolBits |= BIT_ERROR;
 		Close();
-		
+
 		AppendDebugLogFormat("[MEM] Cannot allocate %hu bytes for m_sMyInfoOriginal in UserSetMyInfoOriginal\n", ui16MyInfoLen + 1);
-		
+
 		return;
 	}
 	memcpy(m_sMyInfoOriginal, sMyInfo, ui16MyInfoLen);
 	m_sMyInfoOriginal[ui16MyInfoLen] = '\0';
 	m_ui16MyInfoOriginalLen = ui16MyInfoLen;
-	
+
 	UserParseMyInfo(this);
-	
+
 	if (ui8OldDescriptionLen != m_ui8DescriptionLen || (m_ui8DescriptionLen > 0 && memcmp(sOldDescription, m_sDescription, m_ui8DescriptionLen) != 0))
 	{
 		m_ui32InfoBits |= INFOBIT_DESCRIPTION_CHANGED;
@@ -1755,7 +1755,7 @@ void User::SetMyInfoOriginal(const char * sMyInfo, const uint16_t ui16MyInfoLen)
 	{
 		m_ui32InfoBits &= ~INFOBIT_DESCRIPTION_CHANGED;
 	}
-	
+
 	if (ui8OldTagLen != m_ui8TagLen || (m_ui8TagLen > 0 && memcmp(sOldTag, m_sTag, m_ui8TagLen) != 0))
 	{
 		m_ui32InfoBits |= INFOBIT_TAG_CHANGED;
@@ -1764,7 +1764,7 @@ void User::SetMyInfoOriginal(const char * sMyInfo, const uint16_t ui16MyInfoLen)
 	{
 		m_ui32InfoBits &= ~INFOBIT_TAG_CHANGED;
 	}
-	
+
 	if (ui8OldConnectionLen != m_ui8ConnectionLen || (m_ui8ConnectionLen > 0 && memcmp(sOldConnection, m_sConnection, m_ui8ConnectionLen) != 0))
 	{
 		m_ui32InfoBits |= INFOBIT_CONNECTION_CHANGED;
@@ -1773,7 +1773,7 @@ void User::SetMyInfoOriginal(const char * sMyInfo, const uint16_t ui16MyInfoLen)
 	{
 		m_ui32InfoBits &= ~INFOBIT_CONNECTION_CHANGED;
 	}
-	
+
 	if (ui8OldEmailLen != m_ui8EmailLen || (m_ui8EmailLen > 0 && memcmp(sOldEmail, m_sEmail, m_ui8EmailLen) != 0))
 	{
 		m_ui32InfoBits |= INFOBIT_EMAIL_CHANGED;
@@ -1782,7 +1782,7 @@ void User::SetMyInfoOriginal(const char * sMyInfo, const uint16_t ui16MyInfoLen)
 	{
 		m_ui32InfoBits &= ~INFOBIT_EMAIL_CHANGED;
 	}
-	
+
 	if (ui64OldShareSize != m_ui64SharedSize)
 	{
 		m_ui32InfoBits |= INFOBIT_SHARE_CHANGED;
@@ -1791,19 +1791,19 @@ void User::SetMyInfoOriginal(const char * sMyInfo, const uint16_t ui16MyInfoLen)
 	{
 		m_ui32InfoBits &= ~INFOBIT_SHARE_CHANGED;
 	}
-	
+
 	safe_free(sOldMyInfo);
-	
+
 	if (((m_ui32InfoBits & INFOBIT_SHARE_SHORT_PERM) == INFOBIT_SHARE_SHORT_PERM) == false)
 	{
 		m_ui64ChangedSharedSizeShort = m_ui64SharedSize;
 	}
-	
+
 	if (((m_ui32InfoBits & INFOBIT_SHARE_LONG_PERM) == INFOBIT_SHARE_LONG_PERM) == false)
 	{
 		m_ui64ChangedSharedSizeLong = m_ui64SharedSize;
 	}
-	
+
 }
 //------------------------------------------------------------------------------
 
@@ -1815,19 +1815,19 @@ static void UserSetMyInfoLong(User * pUser, char * sMyInfoLong, const uint16_t &
 		{
 			Users::m_Ptr->DelFromMyInfosTag(pUser);
 		}
-		
+
 		safe_free(pUser->m_sMyInfoLong);
-		
+
 	}
-	
+
 	pUser->m_sMyInfoLong = (char *)malloc(ui16MyInfoLongLen + 1);
 	if (pUser->m_sMyInfoLong == NULL)
 	{
 		pUser->m_ui32BoolBits |= User::BIT_ERROR;
 		pUser->Close();
-		
+
 		AppendDebugLogFormat("[MEM] Cannot allocate %hu bytes for m_sMyInfoLong in UserSetMyInfoLong\n", ui16MyInfoLongLen + 1);
-		
+
 		return;
 	}
 	memcpy(pUser->m_sMyInfoLong, sMyInfoLong, ui16MyInfoLongLen);
@@ -1844,18 +1844,18 @@ static void UserSetMyInfoShort(User * pUser, char * sMyInfoShort, const uint16_t
 		{
 			Users::m_Ptr->DelFromMyInfos(pUser);
 		}
-		
+
 		safe_free(pUser->m_sMyInfoShort);
 	}
-	
+
 	pUser->m_sMyInfoShort = (char *)malloc(ui16MyInfoShortLen + 1);
 	if (pUser->m_sMyInfoShort == NULL)
 	{
 		pUser->m_ui32BoolBits |= User::BIT_ERROR;
 		pUser->Close();
-		
+
 		AppendDebugLogFormat("[MEM] Cannot allocate %hu bytes for m_sMyInfoShort in UserSetMyInfoShort\n", ui16MyInfoShortLen + 1);
-		
+
 		return;
 	}
 	memcpy(pUser->m_sMyInfoShort, sMyInfoShort, ui16MyInfoShortLen);
@@ -1874,9 +1874,9 @@ void User::SetVersion(const char * /* sVersion*/)
 	{
 		m_ui32BoolBits |= BIT_ERROR;
 		Close();
-		
+
 		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for m_sVersion in User::SetVersion\n", szLen+1);
-		
+
 		return;
 	}
 	memcpy(m_sVersion, sNewVer, szLen);
@@ -1888,15 +1888,15 @@ void User::SetVersion(const char * /* sVersion*/)
 void User::SetLastChat(const char * sData, const size_t szLen)
 {
 	free(m_sLastChat);
-	
+
 	m_sLastChat = (char *)malloc(szLen + 1);
 	if (m_sLastChat == NULL)
 	{
 		m_ui32BoolBits |= BIT_ERROR;
 		Close();
-		
+
 		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for m_sLastChat in User::SetLastChat\n", szLen+1);
-		
+
 		return;
 	}
 	memcpy(m_sLastChat, sData, szLen);
@@ -1912,18 +1912,18 @@ void User::SetLastChat(const char * sData, const size_t szLen)
 void User::SetLastPM(const char * sData, const size_t szLen)
 {
 	free(m_sLastPM);
-	
+
 	m_sLastPM = (char *)malloc(szLen + 1);
 	if (m_sLastPM == NULL)
 	{
 		m_ui32BoolBits |= BIT_ERROR;
 		Close();
-		
+
 		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for m_sLastPM in User::SetLastPM\n", szLen+1);
-		
+
 		return;
 	}
-	
+
 	memcpy(m_sLastPM, sData, szLen);
 	m_sLastPM[szLen] = '\0';
 	m_ui16SamePMs = 1;
@@ -1948,9 +1948,9 @@ void User::SetBuffer(const char * sKickMsg, size_t szLen /* = 0*/)
 	{
 		szLen = strlen(sKickMsg);
 	}
-	
+
 	void * pOldBuf = m_LogInOut.m_pBuffer;
-	
+
 	if (szLen < 512)
 	{
 		m_LogInOut.m_pBuffer = (char *)realloc(pOldBuf, szLen + 1);
@@ -1958,9 +1958,9 @@ void User::SetBuffer(const char * sKickMsg, size_t szLen /* = 0*/)
 		{
 			m_ui32BoolBits |= BIT_ERROR;
 			Close();
-			
+
 			AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for pBuffer in User::SetBuffer\n", szLen+1);
-			
+
 			return;
 		}
 		memcpy(m_LogInOut.m_pBuffer, sKickMsg, szLen);
@@ -1973,9 +1973,9 @@ void User::SetBuffer(const char * sKickMsg, size_t szLen /* = 0*/)
 		{
 			m_ui32BoolBits |= BIT_ERROR;
 			Close();
-			
+
 			AppendDebugLog("%s - [MEM] Cannot allocate 512 bytes for pBuffer in User::SetBuffer\n");
-			
+
 			return;
 		}
 		memcpy(m_LogInOut.m_pBuffer, sKickMsg, 508);
@@ -2000,19 +2000,19 @@ void User::Close(const bool bNoQuit/* = false*/)
 	{
 		return;
 	}
-	
+
 	// nick in hash table ?
 	if ((m_ui32BoolBits & BIT_HASHED) == BIT_HASHED)
 	{
 		HashManager::m_Ptr->Remove(this);
 	}
-	
+
 	// nick in nick/op list ?
 	if (m_ui8State >= STATE_ADDME_2LOOP)
 	{
 		Users::m_Ptr->DelFromNickList(m_sNick, (m_ui32BoolBits & BIT_OPERATOR) == BIT_OPERATOR);
 		Users::m_Ptr->DelFromUserIP(this);
-		
+
 		// PPK ... fix for QuickList nad ghost...
 		// and fixing redirect all too ;)
 		// and fix disconnect on send error too =)
@@ -2022,22 +2022,22 @@ void User::Close(const bool bNoQuit/* = false*/)
 			// alex82 ... NoQuit / Подавляем $Quit для юзера
 			if (((m_ui32InfoBits & INFOBIT_HIDDEN) == INFOBIT_HIDDEN) == false && ((m_ui32InfoBits & INFOBIT_NO_QUIT) == INFOBIT_NO_QUIT) == false)
 			{
-			int iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "$Quit %s|", m_sNick);
+				int iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "$Quit %s|", m_sNick);
 				if (CheckSprintf(iMsgLen, ServerManager::m_szGlobalBufferSize, "User::Close") == true)
-			{
-				GlobalDataQueue::m_Ptr->AddQueueItem(ServerManager::m_pGlobalBuffer, iMsgLen, NULL, 0, GlobalDataQueue::CMD_QUIT);
-			}
+				{
+					GlobalDataQueue::m_Ptr->AddQueueItem(ServerManager::m_pGlobalBuffer, iMsgLen, NULL, 0, GlobalDataQueue::CMD_QUIT);
+				}
 			}
 			Users::m_Ptr->Add2RecTimes(this);
 		}
-		
+
 #ifdef _BUILD_GUI
 		if (::SendMessage(MainWindowPageUsersChat::m_Ptr->m_hWndPageItems[MainWindowPageUsersChat::BTN_AUTO_UPDATE_USERLIST], BM_GETCHECK, 0, 0) == BST_CHECKED)
 		{
 			MainWindowPageUsersChat::m_Ptr->RemoveUser(this);
 		}
 #endif
-		
+
 		//sqldb->FinalizeVisit(u);
 #ifdef FLYLINKDC_USE_DB
 #ifdef _WITH_SQLITE
@@ -2053,55 +2053,55 @@ void User::Close(const bool bNoQuit/* = false*/)
 			ServerManager::m_ui64TotalShare -= m_ui64SharedSize;
 			m_ui32BoolBits &= ~BIT_HAVE_SHARECOUNTED;
 		}
-		
+
 		ScriptManager::m_Ptr->UserDisconnected(this);
 	}
-	
+
 	// + alex82 ... HideUser / Скрытие юзера
 	if (((m_ui32InfoBits & INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == false && m_ui8State > STATE_ADDME_2LOOP)
 	{
 		ServerManager::m_ui32Logged--;
 	}
-	
+
 	m_ui8State = STATE_CLOSING;
-	
+
 	User::DeletePrcsdUsrCmd(m_pCmdActive4Search);
 	User::DeletePrcsdUsrCmd(m_pCmdActive6Search);
 	User::DeletePrcsdUsrCmd(m_pCmdPassiveSearch);
-	
+
 	PrcsdUsrCmd * cur = NULL,
 	              * next = m_pCmdStrt;
-	              
+
 	while (next != NULL)
 	{
 		cur = next;
 		next = cur->m_pNext;
-		
+
 		safe_free(cur->m_sCommand);
-		
+
 		delete cur;
 	}
-	
+
 	m_pCmdStrt = NULL;
 	m_pCmdEnd = NULL;
-	
+
 	PrcsdToUsrCmd * curto = NULL,
 	                * nextto = m_pCmdToUserStrt;
-	                
+
 	while (nextto != NULL)
 	{
 		curto = nextto;
 		nextto = curto->m_pNext;
-		
+
 		safe_free(curto->m_sCommand);
-		
+
 		delete curto;
 	}
-	
-	
+
+
 	m_pCmdToUserStrt = NULL;
 	m_pCmdToUserEnd = NULL;
-	
+
 	if (m_sMyInfoLong)
 	{
 		if (SettingManager::m_Ptr->m_ui8FullMyINFOOption != 2)
@@ -2109,7 +2109,7 @@ void User::Close(const bool bNoQuit/* = false*/)
 			Users::m_Ptr->DelFromMyInfosTag(this);
 		}
 	}
-	
+
 	if (m_sMyInfoShort)
 	{
 		if (SettingManager::m_Ptr->m_ui8FullMyINFOOption != 0)
@@ -2117,11 +2117,11 @@ void User::Close(const bool bNoQuit/* = false*/)
 			Users::m_Ptr->DelFromMyInfos(this);
 		}
 	}
-	
+
 #ifdef USE_FLYLINKDC_EXT_JSON
 	Users::m_Ptr->DelFromExtJSONInfos(this);
 #endif
-	
+
 	if (m_ui32SendBufDataLen == 0 || (m_ui32BoolBits & BIT_ERROR) == BIT_ERROR)
 	{
 		m_ui8State = STATE_REMME;
@@ -2137,31 +2137,31 @@ void User::Add2Userlist()
 {
 	Users::m_Ptr->Add2NickList(this);
 	Users::m_Ptr->Add2UserIP(this);
-	
+
 	switch (SettingManager::m_Ptr->m_ui8FullMyINFOOption)
 	{
-		case 0:
-		{
-			GenerateMyInfoLong();
-			Users::m_Ptr->Add2MyInfosTag(this);
-			return;
-		}
-		case 1:
-		{
-			GenerateMyInfoLong();
-			Users::m_Ptr->Add2MyInfosTag(this);
-			GenerateMyInfoShort();
-			Users::m_Ptr->Add2MyInfos(this);
-			return;
-		}
-		case 2:
-		{
-			GenerateMyInfoShort();
-			Users::m_Ptr->Add2MyInfos(this);
-			return;
-		}
-		default:
-			break;
+	case 0:
+	{
+		GenerateMyInfoLong();
+		Users::m_Ptr->Add2MyInfosTag(this);
+		return;
+	}
+	case 1:
+	{
+		GenerateMyInfoLong();
+		Users::m_Ptr->Add2MyInfosTag(this);
+		GenerateMyInfoShort();
+		Users::m_Ptr->Add2MyInfos(this);
+		return;
+	}
+	case 2:
+	{
+		GenerateMyInfoShort();
+		Users::m_Ptr->Add2MyInfos(this);
+		return;
+	}
+	default:
+		break;
 	}
 }
 //------------------------------------------------------------------------------
@@ -2170,7 +2170,7 @@ void User::AddUserList()
 {
 	m_ui32BoolBits |= BIT_BIG_SEND_BUFFER;
 	m_ui64LastNicklist = ServerManager::m_ui64ActualTick;
-	
+
 	if (((m_ui32SupportBits & SUPPORTBIT_NOHELLO) == SUPPORTBIT_NOHELLO) == false)
 	{
 		if (ProfileManager::m_Ptr->IsAllowed(this, ProfileManager::ALLOWEDOPCHAT) == false || (SettingManager::m_Ptr->m_bBools[SETBOOL_REG_OP_CHAT] == false ||
@@ -2185,7 +2185,7 @@ void User::AddUserList()
 				if (Users::m_Ptr->m_ui32ZNickListLen == 0)
 				{
 					Users::m_Ptr->m_pZNickList = ZlibUtility::m_Ptr->CreateZPipeAlign(Users::m_Ptr->m_pNickList, Users::m_Ptr->m_ui32NickListLen, Users::m_Ptr->m_pZNickList,
-					                                                                    Users::m_Ptr->m_ui32ZNickListLen, Users::m_Ptr->m_ui32ZNickListSize);
+					                             Users::m_Ptr->m_ui32ZNickListLen, Users::m_Ptr->m_ui32ZNickListSize);
 					if (Users::m_Ptr->m_ui32ZNickListLen == 0)
 					{
 						SendCharDelayed(Users::m_Ptr->m_pNickList, Users::m_Ptr->m_ui32NickListLen);
@@ -2218,14 +2218,14 @@ void User::AddUserList()
 						Users::m_Ptr->m_pNickList = pOldBuf;
 						m_ui32BoolBits |= BIT_ERROR;
 						Close();
-						
+
 						AppendDebugLogFormat("[MEM] Cannot reallocate %u bytes for m_pNickList in User::AddUserList\n", Users::m_Ptr->m_ui32NickListSize + NICKLISTSIZE + 1);
-						
+
 						return;
 					}
 					Users::m_Ptr->m_ui32NickListSize += NICKLISTSIZE;
 				}
-				
+
 				memcpy(Users::m_Ptr->m_pNickList + Users::m_Ptr->m_ui32NickListLen - 1, ServerManager::m_pGlobalBuffer, iLen);
 				Users::m_Ptr->m_pNickList[Users::m_Ptr->m_ui32NickListLen + (iLen - 1)] = '\0';
 				SendCharDelayed(Users::m_Ptr->m_pNickList, Users::m_Ptr->m_ui32NickListLen + (iLen - 1));
@@ -2234,39 +2234,33 @@ void User::AddUserList()
 			}
 		}
 	}
-	
+
 	switch (SettingManager::m_Ptr->m_ui8FullMyINFOOption)
 	{
-		case 0:
-		{
+	case 0:
+	{
 #ifdef USE_FLYLINKDC_EXT_JSON
-			// TODO ExtJSON - ZPipe
-			SendCharDelayedExtJSON();
+		// TODO ExtJSON - ZPipe
+		SendCharDelayedExtJSON();
 #endif
-			if (Users::m_Ptr->m_ui32MyInfosTagLen == 0)
+		if (Users::m_Ptr->m_ui32MyInfosTagLen == 0)
+		{
+			break;
+		}
+
+		if (isSupportZpipe() == false)
+		{
+			SendCharDelayed(Users::m_Ptr->m_pMyInfosTag, Users::m_Ptr->m_ui32MyInfosTagLen);
+		}
+		else
+		{
+			if (Users::m_Ptr->m_ui32ZMyInfosTagLen == 0)
 			{
-				break;
-			}
-			
-			if (isSupportZpipe() == false)
-			{
-				SendCharDelayed(Users::m_Ptr->m_pMyInfosTag, Users::m_Ptr->m_ui32MyInfosTagLen);
-			}
-			else
-			{
+				Users::m_Ptr->m_pZMyInfosTag = ZlibUtility::m_Ptr->CreateZPipeAlign(Users::m_Ptr->m_pMyInfosTag, Users::m_Ptr->m_ui32MyInfosTagLen, Users::m_Ptr->m_pZMyInfosTag,
+				                               Users::m_Ptr->m_ui32ZMyInfosTagLen, Users::m_Ptr->m_ui32ZMyInfosTagSize);
 				if (Users::m_Ptr->m_ui32ZMyInfosTagLen == 0)
 				{
-					Users::m_Ptr->m_pZMyInfosTag = ZlibUtility::m_Ptr->CreateZPipeAlign(Users::m_Ptr->m_pMyInfosTag, Users::m_Ptr->m_ui32MyInfosTagLen, Users::m_Ptr->m_pZMyInfosTag,
-					                                                                      Users::m_Ptr->m_ui32ZMyInfosTagLen, Users::m_Ptr->m_ui32ZMyInfosTagSize);
-					if (Users::m_Ptr->m_ui32ZMyInfosTagLen == 0)
-					{
-						SendCharDelayed(Users::m_Ptr->m_pMyInfosTag, Users::m_Ptr->m_ui32MyInfosTagLen);
-					}
-					else
-					{
-						PutInSendBuf(Users::m_Ptr->m_pZMyInfosTag, Users::m_Ptr->m_ui32ZMyInfosTagLen);
-						ServerManager::m_ui64BytesSentSaved += Users::m_Ptr->m_ui32MyInfosTagLen - Users::m_Ptr->m_ui32ZMyInfosTagLen;
-					}
+					SendCharDelayed(Users::m_Ptr->m_pMyInfosTag, Users::m_Ptr->m_ui32MyInfosTagLen);
 				}
 				else
 				{
@@ -2274,99 +2268,28 @@ void User::AddUserList()
 					ServerManager::m_ui64BytesSentSaved += Users::m_Ptr->m_ui32MyInfosTagLen - Users::m_Ptr->m_ui32ZMyInfosTagLen;
 				}
 			}
-			break;
-		}
-		case 1:
-		{
-#ifdef USE_FLYLINKDC_EXT_JSON
-			// TODO ExtJSON - ZPipe
-			// ExtJSON Step reconnect - 1
-			SendCharDelayedExtJSON();
-#endif
-			if (ProfileManager::m_Ptr->IsAllowed(this, ProfileManager::SENDFULLMYINFOS) == false)
-			{
-				if (Users::m_Ptr->m_ui32MyInfosLen == 0)
-				{
-					break;
-				}
-				
-				if (isSupportZpipe() == false)
-				{
-					SendCharDelayed(Users::m_Ptr->m_pMyInfos, Users::m_Ptr->m_ui32MyInfosLen);
-				}
-				else
-				{
-					if (Users::m_Ptr->m_ui32ZMyInfosLen == 0)
-					{
-						Users::m_Ptr->m_pZMyInfos = ZlibUtility::m_Ptr->CreateZPipeAlign(Users::m_Ptr->m_pMyInfos, Users::m_Ptr->m_ui32MyInfosLen, Users::m_Ptr->m_pZMyInfos,
-						                                                                   Users::m_Ptr->m_ui32ZMyInfosLen, Users::m_Ptr->m_ui32ZMyInfosSize);
-						if (Users::m_Ptr->m_ui32ZMyInfosLen == 0)
-						{
-							SendCharDelayed(Users::m_Ptr->m_pMyInfos, Users::m_Ptr->m_ui32MyInfosLen);
-						}
-						else
-						{
-							PutInSendBuf(Users::m_Ptr->m_pZMyInfos, Users::m_Ptr->m_ui32ZMyInfosLen);
-							ServerManager::m_ui64BytesSentSaved += Users::m_Ptr->m_ui32MyInfosLen - Users::m_Ptr->m_ui32ZMyInfosLen;
-						}
-					}
-					else
-					{
-						PutInSendBuf(Users::m_Ptr->m_pZMyInfos, Users::m_Ptr->m_ui32ZMyInfosLen);
-						ServerManager::m_ui64BytesSentSaved += Users::m_Ptr->m_ui32MyInfosLen - Users::m_Ptr->m_ui32ZMyInfosLen;
-					}
-				}
-			}
 			else
 			{
-			
-#ifdef USE_FLYLINKDC_EXT_JSON
-				// TODO ExtJSON
-#endif
-				if (Users::m_Ptr->m_ui32MyInfosTagLen == 0)
-				{
-					break;
-				}
-				if (isSupportZpipe() == false)
-				{
-					SendCharDelayed(Users::m_Ptr->m_pMyInfosTag, Users::m_Ptr->m_ui32MyInfosTagLen);
-				}
-				else
-				{
-					if (Users::m_Ptr->m_ui32ZMyInfosTagLen == 0)
-					{
-						Users::m_Ptr->m_pZMyInfosTag = ZlibUtility::m_Ptr->CreateZPipeAlign(Users::m_Ptr->m_pMyInfosTag, Users::m_Ptr->m_ui32MyInfosTagLen, Users::m_Ptr->m_pZMyInfosTag,
-						                                                                      Users::m_Ptr->m_ui32ZMyInfosTagLen, Users::m_Ptr->m_ui32ZMyInfosTagSize);
-						if (Users::m_Ptr->m_ui32ZMyInfosTagLen == 0)
-						{
-							SendCharDelayed(Users::m_Ptr->m_pMyInfosTag, Users::m_Ptr->m_ui32MyInfosTagLen);
-						}
-						else
-						{
-							PutInSendBuf(Users::m_Ptr->m_pZMyInfosTag, Users::m_Ptr->m_ui32ZMyInfosTagLen);
-							ServerManager::m_ui64BytesSentSaved += Users::m_Ptr->m_ui32MyInfosTagLen - Users::m_Ptr->m_ui32ZMyInfosTagLen;
-						}
-					}
-					else
-					{
-						PutInSendBuf(Users::m_Ptr->m_pZMyInfosTag, Users::m_Ptr->m_ui32ZMyInfosTagLen);
-						ServerManager::m_ui64BytesSentSaved += Users::m_Ptr->m_ui32MyInfosTagLen - Users::m_Ptr->m_ui32ZMyInfosTagLen;
-					}
-				}
+				PutInSendBuf(Users::m_Ptr->m_pZMyInfosTag, Users::m_Ptr->m_ui32ZMyInfosTagLen);
+				ServerManager::m_ui64BytesSentSaved += Users::m_Ptr->m_ui32MyInfosTagLen - Users::m_Ptr->m_ui32ZMyInfosTagLen;
 			}
-			break;
 		}
-		case 2:
-		{
+		break;
+	}
+	case 1:
+	{
 #ifdef USE_FLYLINKDC_EXT_JSON
-			// TODO ExtJSON ZPipe
-			SendCharDelayedExtJSON();
+		// TODO ExtJSON - ZPipe
+		// ExtJSON Step reconnect - 1
+		SendCharDelayedExtJSON();
 #endif
+		if (ProfileManager::m_Ptr->IsAllowed(this, ProfileManager::SENDFULLMYINFOS) == false)
+		{
 			if (Users::m_Ptr->m_ui32MyInfosLen == 0)
 			{
 				break;
 			}
-			
+
 			if (isSupportZpipe() == false)
 			{
 				SendCharDelayed(Users::m_Ptr->m_pMyInfos, Users::m_Ptr->m_ui32MyInfosLen);
@@ -2376,7 +2299,7 @@ void User::AddUserList()
 				if (Users::m_Ptr->m_ui32ZMyInfosLen == 0)
 				{
 					Users::m_Ptr->m_pZMyInfos = ZlibUtility::m_Ptr->CreateZPipeAlign(Users::m_Ptr->m_pMyInfos, Users::m_Ptr->m_ui32MyInfosLen, Users::m_Ptr->m_pZMyInfos,
-					                                                                   Users::m_Ptr->m_ui32ZMyInfosLen, Users::m_Ptr->m_ui32ZMyInfosSize);
+					                            Users::m_Ptr->m_ui32ZMyInfosLen, Users::m_Ptr->m_ui32ZMyInfosSize);
 					if (Users::m_Ptr->m_ui32ZMyInfosLen == 0)
 					{
 						SendCharDelayed(Users::m_Ptr->m_pMyInfos, Users::m_Ptr->m_ui32MyInfosLen);
@@ -2394,10 +2317,87 @@ void User::AddUserList()
 				}
 			}
 		}
-		default:
-			break;
+		else
+		{
+
+#ifdef USE_FLYLINKDC_EXT_JSON
+			// TODO ExtJSON
+#endif
+			if (Users::m_Ptr->m_ui32MyInfosTagLen == 0)
+			{
+				break;
+			}
+			if (isSupportZpipe() == false)
+			{
+				SendCharDelayed(Users::m_Ptr->m_pMyInfosTag, Users::m_Ptr->m_ui32MyInfosTagLen);
+			}
+			else
+			{
+				if (Users::m_Ptr->m_ui32ZMyInfosTagLen == 0)
+				{
+					Users::m_Ptr->m_pZMyInfosTag = ZlibUtility::m_Ptr->CreateZPipeAlign(Users::m_Ptr->m_pMyInfosTag, Users::m_Ptr->m_ui32MyInfosTagLen, Users::m_Ptr->m_pZMyInfosTag,
+					                               Users::m_Ptr->m_ui32ZMyInfosTagLen, Users::m_Ptr->m_ui32ZMyInfosTagSize);
+					if (Users::m_Ptr->m_ui32ZMyInfosTagLen == 0)
+					{
+						SendCharDelayed(Users::m_Ptr->m_pMyInfosTag, Users::m_Ptr->m_ui32MyInfosTagLen);
+					}
+					else
+					{
+						PutInSendBuf(Users::m_Ptr->m_pZMyInfosTag, Users::m_Ptr->m_ui32ZMyInfosTagLen);
+						ServerManager::m_ui64BytesSentSaved += Users::m_Ptr->m_ui32MyInfosTagLen - Users::m_Ptr->m_ui32ZMyInfosTagLen;
+					}
+				}
+				else
+				{
+					PutInSendBuf(Users::m_Ptr->m_pZMyInfosTag, Users::m_Ptr->m_ui32ZMyInfosTagLen);
+					ServerManager::m_ui64BytesSentSaved += Users::m_Ptr->m_ui32MyInfosTagLen - Users::m_Ptr->m_ui32ZMyInfosTagLen;
+				}
+			}
+		}
+		break;
 	}
-	
+	case 2:
+	{
+#ifdef USE_FLYLINKDC_EXT_JSON
+		// TODO ExtJSON ZPipe
+		SendCharDelayedExtJSON();
+#endif
+		if (Users::m_Ptr->m_ui32MyInfosLen == 0)
+		{
+			break;
+		}
+
+		if (isSupportZpipe() == false)
+		{
+			SendCharDelayed(Users::m_Ptr->m_pMyInfos, Users::m_Ptr->m_ui32MyInfosLen);
+		}
+		else
+		{
+			if (Users::m_Ptr->m_ui32ZMyInfosLen == 0)
+			{
+				Users::m_Ptr->m_pZMyInfos = ZlibUtility::m_Ptr->CreateZPipeAlign(Users::m_Ptr->m_pMyInfos, Users::m_Ptr->m_ui32MyInfosLen, Users::m_Ptr->m_pZMyInfos,
+				                            Users::m_Ptr->m_ui32ZMyInfosLen, Users::m_Ptr->m_ui32ZMyInfosSize);
+				if (Users::m_Ptr->m_ui32ZMyInfosLen == 0)
+				{
+					SendCharDelayed(Users::m_Ptr->m_pMyInfos, Users::m_Ptr->m_ui32MyInfosLen);
+				}
+				else
+				{
+					PutInSendBuf(Users::m_Ptr->m_pZMyInfos, Users::m_Ptr->m_ui32ZMyInfosLen);
+					ServerManager::m_ui64BytesSentSaved += Users::m_Ptr->m_ui32MyInfosLen - Users::m_Ptr->m_ui32ZMyInfosLen;
+				}
+			}
+			else
+			{
+				PutInSendBuf(Users::m_Ptr->m_pZMyInfos, Users::m_Ptr->m_ui32ZMyInfosLen);
+				ServerManager::m_ui64BytesSentSaved += Users::m_Ptr->m_ui32MyInfosLen - Users::m_Ptr->m_ui32ZMyInfosLen;
+			}
+		}
+	}
+	default:
+		break;
+	}
+
 	if (ProfileManager::m_Ptr->IsAllowed(this, ProfileManager::ALLOWEDOPCHAT) == false || (SettingManager::m_Ptr->m_bBools[SETBOOL_REG_OP_CHAT] == false ||
 	        (SettingManager::m_Ptr->m_bBools[SETBOOL_REG_BOT] == true && SettingManager::m_Ptr->m_bBotsSameNick == true)))
 	{
@@ -2412,7 +2412,7 @@ void User::AddUserList()
 				if (Users::m_Ptr->m_ui32ZOpListLen == 0)
 				{
 					Users::m_Ptr->m_pZOpList = ZlibUtility::m_Ptr->CreateZPipeAlign(Users::m_Ptr->m_pOpList, Users::m_Ptr->m_ui32OpListLen, Users::m_Ptr->m_pZOpList,
-					                                                                  Users::m_Ptr->m_ui32ZOpListLen, Users::m_Ptr->m_ui32ZOpListSize);
+					                           Users::m_Ptr->m_ui32ZOpListLen, Users::m_Ptr->m_ui32ZOpListSize);
 					if (Users::m_Ptr->m_ui32ZOpListLen == 0)
 					{
 						SendCharDelayed(Users::m_Ptr->m_pOpList, Users::m_Ptr->m_ui32OpListLen);
@@ -2448,14 +2448,14 @@ void User::AddUserList()
 					Users::m_Ptr->m_pOpList = pOldBuf;
 					m_ui32BoolBits |= BIT_ERROR;
 					Close();
-					
+
 					AppendDebugLogFormat("[MEM] Cannot reallocate %u bytes for m_pOpList in User::AddUserList\n", Users::m_Ptr->m_ui32OpListSize + OPLISTSIZE + 1);
-					
+
 					return;
 				}
 				Users::m_Ptr->m_ui32OpListSize += OPLISTSIZE;
 			}
-			
+
 			memcpy(Users::m_Ptr->m_pOpList + Users::m_Ptr->m_ui32OpListLen - 1, ServerManager::m_pGlobalBuffer, iLen);
 			Users::m_Ptr->m_pOpList[Users::m_Ptr->m_ui32OpListLen + (iLen - 1)] = '\0';
 			SendCharDelayed(Users::m_Ptr->m_pOpList, Users::m_Ptr->m_ui32OpListLen + (iLen - 1));
@@ -2463,7 +2463,7 @@ void User::AddUserList()
 			Users::m_Ptr->m_pOpList[Users::m_Ptr->m_ui32OpListLen] = '\0';
 		}
 	}
-	
+
 	if (ProfileManager::m_Ptr->IsAllowed(this, ProfileManager::SENDALLUSERIP) == true && ((m_ui32SupportBits & SUPPORTBIT_USERIP2) == SUPPORTBIT_USERIP2) == true)
 	{
 		if (Users::m_Ptr->m_ui32UserIPListLen > 9)
@@ -2477,7 +2477,7 @@ void User::AddUserList()
 				if (Users::m_Ptr->m_ui32ZUserIPListLen == 0)
 				{
 					Users::m_Ptr->m_pZUserIPList = ZlibUtility::m_Ptr->CreateZPipeAlign(Users::m_Ptr->m_pUserIPList, Users::m_Ptr->m_ui32UserIPListLen, Users::m_Ptr->m_pZUserIPList,
-					                                                                      Users::m_Ptr->m_ui32ZUserIPListLen, Users::m_Ptr->m_ui32ZUserIPListSize);
+					                               Users::m_Ptr->m_ui32ZUserIPListLen, Users::m_Ptr->m_ui32ZUserIPListSize);
 					if (Users::m_Ptr->m_ui32ZUserIPListLen == 0)
 					{
 						SendCharDelayed(Users::m_Ptr->m_pUserIPList, Users::m_Ptr->m_ui32UserIPListLen);
@@ -2507,7 +2507,7 @@ bool User::GenerateMyInfoLong()   // true == changed
 	{
 		return false;
 	}
-	
+
 	// Add description
 	if (m_ui8ChangedDescriptionLongLen != 0)
 	{
@@ -2516,11 +2516,11 @@ bool User::GenerateMyInfoLong()   // true == changed
 			memcpy(ServerManager::m_pGlobalBuffer + iLen, m_sChangedDescriptionLong, m_ui8ChangedDescriptionLongLen);
 			iLen += m_ui8ChangedDescriptionLongLen;
 		}
-		
+
 		if (((m_ui32InfoBits & INFOBIT_DESCRIPTION_LONG_PERM) == INFOBIT_DESCRIPTION_LONG_PERM) == false)
 		{
 			User::FreeInfo(m_sChangedDescriptionLong, m_ui8ChangedDescriptionLongLen);
-            m_ui8ChangedDescriptionLongLen = 0;
+			m_ui8ChangedDescriptionLongLen = 0;
 		}
 	}
 	else if (m_sDescription != NULL)
@@ -2528,7 +2528,7 @@ bool User::GenerateMyInfoLong()   // true == changed
 		memcpy(ServerManager::m_pGlobalBuffer + iLen, m_sDescription, (size_t)m_ui8DescriptionLen);
 		iLen += m_ui8DescriptionLen;
 	}
-	
+
 	// Add tag
 	if (m_ui8ChangedTagLongLen != 0)
 	{
@@ -2537,7 +2537,7 @@ bool User::GenerateMyInfoLong()   // true == changed
 			memcpy(ServerManager::m_pGlobalBuffer + iLen, m_sChangedTagLong, m_ui8ChangedTagLongLen);
 			iLen += m_ui8ChangedTagLongLen;
 		}
-		
+
 		if (((m_ui32InfoBits & INFOBIT_TAG_LONG_PERM) == INFOBIT_TAG_LONG_PERM) == false)
 		{
 			User::FreeInfo(m_sChangedTagLong, m_ui8ChangedTagLongLen);
@@ -2548,10 +2548,10 @@ bool User::GenerateMyInfoLong()   // true == changed
 		memcpy(ServerManager::m_pGlobalBuffer + iLen, m_sTag, (size_t)m_ui8TagLen);
 		iLen += (int)m_ui8TagLen;
 	}
-	
+
 	memcpy(ServerManager::m_pGlobalBuffer + iLen, "$ $", 3);
 	iLen += 3;
-	
+
 	// Add connection
 	if (m_ui8ChangedConnectionLongLen != 0)
 	{
@@ -2560,7 +2560,7 @@ bool User::GenerateMyInfoLong()   // true == changed
 			memcpy(ServerManager::m_pGlobalBuffer + iLen, m_sChangedConnectionLong, m_ui8ChangedConnectionLongLen);
 			iLen += m_ui8ChangedConnectionLongLen;
 		}
-		
+
 		if (((m_ui32InfoBits & INFOBIT_CONNECTION_LONG_PERM) == INFOBIT_CONNECTION_LONG_PERM) == false)
 		{
 			User::FreeInfo(m_sChangedConnectionLong, m_ui8ChangedConnectionLongLen);
@@ -2571,17 +2571,17 @@ bool User::GenerateMyInfoLong()   // true == changed
 		memcpy(ServerManager::m_pGlobalBuffer + iLen, m_sConnection, m_ui8ConnectionLen);
 		iLen += m_ui8ConnectionLen;
 	}
-	
+
 	// add magicbyte
 	uint8_t ui8Magic = m_ui8MagicByte;
-	
+
 	if (((m_ui32BoolBits & User::SUPPORTBIT_TLS2) == User::SUPPORTBIT_TLS2) == false)
 	{
 		// should not be set if user not have TLS2 support
 		ui8Magic &= ~0x10;
 		ui8Magic &= ~0x20;
 	}
-	
+
 	if ((m_ui32BoolBits & BIT_IPV4) == BIT_IPV4)
 	{
 		ui8Magic |= 0x40; // IPv4 support
@@ -2590,7 +2590,7 @@ bool User::GenerateMyInfoLong()   // true == changed
 	{
 		ui8Magic &= ~0x40; // IPv4 support
 	}
-	
+
 	if ((m_ui32BoolBits & BIT_IPV6) == BIT_IPV6)
 	{
 		ui8Magic |= 0x80; // IPv6 support
@@ -2599,11 +2599,11 @@ bool User::GenerateMyInfoLong()   // true == changed
 	{
 		ui8Magic &= ~0x80; // IPv6 support
 	}
-	
+
 	ServerManager::m_pGlobalBuffer[iLen] = ui8Magic;
 	ServerManager::m_pGlobalBuffer[iLen + 1] = '$';
 	iLen += 2;
-	
+
 	// Add email
 	if (m_ui8ChangedEmailLongLen != 0)
 	{
@@ -2612,7 +2612,7 @@ bool User::GenerateMyInfoLong()   // true == changed
 			memcpy(ServerManager::m_pGlobalBuffer + iLen, m_sChangedEmailLong, m_ui8ChangedEmailLongLen);
 			iLen += m_ui8ChangedEmailLongLen;
 		}
-		
+
 		if (((m_ui32InfoBits & INFOBIT_EMAIL_LONG_PERM) == INFOBIT_EMAIL_LONG_PERM) == false)
 		{
 			User::FreeInfo(m_sChangedEmailLong, m_ui8ChangedEmailLongLen);
@@ -2623,21 +2623,21 @@ bool User::GenerateMyInfoLong()   // true == changed
 		memcpy(ServerManager::m_pGlobalBuffer + iLen, m_sEmail, (size_t)m_ui8EmailLen);
 		iLen += (int)m_ui8EmailLen;
 	}
-	
+
 	// Add share and end of myinfo
 	int iRet = snprintf(ServerManager::m_pGlobalBuffer + iLen, ServerManager::m_szGlobalBufferSize - iLen, "$%" PRIu64 "$|", m_ui64ChangedSharedSizeLong);
-	
+
 	if (((m_ui32InfoBits & INFOBIT_SHARE_LONG_PERM) == INFOBIT_SHARE_LONG_PERM) == false)
 	{
 		m_ui64ChangedSharedSizeLong = m_ui64SharedSize;
 	}
-	
+
 	if (iRet <= 0)
 	{
 		return false;
 	}
 	iLen += iRet;
-	
+
 	if (m_sMyInfoLong != NULL)
 	{
 		if (m_ui16MyInfoLongLen == (uint16_t)iLen && memcmp(m_sMyInfoLong + 14 + m_ui8NickLen, ServerManager::m_pGlobalBuffer + 14 + m_ui8NickLen, m_ui16MyInfoLongLen - 14 - m_ui8NickLen) == 0)
@@ -2645,9 +2645,9 @@ bool User::GenerateMyInfoLong()   // true == changed
 			return false;
 		}
 	}
-	
+
 	UserSetMyInfoLong(this, ServerManager::m_pGlobalBuffer, (uint16_t)iLen);
-	
+
 	return true;
 }
 //---------------------------------------------------------------------------
@@ -2660,12 +2660,12 @@ bool User::GenerateMyInfoShort()   // true == changed
 	{
 		return false;
 	}
-	
+
 	// Add mode to start of description if is enabled
 	if (SettingManager::m_Ptr->m_bBools[SETBOOL_MODE_TO_DESCRIPTION] == true && m_sModes[0] != 0)
 	{
 		char * sActualDescription = NULL;
-		
+
 		if (m_ui8ChangedDescriptionShortLen != 0)
 		{
 			sActualDescription = m_sChangedDescriptionShort;
@@ -2674,7 +2674,7 @@ bool User::GenerateMyInfoShort()   // true == changed
 		{
 			sActualDescription = m_sDescription;
 		}
-		
+
 		if (sActualDescription == NULL)
 		{
 			ServerManager::m_pGlobalBuffer[iLen] = m_sModes[0];
@@ -2687,7 +2687,7 @@ bool User::GenerateMyInfoShort()   // true == changed
 			iLen += 2;
 		}
 	}
-	
+
 	// Add description
 	if (m_ui8ChangedDescriptionShortLen != 0)
 	{
@@ -2696,7 +2696,7 @@ bool User::GenerateMyInfoShort()   // true == changed
 			memcpy(ServerManager::m_pGlobalBuffer + iLen, m_sChangedDescriptionShort, m_ui8ChangedDescriptionShortLen);
 			iLen += m_ui8ChangedDescriptionShortLen;
 		}
-		
+
 		if (((m_ui32InfoBits & INFOBIT_DESCRIPTION_SHORT_PERM) == INFOBIT_DESCRIPTION_SHORT_PERM) == false)
 		{
 			User::FreeInfo(m_sChangedDescriptionShort, m_ui8ChangedDescriptionShortLen);
@@ -2707,7 +2707,7 @@ bool User::GenerateMyInfoShort()   // true == changed
 		memcpy(ServerManager::m_pGlobalBuffer + iLen, m_sDescription, m_ui8DescriptionLen);
 		iLen += m_ui8DescriptionLen;
 	}
-	
+
 	// Add tag
 	if (m_ui8ChangedTagShortLen != 0)
 	{
@@ -2716,7 +2716,7 @@ bool User::GenerateMyInfoShort()   // true == changed
 			memcpy(ServerManager::m_pGlobalBuffer + iLen, m_sChangedTagShort, m_ui8ChangedTagShortLen);
 			iLen += m_ui8ChangedTagShortLen;
 		}
-		
+
 		if (((m_ui32InfoBits & INFOBIT_TAG_SHORT_PERM) == INFOBIT_TAG_SHORT_PERM) == false)
 		{
 			User::FreeInfo(m_sChangedTagShort, m_ui8ChangedTagShortLen);
@@ -2727,7 +2727,7 @@ bool User::GenerateMyInfoShort()   // true == changed
 		memcpy(ServerManager::m_pGlobalBuffer + iLen, m_sTag, (size_t)m_ui8TagLen);
 		iLen += (int)m_ui8TagLen;
 	}
-	
+
 	// Add mode to myinfo if is enabled
 	if (SettingManager::m_Ptr->m_bBools[SETBOOL_MODE_TO_MYINFO] == true && m_sModes[0] != 0)
 	{
@@ -2743,7 +2743,7 @@ bool User::GenerateMyInfoShort()   // true == changed
 		memcpy(ServerManager::m_pGlobalBuffer + iLen, "$ $", 3);
 		iLen += 3;
 	}
-	
+
 	// Add connection
 	if (m_ui8ChangedConnectionShortLen != 0)
 	{
@@ -2752,7 +2752,7 @@ bool User::GenerateMyInfoShort()   // true == changed
 			memcpy(ServerManager::m_pGlobalBuffer + iLen, m_sChangedConnectionShort, m_ui8ChangedConnectionShortLen);
 			iLen += m_ui8ChangedConnectionShortLen;
 		}
-		
+
 		if (((m_ui32InfoBits & INFOBIT_CONNECTION_SHORT_PERM) == INFOBIT_CONNECTION_SHORT_PERM) == false)
 		{
 			User::FreeInfo(m_sChangedConnectionShort, m_ui8ChangedConnectionShortLen);
@@ -2763,17 +2763,17 @@ bool User::GenerateMyInfoShort()   // true == changed
 		memcpy(ServerManager::m_pGlobalBuffer + iLen, m_sConnection, m_ui8ConnectionLen);
 		iLen += m_ui8ConnectionLen;
 	}
-	
+
 	// add magicbyte
 	uint8_t ui8Magic = m_ui8MagicByte;
-	
+
 	if (((m_ui32BoolBits & User::SUPPORTBIT_TLS2) == User::SUPPORTBIT_TLS2) == false)
 	{
 		// should not be set if user not have TLS2 support
 		ui8Magic &= ~0x10;
 		ui8Magic &= ~0x20;
 	}
-	
+
 	if ((m_ui32BoolBits & BIT_IPV4) == BIT_IPV4)
 	{
 		ui8Magic |= 0x40; // IPv4 support
@@ -2782,7 +2782,7 @@ bool User::GenerateMyInfoShort()   // true == changed
 	{
 		ui8Magic &= ~0x40; // IPv4 support
 	}
-	
+
 	if ((m_ui32BoolBits & BIT_IPV6) == BIT_IPV6)
 	{
 		ui8Magic |= 0x80; // IPv6 support
@@ -2791,11 +2791,11 @@ bool User::GenerateMyInfoShort()   // true == changed
 	{
 		ui8Magic &= ~0x80; // IPv6 support
 	}
-	
+
 	ServerManager::m_pGlobalBuffer[iLen] = ui8Magic;
 	ServerManager::m_pGlobalBuffer[iLen + 1] = '$';
 	iLen += 2;
-	
+
 	// Add email
 	if (m_ui8ChangedEmailShortLen != 0)
 	{
@@ -2804,7 +2804,7 @@ bool User::GenerateMyInfoShort()   // true == changed
 			memcpy(ServerManager::m_pGlobalBuffer + iLen, m_sChangedEmailShort, m_ui8ChangedEmailShortLen);
 			iLen += m_ui8ChangedEmailShortLen;
 		}
-		
+
 		if (((m_ui32InfoBits & INFOBIT_EMAIL_SHORT_PERM) == INFOBIT_EMAIL_SHORT_PERM) == false)
 		{
 			User::FreeInfo(m_sChangedEmailShort, m_ui8ChangedEmailShortLen);
@@ -2815,21 +2815,21 @@ bool User::GenerateMyInfoShort()   // true == changed
 		memcpy(ServerManager::m_pGlobalBuffer + iLen, m_sEmail, (size_t)m_ui8EmailLen);
 		iLen += (int)m_ui8EmailLen;
 	}
-	
+
 	// Add share and end of myinfo
 	int iRet = snprintf(ServerManager::m_pGlobalBuffer + iLen, ServerManager::m_szGlobalBufferSize - iLen, "$%" PRIu64 "$|", m_ui64ChangedSharedSizeShort);
-	
+
 	if (((m_ui32InfoBits & INFOBIT_SHARE_SHORT_PERM) == INFOBIT_SHARE_SHORT_PERM) == false)
 	{
 		m_ui64ChangedSharedSizeShort = m_ui64SharedSize;
 	}
-	
+
 	if (iRet <= 0)
 	{
 		return false;
 	}
 	iLen += iRet;
-	
+
 	if (m_sMyInfoShort != NULL)
 	{
 		if (m_ui16MyInfoShortLen == (uint16_t)iLen && memcmp(m_sMyInfoShort + 14 + m_ui8NickLen, ServerManager::m_pGlobalBuffer + 14 + m_ui8NickLen, m_ui16MyInfoShortLen - 14 - m_ui8NickLen) == 0)
@@ -2837,9 +2837,9 @@ bool User::GenerateMyInfoShort()   // true == changed
 			return false;
 		}
 	}
-	
+
 	UserSetMyInfoShort(this, ServerManager::m_pGlobalBuffer, (uint16_t)iLen);
-	
+
 	return true;
 }
 //---------------------------------------------------------------------------
@@ -2850,7 +2850,7 @@ void User::HasSuspiciousTag()
 	{
 		m_sDescription[m_ui8DescriptionLen] = '\0';
 		GlobalDataQueue::m_Ptr->StatusMessageFormat("User::HasSuspiciousTag", "<%s> *** %s (%s) %s. %s: %s|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], m_sNick, m_sIP, LanguageManager::m_Ptr->m_sTexts[LAN_HAS_SUSPICIOUS_TAG_CHECK_HIM],
-		                                            LanguageManager::m_Ptr->m_sTexts[LAN_FULL_DESCRIPTION], m_sDescription);
+		        LanguageManager::m_Ptr->m_sTexts[LAN_FULL_DESCRIPTION], m_sDescription);
 		m_sDescription[m_ui8DescriptionLen] = '$';
 	}
 	m_ui32BoolBits &= ~BIT_HAVE_BADTAG;
@@ -2870,7 +2870,7 @@ bool User::ProcessRules()
 			return false;
 		}
 	}
-	
+
 	// no Tag? Apply rule
 	if (m_sTag == NULL)
 	{
@@ -2890,7 +2890,7 @@ bool User::ProcessRules()
 		if (ProfileManager::m_Ptr->IsAllowed(this, ProfileManager::NOSLOTCHECK) == false)
 		{
 			// TODO 2 -oPTA -ccheckers: $SR based slots fetching for no_tag users
-			
+
 			if ((SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MIN_SLOTS_LIMIT] != 0 && m_ui32Slots < (uint32_t)SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MIN_SLOTS_LIMIT]) ||
 			        (SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_SLOTS_LIMIT] != 0 && m_ui32Slots > (uint32_t)SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_SLOTS_LIMIT]))
 			{
@@ -2899,7 +2899,7 @@ bool User::ProcessRules()
 				return false;
 			}
 		}
-		
+
 		// slots/hub ration check
 		if (ProfileManager::m_Ptr->IsAllowed(this, ProfileManager::NOSLOTHUBRATIO) == false &&
 		        SettingManager::m_Ptr->m_i16Shorts[SETSHORT_HUB_SLOT_RATIO_HUBS] != 0 && SettingManager::m_Ptr->m_i16Shorts[SETSHORT_HUB_SLOT_RATIO_SLOTS] != 0)
@@ -2913,7 +2913,7 @@ bool User::ProcessRules()
 				return false;
 			}
 		}
-		
+
 		// hub checker
 		if (ProfileManager::m_Ptr->IsAllowed(this, ProfileManager::NOMAXHUBCHECK) == false && SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_HUBS_LIMIT] != 0)
 		{
@@ -2925,7 +2925,7 @@ bool User::ProcessRules()
 			}
 		}
 	}
-	
+
 	return true;
 }
 
@@ -2937,12 +2937,12 @@ void User::AddPrcsdCmd(const uint8_t ui8Type, const char * sCommand, const size_
 	{
 		PrcsdToUsrCmd * cur = NULL,
 		                * next = m_pCmdToUserStrt;
-		                
+
 		while (next != NULL)
 		{
 			cur = next;
 			next = cur->m_pNext;
-			
+
 			if (cur->m_pToUser == pToUser)
 			{
 				char * pOldBuf = cur->m_sCommand;
@@ -2952,9 +2952,9 @@ void User::AddPrcsdCmd(const uint8_t ui8Type, const char * sCommand, const size_
 					cur->m_sCommand = pOldBuf;
 					m_ui32BoolBits |= BIT_ERROR;
 					Close();
-					
+
 					AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in User::AddPrcsdCmd\n", cur->m_ui32Len+szCommandLen+1);
-					
+
 					return;
 				}
 				memcpy(cur->m_sCommand + cur->m_ui32Len, sCommand, szCommandLen);
@@ -2964,42 +2964,42 @@ void User::AddPrcsdCmd(const uint8_t ui8Type, const char * sCommand, const size_
 				return;
 			}
 		}
-		
+
 		PrcsdToUsrCmd * pNewToCmd = new (std::nothrow) PrcsdToUsrCmd;
 		if (pNewToCmd == NULL)
 		{
 			m_ui32BoolBits |= BIT_ERROR;
 			Close();
-			
+
 			AppendDebugLog("%s - [MEM] User::AddPrcsdCmd cannot allocate new pNewToCmd\n");
-			
+
 			return;
 		}
-		
+
 		pNewToCmd->m_sCommand = (char *)malloc(szCommandLen + 1);
 		if (pNewToCmd->m_sCommand == NULL)
 		{
 			m_ui32BoolBits |= BIT_ERROR;
 			Close();
-			
+
 			AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for sCommand in User::AddPrcsdCmd\n", szCommandLen+1);
-			
+
 			delete pNewToCmd;
-			
+
 			return;
 		}
-		
+
 		memcpy(pNewToCmd->m_sCommand, sCommand, szCommandLen);
 		pNewToCmd->m_sCommand[szCommandLen] = '\0';
-		
+
 		pNewToCmd->m_ui32Len = (uint32_t)szCommandLen;
 		pNewToCmd->m_ui32PmCount = bIsPm == true ? 1 : 0;
 		pNewToCmd->m_ui32Loops = 0;
 		pNewToCmd->m_pToUser = pToUser;
-		
+
 		pNewToCmd->m_nick = std::string(pToUser->m_sNick, pToUser->m_ui8NickLen);
 		pNewToCmd->m_pNext = nullptr;
-		
+
 		if (m_pCmdToUserStrt == NULL)
 		{
 			m_pCmdToUserStrt = pNewToCmd;
@@ -3010,42 +3010,42 @@ void User::AddPrcsdCmd(const uint8_t ui8Type, const char * sCommand, const size_
 			m_pCmdToUserEnd->m_pNext = pNewToCmd;
 			m_pCmdToUserEnd = pNewToCmd;
 		}
-		
+
 		return;
 	}
-	
+
 	PrcsdUsrCmd * pNewcmd = new (std::nothrow) PrcsdUsrCmd;
 	if (pNewcmd == NULL)
 	{
 		m_ui32BoolBits |= BIT_ERROR;
 		Close();
-		
+
 		AppendDebugLog("%s - [MEM] User::AddPrcsdCmd cannot allocate new pNewcmd1\n");
-		
+
 		return;
 	}
-	
+
 	pNewcmd->m_sCommand = (char *)malloc(szCommandLen + 1);
 	if (pNewcmd->m_sCommand == NULL)
 	{
 		m_ui32BoolBits |= BIT_ERROR;
 		Close();
-		
+
 		AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for sCommand in User::AddPrcsdCmd1\n", szCommandLen+1);
-		
+
 		delete pNewcmd;
-		
+
 		return;
 	}
-	
+
 	memcpy(pNewcmd->m_sCommand, sCommand, szCommandLen);
 	pNewcmd->m_sCommand[szCommandLen] = '\0';
-	
+
 	pNewcmd->m_ui32Len = (uint32_t)szCommandLen;
 	pNewcmd->m_ui8Type = ui8Type;
 	pNewcmd->m_pNext = nullptr;
 	pNewcmd->m_pPtr = (void *)pToUser; // TODO - опасно
-	
+
 	if (m_pCmdStrt == NULL)
 	{
 		m_pCmdStrt = pNewcmd;
@@ -3065,7 +3065,7 @@ void User::AddMeOrIPv4Check()
 	{
 		m_ui8State = STATE_IPV4_CHECK;
 		m_LogInOut.m_ui64IPv4CheckTick = ServerManager::m_ui64ActualTick;
-		
+
 		SendFormat("AddMeOrIPv4Check", true, "$ConnectToMe %s %s:%hu|", m_sNick, ServerManager::m_sHubIP, SettingManager::m_Ptr->m_ui16PortNumbers[0]);
 	}
 	else
@@ -3078,7 +3078,7 @@ void User::AddMeOrIPv4Check()
 char * User::SetUserInfo(char* sOldData, uint8_t &ui8OldDataLen, const char * sNewData, const size_t szNewDataLen, const char * /* sDataName */)
 {
 	User::FreeInfo(sOldData, ui8OldDataLen);
-	
+
 	if (szNewDataLen > 0)
 	{
 		sOldData = (char *)malloc(szNewDataLen + 1);
@@ -3087,7 +3087,7 @@ char * User::SetUserInfo(char* sOldData, uint8_t &ui8OldDataLen, const char * sN
 			AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes in User::SetUserInfo\n", szNewDataLen+1);
 			return sOldData;
 		}
-		
+
 		memcpy(sOldData, sNewData, szNewDataLen);
 		sOldData[szNewDataLen] = '\0';
 		ui8OldDataLen = (uint8_t)szNewDataLen;
@@ -3096,7 +3096,7 @@ char * User::SetUserInfo(char* sOldData, uint8_t &ui8OldDataLen, const char * sN
 	{
 		ui8OldDataLen = 1;
 	}
-	
+
 	return sOldData;
 }
 //---------------------------------------------------------------------------

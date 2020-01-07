@@ -68,34 +68,34 @@ SettingManager::SettingManager(void) : m_ui64MinShare(0), m_ui64MaxShare(0), m_s
 
 	memset(m_sPreTexts, 0, sizeof(m_sPreTexts));
 	memset(m_ui16PreTextsLens, 0, sizeof(m_ui16PreTextsLens));
-	
+
 	memset(m_sTexts, 0, sizeof(m_sTexts));
 	memset(m_ui16TextsLens, 0, sizeof(m_ui16TextsLens));
-	
+
 	memset(m_i16Shorts, 0, sizeof(m_i16Shorts));
-	
+
 	memset(m_ui16PortNumbers, 0, sizeof(m_ui16PortNumbers));
-	
+
 	memset(m_bBools, 0, sizeof(m_bBools));
-	
+
 	// Read default bools
 	for (size_t szi = 0; szi < SETBOOL_IDS_END; szi++)
 	{
 		SetBool(szi, SetBoolDef[szi]);
 	}
-	
+
 	// Read default shorts
 	for (size_t szi = 0; szi < SETSHORT_IDS_END; szi++)
 	{
 		SetShort(szi, SetShortDef[szi]);
 	}
-	
+
 	// Read default texts
 	for (size_t szi = 0; szi < SETTXT_IDS_END; szi++)
 	{
 		SetText(szi, SetTxtDef[szi]);
 	}
-	
+
 	// Load settings
 	Load();
 }
@@ -104,33 +104,33 @@ SettingManager::SettingManager(void) : m_ui64MinShare(0), m_ui64MaxShare(0), m_s
 SettingManager::~SettingManager(void)
 {
 	Save();
-	
+
 	if (m_sMOTD != NULL)
 	{
 		safe_free(m_sMOTD);
 		m_ui16MOTDLen = 0;
 	}
-	
+
 	for (size_t szi = 0; szi < SETTXT_IDS_END; szi++)
 	{
 		if (m_sTexts[szi] == NULL)
 		{
 			continue;
 		}
-		
+
 		free(m_sTexts[szi]);
 	}
-	
+
 	for (size_t szi = 0; szi < SETPRETXT_IDS_END; szi++)
 	{
 		if (m_sPreTexts[szi] == NULL || (szi == SETPRETXT_HUB_SEC && m_sPreTexts[szi] == sHubSec))
 		{
 			continue;
 		}
-		
+
 		free(m_sPreTexts[szi]);
 	}
-	
+
 }
 //---------------------------------------------------------------------------
 
@@ -155,7 +155,7 @@ void SettingManager::LoadMOTD()
 		safe_free(m_sMOTD);
 		m_ui16MOTDLen = 0;
 	}
-	
+
 #ifdef _WIN32
 	FILE *fr = fopen((ServerManager::m_sPath + "\\cfg\\Motd.txt").c_str(), "rb");
 #else
@@ -169,7 +169,7 @@ void SettingManager::LoadMOTD()
 		{
 			fseek(fr, 0, SEEK_SET);
 			m_ui16MOTDLen = (uint16_t)(ulflen < 65024 ? ulflen : 65024);
-			
+
 			// allocate memory for m_sMOTD
 			m_sMOTD = (char *)malloc(m_ui16MOTDLen + 1);
 			if (m_sMOTD == NULL)
@@ -177,7 +177,7 @@ void SettingManager::LoadMOTD()
 				AppendDebugLogFormat("[MEM] Cannot allocate %hu bytes for m_sMOTD in SettingManager::LoadMOTD\n", m_ui16MOTDLen + 1);
 				exit(EXIT_FAILURE);
 			}
-			
+
 			// read from file to m_sMOTD, if it failed then free m_sMOTD and create default one
 			if (fread(m_sMOTD, 1, (size_t)m_ui16MOTDLen, fr) == (size_t)m_ui16MOTDLen)
 			{
@@ -187,7 +187,7 @@ void SettingManager::LoadMOTD()
 			{
 				safe_free(m_sMOTD);
 				m_ui16MOTDLen = 0;
-				
+
 				// motd loading failed ? create default one...
 				CreateDefaultMOTD();
 			}
@@ -199,7 +199,7 @@ void SettingManager::LoadMOTD()
 		// no motd to load ? create default one...
 		CreateDefaultMOTD();
 	}
-	
+
 	CheckMOTD();
 }
 //---------------------------------------------------------------------------
@@ -245,25 +245,25 @@ void SettingManager::CheckAndSet(const char * sName, const char * sValue)
 			return;
 		}
 	}
-	
+
 	// Integers
 	for (size_t szi = 0; szi < SETSHORT_IDS_END; szi++)
 	{
 		if (strcmp(SetShortStr[szi], sName) == 0)
 		{
 			int32_t iValue = atoi(sValue);
-			
+
 			// Check if is valid value
 			if (sValue[0] == '\0' || iValue < 0 || iValue > 32767)
 			{
 				return;
 			}
-			
+
 			SetShort(szi, (int16_t)iValue);
 			return;
 		}
 	}
-	
+
 	// Strings
 	for (size_t szi = 0; szi < SETTXT_IDS_END; szi++)
 	{
@@ -279,10 +279,10 @@ void SettingManager::CheckAndSet(const char * sName, const char * sValue)
 void SettingManager::Load()
 {
 	m_bUpdateLocked = true;
-	
+
 	// Load MOTD
 	LoadMOTD();
-	
+
 #ifdef _WIN32
 	if (FileExist((ServerManager::m_sPath + "\\cfg\\Settings.pxt").c_str()) == false)
 	{
@@ -291,12 +291,12 @@ void SettingManager::Load()
 	{
 #endif
 		LoadXML();
-		
+
 		m_bUpdateLocked = false;
-		
+
 		return;
 	}
-	
+
 #ifdef _WIN32
 	FILE * fSettingsFile = fopen((ServerManager::m_sPath + "\\cfg\\Settings.pxt").c_str(), "rt");
 #else
@@ -313,31 +313,31 @@ void SettingManager::Load()
 		if (iMsgLen > 0)
 		{
 #ifdef _BUILD_GUI
-		::MessageBox(NULL, ServerManager::m_pGlobalBuffer, g_sPtokaXTitle, MB_OK | MB_ICONERROR);
+			::MessageBox(NULL, ServerManager::m_pGlobalBuffer, g_sPtokaXTitle, MB_OK | MB_ICONERROR);
 #else
-		AppendLog(ServerManager::m_pGlobalBuffer);
+			AppendLog(ServerManager::m_pGlobalBuffer);
 #endif
 		}
-		
+
 		exit(EXIT_FAILURE);
 	}
-	
+
 	char * sValue = NULL;
 	size_t szLen = 0;
-	
+
 	while (fgets(ServerManager::m_pGlobalBuffer, (int)ServerManager::m_szGlobalBufferSize, fSettingsFile) != NULL)
 	{
 		if (ServerManager::m_pGlobalBuffer[0] == '#' || ServerManager::m_pGlobalBuffer[0] == '\n')
 		{
 			continue;
 		}
-		
+
 		sValue = NULL;
-		
+
 		szLen = strlen(ServerManager::m_pGlobalBuffer) - 1;
-		
+
 		ServerManager::m_pGlobalBuffer[szLen] = '\0';
-		
+
 		for (size_t szi = 0; szi < szLen; szi++)
 		{
 			if (isspace(ServerManager::m_pGlobalBuffer[szi]) != 0)
@@ -345,7 +345,7 @@ void SettingManager::Load()
 				ServerManager::m_pGlobalBuffer[szi] = '\0';
 				continue;
 			}
-			
+
 			if (ServerManager::m_pGlobalBuffer[szi] == '=')
 			{
 				if (isspace(ServerManager::m_pGlobalBuffer[szi + 1]) != 0)
@@ -356,21 +356,21 @@ void SettingManager::Load()
 				{
 					sValue = ServerManager::m_pGlobalBuffer + szi + 1;
 				}
-				
+
 				break;
 			}
 		}
-		
+
 		if (sValue == NULL || ServerManager::m_pGlobalBuffer[0] == '\0')
 		{
 			continue;
 		}
-		
+
 		CheckAndSet(ServerManager::m_pGlobalBuffer, sValue);
 	}
-	
+
 	fclose(fSettingsFile);
-	
+
 	m_bUpdateLocked = false;
 }
 //---------------------------------------------------------------------------
@@ -390,25 +390,25 @@ void SettingManager::LoadXML()
 			if (iMsgLen > 0)
 			{
 #ifdef _BUILD_GUI
-			::MessageBox(NULL, ServerManager::m_pGlobalBuffer, g_sPtokaXTitle, MB_OK | MB_ICONERROR);
+				::MessageBox(NULL, ServerManager::m_pGlobalBuffer, g_sPtokaXTitle, MB_OK | MB_ICONERROR);
 #else
-			AppendLog(ServerManager::m_pGlobalBuffer);
+				AppendLog(ServerManager::m_pGlobalBuffer);
 #endif
 			}
-			
+
 			exit(EXIT_FAILURE);
 		}
 	}
 	else
 	{
 		TiXmlHandle cfg(&doc);
-		
+
 		TiXmlElement *settings = cfg.FirstChild("PtokaX").Element();
 		if (settings == NULL)
 		{
 			return;
 		}
-		
+
 		// version first run
 		const char * sVersion;
 		if (settings->ToElement() == NULL || (sVersion = settings->ToElement()->Attribute("Version")) == NULL ||
@@ -420,7 +420,7 @@ void SettingManager::LoadXML()
 		{
 			m_bFirstRun = false;
 		}
-		
+
 		// Read bools
 		TiXmlNode *SettingNode = settings->FirstChild("Booleans");
 		if (SettingNode != NULL)
@@ -429,14 +429,14 @@ void SettingManager::LoadXML()
 			while ((SettingValue = SettingNode->IterateChildren(SettingValue)) != NULL)
 			{
 				const char * sName;
-				
+
 				if (SettingValue->ToElement() == NULL || (sName = SettingValue->ToElement()->Attribute("Name")) == NULL)
 				{
 					continue;
 				}
-				
+
 				bool bValue = atoi(SettingValue->ToElement()->GetText()) == 0 ? false : true;
-				
+
 				for (size_t szi = 0; szi < SETBOOL_IDS_END; szi++)
 				{
 					if (strcmp(SetBoolStr[szi], sName) == 0)
@@ -446,7 +446,7 @@ void SettingManager::LoadXML()
 				}
 			}
 		}
-		
+
 		// Read integers
 		SettingNode = settings->FirstChild("Integers");
 		if (SettingNode != NULL)
@@ -455,19 +455,19 @@ void SettingManager::LoadXML()
 			while ((SettingValue = SettingNode->IterateChildren(SettingValue)) != NULL)
 			{
 				const char * sName;
-				
+
 				if (SettingValue->ToElement() == NULL || (sName = SettingValue->ToElement()->Attribute("Name")) == NULL)
 				{
 					continue;
 				}
-				
+
 				int32_t iValue = atoi(SettingValue->ToElement()->GetText());
 				// Check if is valid value
 				if (iValue < 0 || iValue > 32767)
 				{
 					continue;
 				}
-				
+
 				for (size_t szi = 0; szi < SETSHORT_IDS_END; szi++)
 				{
 					if (strcmp(SetShortStr[szi], sName) == 0)
@@ -477,7 +477,7 @@ void SettingManager::LoadXML()
 				}
 			}
 		}
-		
+
 		// Read strings
 		SettingNode = settings->FirstChild("Strings");
 		if (SettingNode != NULL)
@@ -486,19 +486,19 @@ void SettingManager::LoadXML()
 			while ((SettingValue = SettingNode->IterateChildren(SettingValue)) != NULL)
 			{
 				const char * sName;
-				
+
 				if (SettingValue->ToElement() == NULL || (sName = SettingValue->ToElement()->Attribute("Name")) == NULL)
 				{
 					continue;
 				}
-				
+
 				const char * sText = SettingValue->ToElement()->GetText();
-				
+
 				if (sText == NULL)
 				{
 					continue;
 				}
-				
+
 				for (size_t szi = 0; szi < SETTXT_IDS_END; szi++)
 				{
 					if (strcmp(SetTxtStr[szi], sName) == 0)
@@ -515,7 +515,7 @@ void SettingManager::LoadXML()
 void SettingManager::Save()
 {
 	SaveMOTD();
-	
+
 #ifdef _WIN32
 	FILE * fSettingsFile = fopen((ServerManager::m_sPath + "\\cfg\\Settings.pxt").c_str(), "wb");
 #else
@@ -525,14 +525,14 @@ void SettingManager::Save()
 	{
 		return;
 	}
-	
+
 	static const char sPtokaXSettingsFile[] = "#\n# PtokaX settings file\n#\n";
 	fwrite(sPtokaXSettingsFile, 1, sizeof(sPtokaXSettingsFile) - 1, fSettingsFile);
-	
+
 	// Save booleans
 	static const char sPtokaXSettingsFileBooleans[] = "\n#\n# Boolean settings\n#\n\n";
 	fwrite(sPtokaXSettingsFileBooleans, 1, sizeof(sPtokaXSettingsFileBooleans) - 1, fSettingsFile);
-	
+
 	for (size_t szi = 0; szi < SETBOOL_IDS_END; szi++)
 	{
 		// Don't save empty hint
@@ -540,13 +540,13 @@ void SettingManager::Save()
 		{
 			fputs(SetBoolCom[szi], fSettingsFile);
 		}
-		
+
 		// Don't save setting with empty id
 		if (SetBoolStr[szi][0] == NULL)
 		{
 			continue;
 		}
-		
+
 		// Save setting with default value as comment
 		if (m_bBools[szi] == SetBoolDef[szi])
 		{
@@ -557,11 +557,11 @@ void SettingManager::Save()
 			fprintf(fSettingsFile, "%s\t=\t%c\n", SetBoolStr[szi], m_bBools[szi] == 0 ? '0' : '1');
 		}
 	}
-	
+
 	// Save integers
 	static const char sPtokaXSettingsFileIntegers[] = "\n#\n# Integer settings\n#\n\n";
 	fwrite(sPtokaXSettingsFileIntegers, 1, sizeof(sPtokaXSettingsFileIntegers) - 1, fSettingsFile);
-	
+
 	for (size_t szi = 0; szi < SETSHORT_IDS_END; szi++)
 	{
 		// Don't save empty hint
@@ -569,13 +569,13 @@ void SettingManager::Save()
 		{
 			fputs(SetShortCom[szi], fSettingsFile);
 		}
-		
+
 		// Don't save setting with empty id
 		if (SetShortStr[szi][0] == NULL)
 		{
 			continue;
 		}
-		
+
 		// Save setting with default value as comment
 		if (m_i16Shorts[szi] == SetShortDef[szi])
 		{
@@ -586,11 +586,11 @@ void SettingManager::Save()
 			fprintf(fSettingsFile, "%s\t=\t%hd\n", SetShortStr[szi], m_i16Shorts[szi]);
 		}
 	}
-	
+
 	// Save strings
 	static const char sPtokaXSettingsFileStrings[] = "\n#\n# String settings\n#\n\n";
 	fwrite(sPtokaXSettingsFileStrings, 1, sizeof(sPtokaXSettingsFileStrings) - 1, fSettingsFile);
-	
+
 	for (size_t szi = 0; szi < SETTXT_IDS_END; szi++)
 	{
 		// Don't save empty hint
@@ -598,13 +598,13 @@ void SettingManager::Save()
 		{
 			fputs(SetTxtCom[szi], fSettingsFile);
 		}
-		
+
 		// Don't save setting with empty id
 		if (SetTxtStr[szi][0] == NULL)
 		{
 			continue;
 		}
-		
+
 		// Save setting with default value as comment
 		if ((m_sTexts[szi] == NULL && SetTxtDef[szi][0] == '\0') || (m_sTexts[szi] != NULL && strcmp(m_sTexts[szi], SetTxtDef[szi]) == 0))
 		{
@@ -615,7 +615,7 @@ void SettingManager::Save()
 			fprintf(fSettingsFile, "%s\t=\t%s\n", SetTxtStr[szi], m_sTexts[szi] != NULL ? m_sTexts[szi] : "");
 		}
 	}
-	
+
 	fclose(fSettingsFile);
 }
 //---------------------------------------------------------------------------
@@ -659,111 +659,111 @@ void SettingManager::SetBool(const size_t szBoolId, const bool bValue)
 	{
 		return;
 	}
-	
+
 	if (szBoolId == SETBOOL_ANTI_MOGLO)
 	{
 		Lock l(m_csSetting);
 		m_bBools[szBoolId] = bValue;
 		return;
 	}
-	
+
 	m_bBools[szBoolId] = bValue;
-	
+
 	switch (szBoolId)
 	{
-		case SETBOOL_REG_BOT:
-			UpdateBotsSameNick();
-			if (bValue == false)
-			{
-				DisableBot();
-			}
-			UpdateBot();
-			break;
-		case SETBOOL_REG_OP_CHAT:
-			UpdateBotsSameNick();
-			if (bValue == false)
-			{
-				DisableOpChat();
-			}
-			UpdateOpChat();
-			break;
-		case SETBOOL_USE_BOT_NICK_AS_HUB_SEC:
-			UpdateHubSec();
-			UpdateMOTD();
-			UpdateHubNameWelcome();
-			UpdateRegOnlyMessage();
-			UpdateShareLimitMessage();
-			UpdateSlotsLimitMessage();
-			UpdateHubSlotRatioMessage();
-			UpdateMaxHubsLimitMessage();
-			UpdateNoTagMessage();
-			UpdateNickLimitMessage();
-			break;
-		case SETBOOL_DISABLE_MOTD:
-		case SETBOOL_MOTD_AS_PM:
-			UpdateMOTD();
-			break;
-		case SETBOOL_REG_ONLY_REDIR:
-			UpdateRegOnlyMessage();
-			break;
-		case SETBOOL_SHARE_LIMIT_REDIR:
-			UpdateShareLimitMessage();
-			break;
-		case SETBOOL_SLOTS_LIMIT_REDIR:
-			UpdateSlotsLimitMessage();
-			break;
-		case SETBOOL_HUB_SLOT_RATIO_REDIR:
-			UpdateHubSlotRatioMessage();
-			break;
-		case SETBOOL_MAX_HUBS_LIMIT_REDIR:
-			UpdateMaxHubsLimitMessage();
-			break;
-		case SETBOOL_NICK_LIMIT_REDIR:
-			UpdateNickLimitMessage();
-			break;
-		case SETBOOL_ENABLE_TEXT_FILES:
-			if (bValue == true && m_bUpdateLocked == false)
-			{
-				TextFilesManager::m_Ptr->RefreshTextFiles();
-			}
-			break;
+	case SETBOOL_REG_BOT:
+		UpdateBotsSameNick();
+		if (bValue == false)
+		{
+			DisableBot();
+		}
+		UpdateBot();
+		break;
+	case SETBOOL_REG_OP_CHAT:
+		UpdateBotsSameNick();
+		if (bValue == false)
+		{
+			DisableOpChat();
+		}
+		UpdateOpChat();
+		break;
+	case SETBOOL_USE_BOT_NICK_AS_HUB_SEC:
+		UpdateHubSec();
+		UpdateMOTD();
+		UpdateHubNameWelcome();
+		UpdateRegOnlyMessage();
+		UpdateShareLimitMessage();
+		UpdateSlotsLimitMessage();
+		UpdateHubSlotRatioMessage();
+		UpdateMaxHubsLimitMessage();
+		UpdateNoTagMessage();
+		UpdateNickLimitMessage();
+		break;
+	case SETBOOL_DISABLE_MOTD:
+	case SETBOOL_MOTD_AS_PM:
+		UpdateMOTD();
+		break;
+	case SETBOOL_REG_ONLY_REDIR:
+		UpdateRegOnlyMessage();
+		break;
+	case SETBOOL_SHARE_LIMIT_REDIR:
+		UpdateShareLimitMessage();
+		break;
+	case SETBOOL_SLOTS_LIMIT_REDIR:
+		UpdateSlotsLimitMessage();
+		break;
+	case SETBOOL_HUB_SLOT_RATIO_REDIR:
+		UpdateHubSlotRatioMessage();
+		break;
+	case SETBOOL_MAX_HUBS_LIMIT_REDIR:
+		UpdateMaxHubsLimitMessage();
+		break;
+	case SETBOOL_NICK_LIMIT_REDIR:
+		UpdateNickLimitMessage();
+		break;
+	case SETBOOL_ENABLE_TEXT_FILES:
+		if (bValue == true && m_bUpdateLocked == false)
+		{
+			TextFilesManager::m_Ptr->RefreshTextFiles();
+		}
+		break;
 #ifdef _BUILD_GUI
-		case SETBOOL_ENABLE_TRAY_ICON:
-			if (m_bUpdateLocked == false)
-			{
-				MainWindow::m_Ptr->UpdateSysTray();
-			}
-			
-			break;
+	case SETBOOL_ENABLE_TRAY_ICON:
+		if (m_bUpdateLocked == false)
+		{
+			MainWindow::m_Ptr->UpdateSysTray();
+		}
+
+		break;
 #endif
 #ifdef FLYLINKDC_REMOVE_REGISTER_THREAD
-		case SETBOOL_AUTO_REG:
-			if (m_bUpdateLocked == false)
-			{
-				ServerManager::UpdateAutoRegState();
-			}
-			break;
+	case SETBOOL_AUTO_REG:
+		if (m_bUpdateLocked == false)
+		{
+			ServerManager::UpdateAutoRegState();
+		}
+		break;
 #endif
-		case SETBOOL_ENABLE_SCRIPTING:
-			UpdateScripting();
-			break;
+	case SETBOOL_ENABLE_SCRIPTING:
+		UpdateScripting();
+		break;
 #if defined(_WITH_SQLITE) || defined(_WITH_POSTGRES) || defined(_WITH_MYSQL)
-		case SETBOOL_ENABLE_DATABASE:
-			if (m_bUpdateLocked == false)
-			{
-				UpdateDatabase();
-			}
-			
-			break;
+	case SETBOOL_ENABLE_DATABASE:
+		if (m_bUpdateLocked == false)
+		{
+			UpdateDatabase();
+		}
+
+		break;
 #endif
-		case SETBOOL_RESOLVE_TO_IP:
-			if (m_bUpdateLocked == false)
-			{
-				ServerManager::ResolveHubAddress(true);
-			}
-			break;
-		default:
-			break;
+	case SETBOOL_RESOLVE_TO_IP:
+		if (m_bUpdateLocked == false)
+		{
+			ServerManager::ResolveHubAddress(true);
+		}
+		break;
+	default:
+		break;
 	}
 }
 //---------------------------------------------------------------------------
@@ -775,7 +775,7 @@ void SettingManager::SetMOTD(const char * sTxt, const size_t szLen)
 	{
 		return;
 	}
-	
+
 	if (szLen == 0)
 	{
 		if (m_sMOTD != NULL)
@@ -788,24 +788,24 @@ void SettingManager::SetMOTD(const char * sTxt, const size_t szLen)
 	{
 		uint16_t ui16OldMOTDLen = m_ui16MOTDLen;
 		char * sOldMOTD = m_sMOTD;
-		
+
 		m_ui16MOTDLen = (uint16_t)(szLen < 65024 ? szLen : 65024);
-		
+
 		// (re)allocate memory for m_sMOTD
 		m_sMOTD = (char *)realloc(sOldMOTD, m_ui16MOTDLen + 1);
 		if (m_sMOTD == NULL)
 		{
 			m_sMOTD = sOldMOTD;
 			m_ui16MOTDLen = ui16OldMOTDLen;
-			
+
 			AppendDebugLogFormat("[MEM] Cannot (re)allocate %hu bytes in SettingManager::SetMOTD for m_sMOTD\n", m_ui16MOTDLen + 1);
-			
+
 			return;
 		}
-		
+
 		memcpy(m_sMOTD, sTxt, (size_t)m_ui16MOTDLen);
 		m_sMOTD[m_ui16MOTDLen] = '\0';
-		
+
 		CheckMOTD();
 	}
 }
@@ -817,247 +817,247 @@ void SettingManager::SetShort(const size_t szShortId, const int16_t i16Value)
 	{
 		return;
 	}
-	
+
 	switch (szShortId)
 	{
-		case SETSHORT_MIN_SHARE_LIMIT:
-		case SETSHORT_MAX_SHARE_LIMIT:
-			if (i16Value > 9999)
-			{
-				return;
-			}
-			break;
-		case SETSHORT_MIN_SHARE_UNITS:
-		case SETSHORT_MAX_SHARE_UNITS:
-			if (i16Value > 4)
-			{
-				return;
-			}
-			break;
-		case SETSHORT_NO_TAG_OPTION:
-		case SETSHORT_FULL_MYINFO_OPTION:
-		case SETSHORT_GLOBAL_MAIN_CHAT_ACTION:
-		case SETSHORT_BRUTE_FORCE_PASS_PROTECT_BAN_TYPE:
-			if (i16Value > 2)
-			{
-				return;
-			}
-			break;
-		case SETSHORT_MAX_USERS:
-		case SETSHORT_DEFAULT_TEMP_BAN_TIME:
-		case SETSHORT_DEFLOOD_TEMP_BAN_TIME:
-		case SETSHORT_SR_MESSAGES:
-		case SETSHORT_SR_MESSAGES2:
-			if (i16Value == 0)
-			{
-				return;
-			}
-			break;
-		case SETSHORT_MIN_SLOTS_LIMIT:
-		case SETSHORT_MAX_SLOTS_LIMIT:
-		case SETSHORT_HUB_SLOT_RATIO_HUBS:
-		case SETSHORT_HUB_SLOT_RATIO_SLOTS:
-		case SETSHORT_MAX_HUBS_LIMIT:
-		case SETSHORT_MAX_CHAT_LINES:
-		case SETSHORT_MAX_PM_LINES:
-		case SETSHORT_MYINFO_DELAY:
-		case SETSHORT_MIN_SEARCH_LEN:
-		case SETSHORT_MAX_SEARCH_LEN:
-		case SETSHORT_MAX_PM_COUNT_TO_USER:
-			if (i16Value > 999)
-			{
-				return;
-			}
-			break;
-		case SETSHORT_MAIN_CHAT_MESSAGES:
-		case SETSHORT_MAIN_CHAT_TIME:
-		case SETSHORT_SAME_MAIN_CHAT_TIME:
-		case SETSHORT_PM_MESSAGES:
-		case SETSHORT_PM_TIME:
-		case SETSHORT_SAME_PM_TIME:
-		case SETSHORT_SEARCH_MESSAGES:
-		case SETSHORT_SEARCH_TIME:
-		case SETSHORT_SAME_SEARCH_TIME:
-		case SETSHORT_MYINFO_MESSAGES:
-		case SETSHORT_MYINFO_TIME:
-		case SETSHORT_GETNICKLIST_MESSAGES:
-		case SETSHORT_GETNICKLIST_TIME:
-		case SETSHORT_DEFLOOD_WARNING_COUNT:
-		case SETSHORT_GLOBAL_MAIN_CHAT_MESSAGES:
-		case SETSHORT_GLOBAL_MAIN_CHAT_TIME:
-		case SETSHORT_GLOBAL_MAIN_CHAT_TIMEOUT:
-		case SETSHORT_BRUTE_FORCE_PASS_PROTECT_TEMP_BAN_TIME:
-		case SETSHORT_MAIN_CHAT_MESSAGES2:
-		case SETSHORT_MAIN_CHAT_TIME2:
-		case SETSHORT_PM_MESSAGES2:
-		case SETSHORT_PM_TIME2:
-		case SETSHORT_SEARCH_MESSAGES2:
-		case SETSHORT_SEARCH_TIME2:
-		case SETSHORT_MYINFO_MESSAGES2:
-		case SETSHORT_MYINFO_TIME2:
-		case SETSHORT_CHAT_INTERVAL_MESSAGES:
-		case SETSHORT_CHAT_INTERVAL_TIME:
-		case SETSHORT_PM_INTERVAL_MESSAGES:
-		case SETSHORT_PM_INTERVAL_TIME:
-		case SETSHORT_SEARCH_INTERVAL_MESSAGES:
-		case SETSHORT_SEARCH_INTERVAL_TIME:
-			if (i16Value == 0 || i16Value > 999)
-			{
-				return;
-			}
-			break;
-		case SETSHORT_CTM_MESSAGES:
-		case SETSHORT_CTM_TIME:
-		case SETSHORT_CTM_MESSAGES2:
-		case SETSHORT_CTM_TIME2:
-		case SETSHORT_RCTM_MESSAGES:
-		case SETSHORT_RCTM_TIME:
-		case SETSHORT_RCTM_MESSAGES2:
-		case SETSHORT_RCTM_TIME2:
-		case SETSHORT_SR_TIME:
-		case SETSHORT_SR_TIME2:
-		case SETSHORT_MAX_DOWN_KB:
-		case SETSHORT_MAX_DOWN_TIME:
-		case SETSHORT_MAX_DOWN_KB2:
-		case SETSHORT_MAX_DOWN_TIME2:
-			if (i16Value == 0 || i16Value > 9999)
-			{
-				return;
-			}
-			break;
-		case SETSHORT_NEW_CONNECTIONS_COUNT:
-		case SETSHORT_NEW_CONNECTIONS_TIME:
-			if (i16Value == 0 || i16Value > 999)
-			{
-				return;
-			}
-			{
-				Lock l(m_csSetting);
-				m_i16Shorts[szShortId] = i16Value;
-				return;
-			}
-		case SETSHORT_SAME_MAIN_CHAT_MESSAGES:
-		case SETSHORT_SAME_MULTI_MAIN_CHAT_MESSAGES:
-		case SETSHORT_SAME_MULTI_MAIN_CHAT_LINES:
-		case SETSHORT_SAME_PM_MESSAGES:
-		case SETSHORT_SAME_MULTI_PM_MESSAGES:
-		case SETSHORT_SAME_MULTI_PM_LINES:
-		case SETSHORT_SAME_SEARCH_MESSAGES:
-			if (i16Value < 2 || i16Value > 999)
-			{
-				return;
-			}
-			break;
-		case SETSHORT_MAIN_CHAT_ACTION:
-		case SETSHORT_MAIN_CHAT_ACTION2:
-		case SETSHORT_SAME_MAIN_CHAT_ACTION:
-		case SETSHORT_SAME_MULTI_MAIN_CHAT_ACTION:
-		case SETSHORT_PM_ACTION:
-		case SETSHORT_PM_ACTION2:
-		case SETSHORT_SAME_PM_ACTION:
-		case SETSHORT_SAME_MULTI_PM_ACTION:
-		case SETSHORT_SEARCH_ACTION:
-		case SETSHORT_SEARCH_ACTION2:
-		case SETSHORT_SAME_SEARCH_ACTION:
-		case SETSHORT_MYINFO_ACTION:
-		case SETSHORT_MYINFO_ACTION2:
-		case SETSHORT_GETNICKLIST_ACTION:
-		case SETSHORT_CTM_ACTION:
-		case SETSHORT_CTM_ACTION2:
-		case SETSHORT_RCTM_ACTION:
-		case SETSHORT_RCTM_ACTION2:
-		case SETSHORT_SR_ACTION:
-		case SETSHORT_SR_ACTION2:
-		case SETSHORT_MAX_DOWN_ACTION:
-		case SETSHORT_MAX_DOWN_ACTION2:
-			if (i16Value > 6)
-			{
-				return;
-			}
-			break;
-		case SETSHORT_DEFLOOD_WARNING_ACTION:
-			if (i16Value > 3)
-			{
-				return;
-			}
-			break;
-		case SETSHORT_MIN_NICK_LEN:
-		case SETSHORT_MAX_NICK_LEN:
-			if (i16Value > 64)
-			{
-				return;
-			}
-			break;
-		case SETSHORT_MAX_SIMULTANEOUS_LOGINS:
-			if (i16Value == 0 || i16Value > 1000)
-			{
-				return;
-			}
-			break;
-		case SETSHORT_MAX_MYINFO_LEN:
-			if (i16Value < 64 || i16Value > 512)
-			{
-				return;
-			}
-			break;
-		case SETSHORT_MAX_CTM_LEN:
-		case SETSHORT_MAX_RCTM_LEN:
-			if (i16Value == 0 || i16Value > 512)
-			{
-				return;
-			}
-			break;
-		case SETSHORT_MAX_SR_LEN:
-			if (i16Value == 0 || i16Value > 8192)
-			{
-				return;
-			}
-			break;
-		case SETSHORT_MAX_CONN_SAME_IP:
-		case SETSHORT_MIN_RECONN_TIME:
-			if (i16Value == 0 || i16Value > 256)
-			{
-				return;
-			}
-			break;
-		default:
-			break;
+	case SETSHORT_MIN_SHARE_LIMIT:
+	case SETSHORT_MAX_SHARE_LIMIT:
+		if (i16Value > 9999)
+		{
+			return;
+		}
+		break;
+	case SETSHORT_MIN_SHARE_UNITS:
+	case SETSHORT_MAX_SHARE_UNITS:
+		if (i16Value > 4)
+		{
+			return;
+		}
+		break;
+	case SETSHORT_NO_TAG_OPTION:
+	case SETSHORT_FULL_MYINFO_OPTION:
+	case SETSHORT_GLOBAL_MAIN_CHAT_ACTION:
+	case SETSHORT_BRUTE_FORCE_PASS_PROTECT_BAN_TYPE:
+		if (i16Value > 2)
+		{
+			return;
+		}
+		break;
+	case SETSHORT_MAX_USERS:
+	case SETSHORT_DEFAULT_TEMP_BAN_TIME:
+	case SETSHORT_DEFLOOD_TEMP_BAN_TIME:
+	case SETSHORT_SR_MESSAGES:
+	case SETSHORT_SR_MESSAGES2:
+		if (i16Value == 0)
+		{
+			return;
+		}
+		break;
+	case SETSHORT_MIN_SLOTS_LIMIT:
+	case SETSHORT_MAX_SLOTS_LIMIT:
+	case SETSHORT_HUB_SLOT_RATIO_HUBS:
+	case SETSHORT_HUB_SLOT_RATIO_SLOTS:
+	case SETSHORT_MAX_HUBS_LIMIT:
+	case SETSHORT_MAX_CHAT_LINES:
+	case SETSHORT_MAX_PM_LINES:
+	case SETSHORT_MYINFO_DELAY:
+	case SETSHORT_MIN_SEARCH_LEN:
+	case SETSHORT_MAX_SEARCH_LEN:
+	case SETSHORT_MAX_PM_COUNT_TO_USER:
+		if (i16Value > 999)
+		{
+			return;
+		}
+		break;
+	case SETSHORT_MAIN_CHAT_MESSAGES:
+	case SETSHORT_MAIN_CHAT_TIME:
+	case SETSHORT_SAME_MAIN_CHAT_TIME:
+	case SETSHORT_PM_MESSAGES:
+	case SETSHORT_PM_TIME:
+	case SETSHORT_SAME_PM_TIME:
+	case SETSHORT_SEARCH_MESSAGES:
+	case SETSHORT_SEARCH_TIME:
+	case SETSHORT_SAME_SEARCH_TIME:
+	case SETSHORT_MYINFO_MESSAGES:
+	case SETSHORT_MYINFO_TIME:
+	case SETSHORT_GETNICKLIST_MESSAGES:
+	case SETSHORT_GETNICKLIST_TIME:
+	case SETSHORT_DEFLOOD_WARNING_COUNT:
+	case SETSHORT_GLOBAL_MAIN_CHAT_MESSAGES:
+	case SETSHORT_GLOBAL_MAIN_CHAT_TIME:
+	case SETSHORT_GLOBAL_MAIN_CHAT_TIMEOUT:
+	case SETSHORT_BRUTE_FORCE_PASS_PROTECT_TEMP_BAN_TIME:
+	case SETSHORT_MAIN_CHAT_MESSAGES2:
+	case SETSHORT_MAIN_CHAT_TIME2:
+	case SETSHORT_PM_MESSAGES2:
+	case SETSHORT_PM_TIME2:
+	case SETSHORT_SEARCH_MESSAGES2:
+	case SETSHORT_SEARCH_TIME2:
+	case SETSHORT_MYINFO_MESSAGES2:
+	case SETSHORT_MYINFO_TIME2:
+	case SETSHORT_CHAT_INTERVAL_MESSAGES:
+	case SETSHORT_CHAT_INTERVAL_TIME:
+	case SETSHORT_PM_INTERVAL_MESSAGES:
+	case SETSHORT_PM_INTERVAL_TIME:
+	case SETSHORT_SEARCH_INTERVAL_MESSAGES:
+	case SETSHORT_SEARCH_INTERVAL_TIME:
+		if (i16Value == 0 || i16Value > 999)
+		{
+			return;
+		}
+		break;
+	case SETSHORT_CTM_MESSAGES:
+	case SETSHORT_CTM_TIME:
+	case SETSHORT_CTM_MESSAGES2:
+	case SETSHORT_CTM_TIME2:
+	case SETSHORT_RCTM_MESSAGES:
+	case SETSHORT_RCTM_TIME:
+	case SETSHORT_RCTM_MESSAGES2:
+	case SETSHORT_RCTM_TIME2:
+	case SETSHORT_SR_TIME:
+	case SETSHORT_SR_TIME2:
+	case SETSHORT_MAX_DOWN_KB:
+	case SETSHORT_MAX_DOWN_TIME:
+	case SETSHORT_MAX_DOWN_KB2:
+	case SETSHORT_MAX_DOWN_TIME2:
+		if (i16Value == 0 || i16Value > 9999)
+		{
+			return;
+		}
+		break;
+	case SETSHORT_NEW_CONNECTIONS_COUNT:
+	case SETSHORT_NEW_CONNECTIONS_TIME:
+		if (i16Value == 0 || i16Value > 999)
+		{
+			return;
+		}
+		{
+			Lock l(m_csSetting);
+			m_i16Shorts[szShortId] = i16Value;
+			return;
+		}
+	case SETSHORT_SAME_MAIN_CHAT_MESSAGES:
+	case SETSHORT_SAME_MULTI_MAIN_CHAT_MESSAGES:
+	case SETSHORT_SAME_MULTI_MAIN_CHAT_LINES:
+	case SETSHORT_SAME_PM_MESSAGES:
+	case SETSHORT_SAME_MULTI_PM_MESSAGES:
+	case SETSHORT_SAME_MULTI_PM_LINES:
+	case SETSHORT_SAME_SEARCH_MESSAGES:
+		if (i16Value < 2 || i16Value > 999)
+		{
+			return;
+		}
+		break;
+	case SETSHORT_MAIN_CHAT_ACTION:
+	case SETSHORT_MAIN_CHAT_ACTION2:
+	case SETSHORT_SAME_MAIN_CHAT_ACTION:
+	case SETSHORT_SAME_MULTI_MAIN_CHAT_ACTION:
+	case SETSHORT_PM_ACTION:
+	case SETSHORT_PM_ACTION2:
+	case SETSHORT_SAME_PM_ACTION:
+	case SETSHORT_SAME_MULTI_PM_ACTION:
+	case SETSHORT_SEARCH_ACTION:
+	case SETSHORT_SEARCH_ACTION2:
+	case SETSHORT_SAME_SEARCH_ACTION:
+	case SETSHORT_MYINFO_ACTION:
+	case SETSHORT_MYINFO_ACTION2:
+	case SETSHORT_GETNICKLIST_ACTION:
+	case SETSHORT_CTM_ACTION:
+	case SETSHORT_CTM_ACTION2:
+	case SETSHORT_RCTM_ACTION:
+	case SETSHORT_RCTM_ACTION2:
+	case SETSHORT_SR_ACTION:
+	case SETSHORT_SR_ACTION2:
+	case SETSHORT_MAX_DOWN_ACTION:
+	case SETSHORT_MAX_DOWN_ACTION2:
+		if (i16Value > 6)
+		{
+			return;
+		}
+		break;
+	case SETSHORT_DEFLOOD_WARNING_ACTION:
+		if (i16Value > 3)
+		{
+			return;
+		}
+		break;
+	case SETSHORT_MIN_NICK_LEN:
+	case SETSHORT_MAX_NICK_LEN:
+		if (i16Value > 64)
+		{
+			return;
+		}
+		break;
+	case SETSHORT_MAX_SIMULTANEOUS_LOGINS:
+		if (i16Value == 0 || i16Value > 1000)
+		{
+			return;
+		}
+		break;
+	case SETSHORT_MAX_MYINFO_LEN:
+		if (i16Value < 64 || i16Value > 512)
+		{
+			return;
+		}
+		break;
+	case SETSHORT_MAX_CTM_LEN:
+	case SETSHORT_MAX_RCTM_LEN:
+		if (i16Value == 0 || i16Value > 512)
+		{
+			return;
+		}
+		break;
+	case SETSHORT_MAX_SR_LEN:
+		if (i16Value == 0 || i16Value > 8192)
+		{
+			return;
+		}
+		break;
+	case SETSHORT_MAX_CONN_SAME_IP:
+	case SETSHORT_MIN_RECONN_TIME:
+		if (i16Value == 0 || i16Value > 256)
+		{
+			return;
+		}
+		break;
+	default:
+		break;
 	}
-	
+
 	m_i16Shorts[szShortId] = i16Value;
-	
+
 	switch (szShortId)
 	{
-		case SETSHORT_MIN_SHARE_LIMIT:
-		case SETSHORT_MIN_SHARE_UNITS:
-			UpdateMinShare();
-			UpdateShareLimitMessage();
-			break;
-		case SETSHORT_MAX_SHARE_LIMIT:
-		case SETSHORT_MAX_SHARE_UNITS:
-			UpdateMaxShare();
-			UpdateShareLimitMessage();
-			break;
-		case SETSHORT_MIN_SLOTS_LIMIT:
-		case SETSHORT_MAX_SLOTS_LIMIT:
-			UpdateSlotsLimitMessage();
-			break;
-		case SETSHORT_HUB_SLOT_RATIO_HUBS:
-		case SETSHORT_HUB_SLOT_RATIO_SLOTS:
-			UpdateHubSlotRatioMessage();
-			break;
-		case SETSHORT_MAX_HUBS_LIMIT:
-			UpdateMaxHubsLimitMessage();
-			break;
-		case SETSHORT_NO_TAG_OPTION:
-			UpdateNoTagMessage();
-			break;
-		case SETSHORT_MIN_NICK_LEN:
-		case SETSHORT_MAX_NICK_LEN:
-			UpdateNickLimitMessage();
-			break;
-		default:
-			break;
+	case SETSHORT_MIN_SHARE_LIMIT:
+	case SETSHORT_MIN_SHARE_UNITS:
+		UpdateMinShare();
+		UpdateShareLimitMessage();
+		break;
+	case SETSHORT_MAX_SHARE_LIMIT:
+	case SETSHORT_MAX_SHARE_UNITS:
+		UpdateMaxShare();
+		UpdateShareLimitMessage();
+		break;
+	case SETSHORT_MIN_SLOTS_LIMIT:
+	case SETSHORT_MAX_SLOTS_LIMIT:
+		UpdateSlotsLimitMessage();
+		break;
+	case SETSHORT_HUB_SLOT_RATIO_HUBS:
+	case SETSHORT_HUB_SLOT_RATIO_SLOTS:
+		UpdateHubSlotRatioMessage();
+		break;
+	case SETSHORT_MAX_HUBS_LIMIT:
+		UpdateMaxHubsLimitMessage();
+		break;
+	case SETSHORT_NO_TAG_OPTION:
+		UpdateNoTagMessage();
+		break;
+	case SETSHORT_MIN_NICK_LEN:
+	case SETSHORT_MAX_NICK_LEN:
+		UpdateNickLimitMessage();
+		break;
+	default:
+		break;
 	}
 }
 //---------------------------------------------------------------------------
@@ -1080,173 +1080,173 @@ void SettingManager::SetText(const size_t szTxtId, const char * sTxt, const size
 	{
 		return;
 	}
-	
+
 	switch (szTxtId)
 	{
-		case SETTXT_HUB_NAME:
-		case SETTXT_HUB_ADDRESS:
-			if (szLen == 0 || szLen > 256 || strchr(sTxt, '$') != NULL || strchr(sTxt, '|') != NULL)
-			{
-				return;
-			}
-			break;
-		case SETTXT_REG_ONLY_MSG:
-		case SETTXT_SHARE_LIMIT_MSG:
-		case SETTXT_SLOTS_LIMIT_MSG:
-		case SETTXT_HUB_SLOT_RATIO_MSG:
-		case SETTXT_MAX_HUBS_LIMIT_MSG:
-		case SETTXT_NO_TAG_MSG:
-		case SETTXT_NICK_LIMIT_MSG:
-			if (szLen == 0 || szLen > 256 || strchr(sTxt, '|') != NULL)
-			{
-				return;
-			}
-			break;
-		case SETTXT_BOT_NICK:
-			if (szLen == 0 || szLen > 64 || strpbrk(sTxt, " $|") != NULL)
-			{
-				return;
-			}
-			if (ServerManager::m_pServersS != NULL && m_bBotsSameNick == false)
-			{
-				ReservedNicksManager::m_Ptr->DelReservedNick(m_sTexts[SETTXT_BOT_NICK]);
-			}
-			if (m_bBools[SETBOOL_REG_BOT] == true)
-			{
-				DisableBot();
-			}
-			break;
-		case SETTXT_OP_CHAT_NICK:
-			if (szLen == 0 || szLen > 64 || strpbrk(sTxt, " $|") != NULL)
-			{
-				return;
-			}
-			if (ServerManager::m_pServersS != NULL && m_bBotsSameNick == false)
-			{
-				ReservedNicksManager::m_Ptr->DelReservedNick(m_sTexts[SETTXT_OP_CHAT_NICK]);
-			}
-			if (m_bBools[SETBOOL_REG_OP_CHAT] == true)
-			{
-				DisableOpChat();
-			}
-			break;
-		case SETTXT_ADMIN_NICK:
-			if (szLen == 0 || szLen > 64 || strpbrk(sTxt, " $|") != NULL)
-			{
-				return;
-			}
-			break;
-		case SETTXT_TCP_PORTS:
-			if (szLen == 0 || szLen > 64)
-			{
-				return;
-			}
-			break;
-		case SETTXT_UDP_PORT:
-			if (szLen == 0 || szLen > 5)
-			{
-				return;
-			}
-			UpdateUDPPort();
-			break;
-		case SETTXT_CHAT_COMMANDS_PREFIXES:
-			if (szLen == 0 || szLen > 5 || strchr(sTxt, '|') != NULL || strchr(sTxt, ' ') != NULL)
-			{
-				return;
-			}
-			break;
-		case SETTXT_HUB_DESCRIPTION:
-		case SETTXT_HUB_TOPIC:
-			if (szLen > 256 || (szLen != 0 && (strchr(sTxt, '$') != NULL || strchr(sTxt, '|') != NULL)))
-			{
-				return;
-			}
-			break;
-		case SETTXT_REDIRECT_ADDRESS:
-		case SETTXT_REG_ONLY_REDIR_ADDRESS:
-		case SETTXT_SHARE_LIMIT_REDIR_ADDRESS:
-		case SETTXT_SLOTS_LIMIT_REDIR_ADDRESS:
-		case SETTXT_HUB_SLOT_RATIO_REDIR_ADDRESS:
-		case SETTXT_MAX_HUBS_LIMIT_REDIR_ADDRESS:
-		case SETTXT_NO_TAG_REDIR_ADDRESS:
-		case SETTXT_TEMP_BAN_REDIR_ADDRESS:
-		case SETTXT_PERM_BAN_REDIR_ADDRESS:
-		case SETTXT_NICK_LIMIT_REDIR_ADDRESS:
-		case SETTXT_MSG_TO_ADD_TO_BAN_MSG:
-			if (szLen > 256 || (szLen != 0 && strchr(sTxt, '|') != NULL))
-			{
-				return;
-			}
-			break;
-		case SETTXT_REGISTER_SERVERS:
-			if (szLen > 1024)
-			{
-				return;
-			}
-			break;
-		case SETTXT_BOT_DESCRIPTION:
-		case SETTXT_BOT_EMAIL:
-			if (szLen > 64 || (szLen != 0 && (strchr(sTxt, '$') != NULL || strchr(sTxt, '|') != NULL)))
-			{
-				return;
-			}
-			if (m_bBools[SETBOOL_REG_BOT] == true)
-			{
-				DisableBot(false);
-			}
-			break;
-		case SETTXT_OP_CHAT_DESCRIPTION:
-		case SETTXT_OP_CHAT_EMAIL:
-			if (szLen > 64 || (szLen != 0 && (strchr(sTxt, '$') != NULL || strchr(sTxt, '|') != NULL)))
-			{
-				return;
-			}
-			if (m_bBools[SETBOOL_REG_OP_CHAT] == true)
-			{
-				DisableOpChat(false);
-			}
-			break;
-		case SETTXT_HUB_OWNER_EMAIL:
-			if (szLen > 64 || (szLen != 0 && (strchr(sTxt, '$') != NULL || strchr(sTxt, '|') != NULL)))
-			{
-				return;
-			}
-			break;
-		case SETTXT_LANGUAGE:
+	case SETTXT_HUB_NAME:
+	case SETTXT_HUB_ADDRESS:
+		if (szLen == 0 || szLen > 256 || strchr(sTxt, '$') != NULL || strchr(sTxt, '|') != NULL)
+		{
+			return;
+		}
+		break;
+	case SETTXT_REG_ONLY_MSG:
+	case SETTXT_SHARE_LIMIT_MSG:
+	case SETTXT_SLOTS_LIMIT_MSG:
+	case SETTXT_HUB_SLOT_RATIO_MSG:
+	case SETTXT_MAX_HUBS_LIMIT_MSG:
+	case SETTXT_NO_TAG_MSG:
+	case SETTXT_NICK_LIMIT_MSG:
+		if (szLen == 0 || szLen > 256 || strchr(sTxt, '|') != NULL)
+		{
+			return;
+		}
+		break;
+	case SETTXT_BOT_NICK:
+		if (szLen == 0 || szLen > 64 || strpbrk(sTxt, " $|") != NULL)
+		{
+			return;
+		}
+		if (ServerManager::m_pServersS != NULL && m_bBotsSameNick == false)
+		{
+			ReservedNicksManager::m_Ptr->DelReservedNick(m_sTexts[SETTXT_BOT_NICK]);
+		}
+		if (m_bBools[SETBOOL_REG_BOT] == true)
+		{
+			DisableBot();
+		}
+		break;
+	case SETTXT_OP_CHAT_NICK:
+		if (szLen == 0 || szLen > 64 || strpbrk(sTxt, " $|") != NULL)
+		{
+			return;
+		}
+		if (ServerManager::m_pServersS != NULL && m_bBotsSameNick == false)
+		{
+			ReservedNicksManager::m_Ptr->DelReservedNick(m_sTexts[SETTXT_OP_CHAT_NICK]);
+		}
+		if (m_bBools[SETBOOL_REG_OP_CHAT] == true)
+		{
+			DisableOpChat();
+		}
+		break;
+	case SETTXT_ADMIN_NICK:
+		if (szLen == 0 || szLen > 64 || strpbrk(sTxt, " $|") != NULL)
+		{
+			return;
+		}
+		break;
+	case SETTXT_TCP_PORTS:
+		if (szLen == 0 || szLen > 64)
+		{
+			return;
+		}
+		break;
+	case SETTXT_UDP_PORT:
+		if (szLen == 0 || szLen > 5)
+		{
+			return;
+		}
+		UpdateUDPPort();
+		break;
+	case SETTXT_CHAT_COMMANDS_PREFIXES:
+		if (szLen == 0 || szLen > 5 || strchr(sTxt, '|') != NULL || strchr(sTxt, ' ') != NULL)
+		{
+			return;
+		}
+		break;
+	case SETTXT_HUB_DESCRIPTION:
+	case SETTXT_HUB_TOPIC:
+		if (szLen > 256 || (szLen != 0 && (strchr(sTxt, '$') != NULL || strchr(sTxt, '|') != NULL)))
+		{
+			return;
+		}
+		break;
+	case SETTXT_REDIRECT_ADDRESS:
+	case SETTXT_REG_ONLY_REDIR_ADDRESS:
+	case SETTXT_SHARE_LIMIT_REDIR_ADDRESS:
+	case SETTXT_SLOTS_LIMIT_REDIR_ADDRESS:
+	case SETTXT_HUB_SLOT_RATIO_REDIR_ADDRESS:
+	case SETTXT_MAX_HUBS_LIMIT_REDIR_ADDRESS:
+	case SETTXT_NO_TAG_REDIR_ADDRESS:
+	case SETTXT_TEMP_BAN_REDIR_ADDRESS:
+	case SETTXT_PERM_BAN_REDIR_ADDRESS:
+	case SETTXT_NICK_LIMIT_REDIR_ADDRESS:
+	case SETTXT_MSG_TO_ADD_TO_BAN_MSG:
+		if (szLen > 256 || (szLen != 0 && strchr(sTxt, '|') != NULL))
+		{
+			return;
+		}
+		break;
+	case SETTXT_REGISTER_SERVERS:
+		if (szLen > 1024)
+		{
+			return;
+		}
+		break;
+	case SETTXT_BOT_DESCRIPTION:
+	case SETTXT_BOT_EMAIL:
+		if (szLen > 64 || (szLen != 0 && (strchr(sTxt, '$') != NULL || strchr(sTxt, '|') != NULL)))
+		{
+			return;
+		}
+		if (m_bBools[SETBOOL_REG_BOT] == true)
+		{
+			DisableBot(false);
+		}
+		break;
+	case SETTXT_OP_CHAT_DESCRIPTION:
+	case SETTXT_OP_CHAT_EMAIL:
+		if (szLen > 64 || (szLen != 0 && (strchr(sTxt, '$') != NULL || strchr(sTxt, '|') != NULL)))
+		{
+			return;
+		}
+		if (m_bBools[SETBOOL_REG_OP_CHAT] == true)
+		{
+			DisableOpChat(false);
+		}
+		break;
+	case SETTXT_HUB_OWNER_EMAIL:
+		if (szLen > 64 || (szLen != 0 && (strchr(sTxt, '$') != NULL || strchr(sTxt, '|') != NULL)))
+		{
+			return;
+		}
+		break;
+	case SETTXT_LANGUAGE:
 #ifdef _WIN32
-			if (szLen != 0 && FileExist((ServerManager::m_sPath + "\\language\\" + string(sTxt, szLen) + ".xml").c_str()) == false)
-			{
+		if (szLen != 0 && FileExist((ServerManager::m_sPath + "\\language\\" + string(sTxt, szLen) + ".xml").c_str()) == false)
+		{
 #else
-			if (szLen != 0 && FileExist((ServerManager::m_sPath + "/language/" + string(sTxt, szLen) + ".xml").c_str()) == false)
-			{
+		if (szLen != 0 && FileExist((ServerManager::m_sPath + "/language/" + string(sTxt, szLen) + ".xml").c_str()) == false)
+		{
 #endif
-				return;
-			}
-			break;
-		case SETTXT_IPV4_ADDRESS:
-			if (szLen > 15)
-			{
-				return;
-			}
-			break;
-		case SETTXT_IPV6_ADDRESS:
-			if (szLen > 39)
-			{
-				return;
-			}
-			break;
-		default:
-			if (szLen > 4096)
-			{
-				return;
-			}
-			break;
+			return;
+		}
+		break;
+	case SETTXT_IPV4_ADDRESS:
+		if (szLen > 15)
+		{
+			return;
+		}
+		break;
+	case SETTXT_IPV6_ADDRESS:
+		if (szLen > 39)
+		{
+			return;
+		}
+		break;
+	default:
+		if (szLen > 4096)
+		{
+			return;
+		}
+		break;
 	}
-	
+
 //	const bool isLock = szTxtId == SETTXT_HUB_NAME || szTxtId == SETTXT_HUB_ADDRESS || szTxtId == SETTXT_HUB_DESCRIPTION;
 	{
 		Lock l(m_csSetting);
-		
+
 		if (szLen == 0)
 		{
 			if (m_sTexts[szTxtId] != NULL)
@@ -1262,11 +1262,11 @@ void SettingManager::SetText(const size_t szTxtId, const char * sTxt, const size
 			if (m_sTexts[szTxtId] == NULL)
 			{
 				m_sTexts[szTxtId] = sOldText;
-				
+
 				AppendDebugLogFormat("[MEM] Cannot (re)allocate %zu bytes in SettingManager::SetText\n", szLen + 1);
 				return;
 			}
-			
+
 			memcpy(m_sTexts[szTxtId], sTxt, szLen);
 			m_sTexts[szTxtId][szLen] = '\0';
 			m_ui16TextsLens[szTxtId] = (uint16_t)szLen;
@@ -1274,145 +1274,145 @@ void SettingManager::SetText(const size_t szTxtId, const char * sTxt, const size
 	}
 	switch (szTxtId)
 	{
-		case SETTXT_BOT_NICK:
-			UpdateHubSec();
-			UpdateMOTD();
-			UpdateHubNameWelcome();
-			UpdateRegOnlyMessage();
-			UpdateShareLimitMessage();
-			UpdateSlotsLimitMessage();
-			UpdateHubSlotRatioMessage();
-			UpdateMaxHubsLimitMessage();
-			UpdateNoTagMessage();
-			UpdateNickLimitMessage();
-			UpdateBotsSameNick();
-			
-			if (ServerManager::m_pServersS != NULL && m_bBotsSameNick == false)
-			{
-				ReservedNicksManager::m_Ptr->AddReservedNick(m_sTexts[SETTXT_BOT_NICK]);
-			}
-			
-			UpdateBot();
-			
-			break;
-		case SETTXT_BOT_DESCRIPTION:
-		case SETTXT_BOT_EMAIL:
-			UpdateBot(false);
-			break;
-		case SETTXT_OP_CHAT_NICK:
-			UpdateBotsSameNick();
-			if (ServerManager::m_pServersS != NULL && m_bBotsSameNick == false)
-			{
-				ReservedNicksManager::m_Ptr->AddReservedNick(m_sTexts[SETTXT_OP_CHAT_NICK]);
-			}
-			UpdateOpChat();
-			break;
-		case SETTXT_HUB_TOPIC:
-		case SETTXT_HUB_NAME:
+	case SETTXT_BOT_NICK:
+		UpdateHubSec();
+		UpdateMOTD();
+		UpdateHubNameWelcome();
+		UpdateRegOnlyMessage();
+		UpdateShareLimitMessage();
+		UpdateSlotsLimitMessage();
+		UpdateHubSlotRatioMessage();
+		UpdateMaxHubsLimitMessage();
+		UpdateNoTagMessage();
+		UpdateNickLimitMessage();
+		UpdateBotsSameNick();
+
+		if (ServerManager::m_pServersS != NULL && m_bBotsSameNick == false)
+		{
+			ReservedNicksManager::m_Ptr->AddReservedNick(m_sTexts[SETTXT_BOT_NICK]);
+		}
+
+		UpdateBot();
+
+		break;
+	case SETTXT_BOT_DESCRIPTION:
+	case SETTXT_BOT_EMAIL:
+		UpdateBot(false);
+		break;
+	case SETTXT_OP_CHAT_NICK:
+		UpdateBotsSameNick();
+		if (ServerManager::m_pServersS != NULL && m_bBotsSameNick == false)
+		{
+			ReservedNicksManager::m_Ptr->AddReservedNick(m_sTexts[SETTXT_OP_CHAT_NICK]);
+		}
+		UpdateOpChat();
+		break;
+	case SETTXT_HUB_TOPIC:
+	case SETTXT_HUB_NAME:
 #ifdef _BUILD_GUI
-			if (m_bUpdateLocked == false)
-			{
-				MainWindow::m_Ptr->UpdateTitleBar();
-			}
+		if (m_bUpdateLocked == false)
+		{
+			MainWindow::m_Ptr->UpdateTitleBar();
+		}
 #endif
-			UpdateHubNameWelcome();
-			UpdateHubName();
-			
-			if (UdpDebug::m_Ptr != NULL)
-			{
-				UdpDebug::m_Ptr->UpdateHubName();
-			}
-			break;
-		case SETTXT_LANGUAGE:
-			UpdateLanguage();
-			UpdateHubNameWelcome();
-			break;
-		case SETTXT_REDIRECT_ADDRESS:
-			UpdateRedirectAddress();
-			if (m_bBools[SETBOOL_REG_ONLY_REDIR] == true)
-			{
-				UpdateRegOnlyMessage();
-			}
-			if (m_bBools[SETBOOL_SHARE_LIMIT_REDIR] == true)
-			{
-				UpdateShareLimitMessage();
-			}
-			if (m_bBools[SETBOOL_SLOTS_LIMIT_REDIR] == true)
-			{
-				UpdateSlotsLimitMessage();
-			}
-			if (m_bBools[SETBOOL_HUB_SLOT_RATIO_REDIR] == true)
-			{
-				UpdateHubSlotRatioMessage();
-			}
-			if (m_bBools[SETBOOL_MAX_HUBS_LIMIT_REDIR] == true)
-			{
-				UpdateMaxHubsLimitMessage();
-			}
-			if (m_i16Shorts[SETSHORT_NO_TAG_OPTION] == 2)
-			{
-				UpdateNoTagMessage();
-			}
-			if (m_sTexts[SETTXT_TEMP_BAN_REDIR_ADDRESS] != NULL)
-			{
-				UpdateTempBanRedirAddress();
-			}
-			if (m_sTexts[SETTXT_PERM_BAN_REDIR_ADDRESS] != NULL)
-			{
-				UpdatePermBanRedirAddress();
-			}
-			if (m_bBools[SETBOOL_NICK_LIMIT_REDIR] == true)
-			{
-				UpdateNickLimitMessage();
-			}
-			break;
-		case SETTXT_REG_ONLY_MSG:
-		case SETTXT_REG_ONLY_REDIR_ADDRESS:
+		UpdateHubNameWelcome();
+		UpdateHubName();
+
+		if (UdpDebug::m_Ptr != NULL)
+		{
+			UdpDebug::m_Ptr->UpdateHubName();
+		}
+		break;
+	case SETTXT_LANGUAGE:
+		UpdateLanguage();
+		UpdateHubNameWelcome();
+		break;
+	case SETTXT_REDIRECT_ADDRESS:
+		UpdateRedirectAddress();
+		if (m_bBools[SETBOOL_REG_ONLY_REDIR] == true)
+		{
 			UpdateRegOnlyMessage();
-			break;
-		case SETTXT_SHARE_LIMIT_MSG:
-		case SETTXT_SHARE_LIMIT_REDIR_ADDRESS:
+		}
+		if (m_bBools[SETBOOL_SHARE_LIMIT_REDIR] == true)
+		{
 			UpdateShareLimitMessage();
-			break;
-		case SETTXT_SLOTS_LIMIT_MSG:
-		case SETTXT_SLOTS_LIMIT_REDIR_ADDRESS:
+		}
+		if (m_bBools[SETBOOL_SLOTS_LIMIT_REDIR] == true)
+		{
 			UpdateSlotsLimitMessage();
-			break;
-		case SETTXT_HUB_SLOT_RATIO_MSG:
-		case SETTXT_HUB_SLOT_RATIO_REDIR_ADDRESS:
+		}
+		if (m_bBools[SETBOOL_HUB_SLOT_RATIO_REDIR] == true)
+		{
 			UpdateHubSlotRatioMessage();
-			break;
-		case SETTXT_MAX_HUBS_LIMIT_MSG:
-		case SETTXT_MAX_HUBS_LIMIT_REDIR_ADDRESS:
+		}
+		if (m_bBools[SETBOOL_MAX_HUBS_LIMIT_REDIR] == true)
+		{
 			UpdateMaxHubsLimitMessage();
-			break;
-		case SETTXT_NO_TAG_MSG:
-		case SETTXT_NO_TAG_REDIR_ADDRESS:
+		}
+		if (m_i16Shorts[SETSHORT_NO_TAG_OPTION] == 2)
+		{
 			UpdateNoTagMessage();
-			break;
-		case SETTXT_TEMP_BAN_REDIR_ADDRESS:
+		}
+		if (m_sTexts[SETTXT_TEMP_BAN_REDIR_ADDRESS] != NULL)
+		{
 			UpdateTempBanRedirAddress();
-			break;
-		case SETTXT_PERM_BAN_REDIR_ADDRESS:
+		}
+		if (m_sTexts[SETTXT_PERM_BAN_REDIR_ADDRESS] != NULL)
+		{
 			UpdatePermBanRedirAddress();
-			break;
-		case SETTXT_NICK_LIMIT_MSG:
-		case SETTXT_NICK_LIMIT_REDIR_ADDRESS:
+		}
+		if (m_bBools[SETBOOL_NICK_LIMIT_REDIR] == true)
+		{
 			UpdateNickLimitMessage();
-			break;
-		case SETTXT_TCP_PORTS:
-			UpdateTCPPorts();
-			break;
-		case SETTXT_HUB_ADDRESS:
-		case SETTXT_IPV4_ADDRESS:
-		case SETTXT_IPV6_ADDRESS:
-			if (m_bUpdateLocked == false)
-			{
-				ServerManager::ResolveHubAddress(true);
-			}
-			break;
-		default:
-			break;
+		}
+		break;
+	case SETTXT_REG_ONLY_MSG:
+	case SETTXT_REG_ONLY_REDIR_ADDRESS:
+		UpdateRegOnlyMessage();
+		break;
+	case SETTXT_SHARE_LIMIT_MSG:
+	case SETTXT_SHARE_LIMIT_REDIR_ADDRESS:
+		UpdateShareLimitMessage();
+		break;
+	case SETTXT_SLOTS_LIMIT_MSG:
+	case SETTXT_SLOTS_LIMIT_REDIR_ADDRESS:
+		UpdateSlotsLimitMessage();
+		break;
+	case SETTXT_HUB_SLOT_RATIO_MSG:
+	case SETTXT_HUB_SLOT_RATIO_REDIR_ADDRESS:
+		UpdateHubSlotRatioMessage();
+		break;
+	case SETTXT_MAX_HUBS_LIMIT_MSG:
+	case SETTXT_MAX_HUBS_LIMIT_REDIR_ADDRESS:
+		UpdateMaxHubsLimitMessage();
+		break;
+	case SETTXT_NO_TAG_MSG:
+	case SETTXT_NO_TAG_REDIR_ADDRESS:
+		UpdateNoTagMessage();
+		break;
+	case SETTXT_TEMP_BAN_REDIR_ADDRESS:
+		UpdateTempBanRedirAddress();
+		break;
+	case SETTXT_PERM_BAN_REDIR_ADDRESS:
+		UpdatePermBanRedirAddress();
+		break;
+	case SETTXT_NICK_LIMIT_MSG:
+	case SETTXT_NICK_LIMIT_REDIR_ADDRESS:
+		UpdateNickLimitMessage();
+		break;
+	case SETTXT_TCP_PORTS:
+		UpdateTCPPorts();
+		break;
+	case SETTXT_HUB_ADDRESS:
+	case SETTXT_IPV4_ADDRESS:
+	case SETTXT_IPV6_ADDRESS:
+		if (m_bUpdateLocked == false)
+		{
+			ServerManager::ResolveHubAddress(true);
+		}
+		break;
+	default:
+		break;
 	}
 }
 //---------------------------------------------------------------------------
@@ -1426,7 +1426,7 @@ void SettingManager::SetText(const size_t szTxtId, const string & sTxt)
 void SettingManager::UpdateAll()
 {
 	m_ui8FullMyINFOOption = (uint8_t)m_i16Shorts[SETSHORT_FULL_MYINFO_OPTION];
-	
+
 	UpdateHubSec();
 	UpdateMOTD();
 	UpdateHubNameWelcome();
@@ -1454,21 +1454,21 @@ void SettingManager::UpdateHubSec()
 	{
 		return;
 	}
-	
+
 	if (m_bBools[SETBOOL_USE_BOT_NICK_AS_HUB_SEC] == true)
 	{
 		char * sOldHubSec = m_sPreTexts[SETPRETXT_HUB_SEC];
-		
+
 		m_sPreTexts[SETPRETXT_HUB_SEC] = (char *)realloc(sOldHubSec == sHubSec ? NULL : sOldHubSec, m_ui16TextsLens[SETTXT_BOT_NICK] + 1);
 		if (m_sPreTexts[SETPRETXT_HUB_SEC] == NULL)
 		{
 			m_sPreTexts[SETPRETXT_HUB_SEC] = sOldHubSec;
-			
+
 			AppendDebugLogFormat("[MEM] Cannot (re)allocate %hu bytes in SettingManager::UpdateHubSec\n", m_ui16TextsLens[SETTXT_BOT_NICK] + 1);
-			
+
 			return;
 		}
-		
+
 		memcpy(m_sPreTexts[SETPRETXT_HUB_SEC], m_sTexts[SETTXT_BOT_NICK], m_ui16TextsLens[SETTXT_BOT_NICK]);
 		m_ui16PreTextsLens[SETPRETXT_HUB_SEC] = m_ui16TextsLens[SETTXT_BOT_NICK];
 		m_sPreTexts[SETPRETXT_HUB_SEC][m_ui16PreTextsLens[SETPRETXT_HUB_SEC]] = '\0';
@@ -1479,7 +1479,7 @@ void SettingManager::UpdateHubSec()
 		{
 			free(m_sPreTexts[SETPRETXT_HUB_SEC]);
 		}
-		
+
 		m_sPreTexts[SETPRETXT_HUB_SEC] = (char *)sHubSec;
 		m_ui16PreTextsLens[SETPRETXT_HUB_SEC] = 12;
 	}
@@ -1492,7 +1492,7 @@ void SettingManager::UpdateMOTD()
 	{
 		return;
 	}
-	
+
 	if (m_bBools[SETBOOL_DISABLE_MOTD] == true || m_sMOTD == NULL)
 	{
 		if (m_sPreTexts[SETPRETXT_MOTD] != NULL)
@@ -1500,26 +1500,26 @@ void SettingManager::UpdateMOTD()
 			safe_free(m_sPreTexts[SETPRETXT_MOTD]);
 			m_ui16PreTextsLens[SETPRETXT_MOTD] = 0;
 		}
-		
+
 		return;
 	}
-	
+
 	size_t szNeededMem = (m_bBools[SETBOOL_MOTD_AS_PM] == true ? ((2 * (m_ui16PreTextsLens[SETPRETXT_HUB_SEC])) + m_ui16MOTDLen + 21) : (m_ui16PreTextsLens[SETPRETXT_HUB_SEC] + m_ui16MOTDLen + 5));
-	
+
 	char * sOldMotd = m_sPreTexts[SETPRETXT_MOTD];
-	
+
 	m_sPreTexts[SETPRETXT_MOTD] = (char *)realloc(sOldMotd, szNeededMem);
 	if (m_sPreTexts[SETPRETXT_MOTD] == NULL)
 	{
 		m_sPreTexts[SETPRETXT_MOTD] = sOldMotd;
-		
+
 		AppendDebugLogFormat("[MEM] Cannot (re)allocate %zu bytes in SettingManager::UpdateMOTD\n", szNeededMem);
-		
+
 		return;
 	}
-	
+
 	int iMsgLen = 0;
-	
+
 	if (m_bBools[SETBOOL_MOTD_AS_PM] == true)
 	{
 		iMsgLen = snprintf(m_sPreTexts[SETPRETXT_MOTD], szNeededMem, "$To: %%s From: %s $<%s> %s|", m_sPreTexts[SETPRETXT_HUB_SEC], m_sPreTexts[SETPRETXT_HUB_SEC], m_sMOTD);
@@ -1528,12 +1528,12 @@ void SettingManager::UpdateMOTD()
 	{
 		iMsgLen = snprintf(m_sPreTexts[SETPRETXT_MOTD], szNeededMem, "<%s> %s|", m_sPreTexts[SETPRETXT_HUB_SEC], m_sMOTD);
 	}
-	
+
 	if (iMsgLen <= 0)
 	{
 		exit(EXIT_FAILURE);
 	}
-	
+
 	m_ui16PreTextsLens[SETPRETXT_MOTD] = (uint16_t)iMsgLen;
 }
 //---------------------------------------------------------------------------
@@ -1544,28 +1544,28 @@ void SettingManager::UpdateHubNameWelcome()
 	{
 		return;
 	}
-	
+
 	size_t szNeededMem = 19 + m_ui16TextsLens[SETTXT_HUB_NAME] + m_ui16PreTextsLens[SETPRETXT_HUB_SEC] + LanguageManager::m_Ptr->m_ui16TextsLens[LAN_THIS_HUB_IS_RUNNING] + (sizeof(g_sPtokaXTitle) - 1) + LanguageManager::m_Ptr->m_ui16TextsLens[LAN_UPTIME];
-	
+
 	if (m_sTexts[SETTXT_HUB_TOPIC] != NULL)
 	{
 		szNeededMem += m_ui16TextsLens[SETTXT_HUB_TOPIC] + 3;
 	}
-	
+
 	char * sOldWelcome = m_sPreTexts[SETPRETXT_HUB_NAME_WLCM];
-	
+
 	m_sPreTexts[SETPRETXT_HUB_NAME_WLCM] = (char *)realloc(sOldWelcome, szNeededMem);
 	if (m_sPreTexts[SETPRETXT_HUB_NAME_WLCM] == NULL)
 	{
 		m_sPreTexts[SETPRETXT_HUB_NAME_WLCM] = sOldWelcome;
-		
+
 		AppendDebugLogFormat("[MEM] Cannot (re)allocate %zu bytes in SettingManager::UpdateHubNameWelcome\n", szNeededMem);
-		
+
 		return;
 	}
-	
+
 	int iMsgLen = 0;
-	
+
 	if (m_sTexts[SETTXT_HUB_TOPIC] == NULL)
 	{
 		iMsgLen = snprintf(m_sPreTexts[SETPRETXT_HUB_NAME_WLCM], szNeededMem, "$HubName %s|<%s> %s %s (%s: ", m_sTexts[SETTXT_HUB_NAME], m_sPreTexts[SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_THIS_HUB_IS_RUNNING], g_sPtokaXTitle, LanguageManager::m_Ptr->m_sTexts[LAN_UPTIME]);
@@ -1574,12 +1574,12 @@ void SettingManager::UpdateHubNameWelcome()
 	{
 		iMsgLen =  snprintf(m_sPreTexts[SETPRETXT_HUB_NAME_WLCM], szNeededMem, "$HubName %s - %s|<%s> %s %s (%s: ", m_sTexts[SETTXT_HUB_NAME], m_sTexts[SETTXT_HUB_TOPIC], m_sPreTexts[SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_THIS_HUB_IS_RUNNING], g_sPtokaXTitle, LanguageManager::m_Ptr->m_sTexts[LAN_UPTIME]);
 	}
-	
+
 	if (iMsgLen <= 0)
 	{
 		exit(EXIT_FAILURE);
 	}
-	
+
 	m_ui16PreTextsLens[SETPRETXT_HUB_NAME_WLCM] = (uint16_t)iMsgLen;
 }
 //---------------------------------------------------------------------------
@@ -1590,28 +1590,28 @@ void SettingManager::UpdateHubName()
 	{
 		return;
 	}
-	
+
 	size_t szNeededMem = 11 + m_ui16TextsLens[SETTXT_HUB_NAME];
-	
+
 	if (m_sTexts[SETTXT_HUB_TOPIC] != NULL)
 	{
 		szNeededMem += m_ui16TextsLens[SETTXT_HUB_TOPIC] + 3;
 	}
-	
+
 	char * sOldHubName = m_sPreTexts[SETPRETXT_HUB_NAME];
-	
+
 	m_sPreTexts[SETPRETXT_HUB_NAME] = (char *)realloc(sOldHubName, szNeededMem);
 	if (m_sPreTexts[SETPRETXT_HUB_NAME] == NULL)
 	{
 		m_sPreTexts[SETPRETXT_HUB_NAME] = sOldHubName;
-		
+
 		AppendDebugLogFormat("[MEM] Cannot (re)allocate %zu bytes in SettingManager::UpdateHubName\n", szNeededMem);
-		
+
 		return;
 	}
-	
+
 	int iMsgLen = 0;
-	
+
 	if (m_sTexts[SETTXT_HUB_TOPIC] == NULL)
 	{
 		iMsgLen = snprintf(m_sPreTexts[SETPRETXT_HUB_NAME], szNeededMem, "$HubName %s|", m_sTexts[SETTXT_HUB_NAME]);
@@ -1620,14 +1620,14 @@ void SettingManager::UpdateHubName()
 	{
 		iMsgLen = snprintf(m_sPreTexts[SETPRETXT_HUB_NAME], szNeededMem, "$HubName %s - %s|", m_sTexts[SETTXT_HUB_NAME], m_sTexts[SETTXT_HUB_TOPIC]);
 	}
-	
+
 	if (iMsgLen <= 0)
 	{
 		exit(EXIT_FAILURE);
 	}
-	
+
 	m_ui16PreTextsLens[SETPRETXT_HUB_NAME] = (uint16_t)iMsgLen;
-	
+
 	if (ServerManager::m_bServerRunning == true)
 	{
 		GlobalDataQueue::m_Ptr->AddQueueItem(m_sPreTexts[SETPRETXT_HUB_NAME], m_ui16PreTextsLens[SETPRETXT_HUB_NAME], NULL, 0, GlobalDataQueue::CMD_HUBNAME);
@@ -1641,7 +1641,7 @@ void SettingManager::UpdateRedirectAddress()
 	{
 		return;
 	}
-	
+
 	if (m_sTexts[SETTXT_REDIRECT_ADDRESS] == NULL)
 	{
 		if (m_sPreTexts[SETPRETXT_REDIRECT_ADDRESS] != NULL)
@@ -1649,30 +1649,30 @@ void SettingManager::UpdateRedirectAddress()
 			safe_free(m_sPreTexts[SETPRETXT_REDIRECT_ADDRESS]);
 			m_ui16PreTextsLens[SETPRETXT_REDIRECT_ADDRESS] = 0;
 		}
-		
+
 		return;
 	}
-	
+
 	size_t szNeededLen = 13 + m_ui16TextsLens[SETTXT_REDIRECT_ADDRESS];
-	
+
 	char * sOldRedirAddr = m_sPreTexts[SETPRETXT_REDIRECT_ADDRESS];
-	
+
 	m_sPreTexts[SETPRETXT_REDIRECT_ADDRESS] = (char *)realloc(sOldRedirAddr, szNeededLen);
 	if (m_sPreTexts[SETPRETXT_REDIRECT_ADDRESS] == NULL)
 	{
 		m_sPreTexts[SETPRETXT_REDIRECT_ADDRESS] = sOldRedirAddr;
-		
+
 		AppendDebugLogFormat("[MEM] Cannot (re)allocate %zu bytes in SettingManager::UpdateRedirectAddress\n", szNeededLen);
-		
+
 		return;
 	}
-	
+
 	int iMsgLen = snprintf(m_sPreTexts[SETPRETXT_REDIRECT_ADDRESS], szNeededLen, "$ForceMove %s|", m_sTexts[SETTXT_REDIRECT_ADDRESS]);
 	if (iMsgLen <= 0)
 	{
 		exit(EXIT_FAILURE);
 	}
-	
+
 	m_ui16PreTextsLens[SETPRETXT_REDIRECT_ADDRESS] = (uint16_t)iMsgLen;
 }
 //---------------------------------------------------------------------------
@@ -1683,9 +1683,9 @@ void SettingManager::UpdateRegOnlyMessage()
 	{
 		return;
 	}
-	
+
 	size_t szNeededMem = 5 + m_ui16PreTextsLens[SETPRETXT_HUB_SEC] + m_ui16TextsLens[SETTXT_REG_ONLY_MSG];
-	
+
 	if (m_bBools[SETBOOL_REG_ONLY_REDIR] == true)
 	{
 		if (m_sTexts[SETTXT_REG_ONLY_REDIR_ADDRESS] != NULL)
@@ -1697,25 +1697,25 @@ void SettingManager::UpdateRegOnlyMessage()
 			szNeededMem += m_ui16PreTextsLens[SETPRETXT_REDIRECT_ADDRESS];
 		}
 	}
-	
+
 	char * sOldRegOnlyMsg = m_sPreTexts[SETPRETXT_REG_ONLY_MSG];
-	
+
 	m_sPreTexts[SETPRETXT_REG_ONLY_MSG] = (char *)realloc(sOldRegOnlyMsg, szNeededMem);
 	if (m_sPreTexts[SETPRETXT_REG_ONLY_MSG] == NULL)
 	{
 		m_sPreTexts[SETPRETXT_REG_ONLY_MSG] = sOldRegOnlyMsg;
-		
+
 		AppendDebugLogFormat("[MEM] Cannot (re)allocate %zu bytes in SettingManager::UpdateRegOnlyMessage\n", szNeededMem);
-		
+
 		return;
 	}
-	
+
 	int iMsgLen = snprintf(m_sPreTexts[SETPRETXT_REG_ONLY_MSG], szNeededMem, "<%s> %s|", m_sPreTexts[SETPRETXT_HUB_SEC], m_sTexts[SETTXT_REG_ONLY_MSG]);
 	if (iMsgLen <= 0)
 	{
 		exit(EXIT_FAILURE);
 	}
-	
+
 	if (m_bBools[SETBOOL_REG_ONLY_REDIR] == true)
 	{
 		if (m_sTexts[SETTXT_REG_ONLY_REDIR_ADDRESS] != NULL)
@@ -1733,7 +1733,7 @@ void SettingManager::UpdateRegOnlyMessage()
 			iMsgLen += (int)m_ui16PreTextsLens[SETPRETXT_REDIRECT_ADDRESS];
 		}
 	}
-	
+
 	m_ui16PreTextsLens[SETPRETXT_REG_ONLY_MSG] = (uint16_t)iMsgLen;
 	m_sPreTexts[SETPRETXT_REG_ONLY_MSG][iMsgLen] = '\0';
 }
@@ -1745,15 +1745,15 @@ void SettingManager::UpdateShareLimitMessage()
 	{
 		return;
 	}
-	
+
 	int iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "<%s> ", m_sPreTexts[SETPRETXT_HUB_SEC]);
 	if (iMsgLen <= 0)
 	{
 		exit(EXIT_FAILURE);
 	}
-	
+
 	static const char* units[] = { "B", "kB", "MB", "GB", "TB", "PB", "EB", " ", " ", " ", " ", " ", " ", " ", " ", " " };
-	
+
 	for (uint16_t ui16i = 0; ui16i < m_ui16TextsLens[SETTXT_SHARE_LIMIT_MSG]; ui16i++)
 	{
 		if (m_sTexts[SETTXT_SHARE_LIMIT_MSG][ui16i] == '%')
@@ -1797,14 +1797,14 @@ void SettingManager::UpdateShareLimitMessage()
 				continue;
 			}
 		}
-		
+
 		ServerManager::m_pGlobalBuffer[iMsgLen] = m_sTexts[SETTXT_SHARE_LIMIT_MSG][ui16i];
 		iMsgLen++;
 	}
-	
+
 	ServerManager::m_pGlobalBuffer[iMsgLen] = '|';
 	iMsgLen++;
-	
+
 	if (m_bBools[SETBOOL_SHARE_LIMIT_REDIR] == true)
 	{
 		if (m_sTexts[SETTXT_SHARE_LIMIT_REDIR_ADDRESS] != NULL)
@@ -1822,19 +1822,19 @@ void SettingManager::UpdateShareLimitMessage()
 			iMsgLen += (int)m_ui16PreTextsLens[SETPRETXT_REDIRECT_ADDRESS];
 		}
 	}
-	
+
 	char * sOldShareLimitMsg = m_sPreTexts[SETPRETXT_SHARE_LIMIT_MSG];
-	
+
 	m_sPreTexts[SETPRETXT_SHARE_LIMIT_MSG] = (char *)realloc(sOldShareLimitMsg, iMsgLen + 1);
 	if (m_sPreTexts[SETPRETXT_SHARE_LIMIT_MSG] == NULL)
 	{
 		m_sPreTexts[SETPRETXT_SHARE_LIMIT_MSG] = sOldShareLimitMsg;
-		
+
 		AppendDebugLogFormat("[MEM] Cannot (re)allocate %d bytes in SettingManager::UpdateShareLimitMessage\n", iMsgLen+1);
-		
+
 		return;
 	}
-	
+
 	memcpy(m_sPreTexts[SETPRETXT_SHARE_LIMIT_MSG], ServerManager::m_pGlobalBuffer, iMsgLen);
 	m_sPreTexts[SETPRETXT_SHARE_LIMIT_MSG][iMsgLen] = '\0';
 	m_ui16PreTextsLens[SETPRETXT_SHARE_LIMIT_MSG] = (uint16_t)iMsgLen;
@@ -1847,13 +1847,13 @@ void SettingManager::UpdateSlotsLimitMessage()
 	{
 		return;
 	}
-	
+
 	int iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "<%s> ", m_sPreTexts[SETPRETXT_HUB_SEC]);
 	if (iMsgLen <= 0)
 	{
 		exit(EXIT_FAILURE);
 	}
-	
+
 	for (uint16_t ui16i = 0; ui16i < m_ui16TextsLens[SETTXT_SLOTS_LIMIT_MSG]; ui16i++)
 	{
 		if (m_sTexts[SETTXT_SLOTS_LIMIT_MSG][ui16i] == '%')
@@ -1866,7 +1866,7 @@ void SettingManager::UpdateSlotsLimitMessage()
 					exit(EXIT_FAILURE);
 				}
 				iMsgLen += iRet;
-				
+
 				ui16i += (uint16_t)5;
 				continue;
 			}
@@ -1890,14 +1890,14 @@ void SettingManager::UpdateSlotsLimitMessage()
 				continue;
 			}
 		}
-		
+
 		ServerManager::m_pGlobalBuffer[iMsgLen] = m_sTexts[SETTXT_SLOTS_LIMIT_MSG][ui16i];
 		iMsgLen++;
 	}
-	
+
 	ServerManager::m_pGlobalBuffer[iMsgLen] = '|';
 	iMsgLen++;
-	
+
 	if (m_bBools[SETBOOL_SLOTS_LIMIT_REDIR] == true)
 	{
 		if (m_sTexts[SETTXT_SLOTS_LIMIT_REDIR_ADDRESS] != NULL)
@@ -1915,19 +1915,19 @@ void SettingManager::UpdateSlotsLimitMessage()
 			iMsgLen += (int)m_ui16PreTextsLens[SETPRETXT_REDIRECT_ADDRESS];
 		}
 	}
-	
+
 	char * sOldSlotsLimitMsg = m_sPreTexts[SETPRETXT_SLOTS_LIMIT_MSG];
-	
+
 	m_sPreTexts[SETPRETXT_SLOTS_LIMIT_MSG] = (char *)realloc(sOldSlotsLimitMsg, iMsgLen + 1);
 	if (m_sPreTexts[SETPRETXT_SLOTS_LIMIT_MSG] == NULL)
 	{
 		m_sPreTexts[SETPRETXT_SLOTS_LIMIT_MSG] = sOldSlotsLimitMsg;
-		
+
 		AppendDebugLogFormat("[MEM] Cannot (re)allocate %d bytes in SettingManager::UpdateSlotsLimitMessage\n", iMsgLen+1);
-		
+
 		return;
 	}
-	
+
 	memcpy(m_sPreTexts[SETPRETXT_SLOTS_LIMIT_MSG], ServerManager::m_pGlobalBuffer, iMsgLen);
 	m_sPreTexts[SETPRETXT_SLOTS_LIMIT_MSG][iMsgLen] = '\0';
 	m_ui16PreTextsLens[SETPRETXT_SLOTS_LIMIT_MSG] = (uint16_t)iMsgLen;
@@ -1940,16 +1940,16 @@ void SettingManager::UpdateHubSlotRatioMessage()
 	{
 		return;
 	}
-	
+
 	int iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "<%s> ", m_sPreTexts[SETPRETXT_HUB_SEC]);
 	if (iMsgLen <= 0)
 	{
 		exit(EXIT_FAILURE);
 	}
-	
+
 	static const char * sHubs = "[hubs]";
 	static const char * sSlots = "[slots]";
-	
+
 	for (uint16_t ui16i = 0; ui16i < m_ui16TextsLens[SETTXT_HUB_SLOT_RATIO_MSG]; ui16i++)
 	{
 		if (m_sTexts[SETTXT_HUB_SLOT_RATIO_MSG][ui16i] == '%')
@@ -1962,7 +1962,7 @@ void SettingManager::UpdateHubSlotRatioMessage()
 					exit(EXIT_FAILURE);
 				}
 				iMsgLen += iRet;
-				
+
 				ui16i += (uint16_t)6;
 				continue;
 			}
@@ -1974,19 +1974,19 @@ void SettingManager::UpdateHubSlotRatioMessage()
 					exit(EXIT_FAILURE);
 				}
 				iMsgLen += iRet;
-				
+
 				ui16i += (uint16_t)7;
 				continue;
 			}
 		}
-		
+
 		ServerManager::m_pGlobalBuffer[iMsgLen] = m_sTexts[SETTXT_HUB_SLOT_RATIO_MSG][ui16i];
 		iMsgLen++;
 	}
-	
+
 	ServerManager::m_pGlobalBuffer[iMsgLen] = '|';
 	iMsgLen++;
-	
+
 	if (m_bBools[SETBOOL_HUB_SLOT_RATIO_REDIR] == true)
 	{
 		if (m_sTexts[SETTXT_HUB_SLOT_RATIO_REDIR_ADDRESS] != NULL)
@@ -2004,19 +2004,19 @@ void SettingManager::UpdateHubSlotRatioMessage()
 			iMsgLen += (int)m_ui16PreTextsLens[SETPRETXT_REDIRECT_ADDRESS];
 		}
 	}
-	
+
 	char * sOldHubSlotLimitMsg = m_sPreTexts[SETPRETXT_HUB_SLOT_RATIO_MSG];
-	
+
 	m_sPreTexts[SETPRETXT_HUB_SLOT_RATIO_MSG] = (char *)realloc(sOldHubSlotLimitMsg, iMsgLen + 1);
 	if (m_sPreTexts[SETPRETXT_HUB_SLOT_RATIO_MSG] == NULL)
 	{
 		m_sPreTexts[SETPRETXT_HUB_SLOT_RATIO_MSG] = sOldHubSlotLimitMsg;
-		
+
 		AppendDebugLogFormat("[MEM] Cannot (re)allocate %d bytes in SettingManager::UpdateHubSlotRatioMessage\n", iMsgLen+1);
-		
+
 		return;
 	}
-	
+
 	memcpy(m_sPreTexts[SETPRETXT_HUB_SLOT_RATIO_MSG], ServerManager::m_pGlobalBuffer, iMsgLen);
 	m_sPreTexts[SETPRETXT_HUB_SLOT_RATIO_MSG][iMsgLen] = '\0';
 	m_ui16PreTextsLens[SETPRETXT_HUB_SLOT_RATIO_MSG] = (uint16_t)iMsgLen;
@@ -2029,17 +2029,17 @@ void SettingManager::UpdateMaxHubsLimitMessage()
 	{
 		return;
 	}
-	
+
 	int iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "<%s> ", m_sPreTexts[SETPRETXT_HUB_SEC]);
 	if (iMsgLen <= 0)
 	{
 		exit(EXIT_FAILURE);
 	}
-	
+
 	static const char* sHubs = "%[hubs]";
-	
+
 	char * sMatch = strstr(m_sTexts[SETTXT_MAX_HUBS_LIMIT_MSG], sHubs);
-	
+
 	if (sMatch != NULL)
 	{
 		if (sMatch > m_sTexts[SETTXT_MAX_HUBS_LIMIT_MSG])
@@ -2048,14 +2048,14 @@ void SettingManager::UpdateMaxHubsLimitMessage()
 			memcpy(ServerManager::m_pGlobalBuffer + iMsgLen, m_sTexts[SETTXT_MAX_HUBS_LIMIT_MSG], szLen);
 			iMsgLen += (int)szLen;
 		}
-		
+
 		int iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "%hd", m_i16Shorts[SETSHORT_MAX_HUBS_LIMIT]);
 		if (iRet <= 0)
 		{
 			exit(EXIT_FAILURE);
 		}
 		iMsgLen += iRet;
-		
+
 		if (sMatch + 7 < m_sTexts[SETTXT_MAX_HUBS_LIMIT_MSG] + m_ui16TextsLens[SETTXT_MAX_HUBS_LIMIT_MSG])
 		{
 			size_t szLen = (m_sTexts[SETTXT_MAX_HUBS_LIMIT_MSG] + m_ui16TextsLens[SETTXT_MAX_HUBS_LIMIT_MSG]) - (sMatch + 7);
@@ -2068,10 +2068,10 @@ void SettingManager::UpdateMaxHubsLimitMessage()
 		memcpy(ServerManager::m_pGlobalBuffer, m_sTexts[SETTXT_MAX_HUBS_LIMIT_MSG], m_ui16TextsLens[SETTXT_MAX_HUBS_LIMIT_MSG]);
 		iMsgLen = (int)m_ui16TextsLens[SETTXT_MAX_HUBS_LIMIT_MSG];
 	}
-	
+
 	ServerManager::m_pGlobalBuffer[iMsgLen] = '|';
 	iMsgLen++;
-	
+
 	if (m_bBools[SETBOOL_MAX_HUBS_LIMIT_REDIR] == true)
 	{
 		if (m_sTexts[SETTXT_MAX_HUBS_LIMIT_REDIR_ADDRESS] != NULL)
@@ -2089,19 +2089,19 @@ void SettingManager::UpdateMaxHubsLimitMessage()
 			iMsgLen += (int)m_ui16PreTextsLens[SETPRETXT_REDIRECT_ADDRESS];
 		}
 	}
-	
+
 	char * sOldHubLimitMsg = m_sPreTexts[SETPRETXT_MAX_HUBS_LIMIT_MSG];
-	
+
 	m_sPreTexts[SETPRETXT_MAX_HUBS_LIMIT_MSG] = (char *)realloc(sOldHubLimitMsg, iMsgLen + 1);
 	if (m_sPreTexts[SETPRETXT_MAX_HUBS_LIMIT_MSG] == NULL)
 	{
 		m_sPreTexts[SETPRETXT_MAX_HUBS_LIMIT_MSG] = sOldHubLimitMsg;
-		
+
 		AppendDebugLogFormat("[MEM] Cannot (re)allocate %d bytes in SettingManager::UpdateMaxHubsLimitMessage\n", iMsgLen+1);
-		
+
 		return;
 	}
-	
+
 	memcpy(m_sPreTexts[SETPRETXT_MAX_HUBS_LIMIT_MSG], ServerManager::m_pGlobalBuffer, iMsgLen);
 	m_sPreTexts[SETPRETXT_MAX_HUBS_LIMIT_MSG][iMsgLen] = '\0';
 	m_ui16PreTextsLens[SETPRETXT_MAX_HUBS_LIMIT_MSG] = (uint16_t)iMsgLen;
@@ -2114,7 +2114,7 @@ void SettingManager::UpdateNoTagMessage()
 	{
 		return;
 	}
-	
+
 	if (m_i16Shorts[SETSHORT_NO_TAG_OPTION] == 0)
 	{
 		if (m_sPreTexts[SETPRETXT_NO_TAG_MSG] != NULL)
@@ -2122,12 +2122,12 @@ void SettingManager::UpdateNoTagMessage()
 			safe_free(m_sPreTexts[SETPRETXT_NO_TAG_MSG]);
 			m_ui16PreTextsLens[SETPRETXT_NO_TAG_MSG] = 0;
 		}
-		
+
 		return;
 	}
-	
+
 	size_t szNeededMem = 5 + m_ui16PreTextsLens[SETPRETXT_HUB_SEC] + m_ui16TextsLens[SETTXT_NO_TAG_MSG];
-	
+
 	if (m_i16Shorts[SETSHORT_NO_TAG_OPTION] == 2)
 	{
 		if (m_sTexts[SETTXT_NO_TAG_REDIR_ADDRESS] != NULL)
@@ -2139,25 +2139,25 @@ void SettingManager::UpdateNoTagMessage()
 			szNeededMem += m_ui16PreTextsLens[SETPRETXT_REDIRECT_ADDRESS];
 		}
 	}
-	
+
 	char * sOldNoTagMsg = m_sPreTexts[SETPRETXT_NO_TAG_MSG];
-	
+
 	m_sPreTexts[SETPRETXT_NO_TAG_MSG] = (char *)realloc(sOldNoTagMsg, szNeededMem);
 	if (m_sPreTexts[SETPRETXT_NO_TAG_MSG] == NULL)
 	{
 		m_sPreTexts[SETPRETXT_NO_TAG_MSG] = sOldNoTagMsg;
-		
+
 		AppendDebugLogFormat("[MEM] Cannot (re)allocate %zu bytes in SettingManager::UpdateNoTagMessage\n", szNeededMem);
-		
+
 		return;
 	}
-	
+
 	int iMsgLen = snprintf(m_sPreTexts[SETPRETXT_NO_TAG_MSG], szNeededMem, "<%s> %s|", m_sPreTexts[SETPRETXT_HUB_SEC], m_sTexts[SETTXT_NO_TAG_MSG]);
 	if (iMsgLen <= 0)
 	{
 		exit(EXIT_FAILURE);
 	}
-	
+
 	if (m_i16Shorts[SETSHORT_NO_TAG_OPTION] == 2)
 	{
 		if (m_sTexts[SETTXT_NO_TAG_REDIR_ADDRESS] != NULL)
@@ -2175,7 +2175,7 @@ void SettingManager::UpdateNoTagMessage()
 			iMsgLen += (int)m_ui16PreTextsLens[SETPRETXT_REDIRECT_ADDRESS];
 		}
 	}
-	
+
 	m_ui16PreTextsLens[SETPRETXT_NO_TAG_MSG] = (uint16_t)iMsgLen;
 	m_sPreTexts[SETPRETXT_NO_TAG_MSG][iMsgLen] = '\0';
 }
@@ -2187,9 +2187,9 @@ void SettingManager::UpdateTempBanRedirAddress()
 	{
 		return;
 	}
-	
+
 	size_t szNeededMem = 1;
-	
+
 	if (m_sTexts[SETTXT_TEMP_BAN_REDIR_ADDRESS] != NULL)
 	{
 		szNeededMem += 12 + m_ui16TextsLens[SETTXT_TEMP_BAN_REDIR_ADDRESS];
@@ -2205,24 +2205,24 @@ void SettingManager::UpdateTempBanRedirAddress()
 			safe_free(m_sPreTexts[SETPRETXT_TEMP_BAN_REDIR_ADDRESS]);
 			m_ui16PreTextsLens[SETPRETXT_TEMP_BAN_REDIR_ADDRESS] = 0;
 		}
-		
+
 		return;
 	}
-	
+
 	char * sOldTempBanRedirMsg = m_sPreTexts[SETPRETXT_TEMP_BAN_REDIR_ADDRESS];
-	
+
 	m_sPreTexts[SETPRETXT_TEMP_BAN_REDIR_ADDRESS] = (char *)realloc(sOldTempBanRedirMsg, szNeededMem);
 	if (m_sPreTexts[SETPRETXT_TEMP_BAN_REDIR_ADDRESS] == NULL)
 	{
 		m_sPreTexts[SETPRETXT_TEMP_BAN_REDIR_ADDRESS] = sOldTempBanRedirMsg;
-		
+
 		AppendDebugLogFormat("[MEM] Cannot (re)allocate %zu bytes in SettingManager::UpdateTempBanRedirAddress\n", szNeededMem);
-		
+
 		return;
 	}
-	
+
 	int iMsgLen = 0;
-	
+
 	if (m_sTexts[SETTXT_TEMP_BAN_REDIR_ADDRESS] != NULL)
 	{
 		iMsgLen = snprintf(m_sPreTexts[SETPRETXT_TEMP_BAN_REDIR_ADDRESS], szNeededMem, "$ForceMove %s|", m_sTexts[SETTXT_TEMP_BAN_REDIR_ADDRESS]);
@@ -2236,7 +2236,7 @@ void SettingManager::UpdateTempBanRedirAddress()
 		memcpy(m_sPreTexts[SETPRETXT_TEMP_BAN_REDIR_ADDRESS], m_sPreTexts[SETPRETXT_REDIRECT_ADDRESS], (size_t)m_ui16PreTextsLens[SETPRETXT_REDIRECT_ADDRESS]);
 		iMsgLen = (int)m_ui16PreTextsLens[SETPRETXT_REDIRECT_ADDRESS];
 	}
-	
+
 	m_ui16PreTextsLens[SETPRETXT_TEMP_BAN_REDIR_ADDRESS] = (uint16_t)iMsgLen;
 	m_sPreTexts[SETPRETXT_TEMP_BAN_REDIR_ADDRESS][iMsgLen] = '\0';
 }
@@ -2248,9 +2248,9 @@ void SettingManager::UpdatePermBanRedirAddress()
 	{
 		return;
 	}
-	
+
 	size_t szNeededMem = 1;
-	
+
 	if (m_sTexts[SETTXT_PERM_BAN_REDIR_ADDRESS] != NULL)
 	{
 		szNeededMem += 12 + m_ui16TextsLens[SETTXT_PERM_BAN_REDIR_ADDRESS];
@@ -2266,24 +2266,24 @@ void SettingManager::UpdatePermBanRedirAddress()
 			safe_free(m_sPreTexts[SETPRETXT_PERM_BAN_REDIR_ADDRESS]);
 			m_ui16PreTextsLens[SETPRETXT_PERM_BAN_REDIR_ADDRESS] = 0;
 		}
-		
+
 		return;
 	}
-	
+
 	char * sOldPermBanRedirMsg = m_sPreTexts[SETPRETXT_PERM_BAN_REDIR_ADDRESS];
-	
+
 	m_sPreTexts[SETPRETXT_PERM_BAN_REDIR_ADDRESS] = (char *)realloc(sOldPermBanRedirMsg, szNeededMem);
 	if (m_sPreTexts[SETPRETXT_PERM_BAN_REDIR_ADDRESS] == NULL)
 	{
 		m_sPreTexts[SETPRETXT_PERM_BAN_REDIR_ADDRESS] = sOldPermBanRedirMsg;
-		
+
 		AppendDebugLogFormat("[MEM] Cannot (re)allocate %zu bytes in SettingManager::UpdatePermBanRedirAddress\n", szNeededMem);
-		
+
 		return;
 	}
-	
+
 	int iMsgLen = 0;
-	
+
 	if (m_sTexts[SETTXT_PERM_BAN_REDIR_ADDRESS] != NULL)
 	{
 		iMsgLen = snprintf(m_sPreTexts[SETPRETXT_PERM_BAN_REDIR_ADDRESS], szNeededMem, "$ForceMove %s|", m_sTexts[SETTXT_PERM_BAN_REDIR_ADDRESS]);
@@ -2297,7 +2297,7 @@ void SettingManager::UpdatePermBanRedirAddress()
 		memcpy(m_sPreTexts[SETPRETXT_PERM_BAN_REDIR_ADDRESS], m_sPreTexts[SETPRETXT_REDIRECT_ADDRESS], (size_t)m_ui16PreTextsLens[SETPRETXT_REDIRECT_ADDRESS]);
 		iMsgLen = (int)m_ui16PreTextsLens[SETPRETXT_REDIRECT_ADDRESS];
 	}
-	
+
 	m_ui16PreTextsLens[SETPRETXT_PERM_BAN_REDIR_ADDRESS] = (uint16_t)iMsgLen;
 	m_sPreTexts[SETPRETXT_PERM_BAN_REDIR_ADDRESS][iMsgLen] = '\0';
 }
@@ -2309,13 +2309,13 @@ void SettingManager::UpdateNickLimitMessage()
 	{
 		return;
 	}
-	
+
 	int iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "<%s> ", m_sPreTexts[SETPRETXT_HUB_SEC]);
 	if (iMsgLen <= 0)
 	{
 		exit(EXIT_FAILURE);
 	}
-	
+
 	for (uint16_t ui16i = 0; ui16i < m_ui16TextsLens[SETTXT_NICK_LIMIT_MSG]; ui16i++)
 	{
 		if (m_sTexts[SETTXT_NICK_LIMIT_MSG][ui16i] == '%')
@@ -2328,7 +2328,7 @@ void SettingManager::UpdateNickLimitMessage()
 					exit(EXIT_FAILURE);
 				}
 				iMsgLen += iRet;
-				
+
 				ui16i += (uint16_t)5;
 				continue;
 			}
@@ -2352,14 +2352,14 @@ void SettingManager::UpdateNickLimitMessage()
 				continue;
 			}
 		}
-		
+
 		ServerManager::m_pGlobalBuffer[iMsgLen] = m_sTexts[SETTXT_NICK_LIMIT_MSG][ui16i];
 		iMsgLen++;
 	}
-	
+
 	ServerManager::m_pGlobalBuffer[iMsgLen] = '|';
 	iMsgLen++;
-	
+
 	if (m_bBools[SETBOOL_NICK_LIMIT_REDIR] == true)
 	{
 		if (m_sTexts[SETTXT_NICK_LIMIT_REDIR_ADDRESS] != NULL)
@@ -2377,19 +2377,19 @@ void SettingManager::UpdateNickLimitMessage()
 			iMsgLen += (int)m_ui16PreTextsLens[SETPRETXT_REDIRECT_ADDRESS];
 		}
 	}
-	
+
 	char * sOldNickLimitMsg = m_sPreTexts[SETPRETXT_NICK_LIMIT_MSG];
-	
+
 	m_sPreTexts[SETPRETXT_NICK_LIMIT_MSG] = (char *)realloc(sOldNickLimitMsg, iMsgLen + 1);
 	if (m_sPreTexts[SETPRETXT_NICK_LIMIT_MSG] == NULL)
 	{
 		m_sPreTexts[SETPRETXT_NICK_LIMIT_MSG] = sOldNickLimitMsg;
-		
+
 		AppendDebugLogFormat("[MEM] Cannot (re)allocate %d bytes in SettingManager::UpdateNickLimitMessage\n", iMsgLen+1);
-		
+
 		return;
 	}
-	
+
 	memcpy(m_sPreTexts[SETPRETXT_NICK_LIMIT_MSG], ServerManager::m_pGlobalBuffer, iMsgLen);
 	m_sPreTexts[SETPRETXT_NICK_LIMIT_MSG][iMsgLen] = '\0';
 	m_ui16PreTextsLens[SETPRETXT_NICK_LIMIT_MSG] = (uint16_t)iMsgLen;
@@ -2402,7 +2402,7 @@ void SettingManager::UpdateMinShare()
 	{
 		return;
 	}
-	
+
 	m_ui64MinShare = (uint64_t)(m_i16Shorts[SETSHORT_MIN_SHARE_LIMIT] == 0 ? 0 : m_i16Shorts[SETSHORT_MIN_SHARE_LIMIT] * pow(1024.0, (int)m_i16Shorts[SETSHORT_MIN_SHARE_UNITS]));
 }
 //---------------------------------------------------------------------------
@@ -2413,7 +2413,7 @@ void SettingManager::UpdateMaxShare()
 	{
 		return;
 	}
-	
+
 	m_ui64MaxShare = (uint64_t)(m_i16Shorts[SETSHORT_MAX_SHARE_LIMIT] == 0 ? 0 : m_i16Shorts[SETSHORT_MAX_SHARE_LIMIT] * pow(1024.0, (int)m_i16Shorts[SETSHORT_MAX_SHARE_UNITS]));
 }
 //---------------------------------------------------------------------------
@@ -2424,7 +2424,7 @@ void SettingManager::UpdateTCPPorts()
 	{
 		return;
 	}
-	
+
 	char * sPort = m_sTexts[SETTXT_TCP_PORTS];
 	uint8_t ui8ActualPort = 0;
 	for (uint16_t ui16i = 0; ui16i < m_ui16TextsLens[SETTXT_TCP_PORTS] && ui8ActualPort < 25; ui16i++)
@@ -2432,7 +2432,7 @@ void SettingManager::UpdateTCPPorts()
 		if (m_sTexts[SETTXT_TCP_PORTS][ui16i] == ';')
 		{
 			m_sTexts[SETTXT_TCP_PORTS][ui16i] = '\0';
-			
+
 			if (ui8ActualPort != 0)
 			{
 				m_ui16PortNumbers[ui8ActualPort] = (uint16_t)atoi(sPort);
@@ -2442,32 +2442,32 @@ void SettingManager::UpdateTCPPorts()
 				Lock l(m_csSetting);
 				m_ui16PortNumbers[ui8ActualPort] = (uint16_t)atoi(sPort);
 			}
-			
+
 			m_sTexts[SETTXT_TCP_PORTS][ui16i] = ';';
-			
+
 			sPort = m_sTexts[SETTXT_TCP_PORTS] + ui16i + 1;
 			ui8ActualPort++;
 			continue;
 		}
 	}
-	
+
 	if (sPort[0] != '\0')
 	{
 		m_ui16PortNumbers[ui8ActualPort] = (uint16_t)atoi(sPort);
 		ui8ActualPort++;
 	}
-	
+
 	while (ui8ActualPort < 25)
 	{
 		m_ui16PortNumbers[ui8ActualPort] = 0;
 		ui8ActualPort++;
 	}
-	
+
 	if (ServerManager::m_bServerRunning == false)
 	{
 		return;
 	}
-	
+
 	ServerManager::UpdateServers();
 }
 //---------------------------------------------------------------------------
@@ -2478,7 +2478,7 @@ void SettingManager::UpdateBotsSameNick()
 	{
 		return;
 	}
-	
+
 	if (m_sTexts[SETTXT_BOT_NICK] != NULL && m_sTexts[SETTXT_OP_CHAT_NICK] != NULL &&
 	        m_bBools[SETBOOL_REG_BOT] == true && m_bBools[SETBOOL_REG_OP_CHAT] == true)
 	{
@@ -2497,11 +2497,11 @@ void SettingManager::UpdateLanguage()
 	{
 		return;
 	}
-	
+
 	LanguageManager::m_Ptr->Load();
-	
+
 	UpdateHubNameWelcome();
-	
+
 #ifdef _BUILD_GUI
 	MainWindow::m_Ptr->UpdateLanguage();
 #endif
@@ -2514,7 +2514,7 @@ void SettingManager::UpdateBot(const bool bNickChanged/* = true*/)
 	{
 		return;
 	}
-	
+
 	if (m_bBools[SETBOOL_REG_BOT] == false)
 	{
 		if (m_sPreTexts[SETPRETXT_HUB_BOT_MYINFO] != NULL)
@@ -2522,50 +2522,50 @@ void SettingManager::UpdateBot(const bool bNickChanged/* = true*/)
 			safe_free(m_sPreTexts[SETPRETXT_HUB_BOT_MYINFO]);
 			m_ui16PreTextsLens[SETPRETXT_HUB_BOT_MYINFO] = 0;
 		}
-		
+
 		return;
 	}
-	
+
 	size_t szNeededMem = 23 + m_ui16TextsLens[SETTXT_BOT_NICK] + m_ui16TextsLens[SETTXT_BOT_DESCRIPTION] + m_ui16TextsLens[SETTXT_BOT_EMAIL];
-	
+
 	char * sOldHubBotMyinfoMsg = m_sPreTexts[SETPRETXT_HUB_BOT_MYINFO];
-	
+
 	m_sPreTexts[SETPRETXT_HUB_BOT_MYINFO] = (char *)realloc(sOldHubBotMyinfoMsg, szNeededMem);
 	if (m_sPreTexts[SETPRETXT_HUB_BOT_MYINFO] == NULL)
 	{
 		m_sPreTexts[SETPRETXT_HUB_BOT_MYINFO] = sOldHubBotMyinfoMsg;
-		
+
 		AppendDebugLogFormat("[MEM] Cannot (re)allocate %zu bytes in SettingManager::UpdateBot\n", szNeededMem);
-		
+
 		return;
 	}
-	
+
 	int iMsgLen = snprintf(m_sPreTexts[SETPRETXT_HUB_BOT_MYINFO], szNeededMem, "$MyINFO $ALL %s %s$ $$%s$$|", m_sTexts[SETTXT_BOT_NICK], m_sTexts[SETTXT_BOT_DESCRIPTION] != NULL ? m_sTexts[SETTXT_BOT_DESCRIPTION] : "", m_sTexts[SETTXT_BOT_EMAIL] != NULL ? m_sTexts[SETTXT_BOT_EMAIL] : "");
 	if (iMsgLen <= 0)
 	{
 		exit(EXIT_FAILURE);
 	}
-	
+
 	m_ui16PreTextsLens[SETPRETXT_HUB_BOT_MYINFO] = (uint16_t)iMsgLen;
 	m_sPreTexts[SETPRETXT_HUB_BOT_MYINFO][iMsgLen] = '\0';
-	
+
 	if (ServerManager::m_pServersS == NULL)
 	{
 		return;
 	}
-	
+
 	if (bNickChanged == true && (m_bBotsSameNick == false || ServerManager::m_pServersS->m_bActive == false))
 	{
 		Users::m_Ptr->AddBot2NickList(m_sTexts[SETTXT_BOT_NICK], (size_t)m_ui16TextsLens[SETTXT_BOT_NICK], true);
 	}
-	
+
 	Users::m_Ptr->AddBot2MyInfos(m_sPreTexts[SETPRETXT_HUB_BOT_MYINFO]);
-	
+
 	if (ServerManager::m_pServersS->m_bActive == false)
 	{
 		return;
 	}
-	
+
 	if (bNickChanged == true && m_bBotsSameNick == false)
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "$Hello %s|", m_sTexts[SETTXT_BOT_NICK]);
@@ -2574,10 +2574,10 @@ void SettingManager::UpdateBot(const bool bNickChanged/* = true*/)
 			GlobalDataQueue::m_Ptr->AddQueueItem(ServerManager::m_pGlobalBuffer, iMsgLen, NULL, 0, GlobalDataQueue::CMD_HELLO);
 		}
 	}
-	
+
 	GlobalDataQueue::m_Ptr->AddQueueItem(m_sPreTexts[SETPRETXT_HUB_BOT_MYINFO], m_ui16PreTextsLens[SETPRETXT_HUB_BOT_MYINFO],
-	                                       m_sPreTexts[SETPRETXT_HUB_BOT_MYINFO], m_ui16PreTextsLens[SETPRETXT_HUB_BOT_MYINFO], GlobalDataQueue::CMD_MYINFO);
-	                                       
+	                                     m_sPreTexts[SETPRETXT_HUB_BOT_MYINFO], m_ui16PreTextsLens[SETPRETXT_HUB_BOT_MYINFO], GlobalDataQueue::CMD_MYINFO);
+
 	if (bNickChanged == true)
 	{
 		GlobalDataQueue::m_Ptr->OpListStore(m_sTexts[SETTXT_BOT_NICK]);
@@ -2591,14 +2591,14 @@ void SettingManager::DisableBot(const bool bNickChanged/* = true*/, const bool b
 	{
 		return;
 	}
-	
+
 	if (bNickChanged == true)
 	{
 		if (m_bBotsSameNick == false)
 		{
 			Users::m_Ptr->DelFromNickList(m_sTexts[SETTXT_BOT_NICK], true);
 		}
-		
+
 		int iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "$Quit %s|", m_sTexts[SETTXT_BOT_NICK]);
 		if (iMsgLen > 0)
 		{
@@ -2607,7 +2607,7 @@ void SettingManager::DisableBot(const bool bNickChanged/* = true*/, const bool b
 				// PPK ... send Quit only to users without opchat permission...
 				User * curUser = NULL,
 				       * next = Users::m_Ptr->m_pUserListS;
-				       
+
 				while (next != NULL)
 				{
 					curUser = next;
@@ -2624,7 +2624,7 @@ void SettingManager::DisableBot(const bool bNickChanged/* = true*/, const bool b
 			}
 		}
 	}
-	
+
 	if (m_sPreTexts[SETPRETXT_HUB_BOT_MYINFO] != NULL && m_bBotsSameNick == false && bRemoveMyINFO == true)
 	{
 		Users::m_Ptr->DelBotFromMyInfos(m_sPreTexts[SETPRETXT_HUB_BOT_MYINFO]);
@@ -2638,7 +2638,7 @@ void SettingManager::UpdateOpChat(const bool bNickChanged/* = true*/)
 	{
 		return;
 	}
-	
+
 	if (m_bBools[SETBOOL_REG_OP_CHAT] == false)
 	{
 		if (m_sPreTexts[SETPRETXT_OP_CHAT_HELLO] != NULL)
@@ -2646,71 +2646,71 @@ void SettingManager::UpdateOpChat(const bool bNickChanged/* = true*/)
 			safe_free(m_sPreTexts[SETPRETXT_OP_CHAT_HELLO]);
 			m_ui16PreTextsLens[SETPRETXT_OP_CHAT_HELLO] = 0;
 		}
-		
+
 		if (m_sPreTexts[SETPRETXT_OP_CHAT_MYINFO] != NULL)
 		{
 			safe_free(m_sPreTexts[SETPRETXT_OP_CHAT_MYINFO]);
 			m_ui16PreTextsLens[SETPRETXT_OP_CHAT_MYINFO] = 0;
 		}
-		
+
 		return;
 	}
-	
+
 	size_t szNeededMem = 9 + m_ui16TextsLens[SETTXT_OP_CHAT_NICK];
-	
+
 	char * sOldOpChatHelloMsg = m_sPreTexts[SETPRETXT_OP_CHAT_HELLO];
-	
+
 	m_sPreTexts[SETPRETXT_OP_CHAT_HELLO] = (char *)realloc(sOldOpChatHelloMsg, szNeededMem);
 	if (m_sPreTexts[SETPRETXT_OP_CHAT_HELLO] == NULL)
 	{
 		m_sPreTexts[SETPRETXT_OP_CHAT_HELLO] = sOldOpChatHelloMsg;
-		
+
 		AppendDebugLogFormat("[MEM] Cannot (re)allocate %zu bytes in SettingManager::UpdateOpChat\n", szNeededMem);
-		
+
 		return;
 	}
-	
+
 	int iMsgLen = snprintf(m_sPreTexts[SETPRETXT_OP_CHAT_HELLO], szNeededMem, "$Hello %s|", m_sTexts[SETTXT_OP_CHAT_NICK]);
 	if (iMsgLen <= 0)
 	{
 		exit(EXIT_FAILURE);
 	}
-	
+
 	m_ui16PreTextsLens[SETPRETXT_OP_CHAT_HELLO] = (uint16_t)iMsgLen;
 	m_sPreTexts[SETPRETXT_OP_CHAT_HELLO][iMsgLen] = '\0';
-	
+
 	szNeededMem = 23 + m_ui16TextsLens[SETTXT_OP_CHAT_NICK] + m_ui16TextsLens[SETTXT_OP_CHAT_DESCRIPTION] + m_ui16TextsLens[SETTXT_OP_CHAT_EMAIL];
-	
+
 	char * sOldOpChatMyInfoMsg = m_sPreTexts[SETPRETXT_OP_CHAT_MYINFO];
-	
+
 	m_sPreTexts[SETPRETXT_OP_CHAT_MYINFO] = (char *)realloc(sOldOpChatMyInfoMsg, szNeededMem);
 	if (m_sPreTexts[SETPRETXT_OP_CHAT_MYINFO] == NULL)
 	{
 		m_sPreTexts[SETPRETXT_OP_CHAT_MYINFO] = sOldOpChatMyInfoMsg;
-		
+
 		AppendDebugLogFormat("[MEM] Cannot (re)allocate %zu bytes in SettingManager::UpdateOpChat1\n", szNeededMem);
-		
+
 		if (m_sPreTexts[SETPRETXT_OP_CHAT_MYINFO] == NULL)
 		{
 			exit(EXIT_FAILURE);
 		}
 		return;
 	}
-	
+
 	iMsgLen = snprintf(m_sPreTexts[SETPRETXT_OP_CHAT_MYINFO], szNeededMem, "$MyINFO $ALL %s %s$ $$%s$$|", m_sTexts[SETTXT_OP_CHAT_NICK], m_sTexts[SETTXT_OP_CHAT_DESCRIPTION] != NULL ? m_sTexts[SETTXT_OP_CHAT_DESCRIPTION] : "", m_sTexts[SETTXT_OP_CHAT_EMAIL] != NULL ? m_sTexts[SETTXT_OP_CHAT_EMAIL] : "");
 	if (iMsgLen <= 0)
 	{
 		exit(EXIT_FAILURE);
 	}
-	
+
 	m_ui16PreTextsLens[SETPRETXT_OP_CHAT_MYINFO] = (uint16_t)iMsgLen;
 	m_sPreTexts[SETPRETXT_OP_CHAT_MYINFO][iMsgLen] = '\0';
-	
+
 	if (ServerManager::m_bServerRunning == false)
 	{
 		return;
 	}
-	
+
 	if (m_bBotsSameNick == false)
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "$OpList %s$$|", m_sTexts[SETTXT_OP_CHAT_NICK]);
@@ -2718,10 +2718,10 @@ void SettingManager::UpdateOpChat(const bool bNickChanged/* = true*/)
 		{
 			exit(EXIT_FAILURE);
 		}
-		
+
 		User * curUser = NULL,
 		       * next = Users::m_Ptr->m_pUserListS;
-		       
+
 		while (next != NULL)
 		{
 			curUser = next;
@@ -2749,17 +2749,17 @@ void SettingManager::DisableOpChat(const bool bNickChanged/* = true*/)
 	{
 		return;
 	}
-	
+
 	if (bNickChanged == true)
 	{
 		Users::m_Ptr->DelFromNickList(m_sTexts[SETTXT_OP_CHAT_NICK], true);
-		
+
 		int iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "$Quit %s|", m_sTexts[SETTXT_OP_CHAT_NICK]);
 		if (iMsgLen > 0)
 		{
 			User * curUser = NULL,
 			       * next = Users::m_Ptr->m_pUserListS;
-			       
+
 			while (next != NULL)
 			{
 				curUser = next;
@@ -2783,10 +2783,10 @@ void SettingManager::UpdateUDPPort()
 #ifdef FLYLINKDC_USE_UDP_THREAD
 	UDPThread::Destroy(UDPThread::m_PtrIPv6);
 	UDPThread::m_PtrIPv6 = NULL;
-	
+
 	UDPThread::Destroy(UDPThread::m_PtrIPv4);
 	UDPThread::m_PtrIPv4 = NULL;
-	
+
 	if ((uint16_t)atoi(m_sTexts[SETTXT_UDP_PORT]) != 0)
 	{
 		if (ServerManager::m_bUseIPv6 == false)
@@ -2794,9 +2794,9 @@ void SettingManager::UpdateUDPPort()
 			UDPThread::m_PtrIPv6 = UDPThread::Create(AF_INET);
 			return;
 		}
-		
+
 		UDPThread::m_PtrIPv6 = UDPThread::Create(AF_INET6);
-		
+
 		if (m_bBools[SETBOOL_BIND_ONLY_SINGLE_IP] == true || ServerManager::m_bIPv6DualStack == false)
 		{
 			UDPThread::m_PtrIPv6 = UDPThread::Create(AF_INET);
@@ -2812,7 +2812,7 @@ void SettingManager::UpdateScripting() const
 	{
 		return;
 	}
-	
+
 	if (m_bBools[SETBOOL_ENABLE_SCRIPTING] == true)
 	{
 		ScriptManager::m_Ptr->Start();
@@ -2834,9 +2834,9 @@ void SettingManager::UpdateDatabase()
 	{
 		return;
 	}
-	
+
 	delete DBSQLite::m_Ptr;
-	
+
 	DBSQLite::m_Ptr = new (std::nothrow) DBSQLite();
 	if (DBSQLite::m_Ptr == NULL)
 	{
@@ -2848,9 +2848,9 @@ void SettingManager::UpdateDatabase()
 	{
 		return;
 	}
-	
+
 	delete DBPostgreSQL::m_Ptr;
-	
+
 	DBPostgreSQL::m_Ptr = new (std::nothrow) DBPostgreSQL();
 	if (DBPostgreSQL::m_Ptr == NULL)
 	{
@@ -2862,9 +2862,9 @@ void SettingManager::UpdateDatabase()
 	{
 		return;
 	}
-	
+
 	delete DBMySQL::m_Ptr;
-	
+
 	DBMySQL::m_Ptr = new (std::nothrow) DBMySQL();
 	if (DBMySQL::m_Ptr == NULL)
 	{
@@ -2879,12 +2879,12 @@ void SettingManager::UpdateDatabase()
 void SettingManager::CmdLineBasicSetup()
 {
 	m_bUpdateLocked = true;
-	
+
 	printf("\nWelcome to basic setup.\nYou will now be asked for few settings required to run PtokaX.\nWhen you don't want to change default settings, then simply press enter.\n");
-	
+
 	int16_t i16MaxUsers = 0;
 	char sMaxUsers[7];
-	
+
 maxusers:
 	printf("%sActual value is: %hd\nEnter new value: ", SetShortCom[SETSHORT_MAX_USERS] + 2, m_i16Shorts[SETSHORT_MAX_USERS]);
 	if (fgets(sMaxUsers, 7, stdin) != NULL)
@@ -2896,36 +2896,36 @@ maxusers:
 			{
 				sMatch[0] = '\0';
 			}
-			
+
 			uint8_t ui8Len = (uint8_t)strlen(sMaxUsers);
-			
+
 			for (uint8_t ui8i = 0; ui8i < ui8Len; ui8i++)
 			{
 				if (isdigit(sMaxUsers[ui8i]) == 0)
 				{
 					printf("Character '%c' is not valid number!\n", sMaxUsers[ui8i]);
-					
+
 					if (WantAgain() == false)
 					{
 						return;
 					}
-					
+
 					goto maxusers;
 				}
 			}
-			
+
 			i16MaxUsers = (int16_t)atoi(sMaxUsers);
 			SetShort(SETSHORT_MAX_USERS, i16MaxUsers);
-			
+
 			if (i16MaxUsers != m_i16Shorts[SETSHORT_MAX_USERS])
 			{
 				printf("Failed to set value %hd!\n", i16MaxUsers);
-				
+
 				if (WantAgain() == false)
 				{
 					return;
 				}
-				
+
 				goto maxusers;
 			}
 		}
@@ -2935,7 +2935,7 @@ maxusers:
 		printf("Error reading value... ending.\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	const uint8_t ui8Strings[] = { SETTXT_HUB_NAME, SETTXT_HUB_ADDRESS, SETTXT_ENCODING,
 #ifdef _WITH_POSTGRES
 	                               SETTXT_POSTGRES_HOST, SETTXT_POSTGRES_PORT, SETTXT_POSTGRES_DBNAME, SETTXT_POSTGRES_USER, SETTXT_POSTGRES_PASS,
@@ -2943,9 +2943,9 @@ maxusers:
 	                               SETTXT_MYSQL_HOST, SETTXT_MYSQL_PORT, SETTXT_MYSQL_DBNAME, SETTXT_MYSQL_USER, SETTXT_MYSQL_PASS,
 #endif
 	                             };
-	                             
+
 	char sValue[4098];
-	
+
 	for (uint8_t ui8i = 0; ui8i < sizeof(ui8Strings); ui8i++)
 	{
 value:
@@ -2956,25 +2956,25 @@ value:
 			{
 				continue;
 			}
-			
+
 			char * sMatch = strchr(sValue, '\n');
 			if (sMatch != NULL)
 			{
 				sMatch[0] = '\0';
 			}
-			
+
 			size_t szLen = strlen(sValue);
 			SetText(ui8Strings[ui8i], sValue, szLen);
-			
+
 			if ((szLen == 0 && m_sTexts[ui8Strings[ui8i]] != NULL) || strcmp(sValue, m_sTexts[ui8Strings[ui8i]]) != 0)
 			{
 				printf("Failed to set new string value. Incorrect length or invalid characters?\n");
-				
+
 				if (WantAgain() == false)
 				{
 					return;
 				}
-				
+
 				goto value;
 			}
 		}
@@ -2990,11 +2990,11 @@ value:
 void SettingManager::CmdLineCompleteSetup()
 {
 	m_bUpdateLocked = true;
-	
+
 	printf("\nWelcome to complete setup.\nYou will now be asked for all PtokaX settings.\nWhen you don't want to change default settings, then simply press enter.\n\nFirst we set boolean settings. Use 1 for enabled and 0 for disabled.\n\n");
-	
+
 	char sValue[4098];
-	
+
 	for (size_t szi = 0; szi < SETBOOL_IDS_END; szi++)
 	{
 		// skip obsolete settings
@@ -3010,19 +3010,19 @@ booleanstart:
 			{
 				continue;
 			}
-			
+
 			if (sValue[0] != '0' && sValue[0] != '1')
 			{
 				printf("You need to use 1 or 0 for new value!\n");
-				
+
 				if (WantAgain() == false)
 				{
 					return;
 				}
-				
+
 				goto booleanstart;
 			}
-			
+
 			SetBool(szi, sValue[0] == '0' ? false : true);
 		}
 		else
@@ -3031,11 +3031,11 @@ booleanstart:
 			exit(EXIT_FAILURE);
 		}
 	}
-	
+
 	printf("\nWe finished boolean settings. Now we will set number settings.\n\n");
-	
+
 	int16_t i16Value = 0;
-	
+
 	for (size_t szi = 0; szi < (SETSHORT_IDS_END - 1); szi++)
 	{
 numberstart:
@@ -3046,42 +3046,42 @@ numberstart:
 			{
 				continue;
 			}
-			
+
 			char * sMatch = strchr(sValue, '\n');
 			if (sMatch != NULL)
 			{
 				sMatch[0] = '\0';
 			}
-			
+
 			uint8_t ui8Len = (uint8_t)strlen(sValue);
-			
+
 			for (uint8_t ui8i = 0; ui8i < ui8Len; ui8i++)
 			{
 				if (isdigit(sValue[ui8i]) == 0)
 				{
 					printf("Character '%c' is not valid number!\n", sValue[ui8i]);
-					
+
 					if (WantAgain() == false)
 					{
 						return;
 					}
-					
+
 					goto numberstart;
 				}
 			}
-			
+
 			i16Value = (int16_t)atoi(sValue);
 			SetShort(szi, i16Value);
-			
+
 			if (i16Value != m_i16Shorts[szi])
 			{
 				printf("Failed to set value %hd!\n", i16Value);
-				
+
 				if (WantAgain() == false)
 				{
 					return;
 				}
-				
+
 				goto numberstart;
 			}
 		}
@@ -3091,9 +3091,9 @@ numberstart:
 			exit(EXIT_FAILURE);
 		}
 	}
-	
+
 	printf("\nWe finished number settings. Now we will set string settings.\n\n");
-	
+
 	for (size_t szi = 0; szi < SETTXT_IDS_END; szi++)
 	{
 stringstart:
@@ -3104,25 +3104,25 @@ stringstart:
 			{
 				continue;
 			}
-			
+
 			char * sMatch = strchr(sValue, '\n');
 			if (sMatch != NULL)
 			{
 				sMatch[0] = '\0';
 			}
-			
+
 			size_t szLen = strlen(sValue);
 			SetText(szi, sValue, szLen);
-			
+
 			if ((szLen == 0 && m_sTexts[szi] != NULL) || strcmp(sValue, m_sTexts[szi]) != 0)
 			{
 				printf("Failed to set new string value. Incorrect length or invalid characters?\n");
-				
+
 				if (WantAgain() == false)
 				{
 					return;
 				}
-				
+
 				goto stringstart;
 			}
 		}

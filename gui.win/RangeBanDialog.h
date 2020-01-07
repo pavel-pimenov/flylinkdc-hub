@@ -25,44 +25,44 @@ struct RangeBanItem;
 
 class RangeBanDialog {
 public:
-    HWND m_hWndWindowItems[17];
+	HWND m_hWndWindowItems[17];
 
-    enum enmWindowItems {
-        WINDOW_HANDLE,
-        GB_RANGE,
-        EDT_FROM_IP,
-        EDT_TO_IP,
-        BTN_FULL_BAN,
-        GB_REASON,
-        EDT_REASON,
-        GB_BY,
-        EDT_BY,
-        GB_BAN_TYPE,
-        RB_PERM_BAN,
-        GB_TEMP_BAN,
-        RB_TEMP_BAN,
-        DT_TEMP_BAN_EXPIRE_DATE,
-        DT_TEMP_BAN_EXPIRE_TIME,
-        BTN_ACCEPT,
-        BTN_DISCARD
-    };
+	enum enmWindowItems {
+		WINDOW_HANDLE,
+		GB_RANGE,
+		EDT_FROM_IP,
+		EDT_TO_IP,
+		BTN_FULL_BAN,
+		GB_REASON,
+		EDT_REASON,
+		GB_BY,
+		EDT_BY,
+		GB_BAN_TYPE,
+		RB_PERM_BAN,
+		GB_TEMP_BAN,
+		RB_TEMP_BAN,
+		DT_TEMP_BAN_EXPIRE_DATE,
+		DT_TEMP_BAN_EXPIRE_TIME,
+		BTN_ACCEPT,
+		BTN_DISCARD
+	};
 
-    RangeBanDialog();
-    ~RangeBanDialog();
+	RangeBanDialog();
+	~RangeBanDialog();
 
-    static LRESULT CALLBACK StaticRangeBanDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK StaticRangeBanDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	void DoModal(HWND hWndParent, RangeBanItem * pRangeBan = nullptr);
 	void RangeBanDeleted(RangeBanItem * pRangeBan);
 private:
-    RangeBanItem * m_pRangeBanToChange;
+	RangeBanItem * m_pRangeBanToChange;
 
-    RangeBanDialog(const RangeBanDialog&) = delete;
-    const RangeBanDialog& operator=(const RangeBanDialog&) = delete;
+	RangeBanDialog(const RangeBanDialog&) = delete;
+	const RangeBanDialog& operator=(const RangeBanDialog&) = delete;
 
-    LRESULT RangeBanDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT RangeBanDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-    bool OnAccept();
+	bool OnAccept();
 };
 //------------------------------------------------------------------------------
 

@@ -162,14 +162,14 @@ char * Lock2Key(char * sLock)
 	static const uint8_t ui8LockSize = 46;
 	static char cKey[128];
 	cKey[0] = '\0';
-	
+
 	// $Lock EXTENDEDPROTOCOL33MTL6@h5AIad^P2UoPv?fZU]ivM6 Pk=PtokaX|
-	
+
 	sLock = sLock + 6; // set begin after $Lock_
 	sLock[ui8LockSize] = '\0'; // set end before Pk
-	
+
 	uint8_t v;
-	
+
 	// first make the crypting stuff
 	for (uint8_t ui8i = 0; ui8i < ui8LockSize; ui8i++)
 	{
@@ -181,34 +181,34 @@ char * Lock2Key(char * sLock)
 		{
 			v = sLock[ui8i] ^ sLock[ui8i - 1];
 		}
-		
+
 		// swap nibbles (0xF0 = 11110000, 0x0F = 00001111)
-		
+
 		v = (uint8_t)(((v << 4) & 0xF0) | ((v >> 4) & 0x0F));
-		
+
 		switch (v)
 		{
-			case   0:
-				strcat(cKey, "/%DCN000%/");
-				break;
-			case   5:
-				strcat(cKey, "/%DCN005%/");
-				break;
-			case  36:
-				strcat(cKey, "/%DCN036%/");
-				break;
-			case  96:
-				strcat(cKey, "/%DCN096%/");
-				break;
-			case 124:
-				strcat(cKey, "/%DCN124%/");
-				break;
-			case 126:
-				strcat(cKey, "/%DCN126%/");
-				break;
-			default:
-				strncat(cKey, (char *)&v, 1);
-				break;
+		case   0:
+			strcat(cKey, "/%DCN000%/");
+			break;
+		case   5:
+			strcat(cKey, "/%DCN005%/");
+			break;
+		case  36:
+			strcat(cKey, "/%DCN036%/");
+			break;
+		case  96:
+			strcat(cKey, "/%DCN096%/");
+			break;
+		case 124:
+			strcat(cKey, "/%DCN124%/");
+			break;
+		case 126:
+			strcat(cKey, "/%DCN126%/");
+			break;
+		default:
+			strncat(cKey, (char *)&v, 1);
+			break;
 		}
 	}
 	return cKey;
@@ -271,25 +271,25 @@ char * WSErrorStr(const uint32_t ui32Error)
 		{"WSANO_RECOVERY"}, // 11003
 		{"WSANO_DATA"} // 11004
 	};
-	
+
 	switch (ui32Error)
 	{
-		case 10091 :
-			return errStrings[66]; // WSASYSNOTREADY
-		case 10092 :
-			return errStrings[67]; // WSAVERNOTSUPPORTED
-		case 10093 :
-			return errStrings[68]; // WSANOTINITIALISED
-		case 11001 :
-			return errStrings[69]; // WSAHOST
-		case 11002 :
-			return errStrings[70]; // WSATRY
-		case 11003 :
-			return errStrings[71]; // WSANO
-		case 11004 :
-			return errStrings[72]; // WSANO
-		default :
-			return errStrings[ui32Error - 10000];
+	case 10091 :
+		return errStrings[66]; // WSASYSNOTREADY
+	case 10092 :
+		return errStrings[67]; // WSAVERNOTSUPPORTED
+	case 10093 :
+		return errStrings[68]; // WSANOTINITIALISED
+	case 11001 :
+		return errStrings[69]; // WSAHOST
+	case 11002 :
+		return errStrings[70]; // WSATRY
+	case 11003 :
+		return errStrings[71]; // WSANO
+	case 11004 :
+		return errStrings[72]; // WSANO
+	default :
+		return errStrings[ui32Error - 10000];
 	}
 }
 #else
@@ -304,21 +304,21 @@ const char * ErrnoStr(const uint32_t ui32Error)
 		"ECONNREFUSED",
 		"EHOSTUNREACH",
 	};
-	
+
 	switch (ui32Error)
 	{
-		case 98:
-			return errStrings[1];
-		case 104:
-			return errStrings[2];
-		case 110:
-			return errStrings[3];
-		case 111:
-			return errStrings[4];
-		case 113:
-			return errStrings[5];
-		default :
-			return errStrings[0];
+	case 98:
+		return errStrings[1];
+	case 104:
+		return errStrings[2];
+	case 110:
+		return errStrings[3];
+	case 111:
+		return errStrings[4];
+	case 113:
+		return errStrings[5];
+	default :
+		return errStrings[0];
 	}
 }
 #endif
@@ -328,7 +328,7 @@ const char * formatBytes(const uint64_t ui64Bytes)
 {
 	static const char *unit[] = {"B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB", " ", " ", " ", " ", " ", " ", " "};
 	static char sBytes[128];
-	
+
 	if (ui64Bytes < 1024)
 	{
 		int iLen = snprintf(sBytes, 128, "%" PRIu64 " %s", ui64Bytes & 0xffffffff, unit[0]);
@@ -343,14 +343,14 @@ const char * formatBytes(const uint64_t ui64Bytes)
 		uint8_t iter = 0;
 		for (; ldBytes > 1024; iter++)
 			ldBytes /= 1024;
-			
+
 		int iLen = snprintf(sBytes, 128, "%0.2Lf %s", ldBytes, unit[iter]);
 		if (iLen <= 0)
 		{
 			sBytes[0] = '\0';
 		}
 	}
-	
+
 	return sBytes;
 }
 //---------------------------------------------------------------------------
@@ -359,7 +359,7 @@ const char * formatBytesPerSecond(const uint64_t ui64Bytes)
 {
 	static const char *secondunit[] = {"B/s", "kB/s", "MB/s", "GB/s", "TB/s", "PB/s", "EB/s", "ZB/s", "YB/s", " ", " ", " ", " ", " ", " ", " "};
 	static char sBytes[128];
-	
+
 	if (ui64Bytes < 1024)
 	{
 		int iLen = snprintf(sBytes, 128, "%" PRIu64 " %s", ui64Bytes & 0xffffffff, secondunit[0]);
@@ -374,14 +374,14 @@ const char * formatBytesPerSecond(const uint64_t ui64Bytes)
 		uint8_t iter = 0;
 		for (; ldBytes > 1024; iter++)
 			ldBytes /= 1024;
-			
+
 		int iLen = snprintf(sBytes, 128, "%0.2Lf %s", ldBytes, secondunit[iter]);
 		if (iLen <= 0)
 		{
 			sBytes[0] = '\0';
 		}
 	}
-	
+
 	return sBytes;
 }
 //---------------------------------------------------------------------------
@@ -390,12 +390,12 @@ const char * formatTime(uint64_t ui64Rest)
 {
 	static char time[256];
 	time[0] = '\0';
-	
+
 	char buf[128];
 	uint8_t i = 0;
 	uint64_t n = ui64Rest / 525600;
 	ui64Rest -= n * 525600;
-	
+
 	if (n != 0)
 	{
 		int iLen = snprintf(buf, 128, "%" PRIu64 " %s", n, n > 1 ? LanguageManager::m_Ptr->m_sTexts[LAN_YEARS_LWR] : LanguageManager::m_Ptr->m_sTexts[LAN_YEAR_LWR]);
@@ -407,10 +407,10 @@ const char * formatTime(uint64_t ui64Rest)
 		strcat(time, buf);
 		i++;
 	}
-	
+
 	n = ui64Rest / 43200;
 	ui64Rest -= n * 43200;
-	
+
 	if (n != 0)
 	{
 		int iLen = snprintf(buf, 128, "%s%" PRIu64 " %s", i > 0 ? " " : "", n, n > 1 ? LanguageManager::m_Ptr->m_sTexts[LAN_MONTHS_LWR] : LanguageManager::m_Ptr->m_sTexts[LAN_MONTH_LWR]);
@@ -419,14 +419,14 @@ const char * formatTime(uint64_t ui64Rest)
 			time[0] = '\0';
 			return time;
 		}
-		
+
 		strcat(time, buf);
 		i++;
 	}
-	
+
 	n = ui64Rest / 1440;
 	ui64Rest -= n * 1440;
-	
+
 	if (n != 0)
 	{
 		int iLen = snprintf(buf, 128, "%s%" PRIu64 " %s", i > 0 ? " " : "", n, n > 1 ? LanguageManager::m_Ptr->m_sTexts[LAN_DAYS_LWR] : LanguageManager::m_Ptr->m_sTexts[LAN_DAY_LWR]);
@@ -435,14 +435,14 @@ const char * formatTime(uint64_t ui64Rest)
 			time[0] = '\0';
 			return time;
 		}
-		
+
 		strcat(time, buf);
 		i++;
 	}
-	
+
 	n = ui64Rest / 60;
 	ui64Rest -= n * 60;
-	
+
 	if (n != 0)
 	{
 		int iLen = snprintf(buf, 128, "%s%" PRIu64 " %s", i > 0 ? " " : "", n, n > 1 ? LanguageManager::m_Ptr->m_sTexts[LAN_HOURS_LWR] : LanguageManager::m_Ptr->m_sTexts[LAN_HOUR_LWR]);
@@ -451,11 +451,11 @@ const char * formatTime(uint64_t ui64Rest)
 			time[0] = '\0';
 			return time;
 		}
-		
+
 		strcat(time, buf);
 		i++;
 	}
-	
+
 	if (ui64Rest != 0)
 	{
 		int iLen = snprintf(buf, 128, "%s%" PRIu64 " %s", i > 0 ? " " : "", ui64Rest, LanguageManager::m_Ptr->m_sTexts[LAN_MIN_LWR]);
@@ -466,7 +466,7 @@ const char * formatTime(uint64_t ui64Rest)
 		}
 		strcat(time, buf);
 	}
-	
+
 	return time;
 }
 //---------------------------------------------------------------------------
@@ -475,12 +475,12 @@ const char * formatSecTime(uint64_t ui64Rest)
 {
 	static char time[256];
 	time[0] = '\0';
-	
+
 	char buf[128];
 	uint8_t i = 0;
 	uint64_t n = ui64Rest / 31536000;
 	ui64Rest -= n * 31536000;
-	
+
 	if (n != 0)
 	{
 		int iLen = snprintf(buf, 128, "%" PRIu64 " %s", n, n > 1 ? LanguageManager::m_Ptr->m_sTexts[LAN_YEARS_LWR] : LanguageManager::m_Ptr->m_sTexts[LAN_YEAR_LWR]);
@@ -489,14 +489,14 @@ const char * formatSecTime(uint64_t ui64Rest)
 			time[0] = '\0';
 			return time;
 		}
-		
+
 		strcat(time, buf);
 		i++;
 	}
-	
+
 	n = ui64Rest / 2592000;
 	ui64Rest -= n * 2592000;
-	
+
 	if (n != 0)
 	{
 		int iLen = snprintf(buf, 128, "%s%" PRIu64 " %s", i > 0 ? " " : "", n, n > 1 ? LanguageManager::m_Ptr->m_sTexts[LAN_MONTHS_LWR] : LanguageManager::m_Ptr->m_sTexts[LAN_MONTH_LWR]);
@@ -505,14 +505,14 @@ const char * formatSecTime(uint64_t ui64Rest)
 			time[0] = '\0';
 			return time;
 		}
-		
+
 		strcat(time, buf);
 		i++;
 	}
-	
+
 	n = ui64Rest / 86400;
 	ui64Rest -= n * 86400;
-	
+
 	if (n != 0)
 	{
 		int iLen = snprintf(buf, 128, "%s%" PRIu64 " %s", i > 0 ? " " : "", n, n > 1 ? LanguageManager::m_Ptr->m_sTexts[LAN_DAYS_LWR] : LanguageManager::m_Ptr->m_sTexts[LAN_DAY_LWR]);
@@ -521,14 +521,14 @@ const char * formatSecTime(uint64_t ui64Rest)
 			time[0] = '\0';
 			return time;
 		}
-		
+
 		strcat(time, buf);
 		i++;
 	}
-	
+
 	n = ui64Rest / 3600;
 	ui64Rest -= n * 3600;
-	
+
 	if (n != 0)
 	{
 		int iLen = snprintf(buf, 128, "%s%" PRIu64 " %s", i > 0 ? " " : "", n, n > 1 ? LanguageManager::m_Ptr->m_sTexts[LAN_HOURS_LWR] : LanguageManager::m_Ptr->m_sTexts[LAN_HOUR_LWR]);
@@ -537,14 +537,14 @@ const char * formatSecTime(uint64_t ui64Rest)
 			time[0] = '\0';
 			return time;
 		}
-		
+
 		strcat(time, buf);
 		i++;
 	}
-	
+
 	n = ui64Rest / 60;
 	ui64Rest -= n * 60;
-	
+
 	if (n != 0)
 	{
 		int iLen = snprintf(buf, 128, "%s%" PRIu64 " %s", i > 0 ? " " : "", n, LanguageManager::m_Ptr->m_sTexts[LAN_MIN_LWR]);
@@ -553,11 +553,11 @@ const char * formatSecTime(uint64_t ui64Rest)
 			time[0] = '\0';
 			return time;
 		}
-		
+
 		strcat(time, buf);
 		i++;
 	}
-	
+
 	if (ui64Rest != 0)
 	{
 		int iLen = snprintf(buf, 128, "%s%" PRIu64 " %s", i > 0 ? " " : "", ui64Rest, LanguageManager::m_Ptr->m_sTexts[LAN_SEC_LWR]);
@@ -566,7 +566,7 @@ const char * formatSecTime(uint64_t ui64Rest)
 			time[0] = '\0';
 			return time;
 		}
-		
+
 		strcat(time, buf);
 	}
 	return time;
@@ -628,7 +628,7 @@ bool isIP(const char * sIP)
 		{
 			return false;
 		}
-		
+
 		uint8_t ui128IpHash[16];
 #if defined(_WIN32) && !defined(_WIN64) && !defined(_WIN_IOT)
 		if (win_inet_pton(sIP, ui128IpHash) != 1)
@@ -646,15 +646,15 @@ bool isIP(const char * sIP)
 		{
 			return false;
 		}
-		
+
 		uint32_t ui32IpHash = inet_addr(sIP);
-		
+
 		if (ui32IpHash == INADDR_NONE)
 		{
 			return false;
 		}
 	}
-	
+
 	return true;
 }
 //---------------------------------------------------------------------------
@@ -663,14 +663,14 @@ uint32_t HashNick(const char * sNick, const size_t szNickLen)
 {
 	unsigned char c = 0;
 	uint32_t h = 5381;
-	
+
 	for (size_t szi = 0; szi < szNickLen; szi++)
 	{
 		c = (unsigned char)tolower(sNick[szi]);
 		h += (h << 5);
 		h ^= c;
 	}
-	
+
 	return (h + 1);
 }
 //---------------------------------------------------------------------------
@@ -683,7 +683,7 @@ bool HashIP(const char * sIP, uint8_t * ui128IpHash)
 		{
 			return false;
 		}
-		
+
 #if defined(_WIN32) && !defined(_WIN64) && !defined(_WIN_IOT)
 		if (win_inet_pton(sIP, ui128IpHash) != 1)
 		{
@@ -700,22 +700,22 @@ bool HashIP(const char * sIP, uint8_t * ui128IpHash)
 		{
 			return false;
 		}
-		
+
 		uint32_t ui32IpHash = inet_addr(sIP);
-		
+
 		if (ui32IpHash == INADDR_NONE)
 		{
 			return false;
 		}
-		
+
 		memset(ui128IpHash, 0, 16);
-		
+
 		ui128IpHash[10] = 255;
 		ui128IpHash[11] = 255;
-		
+
 		memcpy(ui128IpHash + 12, &ui32IpHash, 4);
 	}
-	
+
 	return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -724,19 +724,19 @@ uint16_t GetIpTableIdx(const uint8_t * ui128IpHash)
 {
 	unsigned char c = 0;
 	uint32_t h = 5381;
-	
+
 	for (uint8_t ui8i = 0; ui8i < 16; ui8i++)
 	{
 		c = (unsigned char)ui128IpHash[ui8i];
 		h += (h << 5);
 		h ^= c;
 	}
-	
+
 	h += 1;
-	
+
 	uint16_t ui16Idx = 0;
 	memcpy(&ui16Idx, &h, sizeof(uint16_t));
-	
+
 	return ui16Idx;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -744,88 +744,88 @@ uint16_t GetIpTableIdx(const uint8_t * ui128IpHash)
 int GenerateBanMessage(BanItem * pBan, const time_t &tAccTime)
 {
 	int iMsgLen = 0;
-	
+
 	if (((pBan->m_ui8Bits & BanManager::PERM) == BanManager::PERM) == true)
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "<%s> %s.", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_SORRY_PERM_BANNED]);
-		
+
 	}
 	else
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "<%s> %s: %s.", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_SORRY_TEMP_BANNED], formatSecTime(pBan->m_tTempBanExpire - tAccTime));
-		
+
 	}
-	
+
 	if (iMsgLen <= 0)
 	{
 		AppendDebugLogFormat("[ERR] snprintf wrong value %d in GenerateBanMessage1\n", iMsgLen);
-		
+
 		return 0;
 	}
-	
-	
+
+
 	if (SettingManager::m_Ptr->m_bBools[SETBOOL_BAN_MSG_SHOW_IP] == true && pBan->m_sIp[0] != '\0')
 	{
 		int iLen = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_IP], pBan->m_sIp);
 		if (iLen <= 0)
 		{
 			AppendDebugLogFormat("[ERR] snprintf wrong value %d in GenerateBanMessage2\n", iLen);
-			
+
 			return 0;
 		}
-		
+
 		iMsgLen += iLen;
 	}
-	
+
 	if (SettingManager::m_Ptr->m_bBools[SETBOOL_BAN_MSG_SHOW_NICK] == true && pBan->m_sNick != NULL)
 	{
 		int iLen = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_NICK], pBan->m_sNick);
 		if (iLen <= 0)
 		{
 			AppendDebugLogFormat("[ERR] snprintf wrong value %d in GenerateBanMessage3\n", iLen);
-			
+
 			return 0;
 		}
-		
+
 		iMsgLen += iLen;
 	}
-	
+
 	if (SettingManager::m_Ptr->m_bBools[SETBOOL_BAN_MSG_SHOW_REASON] == true && pBan->m_sReason != NULL)
 	{
 		int iLen = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_REASON], pBan->m_sReason);
 		if (iLen <= 0)
 		{
 			AppendDebugLogFormat("[ERR] snprintf wrong value %d in GenerateBanMessage4\n", iLen);
-			
+
 			return 0;
 		}
-		
+
 		iMsgLen += iLen;
 	}
-	
+
 	if (SettingManager::m_Ptr->m_bBools[SETBOOL_BAN_MSG_SHOW_BY] == true && pBan->m_sBy != NULL)
 	{
 		int iLen = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_BANNED_BY], pBan->m_sBy);
 		if (iLen <= 0)
 		{
 			AppendDebugLogFormat("[ERR] snprintf wrong value %d in GenerateBanMessage5\n", iLen);
-			
+
 			return 0;
 		}
-		
+
 		iMsgLen += iLen;
 	}
-	
+
 	if (SettingManager::m_Ptr->m_sTexts[SETTXT_MSG_TO_ADD_TO_BAN_MSG] != NULL)
 	{
 		int iLen = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s|", SettingManager::m_Ptr->m_sTexts[SETTXT_MSG_TO_ADD_TO_BAN_MSG]);
 		if (iLen <= 0)
 		{
 			AppendDebugLogFormat("[ERR] snprintf wrong value %d in GenerateBanMessage6\n", iLen);
-			
+
 			return 0;
 		}
-		
+
 		iMsgLen += iLen;
 	}
 	else
@@ -834,7 +834,7 @@ int GenerateBanMessage(BanItem * pBan, const time_t &tAccTime)
 		iMsgLen++;
 		ServerManager::m_pGlobalBuffer[iMsgLen] = '\0';
 	}
-	
+
 	if (((pBan->m_ui8Bits & BanManager::PERM) == BanManager::PERM) == true)
 	{
 		if (SettingManager::m_Ptr->m_bBools[SETBOOL_PERM_BAN_REDIR] == true && SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_PERM_BAN_REDIR_ADDRESS] != NULL)
@@ -851,7 +851,7 @@ int GenerateBanMessage(BanItem * pBan, const time_t &tAccTime)
 			iMsgLen += (int)SettingManager::m_Ptr->m_ui16PreTextsLens[SettingManager::SETPRETXT_TEMP_BAN_REDIR_ADDRESS];
 		}
 	}
-	
+
 	return iMsgLen;
 }
 //---------------------------------------------------------------------------
@@ -859,7 +859,7 @@ int GenerateBanMessage(BanItem * pBan, const time_t &tAccTime)
 int GenerateRangeBanMessage(RangeBanItem * pRangeBan, const time_t &tAccTime)
 {
 	int iMsgLen = 0;
-	
+
 	if (((pRangeBan->m_ui8Bits & BanManager::PERM) == BanManager::PERM) == true)
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "<%s> %s.", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_SORRY_PERM_BANNED]);
@@ -868,63 +868,63 @@ int GenerateRangeBanMessage(RangeBanItem * pRangeBan, const time_t &tAccTime)
 	{
 		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "<%s> %s: %s", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_SORRY_TEMP_BANNED], formatSecTime(pRangeBan->m_tTempBanExpire - tAccTime));
 	}
-	
+
 	if (iMsgLen <= 0)
 	{
 		AppendDebugLogFormat("[ERR] snprintf wrong value %d in GenerateRangeBanMessage1\n", iMsgLen);
-		
+
 		return 0;
 	}
-	
+
 	if (SettingManager::m_Ptr->m_bBools[SETBOOL_BAN_MSG_SHOW_RANGE] == true)
 	{
 		int iLen = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s-%s", LanguageManager::m_Ptr->m_sTexts[LAN_RANGE], pRangeBan->m_sIpFrom, pRangeBan->m_sIpTo);
 		if (iLen <= 0)
 		{
 			AppendDebugLogFormat("[ERR] snprintf wrong value %d in GenerateRangeBanMessage2\n", iLen);
-			
+
 			return 0;
 		}
-		
+
 		iMsgLen += iLen;
 	}
-	
+
 	if (SettingManager::m_Ptr->m_bBools[SETBOOL_BAN_MSG_SHOW_REASON] == true && pRangeBan->m_sReason != NULL)
 	{
 		int iLen = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_REASON], pRangeBan->m_sReason);
 		if (iLen <= 0)
 		{
 			AppendDebugLogFormat("[ERR] snprintf wrong value %d in GenerateRangeBanMessage3\n", iLen);
-			
+
 			return 0;
 		}
-		
+
 		iMsgLen += iLen;
 	}
-	
+
 	if (SettingManager::m_Ptr->m_bBools[SETBOOL_BAN_MSG_SHOW_BY] == true && pRangeBan->m_sBy != NULL)
 	{
 		int iLen = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_BANNED_BY], pRangeBan->m_sBy);
 		if (iLen <= 0)
 		{
 			AppendDebugLogFormat("[ERR] snprintf wrong value %d in GenerateRangeBanMessage4\n", iLen);
-			
+
 			return 0;
 		}
-		
+
 		iMsgLen += iLen;
 	}
-	
+
 	if (SettingManager::m_Ptr->m_sTexts[SETTXT_MSG_TO_ADD_TO_BAN_MSG] != NULL)
 	{
 		int iLen = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s|", SettingManager::m_Ptr->m_sTexts[SETTXT_MSG_TO_ADD_TO_BAN_MSG]);
 		if (iLen <= 0)
 		{
 			AppendDebugLogFormat("[ERR] snprintf wrong value %d in GenerateRangeBanMessage5\n", iLen);
-			
+
 			return 0;
 		}
-		
+
 		iMsgLen += iLen;
 	}
 	else
@@ -933,7 +933,7 @@ int GenerateRangeBanMessage(RangeBanItem * pRangeBan, const time_t &tAccTime)
 		iMsgLen++;
 		ServerManager::m_pGlobalBuffer[iMsgLen] = '\0';
 	}
-	
+
 	if (((pRangeBan->m_ui8Bits & BanManager::PERM) == BanManager::PERM) == true)
 	{
 		if (SettingManager::m_Ptr->m_bBools[SETBOOL_PERM_BAN_REDIR] == true && SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_PERM_BAN_REDIR_ADDRESS] != NULL)
@@ -950,7 +950,7 @@ int GenerateRangeBanMessage(RangeBanItem * pRangeBan, const time_t &tAccTime)
 			iMsgLen += (int)SettingManager::m_Ptr->m_ui16PreTextsLens[SettingManager::SETPRETXT_TEMP_BAN_REDIR_ADDRESS];
 		}
 	}
-	
+
 	return iMsgLen;
 }
 //---------------------------------------------------------------------------
@@ -959,40 +959,40 @@ bool GenerateTempBanTime(const uint8_t ui8Multiplyer, const uint32_t ui32Time, t
 {
 	time(&tAccTime);
 	struct tm *tm = localtime(&tAccTime);
-	
+
 	switch (ui8Multiplyer)
 	{
-		case 'm':
-			tm->tm_min += ui32Time;
-			break;
-		case 'h':
-			tm->tm_hour += ui32Time;
-			break;
-		case 'd':
-			tm->tm_mday += ui32Time;
-			break;
-		case 'w':
-			tm->tm_mday += ui32Time * 7;
-			break;
-		case 'M':
-			tm->tm_mon += ui32Time;
-			break;
-		case 'Y':
-			tm->tm_year += ui32Time;
-			break;
-		default:
-			return false;
+	case 'm':
+		tm->tm_min += ui32Time;
+		break;
+	case 'h':
+		tm->tm_hour += ui32Time;
+		break;
+	case 'd':
+		tm->tm_mday += ui32Time;
+		break;
+	case 'w':
+		tm->tm_mday += ui32Time * 7;
+		break;
+	case 'M':
+		tm->tm_mon += ui32Time;
+		break;
+	case 'Y':
+		tm->tm_year += ui32Time;
+		break;
+	default:
+		return false;
 	}
-	
+
 	tm->tm_isdst = -1;
-	
+
 	tBanTime = mktime(tm);
-	
+
 	if(tBanTime == (time_t)-1)
 	{
 		return false;
 	}
-	
+
 	return true;
 }
 //---------------------------------------------------------------------------
@@ -1011,13 +1011,13 @@ bool HaveOnlyNumbers(char *sData, const uint16_t ui16Len)
 bool CheckSprintf(const int &iRetVal, const size_t &szMax, const char * sMsg) {
 	if (iRetVal > 0) {
 		if (szMax != 0 && iRetVal >= (int)szMax) {
-            px_string sDbgstr = "%s - [ERR] sprintf high value " + px_string(iRetVal) + "/" + px_string((uint64_t)szMax) + " in " + px_string(sMsg) + "\n";
+			px_string sDbgstr = "%s - [ERR] sprintf high value " + px_string(iRetVal) + "/" + px_string((uint64_t)szMax) + " in " + px_string(sMsg) + "\n";
 			AppendDebugLog(sDbgstr.c_str()/*, 0*/);
 			return false;
 		}
 	}
 	else {
-        px_string sDbgstr = "%s - [ERR] sprintf low value " + px_string(iRetVal) + " in " + px_string(sMsg) + "\n";
+		px_string sDbgstr = "%s - [ERR] sprintf low value " + px_string(iRetVal) + " in " + px_string(sMsg) + "\n";
 		AppendDebugLog(sDbgstr.c_str()/*, 0*/);
 		return false;
 	}
@@ -1028,13 +1028,13 @@ bool CheckSprintf(const int &iRetVal, const size_t &szMax, const char * sMsg) {
 bool CheckSprintf1(const int &iRetVal, const size_t &szLenVal, const size_t &szMax, const char * sMsg) {
 	if (iRetVal > 0) {
 		if (szMax != 0 && szLenVal >= szMax) {
-            px_string sDbgstr = "%s - [ERR] sprintf high value " + px_string((uint64_t)szLenVal) + "/" + px_string((uint64_t)szMax) + " in " + px_string(sMsg) + "\n";
+			px_string sDbgstr = "%s - [ERR] sprintf high value " + px_string((uint64_t)szLenVal) + "/" + px_string((uint64_t)szMax) + " in " + px_string(sMsg) + "\n";
 			AppendDebugLog(sDbgstr.c_str()/*, 0*/);
 			return false;
 		}
 	}
 	else {
-        px_string sDbgstr = "%s - [ERR] sprintf low value " + px_string(iRetVal) + " in " + px_string(sMsg) + "\n";
+		px_string sDbgstr = "%s - [ERR] sprintf low value " + px_string(iRetVal) + " in " + px_string(sMsg) + "\n";
 		AppendDebugLog(sDbgstr.c_str()/*, 0*/);
 		return false;
 	}
@@ -1062,23 +1062,23 @@ void AppendLog(const char* sData, const bool bScript/* == false*/)
 		fw = fopen((ServerManager::m_sPath + "/logs/script.log").c_str(), "a");
 #endif
 	}
-	
+
 	if (fw != NULL)
 	{
 		time_t acc_time;
 		time(&acc_time);
-		
+
 		struct tm * acc_tm;
 		acc_tm = localtime(&acc_time);
-		
+
 		char sBuf[64];
 		strftime(sBuf, 64, "%c", acc_tm);
-		
+
 		fprintf(fw, "%s - %s\n", sBuf, sData);
-		
+
 		fclose(fw);
 	}
-	
+
 	if (UdpDebug::m_Ptr != NULL && bScript == false)
 	{
 		UdpDebug::m_Ptr->BroadcastFormat("[LOG] %s", sData);
@@ -1090,29 +1090,29 @@ void AppendDebugLog(const char * sData)
 {
 
 	AppendSyslog("AppendDebugLog", sData); // [+]FlylinkDC++
-	
+
 #ifdef _WIN32
 	FILE * fw = fopen((ServerManager::m_sPath + "\\logs\\debug.log").c_str(), "a");
 #else
 	FILE * fw = fopen((ServerManager::m_sPath + "/logs/debug.log").c_str(), "a");
 #endif
-	
+
 	if (fw == NULL)
 	{
 		return;
 	}
-	
+
 	time_t acc_time;
 	time(&acc_time);
-	
+
 	struct tm * acc_tm;
 	acc_tm = localtime(&acc_time);
-	
+
 	char sBuf[64];
 	strftime(sBuf, 64, "%c", acc_tm);
-	
+
 	fprintf(fw, sData, sBuf); // "%s - xxx\n"
-	
+
 	fclose(fw);
 }
 //---------------------------------------------------------------------------
@@ -1131,35 +1131,35 @@ void AppendDebugLogFormat(const char * sFormatMsg, ...)
 		syslog(LOG_NOTICE, "[AppendDebugLogFormat] %s", l_str.c_str());
 	}
 #endif
-	
+
 #ifdef _WIN32
 	FILE * fw = fopen((ServerManager::m_sPath + "\\logs\\debug.log").c_str(), "a");
 #else
 	FILE * fw = fopen((ServerManager::m_sPath + "/logs/debug.log").c_str(), "a");
 #endif
-	
+
 	if (fw == NULL)
 	{
 		return;
 	}
-	
+
 	time_t tmAccTime;
 	time(&tmAccTime);
-	
+
 	size_t szLen = strftime(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "%c - ", localtime(&tmAccTime));
-	
+
 	if (szLen != 0)
 	{
 		fwrite(ServerManager::m_pGlobalBuffer, 1, szLen, fw);
 	}
-	
+
 	va_list vlArgs;
 	va_start(vlArgs, sFormatMsg);
-	
+
 	vfprintf(fw, sFormatMsg, vlArgs);
-	
+
 	va_end(vlArgs);
-	
+
 	fclose(fw);
 }
 //---------------------------------------------------------------------------
@@ -1167,15 +1167,15 @@ void AppendDebugLogFormat(const char * sFormatMsg, ...)
 void GetHeapStats(void * pHeap, DWORD &dwCommitted, DWORD &dwUnCommitted)
 {
 	PROCESS_HEAP_ENTRY *lpEntry;
-	
+
 	lpEntry = (PROCESS_HEAP_ENTRY *)calloc(1, sizeof(PROCESS_HEAP_ENTRY));
 	if (lpEntry == NULL)
 	{
 		return;
 	}
-	
+
 	lpEntry->lpData = NULL;
-	
+
 	while (HeapWalk((HANDLE)pHeap, (PROCESS_HEAP_ENTRY *)lpEntry) != 0)
 	{
 		if ((lpEntry->wFlags & PROCESS_HEAP_REGION))
@@ -1184,7 +1184,7 @@ void GetHeapStats(void * pHeap, DWORD &dwCommitted, DWORD &dwUnCommitted)
 			dwUnCommitted += lpEntry->Region.dwUnCommittedSize;
 		}
 	}
-	
+
 	free(lpEntry);
 }
 //---------------------------------------------------------------------------
@@ -1192,7 +1192,7 @@ void GetHeapStats(void * pHeap, DWORD &dwCommitted, DWORD &dwUnCommitted)
 const char * ExtractFileName(const char * sPath)
 {
 	const char * sName = strrchr(sPath, '\\');
-	
+
 	if (sName != NULL)
 	{
 		return sName;
@@ -1231,7 +1231,7 @@ bool FileExist(const char * sPath)
 #endif
 		return true;
 	}
-	
+
 	return false;
 }
 //---------------------------------------------------------------------------
@@ -1249,7 +1249,7 @@ bool DirExist(const char * sPath)
 #endif
 		return true;
 	}
-	
+
 	return false;
 }
 //---------------------------------------------------------------------------
@@ -1260,14 +1260,14 @@ void SetupOsVersion()
 	OSVERSIONINFOEX ver;
 	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
 	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-	
+
 	if (::GetVersionEx((OSVERSIONINFO*)&ver) == 0)
 	{
 		ServerManager::m_sOS = "Windows (unknown version)";
-		
+
 		return;
 	}
-	
+
 	if (ver.dwMajorVersion == 10)
 	{
 		if (ver.dwMinorVersion == 0)
@@ -1328,16 +1328,16 @@ void SetupOsVersion()
 			{
 				SYSTEM_INFO si;
 				memset(&si, 0, sizeof(SYSTEM_INFO));
-				
+
 				::GetNativeSystemInfo(&si);
-				
+
 				if (si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64)
 				{
 					ServerManager::m_sOS = "Windows XP x64";
 					return;
 				}
 			}
-			
+
 			// should not happen, but for sure...
 			ServerManager::m_sOS = "Windows 2003/XP64";
 			return;
@@ -1348,7 +1348,7 @@ void SetupOsVersion()
 			return;
 		}
 	}
-	
+
 	ServerManager::m_sOS = "Windows (unknown version)";
 }
 //---------------------------------------------------------------------------
@@ -1361,7 +1361,7 @@ void * LuaAlocator(void * /*pOld*/, void * pData, const size_t /*szOldSize*/, co
 		{
 			free(pData);
 		}
-		
+
 		return NULL;
 	}
 	else
@@ -1391,7 +1391,7 @@ void CheckForIPv4()
 {
 #ifdef _WIN32
 	SOCKET sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	
+
 	if (sock == INVALID_SOCKET)
 	{
 		int iError = WSAGetLastError();
@@ -1416,7 +1416,7 @@ void CheckForIPv6()
 {
 #ifdef _WIN32
 	SOCKET sock = socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP);
-	
+
 	if (sock == INVALID_SOCKET)
 	{
 		int iError = WSAGetLastError();
@@ -1433,7 +1433,7 @@ void CheckForIPv6()
 			return;
 		}
 	}
-	
+
 #ifdef _WIN32
 	DWORD dwIPv6 = 0;
 	if (setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, (char *)&dwIPv6, sizeof(dwIPv6)) != SOCKET_ERROR)
@@ -1445,15 +1445,15 @@ void CheckForIPv6()
 #endif
 		ServerManager::m_bIPv6DualStack = true;
 	}
-	
+
 	safe_closesocket(sock);
-	
+
 #if defined(_WIN32) && !defined(_WIN64) && !defined(_WIN_IOT)
 	HINSTANCE hWs2_32 = ::LoadLibrary("Ws2_32.dll");
-	
+
 	MyInetPton = (pInetPton)::GetProcAddress(hWs2_32, "inet_pton");
 	MyInetNtop = (pInetNtop)::GetProcAddress(hWs2_32, "inet_ntop");
-	
+
 	::FreeLibrary(hWs2_32);
 #endif
 }
@@ -1471,7 +1471,7 @@ INT win_inet_pton(PCTSTR pAddrString, PVOID pAddrBuf)
 		sockaddr_storage sas_addr;
 		socklen_t sas_len = sizeof(sockaddr_storage);
 		memset(&sas_addr, 0, sas_len);
-		
+
 		if (::WSAStringToAddressA((LPSTR)pAddrString, AF_INET6, NULL, (struct sockaddr *)&sas_addr, &sas_len) == 0)
 		{
 			memcpy(pAddrBuf, &((struct sockaddr_in6 *)&sas_addr)->sin6_addr.s6_addr, 16);
@@ -1495,11 +1495,11 @@ void win_inet_ntop(PVOID pAddr, PTSTR pStringBuf, size_t szStringBufSize)
 	{
 		struct sockaddr_in6 sin6;
 		socklen_t sin6_len = sizeof(sockaddr_in6);
-		
+
 		memset(&sin6, 0, sin6_len);
 		sin6.sin6_family = AF_INET6;
 		memcpy(&sin6.sin6_addr, pAddr, 16);
-		
+
 		::WSAAddressToStringA((struct sockaddr *)&sin6, sin6_len, NULL, pStringBuf, (LPDWORD)&szStringBufSize);
 	}
 }
@@ -1511,13 +1511,13 @@ bool GetMacAddress(const char * sIP, char * sMac)
 #ifdef FLYLINKDC_USE_MAC
 #ifdef _WIN32
 	uint32_t uiIP = ::inet_addr(sIP);
-	
+
 	MIB_IPNETTABLE * pINT = (MIB_IPNETTABLE *)new (std::nothrow) char[PTOKAX_GLOBAL_BUFF_SIZE]; // TODO
 	if (pINT == NULL)
 	{
 		return false;
 	}
-	
+
 	ULONG ulSize = PTOKAX_GLOBAL_BUFF_SIZE;
 	DWORD dwRes = ::GetIpNetTable(pINT, &ulSize, TRUE);
 	if (dwRes == NO_ERROR)
@@ -1527,7 +1527,7 @@ bool GetMacAddress(const char * sIP, char * sMac)
 			if (pINT->table[dwi].dwAddr == uiIP && pINT->table[dwi].dwType != MIB_IPNET_TYPE_INVALID)
 			{
 				snprintf(sMac, 18, "%02x:%02x:%02x:%02x:%02x:%02x", pINT->table[dwi].bPhysAddr[0], pINT->table[dwi].bPhysAddr[1], pINT->table[dwi].bPhysAddr[2],
-				        pINT->table[dwi].bPhysAddr[3], pINT->table[dwi].bPhysAddr[4], pINT->table[dwi].bPhysAddr[5]);
+				         pINT->table[dwi].bPhysAddr[3], pINT->table[dwi].bPhysAddr[4], pINT->table[dwi].bPhysAddr[5]);
 				delete []pINT;
 				return true;
 			}
@@ -1542,7 +1542,7 @@ bool GetMacAddress(const char * sIP, char * sMac)
 		uint8_t ui8NonSpaces = 0;
 		uint16_t ui16IpLen = (uint16_t)strlen(sIP);
 		char buf[1024];
-	
+
 		while (fgets(buf, 1024, fp) != NULL)
 		{
 			if (strncmp(buf, sIP, ui16IpLen) == 0 && buf[ui16IpLen] == ' ')
@@ -1563,7 +1563,7 @@ bool GetMacAddress(const char * sIP, char * sMac)
 							ui8NonSpaces++;
 						}
 					}
-	
+
 					if (ui8NonSpaces == 3)
 					{
 						strncpy(sMac, buf + ui16IpLen, 17);
@@ -1571,12 +1571,12 @@ bool GetMacAddress(const char * sIP, char * sMac)
 						fclose(fp);
 						return true;
 					}
-	
+
 					ui16IpLen++;
 				}
 			}
 		}
-	
+
 		fclose(fp);
 	}
 #endif
@@ -1612,23 +1612,23 @@ bool CheckAndResizeGlobalBuffer(const size_t szWantedSize)
 	{
 		return true;
 	}
-	
+
 	size_t szOldSize = ServerManager::m_szGlobalBufferSize;
 	char * sOldBuf = ServerManager::m_pGlobalBuffer;
-	
+
 	ServerManager::m_szGlobalBufferSize = Allign128K(szWantedSize);
-	
+
 	ServerManager::m_pGlobalBuffer = (char *)realloc(sOldBuf, ServerManager::m_szGlobalBufferSize);
 	if (ServerManager::m_pGlobalBuffer == NULL)
 	{
 		ServerManager::m_pGlobalBuffer = sOldBuf;
-		
+
 		AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in CheckAndResizeGlobalBuffer for ServerManager::m_pGlobalBuffer\n", ServerManager::m_szGlobalBufferSize);
-		
+
 		ServerManager::m_szGlobalBufferSize = szOldSize;
 		return false;
 	}
-	
+
 	return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1639,19 +1639,19 @@ void ReduceGlobalBuffer()
 	{
 		return;
 	}
-	
+
 	size_t szOldSize = ServerManager::m_szGlobalBufferSize;
 	char * sOldBuf = ServerManager::m_pGlobalBuffer;
-	
+
 	ServerManager::m_szGlobalBufferSize = PTOKAX_GLOBAL_BUFF_SIZE;
-	
+
 	ServerManager::m_pGlobalBuffer = (char *)realloc(sOldBuf, ServerManager::m_szGlobalBufferSize);
 	if (ServerManager::m_pGlobalBuffer == NULL)
 	{
 		ServerManager::m_pGlobalBuffer = sOldBuf;
-		
+
 		AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in ReduceGlobalBuffer for ServerManager::m_pGlobalBuffer\n", ServerManager::m_szGlobalBufferSize);
-		
+
 		ServerManager::m_szGlobalBufferSize = szOldSize;
 		return;
 	}
@@ -1662,7 +1662,7 @@ bool HashPassword(const char * sPassword, const size_t szPassLen, uint8_t * ui8P
 {
 #ifndef _WITHOUT_SKEIN
 	Skein1024_Ctxt_t ctx1024;
-	
+
 	if (Skein1024_Init(&ctx1024, 512) == SKEIN_SUCCESS)
 	{
 		if (Skein1024_Update(&ctx1024, (const u08b_t *)sPassword, szPassLen) == SKEIN_SUCCESS)
@@ -1713,17 +1713,17 @@ bool WantAgain()
 {
 	printf("Do you want to try it again (Y/n) ? ");
 	int iChar = getchar();
-	
+
 	while (getchar() != '\n')
 	{
 		// boredom...
 	};
-	
+
 	if (toupper(iChar) == 'Y')
 	{
 		return true;
 	}
-	
+
 	return false;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1742,7 +1742,7 @@ bool IsPrivateIP(const char * sIP)
 #endif
 			return false;
 		}
-		
+
 		if (IN6_IS_ADDR_LOOPBACK((in6_addr *)ui128IpHash.data()) || IN6_IS_ADDR_LINKLOCAL((in6_addr *)ui128IpHash.data()) || IN6_IS_ADDR_SITELOCAL((in6_addr *)ui128IpHash.data()))
 		{
 			return true;
@@ -1751,21 +1751,21 @@ bool IsPrivateIP(const char * sIP)
 	else
 	{
 		uint32_t ui32IpHash = inet_addr(sIP);
-		
+
 		if (ui32IpHash == INADDR_NONE)
 		{
 			return false;
 		}
-		
+
 		uint8_t ui32IP[4];
 		memcpy(ui32IP, &ui32IpHash, 4);
-		
+
 		if (ui32IP[0] == 10 || ui32IP[0] == 127 || (ui32IP[0] == 169 && ui32IP[1] == 254) || (ui32IP[0] == 172 && ui32IP[1] == 16) || (ui32IP[0] == 192 && ui32IP[1] == 168))
 		{
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

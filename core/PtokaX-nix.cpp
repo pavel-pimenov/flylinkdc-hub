@@ -64,15 +64,15 @@ void show_backtrace (void) {
 static void SigHandler(int iSig)
 {
 	bTerminatedBySignal = true;
-	
+
 	iSignal = iSig;
-	
+
 	// restore to default...
 	struct sigaction sigact;
 	sigact.sa_handler = SIG_DFL;
 	sigemptyset(&sigact.sa_mask);
 	sigact.sa_flags = 0;
-	
+
 	sigaction(iSig, &sigact, NULL);
 }
 
@@ -97,9 +97,9 @@ int main(int argc, char* argv[])
 {
 //	mtrace();
 	bool bSetup = false;
-	
+
 	char * sPidFile = NULL;
-	
+
 	for (int i = 1; i < argc; i++)
 	{
 		if (strcasecmp(argv[i], "-d") == 0)
@@ -113,13 +113,13 @@ int main(int argc, char* argv[])
 				printf("Missing config directory!\n");
 				return EXIT_FAILURE;
 			}
-			
+
 			if (argv[i][0] != '/')
 			{
 				printf("Config directory must be absolute path!\n");
 				return EXIT_FAILURE;
 			}
-			
+
 			size_t szLen = strlen(argv[i]);
 			if (argv[i][szLen - 1] == '/')
 			{
@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
 			{
 				ServerManager::m_sPath = string(argv[i], szLen);
 			}
-			
+
 			if (DirExist(ServerManager::m_sPath.c_str()) == false)
 			{
 				if (mkdir(ServerManager::m_sPath.c_str(), 0755) == -1)
@@ -162,7 +162,7 @@ int main(int argc, char* argv[])
 				printf("Missing pid file!\n");
 				return EXIT_FAILURE;
 			}
-			
+
 			sPidFile = argv[i];
 		}
 		else if (strcmp(argv[i], "-use-syslog") == 0)
@@ -193,7 +193,7 @@ int main(int argc, char* argv[])
 			return EXIT_SUCCESS;
 		}
 	}
-	
+
 	if (ServerManager::m_sPath.size() == 0)
 	{
 		char* home;
@@ -201,7 +201,7 @@ int main(int argc, char* argv[])
 		if (ServerManager::m_bDaemon == true && (home = getenv("HOME")) != NULL)
 		{
 			ServerManager::m_sPath = string(home) + "/.PtokaX";
-			
+
 			if (DirExist(ServerManager::m_sPath.c_str()) == false)
 			{
 				if (mkdir(ServerManager::m_sPath.c_str(), 0755) == -1)
@@ -219,22 +219,22 @@ int main(int argc, char* argv[])
 			ServerManager::m_sPath = ".";
 		}
 	}
-	
+
 	if (bSetup == true)
 	{
 		ServerManager::Initialize();
-		
+
 		ServerManager::CommandLineSetup();
-		
+
 		ServerManager::FinalClose();
-		
+
 		return EXIT_SUCCESS;
 	}
-	
+
 	if (ServerManager::m_bDaemon == true)
 	{
 		printf("Starting %s as daemon using %s as config directory.\n", g_sPtokaXTitle, ServerManager::m_sPath.c_str());
-		
+
 		pid_t pid1 = fork();
 		if (pid1 == -1)
 		{
@@ -245,13 +245,13 @@ int main(int argc, char* argv[])
 		{
 			return EXIT_SUCCESS;
 		}
-		
+
 		if (setsid() == -1)
 		{
 			syslog(LOG_USER | LOG_ERR, "Setsid failed!\n");
 			return EXIT_FAILURE;
 		}
-		
+
 		pid_t pid2 = fork();
 		if (pid2 == -1)
 		{
@@ -262,7 +262,7 @@ int main(int argc, char* argv[])
 		{
 			return EXIT_SUCCESS;
 		}
-		
+
 		if (sPidFile != NULL)
 		{
 			FILE * fw = fopen(sPidFile, "w");
@@ -272,7 +272,7 @@ int main(int argc, char* argv[])
 				fclose(fw);
 			}
 		}
-		
+
 		if (chdir("/") == -1)
 		{
 			syslog(LOG_USER | LOG_ERR, "chdir failed!\n");
@@ -281,78 +281,78 @@ int main(int argc, char* argv[])
 		else if (pid2 > 0)
 		{
 		}
-		
+
 		close(STDIN_FILENO);
 		close(STDOUT_FILENO);
 		close(STDERR_FILENO);
-		
+
 		if (open("/dev/null", O_RDWR) == -1)
 		{
 			syslog(LOG_USER | LOG_ERR, "Failed to open /dev/null!\n");
 			return EXIT_FAILURE;
 		}
-		
+
 		if (dup(0) == -1)
 		{
 			syslog(LOG_USER | LOG_ERR, "First dup(0) failed!\n");
 			return EXIT_FAILURE;
 		}
-		
+
 		if (dup(0) == -1)
 		{
 			syslog(LOG_USER | LOG_ERR, "Second dup(0) failed!\n");
 			return EXIT_FAILURE;
 		}
 	}
-	
+
 	sigset_t sst;
 	sigemptyset(&sst);
 	sigaddset(&sst, SIGPIPE);
 	sigaddset(&sst, SIGURG);
 	sigaddset(&sst, SIGALRM);
-	
+
 	if (ServerManager::m_bDaemon == true)
 	{
 		sigaddset(&sst, SIGHUP);
 	}
-	
+
 	pthread_sigmask(SIG_BLOCK, &sst, NULL);
-	
+
 	struct sigaction sigact;
 	sigact.sa_handler = SigHandler;
 	sigemptyset(&sigact.sa_mask);
 	sigact.sa_flags = 0;
-	
+
 	if (sigaction(SIGINT, &sigact, NULL) == -1)
 	{
 		AppendDebugLog("%s - [ERR] Cannot create sigaction SIGINT in main\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	if (sigaction(SIGTERM, &sigact, NULL) == -1)
 	{
 		AppendDebugLog("%s - [ERR] Cannot create sigaction SIGTERM in main\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	if (sigaction(SIGQUIT, &sigact, NULL) == -1)
 	{
 		AppendDebugLog("%s - [ERR] Cannot create sigaction SIGQUIT in main\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	if (ServerManager::m_bDaemon == false && sigaction(SIGHUP, &sigact, NULL) == -1)
 	{
 		AppendDebugLog("%s - [ERR] Cannot create sigaction SIGHUP in main\n");
 		exit(EXIT_FAILURE);
 	}
-	
-	
+
+
 //    int *foo = (int*)-1; // make a bad pointer
 //    printf("%d\n", *foo);       // causes segfault
 
 	ServerManager::Initialize();
-	
+
 	if (ServerManager::Start() == false)
 	{
 		if (ServerManager::m_bDaemon == false)
@@ -369,29 +369,29 @@ int main(int argc, char* argv[])
 	{
 		printf("%s running...\n", g_sPtokaXTitle);
 	}
-	
+
 	struct timespec sleeptime;
 	sleeptime.tv_sec = 0;
 	sleeptime.tv_nsec = 100000000;
-	
+
 	while (true)
 	{
 		ServiceLoop::m_Ptr->Looper();
-		
+
 		if (ServerManager::m_bServerTerminated == true)
 		{
 			break;
 		}
-		
+
 		if (bTerminatedBySignal == true)
 		{
 			if (ServerManager::m_bIsClose == true)
 			{
 				break;
 			}
-			
+
 			px_string str("Received signal ");
-			
+
 			if (iSignal == SIGINT)
 			{
 				str += "SIGINT";
@@ -412,28 +412,28 @@ int main(int argc, char* argv[])
 			{
 				str += px_string(iSignal);
 			}
-			
+
 			str += " ending...";
-			
+
 			AppendLog(str.c_str());
-			
+
 			ServerManager::m_bIsClose = true;
 			ServerManager::Stop();
-			
+
 			// tell the scripts about the end
 			ScriptManager::m_Ptr->OnExit();
-			
+
 			// send last possible global data
 			GlobalDataQueue::m_Ptr->SendFinalQueue();
-			
+
 			ServerManager::FinalStop(true);
-			
+
 			break;
 		}
-		
+
 		nanosleep(&sleeptime, NULL);
 	}
-	
+
 	if (ServerManager::m_bDaemon == false)
 	{
 		printf("%s ending...\n", g_sPtokaXTitle);
@@ -442,7 +442,7 @@ int main(int argc, char* argv[])
 	{
 		unlink(sPidFile);
 	}
-	
+
 	return EXIT_SUCCESS;
 }
 //---------------------------------------------------------------------------

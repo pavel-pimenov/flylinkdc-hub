@@ -44,7 +44,7 @@ LanguageManager::LanguageManager(void)
 		if (m_sTexts[szi] == NULL)
 		{
 			AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes in LanguageManager::LanguageManager\n", szTextLen+1);
-			
+
 			exit(EXIT_FAILURE);
 		}
 		memcpy(m_sTexts[szi], LangStr[szi], szTextLen);
@@ -70,18 +70,18 @@ void LanguageManager::Load()
 		for (size_t szi = 0; szi < LANG_IDS_END; szi++)
 		{
 			char * sOldText = m_sTexts[szi];
-			
+
 			size_t szTextLen = strlen(LangStr[szi]);
 			m_sTexts[szi] = (char *)realloc(sOldText, szTextLen + 1);
 			if (m_sTexts[szi] == NULL)
 			{
 				m_sTexts[szi] = sOldText;
-				
+
 				AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in LanguageManager::Load\n", szTextLen+1);
-				
+
 				continue;
 			}
-			
+
 			memcpy(m_sTexts[szi], LangStr[szi], szTextLen);
 			m_ui16TextsLens[szi] = (uint16_t)szTextLen;
 			m_sTexts[szi][m_ui16TextsLens[szi]] = '\0';
@@ -94,8 +94,8 @@ void LanguageManager::Load()
 #else
 		string sLanguageFile = ServerManager::m_sPath + "/language/" + string(SettingManager::m_Ptr->m_sTexts[SETTXT_LANGUAGE],
 #endif
-		                                                                         (size_t)SettingManager::m_Ptr->m_ui16TextsLens[SETTXT_LANGUAGE]) + ".xml";
-		                                                                         
+		                       (size_t)SettingManager::m_Ptr->m_ui16TextsLens[SETTXT_LANGUAGE]) + ".xml";
+
 		TiXmlDocument doc(sLanguageFile.c_str());
 		if (doc.LoadFile() == false)
 		{
@@ -105,12 +105,12 @@ void LanguageManager::Load()
 				if (iMsgLen > 0)
 				{
 #ifdef _BUILD_GUI
-				::MessageBox(NULL, ServerManager::m_pGlobalBuffer, g_sPtokaXTitle, MB_OK | MB_ICONERROR);
+					::MessageBox(NULL, ServerManager::m_pGlobalBuffer, g_sPtokaXTitle, MB_OK | MB_ICONERROR);
 #else
-				AppendLog(ServerManager::m_pGlobalBuffer);
+					AppendLog(ServerManager::m_pGlobalBuffer);
 #endif
+				}
 			}
-		}
 		}
 		else
 		{
@@ -125,7 +125,7 @@ void LanguageManager::Load()
 					{
 						continue;
 					}
-					
+
 					const char * sName = text->ToElement()->Attribute("Name");
 					const char * sText = text->ToElement()->GetText();
 					size_t szLen = (sText != NULL ? strlen(sText) : 0);
@@ -140,12 +140,12 @@ void LanguageManager::Load()
 								if (m_sTexts[szi] == NULL)
 								{
 									m_sTexts[szi] = sOldText;
-									
+
 									AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in LanguageManager::Load1\n", szLen+1);
-									
+
 									break;
 								}
-								
+
 								memcpy(m_sTexts[szi], sText, szLen);
 								m_ui16TextsLens[szi] = (uint16_t)szLen;
 								m_sTexts[szi][m_ui16TextsLens[szi]] = '\0';
@@ -168,7 +168,7 @@ void LanguageManager::GenerateXmlExample()
 	xmllanguage.SetAttribute("Name", "Example English Language");
 	xmllanguage.SetAttribute("Author", "PtokaX");
 	xmllanguage.SetAttribute("Version", PtokaXVersionString " build " BUILD_NUMBER);
-	
+
 	for (int i = 0; i < LANG_IDS_END; i++)
 	{
 		TiXmlElement xmlstring("String");
@@ -176,7 +176,7 @@ void LanguageManager::GenerateXmlExample()
 		xmlstring.InsertEndChild(TiXmlText(LangStr[i]));
 		xmllanguage.InsertEndChild(xmlstring);
 	}
-	
+
 	xmldoc.InsertEndChild(xmllanguage);
 	xmldoc.SaveFile("English.xml.example");
 }

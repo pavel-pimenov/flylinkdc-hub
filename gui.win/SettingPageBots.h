@@ -25,52 +25,52 @@
 
 class SettingPageBots : public SettingPage {
 public:
-    bool m_bUpdateHubSec, m_bUpdateMOTD, m_bUpdateHubNameWelcome, m_bUpdateRegOnlyMessage, m_bUpdateShareLimitMessage, m_bUpdateSlotsLimitMessage,
-        m_bUpdateHubSlotRatioMessage, m_bUpdateMaxHubsLimitMessage, m_bUpdateNoTagMessage, m_bUpdateNickLimitMessage, m_bUpdateBotsSameNick, m_bBotNickChanged,
-        m_bUpdateBot, m_bOpChatNickChanged, m_bUpdateOpChat;
+	bool m_bUpdateHubSec, m_bUpdateMOTD, m_bUpdateHubNameWelcome, m_bUpdateRegOnlyMessage, m_bUpdateShareLimitMessage, m_bUpdateSlotsLimitMessage,
+	     m_bUpdateHubSlotRatioMessage, m_bUpdateMaxHubsLimitMessage, m_bUpdateNoTagMessage, m_bUpdateNickLimitMessage, m_bUpdateBotsSameNick, m_bBotNickChanged,
+	     m_bUpdateBot, m_bOpChatNickChanged, m_bUpdateOpChat;
 
-    SettingPageBots();
-    ~SettingPageBots() { };
+	SettingPageBots();
+	~SettingPageBots() { };
 
-    bool CreateSettingPage(HWND hOwner);
+	bool CreateSettingPage(HWND hOwner);
 
-    void Save();
-    void GetUpdates(bool &bUpdatedHubNameWelcome, bool & /*bUpdatedHubName*/, bool & /*bUpdatedTCPPorts*/, bool & /*bUpdatedUDPPort*/, bool & /*bUpdatedAutoReg*/,
-        bool &bUpdatedMOTD, bool &bUpdatedHubSec, bool &bUpdatedRegOnlyMessage, bool &bUpdatedShareLimitMessage,
-		bool &bUpdatedSlotsLimitMessage, bool &bUpdatedHubSlotRatioMessage, bool &bUpdatedMaxHubsLimitMessage, bool &bUpdatedNoTagMessage, 
-		bool &bUpdatedNickLimitMessage, bool &bUpdatedBotsSameNick, bool &bUpdatedBotNick, bool &bUpdatedBot, bool &bUpdatedOpChatNick,
-		bool &bUpdatedOpChat, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
-        bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/);
+	void Save();
+	void GetUpdates(bool &bUpdatedHubNameWelcome, bool & /*bUpdatedHubName*/, bool & /*bUpdatedTCPPorts*/, bool & /*bUpdatedUDPPort*/, bool & /*bUpdatedAutoReg*/,
+	                bool &bUpdatedMOTD, bool &bUpdatedHubSec, bool &bUpdatedRegOnlyMessage, bool &bUpdatedShareLimitMessage,
+	                bool &bUpdatedSlotsLimitMessage, bool &bUpdatedHubSlotRatioMessage, bool &bUpdatedMaxHubsLimitMessage, bool &bUpdatedNoTagMessage,
+	                bool &bUpdatedNickLimitMessage, bool &bUpdatedBotsSameNick, bool &bUpdatedBotNick, bool &bUpdatedBot, bool &bUpdatedOpChatNick,
+	                bool &bUpdatedOpChat, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
+	                bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/);
 
-    char * GetPageName();
-    void FocusLastItem();
+	char * GetPageName();
+	void FocusLastItem();
 private:
-    HWND m_hWndPageItems[17];
-    
-    enum enmPageItems {
-        GB_HUB_BOT,
-        BTN_HUB_BOT_ENABLE,
-        GB_HUB_BOT_NICK,
-        EDT_HUB_BOT_NICK,
-        BTN_HUB_BOT_IS_HUB_SEC,
-        GB_HUB_BOT_DESCRIPTION,
-        EDT_HUB_BOT_DESCRIPTION,
-        GB_HUB_BOT_EMAIL,
-        EDT_HUB_BOT_EMAIL,
-        GB_OP_CHAT_BOT,
-        BTN_OP_CHAT_BOT_ENABLE,
-        GB_OP_CHAT_BOT_NICK,
-        EDT_OP_CHAT_BOT_NICK,
-        GB_OP_CHAT_BOT_DESCRIPTION,
-        EDT_OP_CHAT_BOT_DESCRIPTION,
-        GB_OP_CHAT_BOT_EMAIL,
-        EDT_OP_CHAT_BOT_EMAIL
-    };
+	HWND m_hWndPageItems[17];
 
-    SettingPageBots(const SettingPageBots&) = delete;
-    const SettingPageBots& operator=(const SettingPageBots&) = delete;
+	enum enmPageItems {
+		GB_HUB_BOT,
+		BTN_HUB_BOT_ENABLE,
+		GB_HUB_BOT_NICK,
+		EDT_HUB_BOT_NICK,
+		BTN_HUB_BOT_IS_HUB_SEC,
+		GB_HUB_BOT_DESCRIPTION,
+		EDT_HUB_BOT_DESCRIPTION,
+		GB_HUB_BOT_EMAIL,
+		EDT_HUB_BOT_EMAIL,
+		GB_OP_CHAT_BOT,
+		BTN_OP_CHAT_BOT_ENABLE,
+		GB_OP_CHAT_BOT_NICK,
+		EDT_OP_CHAT_BOT_NICK,
+		GB_OP_CHAT_BOT_DESCRIPTION,
+		EDT_OP_CHAT_BOT_DESCRIPTION,
+		GB_OP_CHAT_BOT_EMAIL,
+		EDT_OP_CHAT_BOT_EMAIL
+	};
 
-    LRESULT SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	SettingPageBots(const SettingPageBots&) = delete;
+	const SettingPageBots& operator=(const SettingPageBots&) = delete;
+
+	LRESULT SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 };
 //------------------------------------------------------------------------------
 

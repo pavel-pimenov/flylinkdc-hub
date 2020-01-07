@@ -27,108 +27,108 @@ struct User;
 struct ProfileItem
 {
 	char * m_sName;
-	
+
 	bool m_bPermissions[256];
-	
+
 	ProfileItem();
 	~ProfileItem();
-	
+
 	DISALLOW_COPY_AND_ASSIGN(ProfileItem);
-	
+
 };
 //---------------------------------------------------------------------------
 
 class ProfileManager
 {
-	private:
-	
-		ProfileItem * CreateProfile(const char * sName);
-		
-		void Load();
-		void LoadXML();
-	public:
-		static ProfileManager * m_Ptr;
-		
-		ProfileItem ** m_ppProfilesTable;
-		
-		uint16_t m_ui16ProfileCount;
-		
-		enum ProfilePermissions
-		{
-			HASKEYICON,
-			NODEFLOODGETNICKLIST,
-			NODEFLOODMYINFO,
-			NODEFLOODSEARCH,
-			NODEFLOODPM,
-			NODEFLOODMAINCHAT,
-			MASSMSG,
-			TOPIC,
-			TEMP_BAN,
-			REFRESHTXT,
-			NOTAGCHECK,
-			TEMP_UNBAN,
-			DELREGUSER,
-			ADDREGUSER,
-			NOCHATLIMITS,
-			NOMAXHUBCHECK,
-			NOSLOTHUBRATIO,
-			NOSLOTCHECK,
-			NOSHARELIMIT,
-			CLRPERMBAN,
-			CLRTEMPBAN,
-			GETINFO,
-			GETBANLIST,
-			RSTSCRIPTS,
-			RSTHUB,
-			TEMPOP,
-			GAG,
-			REDIRECT,
-			BAN,
-			KICK,
-			DROP,
-			ENTERFULLHUB,
-			ENTERIFIPBAN,
-			ALLOWEDOPCHAT,
-			SENDALLUSERIP,
-			RANGE_BAN,
-			RANGE_UNBAN,
-			RANGE_TBAN,
-			RANGE_TUNBAN,
-			GET_RANGE_BANS,
-			CLR_RANGE_BANS,
-			CLR_RANGE_TBANS,
-			UNBAN,
-			NOSEARCHLIMITS,
-			SENDFULLMYINFOS,
-			NOIPCHECK,
-			CLOSE,
-			NODEFLOODCTM,
-			NODEFLOODRCTM,
-			NODEFLOODSR,
-			NODEFLOODRECV,
-			NOCHATINTERVAL,
-			NOPMINTERVAL,
-			NOSEARCHINTERVAL,
-			NOUSRSAMEIP,
-			NORECONNTIME
-		};
-		
-		ProfileManager();
-		~ProfileManager();
-		
-		bool IsAllowed(const User * pUser, const uint32_t ui32Option) const;
-		bool IsProfileAllowed(const int32_t i32Profile, const uint32_t ui32Option) const;
-		int32_t AddProfile(const char * sName);
-		int32_t GetProfileIndex(const char * sName);
-		int32_t RemoveProfileByName(const char * sName);
-		void MoveProfileDown(const uint16_t ui16Profile);
-		void MoveProfileUp(const uint16_t ui16Profile);
-		void ChangeProfileName(const uint16_t ui16Profile, const char * sName, const size_t szLen);
-		void ChangeProfilePermission(const uint16_t ui16Profile, const size_t szId, const bool bValue);
-		void SaveProfiles();
-		bool RemoveProfile(const uint16_t ui16Profile);
-		
-		DISALLOW_COPY_AND_ASSIGN(ProfileManager);
+private:
+
+	ProfileItem * CreateProfile(const char * sName);
+
+	void Load();
+	void LoadXML();
+public:
+	static ProfileManager * m_Ptr;
+
+	ProfileItem ** m_ppProfilesTable;
+
+	uint16_t m_ui16ProfileCount;
+
+	enum ProfilePermissions
+	{
+		HASKEYICON,
+		NODEFLOODGETNICKLIST,
+		NODEFLOODMYINFO,
+		NODEFLOODSEARCH,
+		NODEFLOODPM,
+		NODEFLOODMAINCHAT,
+		MASSMSG,
+		TOPIC,
+		TEMP_BAN,
+		REFRESHTXT,
+		NOTAGCHECK,
+		TEMP_UNBAN,
+		DELREGUSER,
+		ADDREGUSER,
+		NOCHATLIMITS,
+		NOMAXHUBCHECK,
+		NOSLOTHUBRATIO,
+		NOSLOTCHECK,
+		NOSHARELIMIT,
+		CLRPERMBAN,
+		CLRTEMPBAN,
+		GETINFO,
+		GETBANLIST,
+		RSTSCRIPTS,
+		RSTHUB,
+		TEMPOP,
+		GAG,
+		REDIRECT,
+		BAN,
+		KICK,
+		DROP,
+		ENTERFULLHUB,
+		ENTERIFIPBAN,
+		ALLOWEDOPCHAT,
+		SENDALLUSERIP,
+		RANGE_BAN,
+		RANGE_UNBAN,
+		RANGE_TBAN,
+		RANGE_TUNBAN,
+		GET_RANGE_BANS,
+		CLR_RANGE_BANS,
+		CLR_RANGE_TBANS,
+		UNBAN,
+		NOSEARCHLIMITS,
+		SENDFULLMYINFOS,
+		NOIPCHECK,
+		CLOSE,
+		NODEFLOODCTM,
+		NODEFLOODRCTM,
+		NODEFLOODSR,
+		NODEFLOODRECV,
+		NOCHATINTERVAL,
+		NOPMINTERVAL,
+		NOSEARCHINTERVAL,
+		NOUSRSAMEIP,
+		NORECONNTIME
+	};
+
+	ProfileManager();
+	~ProfileManager();
+
+	bool IsAllowed(const User * pUser, const uint32_t ui32Option) const;
+	bool IsProfileAllowed(const int32_t i32Profile, const uint32_t ui32Option) const;
+	int32_t AddProfile(const char * sName);
+	int32_t GetProfileIndex(const char * sName);
+	int32_t RemoveProfileByName(const char * sName);
+	void MoveProfileDown(const uint16_t ui16Profile);
+	void MoveProfileUp(const uint16_t ui16Profile);
+	void ChangeProfileName(const uint16_t ui16Profile, const char * sName, const size_t szLen);
+	void ChangeProfilePermission(const uint16_t ui16Profile, const size_t szId, const bool bValue);
+	void SaveProfiles();
+	bool RemoveProfile(const uint16_t ui16Profile);
+
+	DISALLOW_COPY_AND_ASSIGN(ProfileManager);
 };
 //---------------------------------------------------------------------------
 
