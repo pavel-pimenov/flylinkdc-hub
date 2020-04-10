@@ -401,9 +401,9 @@ const char * formatTime(uint64_t ui64Rest)
 		int iLen = snprintf(buf, 128, "%" PRIu64 " %s", n, n > 1 ? LanguageManager::m_Ptr->m_sTexts[LAN_YEARS_LWR] : LanguageManager::m_Ptr->m_sTexts[LAN_YEAR_LWR]);
 		if (iLen <= 0)
 		{
-			time[0] = '\0';
 			return time;
 		}
+
 		strcat(time, buf);
 		i++;
 	}
@@ -486,7 +486,6 @@ const char * formatSecTime(uint64_t ui64Rest)
 		int iLen = snprintf(buf, 128, "%" PRIu64 " %s", n, n > 1 ? LanguageManager::m_Ptr->m_sTexts[LAN_YEARS_LWR] : LanguageManager::m_Ptr->m_sTexts[LAN_YEAR_LWR]);
 		if (iLen <= 0)
 		{
-			time[0] = '\0';
 			return time;
 		}
 
