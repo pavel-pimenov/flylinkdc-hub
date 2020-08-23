@@ -168,7 +168,7 @@ int main(int argc, char* argv[])
 		else if (strcmp(argv[i], "-use-syslog") == 0)
 		{
 			extern bool g_isUseSyslog;
-			g_isUseSyslog = true;
+			// g_isUseSyslog = true;
 			printf("\r\n[+] Use syslog for debug\r\n");
 		}
 		else if (strcmp(argv[i], "-use-log") == 0)
