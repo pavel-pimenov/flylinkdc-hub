@@ -1160,6 +1160,9 @@ void User::SendCharDelayedExtJSON()
 
 void User::logInvalidUser(int p_id, const char * p_buffer, int p_len, bool p_is_send)
 {
+
+	return;
+
 	std::string l_name = "/home/dc/src/PtokaX/logs/";
 	if (p_is_send)
 		l_name += "send-";
