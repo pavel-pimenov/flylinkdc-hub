@@ -4374,7 +4374,8 @@ void DcCommands::MyNick(DcCommand * pDcCommand)
 		return;
 	}
 
-	strcpy(pOtherUser->m_sIPv4, pDcCommand->m_pUser->m_sIP);
+	strncpy(pOtherUser->m_sIPv4, pDcCommand->m_pUser->m_sIP,sizeof(pOtherUser->m_sIPv4));
+	pOtherUser->m_sIPv4[sizeof(pOtherUser->m_sIPv4)-1] = 0;
 	pOtherUser->m_ui8IPv4Len = pDcCommand->m_pUser->m_ui8IpLen;
 	pOtherUser->m_ui32BoolBits |= User::BIT_IPV4;
 
