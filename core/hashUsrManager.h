@@ -24,6 +24,7 @@
 struct User;
 //---------------------------------------------------------------------------
 #include <unordered_map>
+#include <string>
 /*
 #include <unordered_set>
 #include <map>
