@@ -1162,7 +1162,7 @@ void User::logInvalidUser(int p_id, const char * p_buffer, int p_len, bool p_is_
 {
 
 	return;
-
+#if 0
 	std::string l_name = "/home/dc/src/PtokaX/logs/";
 	if (p_is_send)
 		l_name += "send-";
@@ -1226,7 +1226,7 @@ void User::logInvalidUser(int p_id, const char * p_buffer, int p_len, bool p_is_
 		l_file_out.write(p_buffer, p_len);
 		//l_file_out << std::endl;
 	}
-
+#endif 
 }
 //---------------------------------------------------------------------------
 

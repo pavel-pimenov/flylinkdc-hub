@@ -287,7 +287,7 @@ void ServiceLoop::loadProxyGuard()
 							}
 							else
 							{
-								g_ProxyArray.push_back(CFlyIPRange(l_startIP, l_endIP));
+								g_ProxyArray.emplace_back(CFlyIPRange(l_startIP, l_endIP));
 							}
 						}
 						else
