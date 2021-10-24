@@ -229,51 +229,6 @@
     <ClCompile Include="skein\Optimized_32bit\skein_debug.c">
       <Filter>skein</Filter>
     </ClCompile>
-    <ClCompile Include="zlib\src\adler32.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\src\compress.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\src\crc32.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\src\deflate.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\src\gzclose.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\src\gzlib.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\src\gzread.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\src\gzwrite.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\src\infback.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\src\inffast.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\src\inflate.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\src\inftrees.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\src\trees.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\src\uncompr.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\src\zutil.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
     <ClCompile Include="sqlite\sqlite3.c">
       <Filter>sqlite</Filter>
     </ClCompile>
@@ -294,6 +249,75 @@
     </ClCompile>
     <ClCompile Include="core\HubCommands-RZ.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\adler32.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\chunkset.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\compare258.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\compress.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\crc32.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\crc32_comb.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\deflate.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\deflate_fast.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\deflate_medium.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\deflate_quick.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\deflate_slow.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\functable.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\gzlib.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\gzread.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\gzwrite.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\infback.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\inffast.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\inflate.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\inftrees.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\insert_string.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\trees.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\uncompr.c">
+      <Filter>zlib-ng</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib-ng\zutil.c">
+      <Filter>zlib-ng</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -528,39 +552,6 @@
     <ClInclude Include="skein\Optimized_32bit\skein_port.h">
       <Filter>skein</Filter>
     </ClInclude>
-    <ClInclude Include="zlib\src\crc32.h">
-      <Filter>zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\src\deflate.h">
-      <Filter>zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\src\gzguts.h">
-      <Filter>zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\src\inffast.h">
-      <Filter>zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\src\inffixed.h">
-      <Filter>zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\src\inflate.h">
-      <Filter>zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\src\inftrees.h">
-      <Filter>zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\src\trees.h">
-      <Filter>zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\src\zconf.h">
-      <Filter>zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\src\zlib.h">
-      <Filter>zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="zlib\src\zutil.h">
-      <Filter>zlib</Filter>
-    </ClInclude>
     <ClInclude Include="sqlite\sqlite3.h">
       <Filter>sqlite</Filter>
     </ClInclude>
@@ -598,11 +589,11 @@
     <Filter Include="skein">
       <UniqueIdentifier>{7f059da1-fc46-4faf-8a5e-c3f9ea5df3d8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="zlib">
-      <UniqueIdentifier>{3485dbac-b20e-4800-8072-3ee39ea8b54f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="sqlite">
       <UniqueIdentifier>{49aee817-015f-428f-845c-659b8f813081}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="zlib-ng">
+      <UniqueIdentifier>{3485dbac-b20e-4800-8072-3ee39ea8b54f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
