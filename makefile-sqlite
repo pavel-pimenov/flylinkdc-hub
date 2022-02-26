@@ -29,7 +29,7 @@ CCFLAGS = -O2 -g -Wall -Wextra
 #*******************************************************************************
 # Include
 #*******************************************************************************
-INCLUDE = -Itinyxml -Iskein/Optimized_32bit -I/usr/include -I/usr/include/lua5.1
+INCLUDE = -Itinyxml -Iskein/Optimized_32bit -I/usr/include -I/usr/include/lua5.4 -Izlib-ng
 
 #*******************************************************************************
 # Files to compile and link
@@ -54,61 +54,67 @@ OBJS = $(CURDIR)/obj/colUsers.o $(CURDIR)/obj/DB-SQLite.o $(CURDIR)/obj/DcComman
 # then remove -llua5.1 and after tinyxml/tinyxml.a add /usr/local/lib/liblua.a (default path when is Lua compiled from sources).
 #*******************************************************************************
 
+
+lua54: INCLUDE = -Iskein/Optimized_32bit -I/usr/include -I/usr/include/lua5.4 -Izlib-ng
+lua54: $(OBJS)
+	cd skein; $(MAKE)
+	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -llua5.4 -ltinyxml -ldl
+
 PtokaX: INCLUDE = -Iskein/Optimized_32bit -I/usr/include -I/usr/include/lua5.3
 PtokaX: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -lz -llua5.3 -ltinyxml -ldl
+	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -llua5.3 -ltinyxml -ldl
 
 lua52: INCLUDE = -Iskein/Optimized_32bit -I/usr/include -I/usr/include/lua5.2
 lua52: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -lz -llua5.2 -ltinyxml -ldl
+	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -llua5.2 -ltinyxml -ldl
 
 lua51: INCLUDE = -Iskein/Optimized_32bit -I/usr/include -I/usr/include/lua5.1
 lua51: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -lz -llua5.1 -ltinyxml -ldl
+	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -llua5.1 -ltinyxml -ldl
 
 centos: CXXFLAGS = -O -g -Wall -Wextra -DTIXML_USE_STL -D_WITH_SQLITE
 centos: $(OBJS)
 	cd skein; $(MAKE)
 	cd tinyxml; $(MAKE)
-	$(CXX) $(OBJS) $(CURDIR)/tinyxml/tinyxml.a $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -lz -llua -ldl
+	$(CXX) $(OBJS) $(CURDIR)/tinyxml/tinyxml.a $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lrt -llua -ldl
 
 fedora: INCLUDE = -Iskein/Optimized_32bit -I/usr/include
 fedora: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua -ltinyxml -ldl 
+	$(CXX) $(OBJS) $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -llua -ltinyxml -ldl 
 
 freebsd: INCLUDE = -Iskein/Optimized_32bit -I/usr/include -I/usr/local/include -I/usr/local/include/lua53
 freebsd: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) -L/usr/local/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua-5.3 -ltinyxml -liconv -ldl
+	$(CXX) $(OBJS) -L/usr/local/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -llua-5.3 -ltinyxml -liconv -ldl
 	
 freebsd51: INCLUDE = -Iskein/Optimized_32bit -I/usr/include -I/usr/local/include -I/usr/local/include/lua51
 freebsd51: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) -L/usr/local/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua-5.1 -ltinyxml -liconv -ldl
+	$(CXX) $(OBJS) -L/usr/local/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -llua-5.1 -ltinyxml -liconv -ldl
 
 openbsd: INCLUDE = -Iskein/Optimized_32bit -I/usr/include -I/usr/local/include -I/usr/local/include/lua-5.3
 openbsd: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) -L/usr/local/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua5.3 -ltinyxml -liconv -ldl
+	$(CXX) $(OBJS) -L/usr/local/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -llua5.3 -ltinyxml -liconv -ldl
 
 openbsd51: INCLUDE = -Iskein/Optimized_32bit -I/usr/include -I/usr/local/include -I/usr/local/include/lua-5.1
 openbsd51: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) -L/usr/local/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua5.1 -ltinyxml -liconv -ldl
+	$(CXX) $(OBJS) -L/usr/local/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -llua5.1 -ltinyxml -liconv -ldl
 
 netbsd: INCLUDE = -Iskein/Optimized_32bit -I/usr/include -I/usr/pkg/include -I/usr/pkg/include/lua-5.3
 netbsd: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) -L/usr/pkg/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua5.3 -ltinyxml -liconv -ldl
+	$(CXX) $(OBJS) -L/usr/pkg/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -llua5.3 -ltinyxml -liconv -ldl
 
 netbsd51: INCLUDE = -Iskein/Optimized_32bit -I/usr/include -I/usr/pkg/include -I/usr/pkg/include/lua-5.1
 netbsd51: $(OBJS)
 	cd skein; $(MAKE)
-	$(CXX) $(OBJS) -L/usr/pkg/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -lz -llua5.1 -ltinyxml -liconv -ldl
+	$(CXX) $(OBJS) -L/usr/pkg/lib $(CURDIR)/skein/skein.a -o PtokaX -lstdc++ -lpthread -lm -llua5.1 -ltinyxml -liconv -ldl
 
 install:
 	@if test -d $(INSTDIR); then \

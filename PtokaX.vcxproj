@@ -33,27 +33,27 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Testing|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -867,20 +867,23 @@
     <ClCompile Include="zlib-ng\compress.c" />
     <ClCompile Include="zlib-ng\crc32.c" />
     <ClCompile Include="zlib-ng\crc32_comb.c" />
+    <ClCompile Include="zlib-ng\crc32_fold.c" />
     <ClCompile Include="zlib-ng\deflate.c" />
     <ClCompile Include="zlib-ng\deflate_fast.c" />
+    <ClCompile Include="zlib-ng\deflate_huff.c" />
     <ClCompile Include="zlib-ng\deflate_medium.c" />
     <ClCompile Include="zlib-ng\deflate_quick.c" />
+    <ClCompile Include="zlib-ng\deflate_rle.c" />
     <ClCompile Include="zlib-ng\deflate_slow.c" />
+    <ClCompile Include="zlib-ng\deflate_stored.c" />
     <ClCompile Include="zlib-ng\functable.c" />
-    <ClCompile Include="zlib-ng\gzlib.c" />
-    <ClCompile Include="zlib-ng\gzread.c" />
-    <ClCompile Include="zlib-ng\gzwrite.c" />
     <ClCompile Include="zlib-ng\infback.c" />
     <ClCompile Include="zlib-ng\inffast.c" />
     <ClCompile Include="zlib-ng\inflate.c" />
     <ClCompile Include="zlib-ng\inftrees.c" />
     <ClCompile Include="zlib-ng\insert_string.c" />
+    <ClCompile Include="zlib-ng\insert_string_roll.c" />
+    <ClCompile Include="zlib-ng\slide_hash.c" />
     <ClCompile Include="zlib-ng\trees.c" />
     <ClCompile Include="zlib-ng\uncompr.c" />
     <ClCompile Include="zlib-ng\zutil.c" />
