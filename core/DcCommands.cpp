@@ -2915,6 +2915,7 @@ void DcCommands::Supports(DcCommand * pDcCommand)
 			{
 				pDcCommand->m_pUser->m_ui32SupportBits |= User::SUPPORTBIT_HUBURL;
 			}
+			break; // fix PVS Studio
 		}
 		case 'U':
 		{
