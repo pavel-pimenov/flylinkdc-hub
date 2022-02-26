@@ -1,0 +1,98 @@
+#!/bin/bash
+#svn up
+rm PtokaX
+gcc -static -std=c++11 -O2 -o PtokaX \
+ tinyxml/tinyxmlparser.cpp \
+ tinyxml/tinyxmlerror.cpp \
+ tinyxml/tinyxml.cpp \
+ core/colUsers.cpp \
+ core/DB-SQLite.cpp \
+ core/DcCommands.cpp \
+ core/DeFlood.cpp \
+ core/eventqueue.cpp \
+ core/ExceptionHandling.cpp \
+ core/GlobalDataQueue.cpp \
+ core/hashBanManager.cpp \
+ core/hashRegManager.cpp \
+ core/hashUsrManager.cpp \
+ core/HubCommands.cpp \
+ core/HubCommands-AE.cpp \
+ core/HubCommands-FH.cpp \
+ core/HubCommands-IQ.cpp \
+ core/HubCommands-RZ.cpp \
+ core/IP2Country.cpp \
+ core/LanguageManager.cpp \
+ core/LuaBanManLib.cpp \
+ core/LuaCoreLib.cpp \
+ core/LuaIP2CountryLib.cpp \
+ core/LuaProfManLib.cpp \
+ core/LuaRegManLib.cpp \
+ core/LuaScript.cpp \
+ core/LuaScriptManager.cpp \
+ core/LuaScriptManLib.cpp \
+ core/LuaSetManLib.cpp \
+ core/LuaTmrManLib.cpp \
+ core/LuaUDPDbgLib.cpp \
+ core/ProfileManager.cpp \
+ core/PtokaX-nix.cpp \
+ core/PXBReader.cpp \
+ core/pxstring.cpp \
+ core/RegThread.cpp \
+ core/ResNickManager.cpp \
+ core/ServerManager.cpp \
+ core/ServerThread.cpp \
+ core/serviceLoop.cpp \
+ core/SettingManager.cpp \
+ core/TextConverter.cpp \
+ core/TextFileManager.cpp \
+ core/UdpDebug.cpp \
+ core/UDPThread.cpp \
+ core/UpdateCheckThread.cpp \
+ core/User.cpp \
+ core/utility.cpp \
+ core/ZlibUtility.cpp \
+ zlib-ng/adler32.c \
+ zlib-ng/chunkset.c \
+ zlib-ng/compare258.c \
+ zlib-ng/compress.c \
+ zlib-ng/crc32.c \
+ zlib-ng/crc32_comb.c \
+ zlib-ng/deflate.c \
+ zlib-ng/deflate_fast.c \
+ zlib-ng/deflate_medium.c \
+ zlib-ng/deflate_quick.c \
+ zlib-ng/deflate_slow.c \
+ zlib-ng/functable.c \
+ zlib-ng/infback.c \
+ zlib-ng/inffast.c \
+ zlib-ng/inflate.c \
+ zlib-ng/inftrees.c \
+ zlib-ng/insert_string.c \
+ zlib-ng/trees.c \
+ zlib-ng/uncompr.c \
+ zlib-ng/zutil.c \
+ zlib-ng/deflate_huff.c \
+ zlib-ng/deflate_stored.c \
+ zlib-ng/deflate_rle.c \
+ zlib-ng/crc32_fold.c \
+ zlib-ng/insert_string_roll.c \
+ zlib-ng/slide_hash.c \
+ skein/Optimized_32bit/SHA3api_ref.c \
+ skein/Optimized_32bit/skein.c \
+ skein/Optimized_32bit/skein_block.c \
+ skein/Optimized_32bit/skein_debug.c \
+ -I /usr/include \
+ -I /usr/include/lua5.4 \
+ -I ./core \
+ -I ./json \
+ -I ./tinyxml \
+ -I ./zlib-ng \
+ -I ./skein/Optimized_32bit \
+ -D_REENTRANT \
+ -D_NO_DEBUG \
+ -D_WITH_SQLITE \
+ -DFLYLINKDC_USE_DB \
+ -DUSE_FLYLINKDC_EXT_JSON \
+ -lstdc++ -pthread -lrt -llua5.4 -lsqlite3 -ldl -lm
+
+
