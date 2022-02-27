@@ -1,8 +1,4 @@
-# CentOS
-# sudo yum install tinyxml-devel.x86_64 libunwind-devel.x86_64 zlib-devel.x86_64 lua-devel libsqlite3x-devel.x86_64
 
-git pull
-svn up
 rm PtokaX
 rm core.*
 
