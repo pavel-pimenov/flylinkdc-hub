@@ -1,3 +1,4 @@
+#!/bin/bash
 
 rm PtokaX
 rm core.*
@@ -63,13 +64,3 @@ gcc -std=c++11 -O2 -Wall -Wextra -o PtokaX \
  -DUSE_FLYLINKDC_EXT_JSON \
  -DTIXML_USE_STL \
  -lstdc++ -pthread -ldl -lm -lz -llua -lsqlite3
-
-ulimit -n 32768
-ulimit -c unlimited
-LANG=ru_RU.CP1251
-if [ -n `locale -a|grep -i ru_RU.c p1251` ]; then
-./PtokaX
-else
-echo 'ERROR: run $sudo localedef -c -i ru_RU -f CP1251 ru_RU.CP1251'
-fi
-valgrind ./PtokaX
