@@ -250,83 +250,83 @@
     <ClCompile Include="core\HubCommands-RZ.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\adler32.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\adler32.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\chunkset.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\chunkset.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\compare258.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\compare258.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\compress.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\compress.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\crc32.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\crc32.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\crc32_comb.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\crc32_comb.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\deflate.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\deflate.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\deflate_fast.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\deflate_fast.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\deflate_medium.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\deflate_medium.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\deflate_quick.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\deflate_quick.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\deflate_slow.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\deflate_slow.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\infback.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\infback.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\inffast.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\inffast.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\inflate.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\inflate.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\inftrees.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\inftrees.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\insert_string.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\insert_string.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\trees.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\trees.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\uncompr.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\uncompr.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\zutil.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\zutil.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\deflate_huff.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\deflate_huff.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\deflate_stored.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\deflate_stored.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\functable.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\functable.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\deflate_rle.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\deflate_rle.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\crc32_fold.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\crc32_fold.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\insert_string_roll.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\insert_string_roll.c">
+      <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib-ng\slide_hash.c">
-      <Filter>zlib-ng</Filter>
+    <ClCompile Include="zlib\slide_hash.c">
+      <Filter>zlib</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -601,7 +601,7 @@
     <Filter Include="sqlite">
       <UniqueIdentifier>{49aee817-015f-428f-845c-659b8f813081}</UniqueIdentifier>
     </Filter>
-    <Filter Include="zlib-ng">
+    <Filter Include="zlib">
       <UniqueIdentifier>{3485dbac-b20e-4800-8072-3ee39ea8b54f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
