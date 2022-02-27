@@ -27,7 +27,7 @@
 #ifdef _WIN32
 #pragma hdrstop
 #endif
-#include <zlib-ng.h>
+#include <zlib.h>
 //---------------------------------------------------------------------------
 static const uint32_t ZBUFFERLEN = PTOKAX_GLOBAL_BUFF_SIZE;
 static const uint32_t ZMINLEN = 128;
@@ -90,7 +90,7 @@ char * ZlibUtility::CreateZPipe(const char *sInData, const size_t szInDataSize, 
 		}
 	}
 
-	zng_stream stream;
+	z_stream stream;
 
 	// init zlib struct
 	memset(&stream, 0, sizeof(stream));
@@ -99,7 +99,7 @@ char * ZlibUtility::CreateZPipe(const char *sInData, const size_t szInDataSize, 
 	stream.zfree  = Z_NULL;
 	stream.data_type = Z_TEXT;
 
-	zng_deflateInit(&stream, Z_PTOKAX_COMPRESSION);
+	deflateInit(&stream, Z_PTOKAX_COMPRESSION);
 
 	stream.next_in  = (Bytef*)sInData;
 	stream.avail_in = (uInt)szInDataSize;
@@ -108,9 +108,9 @@ char * ZlibUtility::CreateZPipe(const char *sInData, const size_t szInDataSize, 
 	stream.avail_out = (uInt)m_szZbufferSize-5;
 
 	// compress
-	if (zng_deflate(&stream, Z_FINISH) != Z_STREAM_END)
+	if (deflate(&stream, Z_FINISH) != Z_STREAM_END)
 	{
-		zng_deflateEnd(&stream);
+		deflateEnd(&stream);
 		AppendDebugLog("%s - [ERR] deflate error\n");
 		ui32OutDataLen = 0;
 		return m_pZbuffer;
@@ -119,7 +119,7 @@ char * ZlibUtility::CreateZPipe(const char *sInData, const size_t szInDataSize, 
 	ui32OutDataLen = stream.total_out + 5;
 
 	// cleanup zlib
-	zng_deflateEnd(&stream);
+	deflateEnd(&stream);
 
 	if (ui32OutDataLen >= szInDataSize)
 	{
@@ -166,7 +166,7 @@ char * ZlibUtility::CreateZPipe(const char *sInData, const size_t szInDataSize, 
 		}
 	}
 
-	zng_stream stream;
+	z_stream stream;
 
 	// init zlib struct
 	memset(&stream, 0, sizeof(stream));
@@ -175,7 +175,7 @@ char * ZlibUtility::CreateZPipe(const char *sInData, const size_t szInDataSize, 
 	stream.zfree  = Z_NULL;
 	stream.data_type = Z_TEXT;
 
-	zng_deflateInit(&stream, Z_PTOKAX_COMPRESSION);
+	deflateInit(&stream, Z_PTOKAX_COMPRESSION);
 
 	stream.next_in  = (Bytef*)sInData;
 	stream.avail_in = (uInt)szInDataSize;
@@ -184,9 +184,9 @@ char * ZlibUtility::CreateZPipe(const char *sInData, const size_t szInDataSize, 
 	stream.avail_out = (uInt)m_szZbufferSize-5;
 
 	// compress
-	if (zng_deflate(&stream, Z_FINISH) != Z_STREAM_END)
+	if (deflate(&stream, Z_FINISH) != Z_STREAM_END)
 	{
-		zng_deflateEnd(&stream);
+		deflateEnd(&stream);
 		AppendDebugLog("%s - [ERR] deflate error\n");
 		return sOutData;
 	}
@@ -194,7 +194,7 @@ char * ZlibUtility::CreateZPipe(const char *sInData, const size_t szInDataSize, 
 	szOutDataLen = stream.total_out + 5;
 
 	// cleanup zlib
-	zng_deflateEnd(&stream);
+	deflateEnd(&stream);
 
 	if (szOutDataLen >= szInDataSize)
 	{
@@ -263,7 +263,7 @@ char * ZlibUtility::CreateZPipeAlign(const char *sInData, const size_t szInDataS
 		}
 	}
 
-	zng_stream stream;
+	z_stream stream;
 
 	// init zlib struct
 	memset(&stream, 0, sizeof(stream));
@@ -272,7 +272,7 @@ char * ZlibUtility::CreateZPipeAlign(const char *sInData, const size_t szInDataS
 	stream.zfree  = Z_NULL;
 	stream.data_type = Z_TEXT;
 
-	zng_deflateInit(&stream, Z_PTOKAX_COMPRESSION);
+	deflateInit(&stream, Z_PTOKAX_COMPRESSION);
 
 	stream.next_in  = (Bytef*)sInData;
 	stream.avail_in = (uInt)szInDataSize;
@@ -281,9 +281,9 @@ char * ZlibUtility::CreateZPipeAlign(const char *sInData, const size_t szInDataS
 	stream.avail_out = (uInt)m_szZbufferSize-5;
 
 	// compress
-	if (zng_deflate(&stream, Z_FINISH) != Z_STREAM_END)
+	if (deflate(&stream, Z_FINISH) != Z_STREAM_END)
 	{
-		zng_deflateEnd(&stream);
+		deflateEnd(&stream);
 		AppendDebugLog("%s - [ERR] deflate error\n");
 		return sOutData;
 	}
@@ -291,7 +291,7 @@ char * ZlibUtility::CreateZPipeAlign(const char *sInData, const size_t szInDataS
 	ui32OutDataLen = stream.total_out + 5;
 
 	// cleanup zlib
-	zng_deflateEnd(&stream);
+	deflateEnd(&stream);
 
 	if (ui32OutDataLen >= szInDataSize)
 	{

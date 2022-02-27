@@ -82,7 +82,7 @@ gcc -static -std=c++11 -O2 -o PtokaX \
  skein/Optimized_32bit/skein_block.c \
  skein/Optimized_32bit/skein_debug.c \
  -I /usr/include \
- -I /usr/include/lua5.4 \
+ -I /usr/include/lua5.1 \
  -I ./core \
  -I ./json \
  -I ./tinyxml \
@@ -93,6 +93,6 @@ gcc -static -std=c++11 -O2 -o PtokaX \
  -D_WITH_SQLITE \
  -DFLYLINKDC_USE_DB \
  -DUSE_FLYLINKDC_EXT_JSON \
- -lstdc++ -pthread -lrt -llua5.4 -lsqlite3 -ldl -lm
+ -lstdc++ -pthread -lrt -llua5.1 -lsqlite3 -ldl -lm
 
 
