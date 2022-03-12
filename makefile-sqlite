@@ -29,7 +29,7 @@ CCFLAGS = -O2 -g -Wall -Wextra
 #*******************************************************************************
 # Include
 #*******************************************************************************
-INCLUDE = -Itinyxml -Iskein/Optimized_32bit -I/usr/include -I/usr/include/lua5.4 -Izlib-ng
+INCLUDE = -Itinyxml -Iskein/Optimized_32bit -I/usr/include -I/usr/include/lua5.1 -Izlib-ng
 
 #*******************************************************************************
 # Files to compile and link

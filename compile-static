@@ -94,5 +94,3 @@ gcc -static -std=c++11 -O2 -o PtokaX \
  -DFLYLINKDC_USE_DB \
  -DUSE_FLYLINKDC_EXT_JSON \
  -lstdc++ -pthread -lrt -llua5.1 -lsqlite3 -ldl -lm
-
-
