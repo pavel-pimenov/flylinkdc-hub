@@ -58,6 +58,7 @@ gcc -std=c++11 -O2 -Wall -Wextra -o PtokaX \
  -I ./json \
  -I ./skein/Optimized_32bit \
  -I ./tinyxml \
+ -I /usr/include/lua5.1 \
  -D_NDEBUG \
  -D_WITH_SQLITE \
  -DFLYLINKDC_USE_DB \
