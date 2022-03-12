@@ -55,7 +55,7 @@
 
 git pull
 rm PtokaX
-make -B -f makefile-sqlite lua54
+make -B -f makefile-sqlite lua51
 ulimit -n 32768
 ulimit -c unlimited
 LANG=ru_RU.CP1251
