@@ -64,4 +64,4 @@ gcc -std=c++11 -O2 -Wall -Wextra -o PtokaX \
  -DFLYLINKDC_USE_DB \
  -DUSE_FLYLINKDC_EXT_JSON \
  -DTIXML_USE_STL \
- -lstdc++ -pthread -ldl -lm -lz -llua -lsqlite3
+ -lstdc++ -pthread -ldl -lm -lz -llua5.1 -lsqlite3 -lrt
