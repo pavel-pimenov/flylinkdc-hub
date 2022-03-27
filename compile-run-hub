@@ -1,7 +1,7 @@
 # Hint 1:
 # sudo setcap 'cap_net_bind_service=+ep' /home/dc/src/PtokaX/PtokaX
-# sudo apt-get install mc vnstat nload liblua5.1-0-dev zlib1g-dev libtinyxml-dev lua-filesystem \
-#      lua-iconv lua-sql-sqlite3 lua-svn libsqlite3-dev valgrind cmake build-essential sqlite3 screen curl subversion htop
+# sudo apt-get install mc vnstat nload liblua5.1-0-dev zlib1g-dev libtinyxml-dev lua-filesystem lua-iconv lua-sql-sqlite3 lua-svn libsqlite3-dev valgrind cmake build-essential sqlite3 screen curl subversion htop
+# sudo apt-get install mc vnstat nload liblua5.1-0-dev zlib1g-dev libtinyxml-dev lua-filesystem lua-iconv lua-sql-sqlite3 lua-svn libsqlite3-dev cmake build-essential sqlite3 screen curl htop
 # allow dns requests to google nameservers
 # iptables -A OUTPUT -p udp --dport 53 -d 8.8.8.8 -j ACCEPT
 # iptables -A OUTPUT -p udp --dport 53 -d 8.8.4.4 -j ACCEPT
