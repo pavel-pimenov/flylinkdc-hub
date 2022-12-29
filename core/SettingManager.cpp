@@ -1243,7 +1243,7 @@ void SettingManager::SetText(const size_t szTxtId, const char * sTxt, const size
 		break;
 	}
 
-//	const bool isLock = szTxtId == SETTXT_HUB_NAME || szTxtId == SETTXT_HUB_ADDRESS || szTxtId == SETTXT_HUB_DESCRIPTION;
+//  const bool isLock = szTxtId == SETTXT_HUB_NAME || szTxtId == SETTXT_HUB_ADDRESS || szTxtId == SETTXT_HUB_DESCRIPTION;
 	{
 		Lock l(m_csSetting);
 

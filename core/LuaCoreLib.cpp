@@ -2278,7 +2278,7 @@ static int Redirect(lua_State * pLua)
 	                  sAddress, LanguageManager::m_Ptr->m_sTexts[LAN_MESSAGE], sReason, sAddress);
 
 
-//	UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) redirected by script.", pUser->m_sNick, pUser->m_sIP);
+//  UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) redirected by script.", pUser->m_sNick, pUser->m_sIP);
 
 	pUser->Close();
 

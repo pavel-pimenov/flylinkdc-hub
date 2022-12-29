@@ -3671,7 +3671,7 @@ bool DcCommands::ValidateUserNick(DcCommand * pDcCommand,User * pUser, char * sN
 		{
 			pUser->SendFormat("DcCommands::ValidateUserNick1", false, "<%s> %s '%c' ! %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOUR_NICK_CONTAINS_ILLEGAL_CHARACTER], sNick[ui32i], LanguageManager::m_Ptr->m_sTexts[LAN_PLS_CORRECT_IT_AND_GET_BACK_AGAIN]);
 
-//				UdpDebug::m_Ptr->BroadcastFormat("[SYS] Nick with bad chars (%s) from %s (%s) - user closed.", Nick, pUser->m_sNick, pUser->m_sIP);
+//              UdpDebug::m_Ptr->BroadcastFormat("[SYS] Nick with bad chars (%s) from %s (%s) - user closed.", Nick, pUser->m_sNick, pUser->m_sIP);
 
 			pUser->Close();
 			return false;
@@ -3681,7 +3681,7 @@ bool DcCommands::ValidateUserNick(DcCommand * pDcCommand,User * pUser, char * sN
 			{
 				pUser->SendFormat("DcCommands::ValidateUserNick2", false, "<%s> %s! %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOUR_NICK_CONTAINS_ILLEGAL_WHITE_CHARACTER], LanguageManager::m_Ptr->m_sTexts[LAN_PLS_CORRECT_IT_AND_GET_BACK_AGAIN]);
 
-//					UdpDebug::m_Ptr->BroadcastFormat("[SYS] Nick with white chars (%s) from %s (%s) - user closed.", Nick, pUser->m_sNick, pUser->m_sIP);
+//                  UdpDebug::m_Ptr->BroadcastFormat("[SYS] Nick with white chars (%s) from %s (%s) - user closed.", Nick, pUser->m_sNick, pUser->m_sIP);
 
 				pUser->Close();
 				return false;
@@ -3698,7 +3698,7 @@ bool DcCommands::ValidateUserNick(DcCommand * pDcCommand,User * pUser, char * sN
 	{
 		pUser->SendFormat("DcCommands::ValidateUserNick3", false, "<%s> %s. %s.|$ValidateDenide %s|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_THE_NICK_IS_RESERVED_FOR_SOMEONE_OTHER], LanguageManager::m_Ptr->m_sTexts[LAN_CHANGE_YOUR_NICK_AND_GET_BACK_AGAIN], sNick);
 
-//		UdpDebug::m_Ptr->BroadcastFormat("[SYS] Reserved nick (%s) from %s (%s) - user closed.", Nick, pUser->m_sNick, pUser->m_sIP);
+//      UdpDebug::m_Ptr->BroadcastFormat("[SYS] Reserved nick (%s) from %s (%s) - user closed.", Nick, pUser->m_sNick, pUser->m_sIP);
 
 		pUser->Close();
 		return false;
@@ -3788,7 +3788,7 @@ bool DcCommands::ValidateUserNick(DcCommand * pDcCommand,User * pUser, char * sN
 		{
 			pUser->SendFormat("DcCommands::ValidateUserNick5", false, "$HubIsFull|<%s> %s. %u %s.|%s", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_THIS_HUB_IS_FULL], ServerManager::m_ui32Logged, LanguageManager::m_Ptr->m_sTexts[LAN_USERS_ONLINE_LWR],
 			                  (SettingManager::m_Ptr->m_bBools[SETBOOL_REDIRECT_WHEN_HUB_FULL] == true && SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_REDIRECT_ADDRESS] != NULL) ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_REDIRECT_ADDRESS] : "");
-//			UdpDebug::m_Ptr->BroadcastFormat("[SYS] Hub full for %s (%s) - user closed.", pUser->m_sNick, pUser->m_sIP);
+//          UdpDebug::m_Ptr->BroadcastFormat("[SYS] Hub full for %s (%s) - user closed.", pUser->m_sNick, pUser->m_sIP);
 
 			pUser->Close();
 			return false;
@@ -3938,7 +3938,7 @@ bool DcCommands::ValidateUserNickFinally(bool pIsNotReg, User * pUser, const siz
 		{
 			pUser->SendChar(SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_REG_ONLY_MSG], SettingManager::m_Ptr->m_ui16PreTextsLens[SettingManager::SETPRETXT_REG_ONLY_MSG]);
 
-//			UdpDebug::m_Ptr->BroadcastFormat("[SYS] Hub for reg only %s (%s) - user closed.", pUser->m_sNick, pUser->m_sIP);
+//          UdpDebug::m_Ptr->BroadcastFormat("[SYS] Hub for reg only %s (%s) - user closed.", pUser->m_sNick, pUser->m_sIP);
 
 			pUser->Close();
 			return false;
