@@ -1,7 +1,7 @@
 /*
  * PtokaX - hub server for Direct Connect peer to peer network.
 
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -380,7 +380,7 @@ const char* LangStr[] =
 	"profilename",
 	"Max allowed nick length is 64 characters",
 	"Max allowed password length is 64 characters",
-	"Error, no profile of given name doesn't exist",
+    "Error, profile with given name don't exist", 
 	"You are not allowed add new user with this profile",
 	"is already registered",
 	"successfully added",
@@ -802,6 +802,7 @@ const char* LangStr[] =
 	"You can use SQL Wildcards",
 	"unlimited",
 	"Your client send incorrect IP or Port in command",
+    "You can't redirect yourself", 
 };
 //---------------------------------------------------------------------------
 

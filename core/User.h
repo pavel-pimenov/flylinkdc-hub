@@ -2,7 +2,7 @@
  * PtokaX - hub server for Direct Connect peer to peer network.
 
  * Copyright (C) 2002-2005  Ptaczek, Ptaczek at PtokaX dot org
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -387,11 +387,11 @@ struct User
 		INFOBIT_EMAIL_LONG_PERM            = 0x1000,
 		INFOBIT_SHARE_SHORT_PERM           = 0x2000,
 		INFOBIT_SHARE_LONG_PERM            = 0x4000,
-		// alex82 ... HideUser / Скрытие юзера
+		// alex82 ... HideUser / пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 		INFOBIT_HIDDEN                     = 0x8000,
-		// alex82 ... NoQuit / Подавляем $Quit для юзера
+		// alex82 ... NoQuit / пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ $Quit пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 		INFOBIT_NO_QUIT                    = 0x10000,
-		// alex82 ... HideUserKey / Прячем ключ юзера
+		// alex82 ... HideUserKey / пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 		INFOBIT_HIDE_KEY                   = 0x20000,
 		// alex82 feature...
 	};
@@ -445,7 +445,7 @@ struct User
 		}
 	}
 #endif
-	// alex82 ... Запретили юзерам с одинаковыми профилями глушить друг друга
+	// alex82 ... пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	bool CheckBanProfile(const User* pOtherUser) const
 	{
 		return pOtherUser->m_i32Profile != -1 && m_i32Profile != 0 && m_i32Profile >= pOtherUser->m_i32Profile;

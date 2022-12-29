@@ -1,7 +1,7 @@
 /*
  * PtokaX - hub server for Direct Connect peer to peer network.
 
- * Copyright (C) 2004-2017 Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022 Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -510,7 +510,6 @@ static int SelectCallBack(void *, int iArgCount, char ** ppArgSTrings, char **)
 					return 0;
 				}
 
-				if (szLength > 0)
 				{
 					iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_DESCRIPTION], ppArgSTrings[4]);
 					if (iRet <= 0)
@@ -530,7 +529,6 @@ static int SelectCallBack(void *, int iArgCount, char ** ppArgSTrings, char **)
 					return 0;
 				}
 
-				if (szLength > 0)
 				{
 					iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_TAG], ppArgSTrings[5]);
 					if (iRet <= 0)
@@ -550,7 +548,6 @@ static int SelectCallBack(void *, int iArgCount, char ** ppArgSTrings, char **)
 					return 0;
 				}
 
-				if (szLength > 0)
 				{
 					iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_CONNECTION], ppArgSTrings[6]);
 					if (iRet <= 0)
@@ -566,11 +563,10 @@ static int SelectCallBack(void *, int iArgCount, char ** ppArgSTrings, char **)
 			{
 				if (szLength > 96)
 				{
-					UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBPostgreSQL search returned invalid email length: %zu", szLength);
+					UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid email length: %zu", szLength);
 					return 0;
 				}
 
-				if (szLength > 0)
 				{
 					iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_EMAIL], ppArgSTrings[7]);
 					if (iRet <= 0)

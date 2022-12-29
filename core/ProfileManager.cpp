@@ -2,7 +2,7 @@
  * PtokaX - hub server for Direct Connect peer to peer network.
 
  * Copyright (C) 2002-2005  Ptaczek, Ptaczek at PtokaX dot org
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -324,8 +324,8 @@ ProfileManager::ProfileManager() : m_ppProfilesTable(NULL), m_ui16ProfileCount(0
 		for (uint8_t ui8i = 0; ui8i < 4; ui8i++)
 		{
 			ProfileItem * pNewProfile = CreateProfile(sProfileNames[ui8i]);
-			const size_t l_len_profile = strlen(sProfilePermisions[ui8i]);
-			for (uint8_t ui8j = 0; ui8j < l_len_profile; ui8j++)
+			const size_t szProfilePermissionsLen = strlen(sProfilePermisions[ui8i]);
+			for (uint8_t ui8j = 0; ui8j < szProfilePermissionsLen; ui8j++)
 			{
 				if (sProfilePermisions[ui8i][ui8j] == '1')
 				{

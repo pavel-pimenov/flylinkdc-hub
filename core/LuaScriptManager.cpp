@@ -1,7 +1,7 @@
 /*
  * PtokaX - hub server for Direct Connect peer to peer network.
 
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -878,7 +878,7 @@ void ScriptManager::OnStartup()
 		pScript = next;
 		next = pScript->m_pNext;
 
-		if (((pScript->m_ui16Functions & Script::ONSTARTUP) == Script::ONSTARTUP) == true && (m_bMoved == false || pScript->m_bProcessed == false))
+		if (pScript->m_pLua != NULL &&((pScript->m_ui16Functions & Script::ONSTARTUP) == Script::ONSTARTUP) == true && (m_bMoved == false || pScript->m_bProcessed == false))
 		{
 			pScript->m_bProcessed = true;
 			ScriptOnStartup(pScript);
@@ -905,7 +905,7 @@ void ScriptManager::OnExit(const bool bForce/* = false*/)
 		pScript = next;
 		next = pScript->m_pNext;
 
-		if (((pScript->m_ui16Functions & Script::ONEXIT) == Script::ONEXIT) == true && (m_bMoved == false || pScript->m_bProcessed == false))
+		if (pScript->m_pLua != NULL &&((pScript->m_ui16Functions & Script::ONEXIT) == Script::ONEXIT) == true && (m_bMoved == false || pScript->m_bProcessed == false))
 		{
 			pScript->m_bProcessed = true;
 			ScriptOnExit(pScript);
@@ -963,6 +963,10 @@ bool ScriptManager::Arrival(DcCommand * pDcCommand, const uint8_t ui8Type)
 	{
 		cur = next;
 		next = cur->m_pNext;
+
+		if(cur->m_pLua == NULL) {
+			continue;
+		}
 
 		// if any of the scripts returns a nonzero value,
 		// then stop for all other scripts
@@ -1081,6 +1085,10 @@ bool ScriptManager::UserConnected(User * pUser)
 		cur = next;
 		next = cur->m_pNext;
 
+		if(cur->m_pLua == NULL) {
+			continue;
+		}
+
 		static const uint32_t iConnectedBits[] = { Script::USERCONNECTED, Script::REGCONNECTED, Script::OPCONNECTED };
 
 		if (((cur->m_ui16Functions & iConnectedBits[ui8Type]) == iConnectedBits[ui8Type]) == true && (m_bMoved == false || cur->m_bProcessed == false))
@@ -1198,6 +1206,10 @@ void ScriptManager::UserDisconnected(User * pUser, Script * pScript/* = NULL*/)
 		if (cur == pScript)
 		{
 			return;
+		}
+
+        if(cur->m_pLua == NULL) {
+			continue;
 		}
 
 		static const uint32_t iDisconnectedBits[] = { Script::USERDISCONNECTED, Script::REGDISCONNECTED, Script::OPDISCONNECTED };

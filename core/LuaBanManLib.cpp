@@ -1,7 +1,7 @@
 /*
  * PtokaX - hub server for Direct Connect peer to peer network.
 
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -341,7 +341,7 @@ static int GetBan(lua_State * pLua)
 	size_t szLen;
 	const char * sValue = lua_tolstring(pLua, 1, &szLen);
 
-	BanItem * Ban = BanManager::m_Ptr->FindNick(sValue, szLen);
+	BanItem * pBan = BanManager::m_Ptr->FindNick(sValue, szLen);
 
 	Hash128 ui128Hash;
 
@@ -352,30 +352,30 @@ static int GetBan(lua_State * pLua)
 		lua_newtable(pLua);
 		int t = lua_gettop(pLua), i = 0;
 
-		if (Ban != NULL)
+		if (pBan != NULL)
 		{
 #if LUA_VERSION_NUM < 503
 			lua_pushnumber(pLua, ++i);
 #else
 			lua_pushinteger(pLua, ++i);
 #endif
-			PushBan(pLua, Ban);
+			PushBan(pLua, pBan);
 			lua_rawset(pLua, t);
 		}
 
-		Ban = BanManager::m_Ptr->FindIP(ui128Hash, acc_time);
-		if (Ban != NULL)
+		pBan = BanManager::m_Ptr->FindIP(ui128Hash, acc_time);
+		if (pBan != NULL)
 		{
 #if LUA_VERSION_NUM < 503
 			lua_pushnumber(pLua, ++i);
 #else
 			lua_pushinteger(pLua, ++i);
 #endif
-			PushBan(pLua, Ban);
+			PushBan(pLua, pBan);
 			lua_rawset(pLua, t);
 
 			BanItem * curBan = NULL,
-			          * nextBan = Ban->m_pHashIpTableNext;
+			          * nextBan = pBan->m_pHashIpTableNext;
 
 			while (nextBan != NULL)
 			{
@@ -405,13 +405,13 @@ static int GetBan(lua_State * pLua)
 	{
 		lua_settop(pLua, 0);
 
-		if (Ban == NULL)
+		if (pBan == NULL)
 		{
 			lua_pushnil(pLua);
 			return 1;
 		}
 
-		PushBan(pLua, Ban);
+		PushBan(pLua, pBan);
 		return 1;
 	}
 }

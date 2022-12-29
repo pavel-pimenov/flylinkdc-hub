@@ -2,7 +2,7 @@
  * PtokaX - hub server for Direct Connect peer to peer network.
 
  * Copyright (C) 2002-2005  Ptaczek, Ptaczek at PtokaX dot org
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -695,7 +695,7 @@ void DcCommands::PreProcessData(DcCommand * pDcCommand)
 
 								pDcCommand->m_pUser->m_ui32BoolBits |= User::BIT_OPERATOR;
 
-								// alex82 ... HideUserKey / Прячем ключ юзера
+								// alex82 ... HideUserKey / пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 								if (((pDcCommand->m_pUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false)
 								{
 									Users::m_Ptr->Add2OpList(pDcCommand->m_pUser);
@@ -765,6 +765,7 @@ void DcCommands::PreProcessData(DcCommand * pDcCommand)
 					OpForceMove(pDcCommand);
 					return;
 				}
+                        break;
 			default:
 				break;
 			}
@@ -2606,16 +2607,19 @@ void DcCommands::OpForceMove(DcCommand * pDcCommand)
 	}
 
 	User *OtherUser = HashManager::m_Ptr->FindUser(sCmdParts[0], iCmdPartsLen[0]);
-	if (OtherUser)
-	{
-		if (OtherUser->m_i32Profile != -1 && pDcCommand->m_pUser->m_i32Profile > OtherUser->m_i32Profile)
-		{
-			pDcCommand->m_pUser->SendFormat("DcCommands::OpForceMove2", true, "<%s> %s %s|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_ARE_NOT_ALLOWED_TO_REDIRECT], OtherUser->m_sNick);
+    if(OtherUser) {
+        // Self redirect
+        if(OtherUser == pDcCommand->m_pUser) {
+			pDcCommand->m_pUser->SendFormat("DcCommands::OpForceMove2", true, "<%s> %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_CANT_REDIRECT_YOURSELF]);
 			return;
 		}
-		else
-		{
-			OtherUser->SendFormat("DcCommands::OpForceMove3", false, "<%s> %s %s %s %s. %s: %s|$ForceMove %s|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_ARE_REDIRECTED_TO], sCmdParts[1] + 6,
+
+   	    if(OtherUser->m_i32Profile != -1 && pDcCommand->m_pUser->m_i32Profile > OtherUser->m_i32Profile) {
+			pDcCommand->m_pUser->SendFormat("DcCommands::OpForceMove3", true, "<%s> %s %s|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_ARE_NOT_ALLOWED_TO_REDIRECT], OtherUser->m_sNick);
+            return;
+        }
+
+        OtherUser->SendFormat("DcCommands::OpForceMove4", false, "<%s> %s %s %s %s. %s: %s|$ForceMove %s|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_ARE_REDIRECTED_TO], sCmdParts[1]+6, 
 			                      LanguageManager::m_Ptr->m_sTexts[LAN_BY_LWR], pDcCommand->m_pUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_MESSAGE], sCmdParts[2] + 4, sCmdParts[1] + 6);
 
 			// PPK ... close user !!!
@@ -2632,7 +2636,6 @@ void DcCommands::OpForceMove(DcCommand * pDcCommand)
 			if (SettingManager::m_Ptr->m_bBools[SETBOOL_SEND_STATUS_MESSAGES] == false || ((pDcCommand->m_pUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == false)
 			{
 				pDcCommand->m_pUser->SendFormat("DcCommands::OpForceMove4", true, "<%s> *** %s %s %s. %s: %s|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], OtherUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_IS_REDIRECTED_TO], sCmdParts[1] + 6, LanguageManager::m_Ptr->m_sTexts[LAN_MESSAGE], sCmdParts[2] + 4);
-			}
 		}
 	}
 }
@@ -3874,9 +3877,9 @@ bool DcCommands::ValidateUserNick(DcCommand * pDcCommand,User * pUser, char * sN
 
 				if (Reg == NULL)
 				{
-					// alex82 ... добавили ValidateDenideArrival
+					// alex82 ... пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ValidateDenideArrival
 					ScriptManager::m_Ptr->Arrival(pDcCommand, ScriptManager::VALIDATE_DENIDE_ARRIVAL);
-#ifdef FLYLINKDC_USE_REMOVE_CLONE // пока вешается. отключил
+#ifdef FLYLINKDC_USE_REMOVE_CLONE // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 					if (// TODO OtherUser->m_ui64SharedSize == pUser->m_ui64SharedSize &&
 					    strcmp(OtherUser->m_sNick, pUser->m_sNick) == 0 && strcmp(OtherUser->m_sIP, pUser->m_sIP) == 0) //[+] FlylinkDC++
 					{
@@ -4171,7 +4174,7 @@ void DcCommands::ProcessCmds(User * pUser)
 				}
 
 				// built-in commands
-				// alex82 ... Уменьшили минимальную длину команды
+				// alex82 ... пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 				if (cur->m_ui32Len - pUser->m_ui8NickLen >= 6)
 				{
 					if (HubCommands::DoCommand(pUser, sBuff - (pUser->m_ui8NickLen - 1), cur->m_ui32Len))
@@ -4209,7 +4212,7 @@ void DcCommands::ProcessCmds(User * pUser)
 		{
 			pUser->HasSuspiciousTag();
 		}
-		// alex82 ... HideUser / Скрытие юзера
+		// alex82 ... HideUser / пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 		if (((pUser->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == false) {
 			if (SettingManager::m_Ptr->m_ui8FullMyINFOOption == 0)
 			{

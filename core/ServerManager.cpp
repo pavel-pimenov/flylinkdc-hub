@@ -2,7 +2,7 @@
  * PtokaX - hub server for Direct Connect peer to peer network.
 
  * Copyright (C) 2002-2005  Ptaczek, Ptaczek at PtokaX dot org
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -1145,39 +1145,29 @@ void ServerManager::UpdateAutoRegState()
 #endif
 //---------------------------------------------------------------------------
 
-void ServerManager::CreateServerThread(const int iAddrFamily, const uint16_t ui16PortNumber, const bool bResume/* = false*/)
-{
+void ServerManager::CreateServerThread(const int iAddrFamily, const uint16_t ui16PortNumber, const bool bResume/* = false*/) {
 	ServerThread * pServer = new (std::nothrow) ServerThread(iAddrFamily, ui16PortNumber);
-	if (pServer == NULL)
-	{
+    if(pServer == NULL) {
 		AppendDebugLog("%s - [MEM] Cannot allocate pServer in ServerCreateServerThread\n");
 		exit(EXIT_FAILURE);
 	}
 
-	if (pServer->Listen() == true)
-	{
-		if (m_pServersE == NULL)
-		{
+	if(pServer->Listen() == true) {
+		if(m_pServersE == NULL) {
 			m_pServersS = pServer;
 			m_pServersE = pServer;
-		}
-		else
-		{
+        } else {
 			pServer->m_pPrev = m_pServersE;
 			m_pServersE->m_pNext = pServer;
 			m_pServersE = pServer;
 		}
-	}
-	else
-	{
-		delete pServer;
-		pServer = NULL;
-	}
 
-	if (bResume == true && pServer)
-	{
+		if(bResume == true) {
 		pServer->Resume();
 	}
+    } else {
+        delete pServer;
+    }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

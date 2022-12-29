@@ -2,7 +2,7 @@
  * PtokaX - hub server for Direct Connect peer to peer network.
 
  * Copyright (C) 2002-2005  Ptaczek, Ptaczek at PtokaX dot org
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -856,7 +856,7 @@ void ServiceLoop::ReceiveLoop()
 				curUser->HasSuspiciousTag();
 			}
 
-			// alex82 ... HideUser / Скрытие юзера
+			// alex82 ... HideUser / пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 			if (((curUser->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == false)
 			{
 				curUser->Add2Userlist();
@@ -891,7 +891,7 @@ void ServiceLoop::ReceiveLoop()
 				GlobalDataQueue::m_Ptr->AddQueueItem(ServerManager::m_pGlobalBuffer, iMsgLen, NULL, 0, GlobalDataQueue::CMD_HELLO);
 			}
 
-			// alex82 ... HideUser / Скрытие юзера
+			// alex82 ... HideUser / пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 			if (((curUser->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == false)
 			{
 				GlobalDataQueue::m_Ptr->UserIPStore(curUser);
@@ -929,7 +929,7 @@ void ServiceLoop::ReceiveLoop()
 				*/
 #endif
 
-				// alex82 ... HideUserKey / Прячем ключ юзера
+				// alex82 ... HideUserKey / пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 				if (((curUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == true && ((curUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false)
 				{
 					GlobalDataQueue::m_Ptr->OpListStore(curUser->m_sNick);
@@ -1175,7 +1175,7 @@ void ServiceLoop::SendLoop()
 		{
 		case User::STATE_ADDME_2LOOP:
 		{
-			// alex82 ... HideUser / Скрытие юзера
+			// alex82 ... HideUser / пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 			if (((curUser->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == false)
 			{
 				ServerManager::m_ui32Logged++;

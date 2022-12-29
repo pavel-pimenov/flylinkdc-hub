@@ -1,7 +1,7 @@
 /*
  * PtokaX - hub server for Direct Connect peer to peer network.
 
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -35,7 +35,7 @@
 #include "UdpDebug.h"
 #include "User.h"
 #include "utility.h"
-// alex82 ... Добавили функции статистики
+// alex82 ... пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 #include "DcCommands.h"
 
 //---------------------------------------------------------------------------
@@ -142,7 +142,7 @@ static int RegBot(lua_State * pLua)
 		return 1;
 	}
 
-	// alex82 ... RegBot / Добавили альтернативную функцию для создания бота с полноценным $MyINFO
+	// alex82 ... RegBot / пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ $MyINFO
 	bool bFullMyINFO = false;
 	if (lua_gettop(pLua) == 3)
 		bFullMyINFO = true;
@@ -1630,19 +1630,19 @@ static int GetUserData(lua_State * pLua)
 		break;
 	}
 
-	// alex82 ... HideUser / Скрытие юзера
+	// alex82 ... HideUser / пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	case 65:
 		lua_pushliteral(pLua, "bHidden");
 		(u->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN ? lua_pushboolean(pLua, 1) : lua_pushboolean(pLua, 0);
 		lua_rawset(pLua, 1);
 		break;
-		// alex82 ... NoQuit / Подавляем $Quit для юзера
+		// alex82 ... NoQuit / пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ $Quit пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	case 66:
 		lua_pushliteral(pLua, "bNoQuit");
 		(u->m_ui32InfoBits & User::INFOBIT_NO_QUIT) == User::INFOBIT_NO_QUIT ? lua_pushboolean(pLua, 1) : lua_pushboolean(pLua, 0);
 		lua_rawset(pLua, 1);
 		break;
-		// alex82 ... HideUserKey / Прячем ключ юзера
+		// alex82 ... HideUserKey / пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	case 67:
 		lua_pushliteral(pLua, "bHiddenKey");
 		(u->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY ? lua_pushboolean(pLua, 1) : lua_pushboolean(pLua, 0);
@@ -2069,15 +2069,15 @@ static int GetUserValue(lua_State * pLua)
 		return 1;
 	}
 
-	// alex82 ... HideUser / Скрытие юзера
+	// alex82 ... HideUser / пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	case 65:
 		(u->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN ? lua_pushboolean(pLua, 1) : lua_pushboolean(pLua, 0);
 		return 1;
-		// alex82 ... NoQuit / Подавляем $Quit для юзера
+		// alex82 ... NoQuit / пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ $Quit пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	case 66:
 		(u->m_ui32InfoBits & User::INFOBIT_NO_QUIT) == User::INFOBIT_NO_QUIT ? lua_pushboolean(pLua, 1) : lua_pushboolean(pLua, 0);
 		return 1;
-		// alex82 ... HideUserKey / Прячем ключ юзера
+		// alex82 ... HideUserKey / пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	case 67:
 		(u->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY ? lua_pushboolean(pLua, 1) : lua_pushboolean(pLua, 0);
 		return 1;
@@ -2115,13 +2115,13 @@ static int Disconnect(lua_State * pLua)
 		return 1;
 	}
 
-	User * u;
+	User * pUser;
 
 	if (lua_type(pLua, 1) == LUA_TTABLE)
 	{
-		u = ScriptGetUser(pLua, 1, "Disconnect");
+		pUser = ScriptGetUser(pLua, 1, "Disconnect");
 
-		if (u == NULL)
+		if (pUser == NULL)
 		{
 			lua_settop(pLua, 0);
 			lua_pushnil(pLua);
@@ -2131,16 +2131,16 @@ static int Disconnect(lua_State * pLua)
 	else if (lua_type(pLua, 1) == LUA_TSTRING)
 	{
 		size_t szLen;
-		const char * nick = lua_tolstring(pLua, 1, &szLen);
+		const char * pNick = lua_tolstring(pLua, 1, &szLen);
 
 		if (szLen == 0)
 		{
 			return 0;
 		}
 
-		u = HashManager::m_Ptr->FindUser(nick, szLen);
+		pUser = HashManager::m_Ptr->FindUser(pNick, szLen);
 
-		if (u == NULL)
+		if (pUser == NULL)
 		{
 			lua_settop(pLua, 0);
 
@@ -2158,8 +2158,8 @@ static int Disconnect(lua_State * pLua)
 	}
 
 
-//    UdpDebug->BroadcastFormat("[SYS] User %s (%s) disconnected by script.", u->m_sNick, u->m_sIP);
-	u->Close();
+//    UdpDebug->BroadcastFormat("[SYS] User %s (%s) disconnected by script.", pUser->m_sNick, pUser->m_sIP);
+	pUser->Close();
 
 	lua_settop(pLua, 0);
 
@@ -3067,11 +3067,6 @@ static int SetUserInfo(lua_State * pLua)
 	}
 	else if (lua_type(pLua, 3) == LUA_TNUMBER)
 	{
-		if (ui32DataToChange < 8)
-		{
-			lua_settop(pLua, 0);
-			return 0;
-		}
 
 		if (ui32DataToChange == 8)
 		{
@@ -3105,6 +3100,11 @@ static int SetUserInfo(lua_State * pLua)
 				pUser->m_ui32InfoBits &= ~User::INFOBIT_SHARE_LONG_PERM;
 			}
 		}
+               else 
+                 {
+                   lua_settop(pLua, 0);
+                   return 0;
+                 }
 	}
 	else
 	{
@@ -3117,7 +3117,7 @@ static int SetUserInfo(lua_State * pLua)
 	return 0;
 }
 
-// alex82 ... HideUser / Скрытие юзера
+// alex82 ... HideUser / пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 static int HideUser(lua_State * L) {
 	if (lua_gettop(L) != 2) {
 		luaL_error(L, "bad argument count to 'HideUser' (2 expected, got %d)", lua_gettop(L));
@@ -3207,7 +3207,7 @@ static int HideUser(lua_State * L) {
 				default:
 					break;
 				}
-				// alex82 ... HideUserKey / Прячем ключ юзера
+				// alex82 ... HideUserKey / пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 				if (((u->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == true && ((u->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false) {
 					GlobalDataQueue::m_Ptr->OpListStore(u->m_sNick);
 				}
@@ -3225,7 +3225,7 @@ static int HideUser(lua_State * L) {
 }
 
 //------------------------------------------------------------------------------
-// alex82 ... NoQuit / Подавляем $Quit для юзера
+// alex82 ... NoQuit / пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ $Quit пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 static int UserNoQuit(lua_State * L) {
 	if (lua_gettop(L) != 2) {
 		luaL_error(L, "bad argument count to 'UserNoQuit' (2 expected, got %d)", lua_gettop(L));
@@ -3268,7 +3268,7 @@ static int UserNoQuit(lua_State * L) {
 }
 
 //------------------------------------------------------------------------------
-// alex82 ... HideUserKey / Прячем ключ юзера
+// alex82 ... HideUserKey / пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 static int HideUserKey(lua_State * L) {
 	if (lua_gettop(L) != 2) {
 		luaL_error(L, "bad argument count to 'HideUserKey' (2 expected, got %d)", lua_gettop(L));
@@ -3385,11 +3385,11 @@ static const luaL_Reg CoreRegs[] =
 	{ "SendPmToProfile", SendPmToProfile },
 	{ "SendPmToUser", SendPmToUser },
 	{ "SetUserInfo", SetUserInfo },
-	// alex82 ... HideUser / Скрытие юзера
+	// alex82 ... HideUser / пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	{ "HideUser", HideUser },
-	// alex82 ... NoQuit / Подавляем $Quit для юзера
+	// alex82 ... NoQuit / пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ $Quit пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	{ "UserNoQuit", UserNoQuit },
-	// alex82 ... HideUserKey / Прячем ключ юзера
+	// alex82 ... HideUserKey / пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	{ "HideUserKey", HideUserKey },
 #ifdef USE_FLYLINKDC_EXT_JSON
 	{ "SetUserJson", SetUserJson },

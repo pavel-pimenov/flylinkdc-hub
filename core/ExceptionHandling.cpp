@@ -1,7 +1,7 @@
 /*
  * PtokaX - hub server for Direct Connect peer to peer network.
 
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -256,9 +256,8 @@ LONG WINAPI PtokaX_UnhandledExceptionFilter(LPEXCEPTION_POINTERS ExceptionInfo)
 		memset(&ver, 0, sizeof(OSVERSIONINFOEX));
 		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 
-		if (GetVersionEx((OSVERSIONINFO*)&ver) != 0)
-		{
-			fprintf(pFile, "Windows version: %lu.%lu SP: %hu\n", ver.dwMajorVersion, ver.dwMinorVersion, ver.wServicePackMajor);
+        if(GetVersionEx((OSVERSIONINFO*)&ver) != 0) {
+			fprintf(pFile, "Windows version: %lu.%lu Build: %lu SP: %hu\n", ver.dwMajorVersion, ver.dwMinorVersion, ver.dwBuildNumber, ver.wServicePackMajor);
 		}
 	}
 

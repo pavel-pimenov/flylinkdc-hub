@@ -2,7 +2,7 @@
  * PtokaX - hub server for Direct Connect peer to peer network.
 
  * Copyright (C) 2002-2005  Ptaczek, Ptaczek at PtokaX dot org
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -632,12 +632,6 @@ bool HubCommands::GetIpInfo(ChatCommand * pChatCommand)   // !getipinfo ip
 	pChatCommand->m_sCommand += 10;
 	pChatCommand->m_ui32CommandLen -= 10;
 
-	if (isIP(pChatCommand->m_sCommand) == false)
-	{
-		pChatCommand->m_pUser->SendFormatCheckPM("HHubCommands::GetIpInfo3", pChatCommand->m_bFromPM == true ? SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC] : NULL, true, "<%s> *** %s %cgetipinfo <%s>. %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],
-		        LanguageManager::m_Ptr->m_sTexts[LAN_SNTX_ERR_IN_CMD], SettingManager::m_Ptr->m_sTexts[SETTXT_CHAT_COMMANDS_PREFIXES][0],  LanguageManager::m_Ptr->m_sTexts[LAN_IP], LanguageManager::m_Ptr->m_sTexts[LAN_NO_VALID_IP_SPECIFIED]);
-		return true;
-	}
 #ifdef FLYLINKDC_USE_DB
 #ifdef _WITH_SQLITE
 	if (DBSQLite::m_Ptr->SearchIP(pChatCommand) == true)

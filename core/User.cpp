@@ -2,7 +2,7 @@
  * PtokaX - hub server for Direct Connect peer to peer network.
 
  * Copyright (C) 2002-2005  Ptaczek, Ptaczek at PtokaX dot org
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -2004,6 +2004,11 @@ void User::Close(const bool bNoQuit/* = false*/)
 		return;
 	}
 
+    // Store old state for use in next lines.
+    // State must be updated here and now to avoid multiple closes.
+    uint8_t ui8OldState = m_ui8State;
+    m_ui8State = STATE_CLOSING;
+
 	// nick in hash table ?
 	if ((m_ui32BoolBits & BIT_HASHED) == BIT_HASHED)
 	{
@@ -2011,7 +2016,7 @@ void User::Close(const bool bNoQuit/* = false*/)
 	}
 
 	// nick in nick/op list ?
-	if (m_ui8State >= STATE_ADDME_2LOOP)
+	if (ui8OldState >= STATE_ADDME_2LOOP)
 	{
 		Users::m_Ptr->DelFromNickList(m_sNick, (m_ui32BoolBits & BIT_OPERATOR) == BIT_OPERATOR);
 		Users::m_Ptr->DelFromUserIP(this);
@@ -2021,8 +2026,8 @@ void User::Close(const bool bNoQuit/* = false*/)
 		// and fix disconnect on send error too =)
 		if (bNoQuit == false)
 		{
-			// alex82 ... HideUser / Скрытие юзера
-			// alex82 ... NoQuit / Подавляем $Quit для юзера
+			// alex82 ... HideUser / пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+			// alex82 ... NoQuit / пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ $Quit пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 			if (((m_ui32InfoBits & INFOBIT_HIDDEN) == INFOBIT_HIDDEN) == false && ((m_ui32InfoBits & INFOBIT_NO_QUIT) == INFOBIT_NO_QUIT) == false)
 			{
 				int iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "$Quit %s|", m_sNick);
@@ -2060,13 +2065,11 @@ void User::Close(const bool bNoQuit/* = false*/)
 		ScriptManager::m_Ptr->UserDisconnected(this);
 	}
 
-	// + alex82 ... HideUser / Скрытие юзера
-	if (((m_ui32InfoBits & INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == false && m_ui8State > STATE_ADDME_2LOOP)
+	// + alex82 ... HideUser / пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+	if (((m_ui32InfoBits & INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == false && ui8OldState > STATE_ADDME_2LOOP)
 	{
 		ServerManager::m_ui32Logged--;
 	}
-
-	m_ui8State = STATE_CLOSING;
 
 	User::DeletePrcsdUsrCmd(m_pCmdActive4Search);
 	User::DeletePrcsdUsrCmd(m_pCmdActive6Search);
@@ -3047,7 +3050,7 @@ void User::AddPrcsdCmd(const uint8_t ui8Type, const char * sCommand, const size_
 	pNewcmd->m_ui32Len = (uint32_t)szCommandLen;
 	pNewcmd->m_ui8Type = ui8Type;
 	pNewcmd->m_pNext = nullptr;
-	pNewcmd->m_pPtr = (void *)pToUser; // TODO - опасно
+	pNewcmd->m_pPtr = (void *)pToUser; // TODO - пїЅпїЅпїЅпїЅпїЅпїЅ
 
 	if (m_pCmdStrt == NULL)
 	{
