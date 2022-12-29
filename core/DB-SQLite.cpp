@@ -510,7 +510,6 @@ static int SelectCallBack(void *, int iArgCount, char ** ppArgSTrings, char **)
 					return 0;
 				}
 
-				{
 					iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_DESCRIPTION], ppArgSTrings[4]);
 					if (iRet <= 0)
 					{
@@ -518,7 +517,6 @@ static int SelectCallBack(void *, int iArgCount, char ** ppArgSTrings, char **)
 					}
 					iMsgLen += iRet;
 				}
-			}
 
 			szLength = strlen(ppArgSTrings[5]);
 			if (szLength != 0)
@@ -529,7 +527,6 @@ static int SelectCallBack(void *, int iArgCount, char ** ppArgSTrings, char **)
 					return 0;
 				}
 
-				{
 					iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_TAG], ppArgSTrings[5]);
 					if (iRet <= 0)
 					{
@@ -537,7 +534,6 @@ static int SelectCallBack(void *, int iArgCount, char ** ppArgSTrings, char **)
 					}
 					iMsgLen += iRet;
 				}
-			}
 
 			szLength = strlen(ppArgSTrings[6]);
 			if (szLength != 0)
@@ -548,7 +544,6 @@ static int SelectCallBack(void *, int iArgCount, char ** ppArgSTrings, char **)
 					return 0;
 				}
 
-				{
 					iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_CONNECTION], ppArgSTrings[6]);
 					if (iRet <= 0)
 					{
@@ -556,7 +551,6 @@ static int SelectCallBack(void *, int iArgCount, char ** ppArgSTrings, char **)
 					}
 					iMsgLen += iRet;
 				}
-			}
 
 			szLength = strlen(ppArgSTrings[7]);
 			if (szLength != 0)
@@ -567,7 +561,6 @@ static int SelectCallBack(void *, int iArgCount, char ** ppArgSTrings, char **)
 					return 0;
 				}
 
-				{
 					iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_EMAIL], ppArgSTrings[7]);
 					if (iRet <= 0)
 					{
@@ -575,7 +568,6 @@ static int SelectCallBack(void *, int iArgCount, char ** ppArgSTrings, char **)
 					}
 					iMsgLen += iRet;
 				}
-			}
 
 			uint8_t ui128IPHash[16];
 			memset(ui128IPHash, 0, 16);

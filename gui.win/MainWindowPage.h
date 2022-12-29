@@ -21,7 +21,8 @@
 #define MainWindowPageH
 //------------------------------------------------------------------------------
 
-class MainWindowPage {
+class MainWindowPage
+{
 public:
 	HWND m_hWnd;
 

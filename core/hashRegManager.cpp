@@ -90,7 +90,7 @@ RegUser * RegUser::CreateReg(const char * sRegNick, const size_t szRegNickLen, c
 		pReg->m_bPassHash = true;
 	}
 	else if(sRegPassword != NULL)
-  	       {
+	{
 		pReg->m_sPass = (char *)malloc(szRegPassLen + 1);
 		if (pReg->m_sPass == NULL)
 		{
@@ -101,11 +101,13 @@ RegUser * RegUser::CreateReg(const char * sRegNick, const size_t szRegNickLen, c
 		}
 		memcpy(pReg->m_sPass, sRegPassword, szRegPassLen);
 		pReg->m_sPass[szRegPassLen] = '\0';
-    } else {
-        AppendDebugLogFormat("[ERR] Empty ui8RegPassHash and sRegPassword in RegUser::RegUser\n");
+	}
+	else
+	{
+		AppendDebugLogFormat("[ERR] Empty ui8RegPassHash and sRegPassword in RegUser::RegUser\n");
 
-        delete pReg;
-        return NULL;
+		delete pReg;
+		return NULL;
 	}
 
 	pReg->m_ui16Profile = ui16RegProfile;
@@ -380,7 +382,8 @@ void RegManager::ChangeReg(RegUser * pReg, const char * sNewPasswd, const uint16
 			{
 				ChangedUser->m_ui32BoolBits |= User::BIT_OPERATOR;
 				// alex82 ... HideUserKey / ������ ���� �����
-				if (((ChangedUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false) {
+				if (((ChangedUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false)
+				{
 					Users::m_Ptr->Add2OpList(ChangedUser);
 					GlobalDataQueue::m_Ptr->OpListStore(ChangedUser->m_sNick);
 				}
@@ -389,13 +392,16 @@ void RegManager::ChangeReg(RegUser * pReg, const char * sNewPasswd, const uint16
 			{
 				ChangedUser->m_ui32BoolBits &= ~User::BIT_OPERATOR;
 				// alex82 ... HideUserKey / ������ ���� �����
-				if (((ChangedUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false) {
+				if (((ChangedUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false)
+				{
 					// alex82 ... ��������� �������� OpList
 					int imsgLen = sprintf(ServerManager::m_pGlobalBuffer, "$Quit %s|", ChangedUser->m_sNick);
-					if (CheckSprintf(imsgLen, 128, "RegManager::ChangeReg1") == true) {
+					if (CheckSprintf(imsgLen, 128, "RegManager::ChangeReg1") == true)
+					{
 						GlobalDataQueue::m_Ptr->AddQueueItem(ServerManager::m_pGlobalBuffer, imsgLen, NULL, 0, GlobalDataQueue::CMD_QUIT);
 					}
-					switch (SettingManager::m_Ptr->m_ui8FullMyINFOOption) {
+					switch (SettingManager::m_Ptr->m_ui8FullMyINFOOption)
+					{
 					case 0:
 						GlobalDataQueue::m_Ptr->AddQueueItem(ChangedUser->m_sMyInfoLong, ChangedUser->m_ui16MyInfoLongLen, NULL, 0, GlobalDataQueue::CMD_MYINFO);
 						break;

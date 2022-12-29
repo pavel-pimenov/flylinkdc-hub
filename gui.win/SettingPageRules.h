@@ -23,7 +23,8 @@
 #include "SettingPage.h"
 //---------------------------------------------------------------------------
 
-class SettingPageRules : public SettingPage {
+class SettingPageRules : public SettingPage
+{
 public:
 	bool m_bUpdateNickLimitMessage, m_bUpdateMinShare, m_bUpdateMaxShare, m_bUpdateShareLimitMessage;
 
@@ -45,7 +46,8 @@ public:
 private:
 	HWND m_hWndPageItems[47];
 
-	enum enmPageItems {
+	enum enmPageItems
+	{
 		GB_NICK_LIMITS,
 		EDT_MIN_NICK_LEN,
 		UD_MIN_NICK_LEN,

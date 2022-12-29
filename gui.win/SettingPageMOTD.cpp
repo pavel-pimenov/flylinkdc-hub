@@ -34,10 +34,14 @@
 static WNDPROC wpOldMultiEditProc = nullptr;
 //---------------------------------------------------------------------------
 
-LRESULT CALLBACK MultiEditProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_GETDLGCODE && wParam == VK_TAB) {
+LRESULT CALLBACK MultiEditProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(uMsg == WM_GETDLGCODE && wParam == VK_TAB)
+	{
 		return 0;
-	} else if(uMsg == WM_KEYDOWN && wParam == VK_ESCAPE) {
+	}
+	else if(uMsg == WM_KEYDOWN && wParam == VK_ESCAPE)
+	{
 		::SendMessage(::GetParent(::GetParent(hWnd)), WM_COMMAND, IDCANCEL, 0);
 		return 0;
 	}
@@ -46,20 +50,26 @@ LRESULT CALLBACK MultiEditProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 }
 //---------------------------------------------------------------------------
 
-SettingPageMOTD::SettingPageMOTD() : m_bUpdateMOTD(false) {
+SettingPageMOTD::SettingPageMOTD() : m_bUpdateMOTD(false)
+{
 	memset(&m_hWndPageItems, 0, sizeof(m_hWndPageItems));
 }
 //---------------------------------------------------------------------------
 
-LRESULT SettingPageMOTD::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_COMMAND) {
-		if(LOWORD(wParam) == EDT_MOTD) {
-			if(HIWORD(wParam) == EN_CHANGE) {
+LRESULT SettingPageMOTD::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(uMsg == WM_COMMAND)
+	{
+		if(LOWORD(wParam) == EDT_MOTD)
+		{
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				int iLen = ::GetWindowTextLength((HWND)lParam);
 
 				char * buf = (char *)malloc(iLen+1);
 
-				if(buf == nullptr) {
+				if(buf == nullptr)
+				{
 					AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for buf in SettingPageMOTD::PageMOTDProc\n", iLen+1);
 					return 0;
 				}
@@ -68,15 +78,18 @@ LRESULT SettingPageMOTD::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam
 
 				bool bChanged = false;
 
-				for(uint16_t ui16i = 0; buf[ui16i] != '\0'; ui16i++) {
-					if(buf[ui16i] == '|') {
+				for(uint16_t ui16i = 0; buf[ui16i] != '\0'; ui16i++)
+				{
+					if(buf[ui16i] == '|')
+					{
 						strcpy(buf+ui16i, buf+ui16i+1);
 						bChanged = true;
 						ui16i--;
 					}
 				}
 
-				if(bChanged == true) {
+				if(bChanged == true)
+				{
 					int iStart, iEnd;
 
 					::SendMessage((HWND)lParam, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
@@ -90,8 +103,11 @@ LRESULT SettingPageMOTD::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam
 
 				return 0;
 			}
-		} else if(LOWORD(wParam) == BTN_DISABLE_MOTD) {
-			if(HIWORD(wParam) == BN_CLICKED) {
+		}
+		else if(LOWORD(wParam) == BTN_DISABLE_MOTD)
+		{
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				BOOL bDisableMOTD = ::SendMessage(m_hWndPageItems[BTN_DISABLE_MOTD], BM_GETCHECK, 0, 0) == BST_CHECKED ? FALSE : TRUE;
 				::EnableWindow(m_hWndPageItems[EDT_MOTD], bDisableMOTD);
 				::EnableWindow(m_hWndPageItems[BTN_MOTD_AS_PM], bDisableMOTD);
@@ -103,8 +119,10 @@ LRESULT SettingPageMOTD::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam
 }
 //------------------------------------------------------------------------------
 
-void SettingPageMOTD::Save() {
-	if(m_bCreated == false) {
+void SettingPageMOTD::Save()
+{
+	if(m_bCreated == false)
+	{
 		return;
 	}
 
@@ -115,7 +133,8 @@ void SettingPageMOTD::Save() {
 
 	char * buf = (char *)malloc(iAllocLen+1);
 
-	if(buf == nullptr) {
+	if(buf == nullptr)
+	{
 		AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for buf in SettingPageMOTD::Save\n", iAllocLen+1);
 		return;
 	}
@@ -143,18 +162,22 @@ void SettingPageMOTD::GetUpdates(bool & /*bUpdateHubNameWelcome*/, bool & /*bUpd
                                  bool & /*bUpdatedSlotsLimitMessage*/, bool & /*bUpdatedHubSlotRatioMessage*/, bool & /*bUpdatedMaxHubsLimitMessage*/, bool & /*bUpdatedNoTagMessage*/,
                                  bool & /*bUpdatedNickLimitMessage*/, bool & /*bUpdatedBotsSameNick*/, bool & /*bUpdatedBotNick*/, bool & /*bUpdatedBot*/, bool & /*bUpdatedOpChatNick*/,
                                  bool & /*bUpdatedOpChat*/, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
-                                 bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/) {
-	if(bUpdatedMOTD == false) {
+                                 bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/)
+{
+	if(bUpdatedMOTD == false)
+	{
 		bUpdatedMOTD = m_bUpdateMOTD;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-bool SettingPageMOTD::CreateSettingPage(HWND hOwner) {
+bool SettingPageMOTD::CreateSettingPage(HWND hOwner)
+{
 	CreateHWND(hOwner);
 
-	if(m_bCreated == false) {
+	if(m_bCreated == false)
+	{
 		return false;
 	}
 
@@ -177,8 +200,10 @@ bool SettingPageMOTD::CreateSettingPage(HWND hOwner) {
 	                                    8, (rcThis.bottom - rcThis.top) - GuiSettingManager::m_iCheckHeight - 11, m_iFullEDT, GuiSettingManager::m_iCheckHeight, m_hWnd, (HMENU)BTN_DISABLE_MOTD, ServerManager::m_hInstance, nullptr);
 	::SendMessage(m_hWndPageItems[BTN_DISABLE_MOTD], BM_SETCHECK, (SettingManager::m_Ptr->m_bBools[SETBOOL_DISABLE_MOTD] == true ? BST_CHECKED : BST_UNCHECKED), 0);
 
-	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++) {
-		if(m_hWndPageItems[ui8i] == nullptr) {
+	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++)
+	{
+		if(m_hWndPageItems[ui8i] == nullptr)
+		{
 			return false;
 		}
 
@@ -196,12 +221,14 @@ bool SettingPageMOTD::CreateSettingPage(HWND hOwner) {
 }
 //------------------------------------------------------------------------------
 
-char * SettingPageMOTD::GetPageName() {
+char * SettingPageMOTD::GetPageName()
+{
 	return LanguageManager::m_Ptr->m_sTexts[LAN_MOTD_ONLY];
 }
 //------------------------------------------------------------------------------
 
-void SettingPageMOTD::FocusLastItem() {
+void SettingPageMOTD::FocusLastItem()
+{
 	::SetFocus(m_hWndPageItems[BTN_DISABLE_MOTD]);
 }
 //------------------------------------------------------------------------------

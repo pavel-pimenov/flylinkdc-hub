@@ -32,19 +32,24 @@
 #pragma hdrstop
 //---------------------------------------------------------------------------
 
-SettingPageGeneral::SettingPageGeneral() : m_bUpdateHubNameWelcome(false), m_bUpdateHubName(false), m_bUpdateTCPPorts(false), m_bUpdateUDPPort(false), m_bUpdateAutoReg(false), m_bUpdateLanguage(false) {
+SettingPageGeneral::SettingPageGeneral() : m_bUpdateHubNameWelcome(false), m_bUpdateHubName(false), m_bUpdateTCPPorts(false), m_bUpdateUDPPort(false), m_bUpdateAutoReg(false), m_bUpdateLanguage(false)
+{
 	memset(&m_hWndPageItems, 0, sizeof(m_hWndPageItems));
 }
 //---------------------------------------------------------------------------
 
-LRESULT SettingPageGeneral::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_COMMAND) {
-		switch(LOWORD(wParam)) {
+LRESULT SettingPageGeneral::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(uMsg == WM_COMMAND)
+	{
+		switch(LOWORD(wParam))
+		{
 		case EDT_HUB_NAME:
 		case EDT_HUB_TOPIC:
 		case EDT_HUB_DESCRIPTION:
 		case EDT_HUB_ADDRESS:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				RemoveDollarsPipes((HWND)lParam);
 
 				return 0;
@@ -52,21 +57,25 @@ LRESULT SettingPageGeneral::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 
 			break;
 		case EDT_TCP_PORTS:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				char buf[65];
 				::GetWindowText((HWND)lParam, buf, 65);
 
 				bool bChanged = false;
 
-				for(uint16_t ui16i = 0; buf[ui16i] != '\0'; ui16i++) {
-					if(isdigit(buf[ui16i]) == 0 && buf[ui16i] != ';') {
+				for(uint16_t ui16i = 0; buf[ui16i] != '\0'; ui16i++)
+				{
+					if(isdigit(buf[ui16i]) == 0 && buf[ui16i] != ';')
+					{
 						strcpy(buf+ui16i, buf+ui16i+1);
 						bChanged = true;
 						ui16i--;
 					}
 				}
 
-				if(bChanged == true) {
+				if(bChanged == true)
+				{
 					int iStart, iEnd;
 
 					::SendMessage((HWND)lParam, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
@@ -81,7 +90,8 @@ LRESULT SettingPageGeneral::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 
 			break;
 		case EDT_UDP_PORT:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 0, 65535);
 
 				return 0;
@@ -89,7 +99,8 @@ LRESULT SettingPageGeneral::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 
 			break;
 		case EDT_MAX_USERS:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 1, 32767);
 
 				return 0;
@@ -97,7 +108,8 @@ LRESULT SettingPageGeneral::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 
 			break;
 		case BTN_RESOLVE_ADDRESS:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				BOOL bEnable = ::SendMessage(m_hWndPageItems[BTN_RESOLVE_ADDRESS], BM_GETCHECK, 0, 0) == BST_CHECKED ? FALSE : TRUE;
 				::SetWindowText(m_hWndPageItems[EDT_IPV4_ADDRESS], bEnable == FALSE ? ServerManager::m_sHubIP :
 				                (SettingManager::m_Ptr->m_sTexts[SETTXT_IPV4_ADDRESS] != nullptr ? SettingManager::m_Ptr->m_sTexts[SETTXT_IPV4_ADDRESS] : ""));
@@ -115,15 +127,18 @@ LRESULT SettingPageGeneral::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 }
 //------------------------------------------------------------------------------
 
-void SettingPageGeneral::Save() {
-	if(m_bCreated == false) {
+void SettingPageGeneral::Save()
+{
+	if(m_bCreated == false)
+	{
 		return;
 	}
 
 	char sBuf[1025];
 	int iLen = ::GetWindowText(m_hWndPageItems[EDT_HUB_NAME], sBuf, 1025);
 
-	if(strcmp(sBuf, SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_NAME]) != 0) {
+	if(strcmp(sBuf, SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_NAME]) != 0)
+	{
 		m_bUpdateHubNameWelcome = true;
 		m_bUpdateHubName = true;
 	}
@@ -133,7 +148,8 @@ void SettingPageGeneral::Save() {
 	iLen = ::GetWindowText(m_hWndPageItems[EDT_HUB_TOPIC], sBuf, 1025);
 
 	if(m_bUpdateHubName == false && ((SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_TOPIC] == nullptr && iLen != 0) ||
-	                                 (SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_TOPIC] != nullptr && strcmp(sBuf, SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_TOPIC]) != 0))) {
+	                                 (SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_TOPIC] != nullptr && strcmp(sBuf, SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_TOPIC]) != 0)))
+	{
 		m_bUpdateHubNameWelcome = true;
 		m_bUpdateHubName = true;
 	}
@@ -149,7 +165,8 @@ void SettingPageGeneral::Save() {
 
 	iLen = ::GetWindowText(m_hWndPageItems[EDT_HUB_ADDRESS], sBuf, 1025);
 
-	if(strcmp(sBuf, SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS]) != 0) {
+	if(strcmp(sBuf, SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS]) != 0)
+	{
 		bResolveHubAddress = true;
 	}
 
@@ -159,11 +176,13 @@ void SettingPageGeneral::Save() {
 
 	SettingManager::m_Ptr->SetBool(SETBOOL_RESOLVE_TO_IP, ::SendMessage(m_hWndPageItems[BTN_RESOLVE_ADDRESS], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false);
 
-	if(bOldResolve != SettingManager::m_Ptr->m_bBools[SETBOOL_RESOLVE_TO_IP]) {
+	if(bOldResolve != SettingManager::m_Ptr->m_bBools[SETBOOL_RESOLVE_TO_IP])
+	{
 		bResolveHubAddress = true;
 	}
 
-	if(SettingManager::m_Ptr->m_bBools[SETBOOL_RESOLVE_TO_IP] == false) {
+	if(SettingManager::m_Ptr->m_bBools[SETBOOL_RESOLVE_TO_IP] == false)
+	{
 		iLen = ::GetWindowText(m_hWndPageItems[EDT_IPV4_ADDRESS], sBuf, 1025);
 		SettingManager::m_Ptr->SetText(SETTXT_IPV4_ADDRESS, sBuf, iLen);
 
@@ -175,7 +194,8 @@ void SettingPageGeneral::Save() {
 
 	iLen = ::GetWindowText(m_hWndPageItems[EDT_TCP_PORTS], sBuf, 1025);
 
-	if(strcmp(sBuf, SettingManager::m_Ptr->m_sTexts[SETTXT_TCP_PORTS]) != 0) {
+	if(strcmp(sBuf, SettingManager::m_Ptr->m_sTexts[SETTXT_TCP_PORTS]) != 0)
+	{
 		m_bUpdateTCPPorts = true;
 	}
 
@@ -183,7 +203,8 @@ void SettingPageGeneral::Save() {
 
 	iLen = ::GetWindowText(m_hWndPageItems[EDT_UDP_PORT], sBuf, 1025);
 
-	if(strcmp(sBuf, SettingManager::m_Ptr->m_sTexts[SETTXT_UDP_PORT]) != 0) {
+	if(strcmp(sBuf, SettingManager::m_Ptr->m_sTexts[SETTXT_UDP_PORT]) != 0)
+	{
 		m_bUpdateUDPPort = true;
 	}
 
@@ -192,36 +213,44 @@ void SettingPageGeneral::Save() {
 	iLen = ::GetWindowText(m_hWndPageItems[EDT_HUB_LISTS], sBuf, 1025);
 	SettingManager::m_Ptr->SetText(SETTXT_REGISTER_SERVERS, sBuf, iLen);
 
-	if((::SendMessage(m_hWndPageItems[BTN_HUBLIST_AUTO_REG], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false) != SettingManager::m_Ptr->m_bBools[SETBOOL_AUTO_REG]) {
+	if((::SendMessage(m_hWndPageItems[BTN_HUBLIST_AUTO_REG], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false) != SettingManager::m_Ptr->m_bBools[SETBOOL_AUTO_REG])
+	{
 		m_bUpdateAutoReg = true;
 	}
 
 	SettingManager::m_Ptr->SetBool(SETBOOL_AUTO_REG, ::SendMessage(m_hWndPageItems[BTN_HUBLIST_AUTO_REG], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false);
 
-	if(bResolveHubAddress == true) {
+	if(bResolveHubAddress == true)
+	{
 		ServerManager::ResolveHubAddress(true);
 	}
 
 	uint32_t ui32CurSel = (uint32_t)::SendMessage(m_hWndPageItems[CB_LANGUAGE], CB_GETCURSEL, 0, 0);
 
-	if(ui32CurSel == 0) {
-		if(SettingManager::m_Ptr->m_sTexts[SETTXT_LANGUAGE] != nullptr) {
+	if(ui32CurSel == 0)
+	{
+		if(SettingManager::m_Ptr->m_sTexts[SETTXT_LANGUAGE] != nullptr)
+		{
 			m_bUpdateLanguage = true;
 			m_bUpdateHubNameWelcome = true;
 		}
 
 		SettingManager::m_Ptr->SetText(SETTXT_LANGUAGE, "", 0);
-	} else {
+	}
+	else
+	{
 		uint32_t ui32Len = (uint32_t)::SendMessage(m_hWndPageItems[CB_LANGUAGE], CB_GETLBTEXTLEN, ui32CurSel, 0);
 
 		char * sTempBuf = (char *)malloc(ui32Len+1);
 
-		if(sTempBuf == nullptr) {
+		if(sTempBuf == nullptr)
+		{
 			AppendDebugLogFormat("[MEM] Cannot allocate %u bytes for sTempBuf in SettingPageGeneral::Save\n", ui32Len+1);
 			return;
 		}
 
-		if(SettingManager::m_Ptr->m_sTexts[SETTXT_LANGUAGE] == nullptr || strcmp(sTempBuf, SettingManager::m_Ptr->m_sTexts[SETTXT_LANGUAGE]) != 0) {
+		if(SettingManager::m_Ptr->m_sTexts[SETTXT_LANGUAGE] == nullptr || strcmp(sTempBuf, SettingManager::m_Ptr->m_sTexts[SETTXT_LANGUAGE]) != 0)
+		{
 			m_bUpdateLanguage = true;
 			m_bUpdateHubNameWelcome = true;
 		}
@@ -234,7 +263,8 @@ void SettingPageGeneral::Save() {
 	}
 
 	LRESULT lResult = ::SendMessage(m_hWndPageItems[UD_MAX_USERS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_USERS, LOWORD(lResult));
 	}
 }
@@ -245,32 +275,41 @@ void SettingPageGeneral::GetUpdates(bool &bUpdatedHubNameWelcome, bool &bUpdated
                                     bool & /*bUpdatedSlotsLimitMessage*/, bool & /*bUpdatedHubSlotRatioMessage*/, bool & /*bUpdatedMaxHubsLimitMessage*/, bool & /*bUpdatedNoTagMessage*/,
                                     bool & /*bUpdatedNickLimitMessage*/, bool & /*bUpdatedBotsSameNick*/, bool & /*bUpdatedBotNick*/, bool & /*bUpdatedBot*/, bool & /*bUpdatedOpChatNick*/,
                                     bool & /*bUpdatedOpChat*/, bool &bUpdatedLanguage, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
-                                    bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/) {
-	if(bUpdatedHubNameWelcome == false) {
+                                    bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/)
+{
+	if(bUpdatedHubNameWelcome == false)
+	{
 		bUpdatedHubNameWelcome = m_bUpdateHubNameWelcome;
 	}
-	if(bUpdatedHubName == false) {
+	if(bUpdatedHubName == false)
+	{
 		bUpdatedHubName = m_bUpdateHubName;
 	}
-	if(bUpdatedTCPPorts == false) {
+	if(bUpdatedTCPPorts == false)
+	{
 		bUpdatedTCPPorts = m_bUpdateTCPPorts;
 	}
-	if(bUpdatedUDPPort == false) {
+	if(bUpdatedUDPPort == false)
+	{
 		bUpdatedUDPPort = m_bUpdateUDPPort;
 	}
-	if(bUpdatedAutoReg == false) {
+	if(bUpdatedAutoReg == false)
+	{
 		bUpdatedAutoReg = m_bUpdateAutoReg;
 	}
-	if(bUpdatedLanguage == false) {
+	if(bUpdatedLanguage == false)
+	{
 		bUpdatedLanguage = m_bUpdateLanguage;
 	}
 }
 
 //------------------------------------------------------------------------------
-bool SettingPageGeneral::CreateSettingPage(HWND hOwner) {
+bool SettingPageGeneral::CreateSettingPage(HWND hOwner)
+{
 	CreateHWND(hOwner);
 
-	if(m_bCreated == false) {
+	if(m_bCreated == false)
+	{
 		return false;
 	}
 
@@ -405,8 +444,10 @@ bool SettingPageGeneral::CreateSettingPage(HWND hOwner) {
 	                                        8, iPosY + GuiSettingManager::m_iGroupBoxMargin + GuiSettingManager::m_iEditHeight + 4, m_iFullEDT, GuiSettingManager::m_iCheckHeight, m_hWnd, nullptr, ServerManager::m_hInstance, nullptr);
 	::SendMessage(m_hWndPageItems[BTN_HUBLIST_AUTO_REG], BM_SETCHECK, (SettingManager::m_Ptr->m_bBools[SETBOOL_AUTO_REG] == true ? BST_CHECKED : BST_UNCHECKED), 0);
 
-	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++) {
-		if(m_hWndPageItems[ui8i] == nullptr) {
+	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++)
+	{
+		if(m_hWndPageItems[ui8i] == nullptr)
+		{
 			return false;
 		}
 
@@ -421,34 +462,43 @@ bool SettingPageGeneral::CreateSettingPage(HWND hOwner) {
 	struct _finddata_t langfile;
 	intptr_t hFile = _findfirst((ServerManager::m_sPath+"\\language\\"+"*.xml").c_str(), &langfile);
 
-	if(hFile != -1) {
-		do {
+	if(hFile != -1)
+	{
+		do
+		{
 			if(((langfile.attrib & _A_SUBDIR) == _A_SUBDIR) == true ||
-			        stricmp(langfile.name+(strlen(langfile.name)-4), ".xml") != 0) {
+			        stricmp(langfile.name+(strlen(langfile.name)-4), ".xml") != 0)
+			{
 				continue;
 			}
 
 			::SendMessage(m_hWndPageItems[CB_LANGUAGE], CB_ADDSTRING, 0, (LPARAM)string(langfile.name, strlen(langfile.name)-4).c_str());
-		} while(_findnext(hFile, &langfile) == 0);
+		}
+		while(_findnext(hFile, &langfile) == 0);
 
 		_findclose(hFile);
 	}
 
 	// Select actual language in combobox
-	if(SettingManager::m_Ptr->m_sTexts[SETTXT_LANGUAGE] != nullptr) {
+	if(SettingManager::m_Ptr->m_sTexts[SETTXT_LANGUAGE] != nullptr)
+	{
 		uint32_t ui32Count = (uint32_t)::SendMessage(m_hWndPageItems[CB_LANGUAGE], CB_GETCOUNT, 0, 0);
-		for(uint32_t ui32i = 1; ui32i < ui32Count; ui32i++) {
+		for(uint32_t ui32i = 1; ui32i < ui32Count; ui32i++)
+		{
 			uint32_t ui32Len = (uint32_t)::SendMessage(m_hWndPageItems[CB_LANGUAGE], CB_GETLBTEXTLEN, ui32i, 0);
-			if(ui32Len == (int32_t)SettingManager::m_Ptr->m_ui16TextsLens[SETTXT_LANGUAGE]) {
+			if(ui32Len == (int32_t)SettingManager::m_Ptr->m_ui16TextsLens[SETTXT_LANGUAGE])
+			{
 				char * buf = (char *)malloc(ui32Len+1);
 
-				if(buf == nullptr) {
+				if(buf == nullptr)
+				{
 					AppendDebugLogFormat("[MEM] Cannot allocate %u bytes for buf in SettingPageGeneral::CreateSettingPage\n", ui32Len+1);
 					return false;
 				}
 
 				::SendMessage(m_hWndPageItems[CB_LANGUAGE], CB_GETLBTEXT, ui32i, (LPARAM)buf);
-				if(stricmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_LANGUAGE]) == 0) {
+				if(stricmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_LANGUAGE]) == 0)
+				{
 					::SendMessage(m_hWndPageItems[CB_LANGUAGE], CB_SETCURSEL, ui32i, 0);
 
 					free(buf);
@@ -460,7 +510,8 @@ bool SettingPageGeneral::CreateSettingPage(HWND hOwner) {
 		}
 	}
 
-	if(SettingManager::m_Ptr->m_bBools[SETBOOL_RESOLVE_TO_IP] == true) {
+	if(SettingManager::m_Ptr->m_bBools[SETBOOL_RESOLVE_TO_IP] == true)
+	{
 		::EnableWindow(m_hWndPageItems[EDT_IPV4_ADDRESS], FALSE);
 		::EnableWindow(m_hWndPageItems[EDT_IPV6_ADDRESS], FALSE);
 	}
@@ -471,12 +522,14 @@ bool SettingPageGeneral::CreateSettingPage(HWND hOwner) {
 }
 //------------------------------------------------------------------------------
 
-char * SettingPageGeneral::GetPageName() {
+char * SettingPageGeneral::GetPageName()
+{
 	return LanguageManager::m_Ptr->m_sTexts[LAN_GENERAL_SETTINGS];
 }
 //------------------------------------------------------------------------------
 
-void SettingPageGeneral::FocusLastItem() {
+void SettingPageGeneral::FocusLastItem()
+{
 	::SetFocus(m_hWndPageItems[BTN_HUBLIST_AUTO_REG]);
 }
 //------------------------------------------------------------------------------

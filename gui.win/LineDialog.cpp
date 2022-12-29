@@ -36,22 +36,26 @@ static ATOM atomLineDialog = 0;
 void (*pOnOk)(char * sLine, const int iLen) = nullptr;
 //---------------------------------------------------------------------------
 
-LineDialog::LineDialog(void (*pOnOkFunction)(char * sLine, const int iLen)) {
+LineDialog::LineDialog(void (*pOnOkFunction)(char * sLine, const int iLen))
+{
 	memset(&m_hWndWindowItems, 0, sizeof(m_hWndWindowItems));
 
 	pOnOk = pOnOkFunction;
 }
 //---------------------------------------------------------------------------
 
-LineDialog::~LineDialog() {
+LineDialog::~LineDialog()
+{
 	pOnOk = nullptr;
 }
 //---------------------------------------------------------------------------
 
-LRESULT CALLBACK LineDialog::StaticLineDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK LineDialog::StaticLineDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
 	LineDialog * pLineDialog = (LineDialog *)::GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
-	if(pLineDialog == nullptr) {
+	if(pLineDialog == nullptr)
+	{
 		return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
 
@@ -59,20 +63,26 @@ LRESULT CALLBACK LineDialog::StaticLineDialogProc(HWND hWnd, UINT uMsg, WPARAM w
 }
 //------------------------------------------------------------------------------
 
-LRESULT LineDialog::LineDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	switch(uMsg) {
+LRESULT LineDialog::LineDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch(uMsg)
+	{
 	case WM_SETFOCUS:
 		::SetFocus(m_hWndWindowItems[EDT_LINE]);
 
 		return 0;
 	case WM_COMMAND:
-		switch(LOWORD(wParam)) {
-		case IDOK: {
+		switch(LOWORD(wParam))
+		{
+		case IDOK:
+		{
 			int iLen = ::GetWindowTextLength(m_hWndWindowItems[EDT_LINE]);
-			if(iLen != 0) {
+			if(iLen != 0)
+			{
 				char * sBuf = new (std::nothrow) char[iLen + 1];
 
-				if(sBuf != nullptr) {
+				if(sBuf != nullptr)
+				{
 					::GetWindowText(m_hWndWindowItems[EDT_LINE], sBuf, iLen + 1);
 					(*pOnOk)(sBuf, iLen);
 				}
@@ -90,7 +100,8 @@ LRESULT LineDialog::LineDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		::EnableWindow(::GetParent(m_hWndWindowItems[WINDOW_HANDLE]), TRUE);
 		ServerManager::m_hWndActiveDialog = nullptr;
 		break;
-	case WM_NCDESTROY: {
+	case WM_NCDESTROY:
+	{
 		HWND hWnd = m_hWndWindowItems[WINDOW_HANDLE];
 		delete this;
 		return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
@@ -101,8 +112,10 @@ LRESULT LineDialog::LineDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 }
 //------------------------------------------------------------------------------
 
-void LineDialog::DoModal(HWND hWndParent, char * sCaption, char * sLine) {
-	if(atomLineDialog == 0) {
+void LineDialog::DoModal(HWND hWndParent, char * sCaption, char * sLine)
+{
+	if(atomLineDialog == 0)
+	{
 		WNDCLASSEX m_wc;
 		memset(&m_wc, 0, sizeof(WNDCLASSEX));
 		m_wc.cbSize = sizeof(WNDCLASSEX);
@@ -125,7 +138,8 @@ void LineDialog::DoModal(HWND hWndParent, char * sCaption, char * sLine) {
 	m_hWndWindowItems[WINDOW_HANDLE] = ::CreateWindowEx(WS_EX_DLGMODALFRAME | WS_EX_WINDOWEDGE, MAKEINTATOM(atomLineDialog), (string(sCaption) + ":").c_str(),
 	                                   WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, iX, iY, ScaleGui(306), ScaleGui(105), hWndParent, nullptr, ServerManager::m_hInstance, nullptr);
 
-	if(m_hWndWindowItems[WINDOW_HANDLE] == nullptr) {
+	if(m_hWndWindowItems[WINDOW_HANDLE] == nullptr)
+	{
 		return;
 	}
 
@@ -141,7 +155,8 @@ void LineDialog::DoModal(HWND hWndParent, char * sCaption, char * sLine) {
 
 		int iDiff = rcParent.bottom - iHeight;
 
-		if(iDiff != 0) {
+		if(iDiff != 0)
+		{
 			::GetWindowRect(hWndParent, &rcParent);
 
 			iY = (rcParent.top + ((rcParent.bottom-rcParent.top)/2)) - ((ScaleGui(100) - iDiff) / 2);
@@ -167,7 +182,8 @@ void LineDialog::DoModal(HWND hWndParent, char * sCaption, char * sLine) {
 	m_hWndWindowItems[BTN_CANCEL] = ::CreateWindowEx(0, WC_BUTTON, LanguageManager::m_Ptr->m_sTexts[LAN_DISCARD], WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
 	                                rcParent.right - ((rcParent.right / 2) - 1), GuiSettingManager::m_iOneLineGB + 4, (rcParent.right / 2) - 5, GuiSettingManager::m_iEditHeight, m_hWndWindowItems[WINDOW_HANDLE], (HMENU)IDCANCEL, ServerManager::m_hInstance, nullptr);
 
-	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndWindowItems) / sizeof(m_hWndWindowItems[0])); ui8i++) {
+	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndWindowItems) / sizeof(m_hWndWindowItems[0])); ui8i++)
+	{
 		::SendMessage(m_hWndWindowItems[ui8i], WM_SETFONT, (WPARAM)GuiSettingManager::m_hFont, MAKELPARAM(TRUE, 0));
 	}
 

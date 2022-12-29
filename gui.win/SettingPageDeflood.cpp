@@ -31,14 +31,18 @@
 #pragma hdrstop
 //---------------------------------------------------------------------------
 
-SettingPageDeflood::SettingPageDeflood() {
+SettingPageDeflood::SettingPageDeflood()
+{
 	memset(&m_hWndPageItems, 0, sizeof(m_hWndPageItems));
 }
 //---------------------------------------------------------------------------
 
-LRESULT SettingPageDeflood::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_COMMAND) {
-		switch(LOWORD(wParam)) {
+LRESULT SettingPageDeflood::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(uMsg == WM_COMMAND)
+	{
+		switch(LOWORD(wParam))
+		{
 		case EDT_GLOBAL_MAIN_CHAT_MSGS:
 		case EDT_GLOBAL_MAIN_CHAT_SECS:
 		case EDT_GLOBAL_MAIN_CHAT_SECS2:
@@ -50,7 +54,8 @@ LRESULT SettingPageDeflood::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 		case EDT_MAIN_CHAT_INTERVAL_SECS:
 		case EDT_SAME_MAIN_CHAT_MSGS:
 		case EDT_SAME_MAIN_CHAT_SECS:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 1, 999);
 
 				return 0;
@@ -59,7 +64,8 @@ LRESULT SettingPageDeflood::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 			break;
 		case EDT_SAME_MULTI_MAIN_CHAT_MSGS:
 		case EDT_SAME_MULTI_MAIN_CHAT_LINES:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 2, 999);
 
 				return 0;
@@ -74,7 +80,8 @@ LRESULT SettingPageDeflood::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 		case EDT_RCTM_SECS:
 		case EDT_RCTM_MSGS2:
 		case EDT_RCTM_SECS2:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 1, 9999);
 
 				return 0;
@@ -82,7 +89,8 @@ LRESULT SettingPageDeflood::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 
 			break;
 		case EDT_DEFLOOD_TEMP_BAN_TIME:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 1, 32767);
 
 				return 0;
@@ -90,7 +98,8 @@ LRESULT SettingPageDeflood::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 
 			break;
 		case EDT_MAX_USERS_LOGINS:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 1, 1000);
 
 				return 0;
@@ -98,7 +107,8 @@ LRESULT SettingPageDeflood::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 
 			break;
 		case CB_GLOBAL_MAIN_CHAT:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_GLOBAL_MAIN_CHAT], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_GLOBAL_MAIN_CHAT_MSGS], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_GLOBAL_MAIN_CHAT_MSGS], ui32Action == 0 ? FALSE : TRUE);
@@ -114,7 +124,8 @@ LRESULT SettingPageDeflood::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 
 			break;
 		case CB_MAIN_CHAT:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_MAIN_CHAT], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_MAIN_CHAT_MSGS], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_MAIN_CHAT_MSGS], ui32Action == 0 ? FALSE : TRUE);
@@ -126,7 +137,8 @@ LRESULT SettingPageDeflood::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 
 			break;
 		case CB_MAIN_CHAT2:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_MAIN_CHAT2], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_MAIN_CHAT_MSGS2], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_MAIN_CHAT_MSGS2], ui32Action == 0 ? FALSE : TRUE);
@@ -138,7 +150,8 @@ LRESULT SettingPageDeflood::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 
 			break;
 		case CB_SAME_MAIN_CHAT:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_SAME_MAIN_CHAT], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_SAME_MAIN_CHAT_MSGS], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_SAME_MAIN_CHAT_MSGS], ui32Action == 0 ? FALSE : TRUE);
@@ -150,7 +163,8 @@ LRESULT SettingPageDeflood::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 
 			break;
 		case CB_SAME_MULTI_MAIN_CHAT:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_SAME_MULTI_MAIN_CHAT], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_SAME_MULTI_MAIN_CHAT_MSGS], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_SAME_MULTI_MAIN_CHAT_MSGS], ui32Action == 0 ? FALSE : TRUE);
@@ -162,7 +176,8 @@ LRESULT SettingPageDeflood::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 
 			break;
 		case CB_CTM:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_CTM], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_CTM_MSGS], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_CTM_MSGS], ui32Action == 0 ? FALSE : TRUE);
@@ -174,7 +189,8 @@ LRESULT SettingPageDeflood::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 
 			break;
 		case CB_CTM2:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_CTM2], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_CTM_MSGS2], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_CTM_MSGS2], ui32Action == 0 ? FALSE : TRUE);
@@ -186,7 +202,8 @@ LRESULT SettingPageDeflood::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 
 			break;
 		case CB_RCTM:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_RCTM], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_RCTM_MSGS], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_RCTM_MSGS], ui32Action == 0 ? FALSE : TRUE);
@@ -198,7 +215,8 @@ LRESULT SettingPageDeflood::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 
 			break;
 		case CB_RCTM2:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_RCTM2], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_RCTM_MSGS2], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_RCTM_MSGS2], ui32Action == 0 ? FALSE : TRUE);
@@ -216,141 +234,166 @@ LRESULT SettingPageDeflood::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 }
 //------------------------------------------------------------------------------
 
-void SettingPageDeflood::Save() {
-	if(m_bCreated == false) {
+void SettingPageDeflood::Save()
+{
+	if(m_bCreated == false)
+	{
 		return;
 	}
 
 	LRESULT lResult = ::SendMessage(m_hWndPageItems[UD_GLOBAL_MAIN_CHAT_MSGS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_GLOBAL_MAIN_CHAT_MESSAGES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_GLOBAL_MAIN_CHAT_SECS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_GLOBAL_MAIN_CHAT_TIME, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_GLOBAL_MAIN_CHAT_ACTION, (int16_t)::SendMessage(m_hWndPageItems[CB_GLOBAL_MAIN_CHAT], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_GLOBAL_MAIN_CHAT_SECS2], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_GLOBAL_MAIN_CHAT_TIMEOUT, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_MAIN_CHAT_ACTION, (int16_t)::SendMessage(m_hWndPageItems[CB_MAIN_CHAT], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_MAIN_CHAT_MSGS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAIN_CHAT_MESSAGES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_MAIN_CHAT_SECS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAIN_CHAT_TIME, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_MAIN_CHAT_ACTION2, (int16_t)::SendMessage(m_hWndPageItems[CB_MAIN_CHAT2], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_MAIN_CHAT_MSGS2], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAIN_CHAT_MESSAGES2, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_MAIN_CHAT_SECS2], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAIN_CHAT_TIME2, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_MAIN_CHAT_INTERVAL_MSGS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_CHAT_INTERVAL_MESSAGES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_MAIN_CHAT_INTERVAL_SECS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_CHAT_INTERVAL_TIME, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_SAME_MAIN_CHAT_ACTION, (int16_t)::SendMessage(m_hWndPageItems[CB_SAME_MAIN_CHAT], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SAME_MAIN_CHAT_MSGS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SAME_MAIN_CHAT_MESSAGES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SAME_MAIN_CHAT_SECS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SAME_MAIN_CHAT_TIME, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_SAME_MULTI_MAIN_CHAT_ACTION, (int16_t)::SendMessage(m_hWndPageItems[CB_SAME_MULTI_MAIN_CHAT], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SAME_MULTI_MAIN_CHAT_MSGS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SAME_MULTI_MAIN_CHAT_MESSAGES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SAME_MULTI_MAIN_CHAT_LINES], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SAME_MULTI_MAIN_CHAT_LINES, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_CTM_ACTION, (int16_t)::SendMessage(m_hWndPageItems[CB_CTM], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_CTM_MSGS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_CTM_MESSAGES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_CTM_SECS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_CTM_TIME, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_CTM_ACTION2, (int16_t)::SendMessage(m_hWndPageItems[CB_CTM2], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_CTM_MSGS2], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_CTM_MESSAGES2, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_CTM_SECS2], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_CTM_TIME2, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_RCTM_ACTION, (int16_t)::SendMessage(m_hWndPageItems[CB_RCTM], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_RCTM_MSGS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_RCTM_MESSAGES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_RCTM_SECS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_RCTM_TIME, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_RCTM_ACTION2, (int16_t)::SendMessage(m_hWndPageItems[CB_RCTM2], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_RCTM_MSGS2], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_RCTM_MESSAGES2, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_RCTM_SECS2], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_RCTM_TIME2, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_DEFLOOD_TEMP_BAN_TIME], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_DEFLOOD_TEMP_BAN_TIME, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_MAX_USERS_LOGINS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_SIMULTANEOUS_LOGINS, LOWORD(lResult));
 	}
 }
@@ -361,14 +404,17 @@ void SettingPageDeflood::GetUpdates(bool & /*bUpdateHubNameWelcome*/, bool & /*b
                                     bool & /*bUpdatedSlotsLimitMessage*/, bool & /*bUpdatedHubSlotRatioMessage*/, bool & /*bUpdatedMaxHubsLimitMessage*/, bool & /*bUpdatedNoTagMessage*/,
                                     bool & /*bUpdatedNickLimitMessage*/, bool & /*bUpdatedBotsSameNick*/, bool & /*bUpdatedBotNick*/, bool & /*bUpdatedBot*/, bool & /*bUpdatedOpChatNick*/,
                                     bool & /*bUpdatedOpChat*/, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
-                                    bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/) {
+                                    bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/)
+{
 }
 //------------------------------------------------------------------------------
 
-bool SettingPageDeflood::CreateSettingPage(HWND hOwner) {
+bool SettingPageDeflood::CreateSettingPage(HWND hOwner)
+{
 	CreateHWND(hOwner);
 
-	if(m_bCreated == false) {
+	if(m_bCreated == false)
+	{
 		return false;
 	}
 
@@ -759,8 +805,10 @@ bool SettingPageDeflood::CreateSettingPage(HWND hOwner) {
 	                                        ((rcThis.right - rcThis.left - 5) / 2) + ScaleGui(40) + GuiSettingManager::m_iUpDownWidth + 16, iPosY + GuiSettingManager::m_iGroupBoxMargin + ((GuiSettingManager::m_iEditHeight - GuiSettingManager::m_iTextHeight) / 2),
 	                                        (rcThis.right - rcThis.left) - ((rcThis.right - rcThis.left - 5) / 2) - ScaleGui(40) - GuiSettingManager::m_iUpDownWidth - 29, GuiSettingManager::m_iTextHeight, m_hWnd, nullptr, ServerManager::m_hInstance, nullptr);
 
-	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++) {
-		if(m_hWndPageItems[ui8i] == nullptr) {
+	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++)
+	{
+		if(m_hWndPageItems[ui8i] == nullptr)
+		{
 			return false;
 		}
 
@@ -840,12 +888,14 @@ bool SettingPageDeflood::CreateSettingPage(HWND hOwner) {
 }
 //------------------------------------------------------------------------------
 
-char * SettingPageDeflood::GetPageName() {
+char * SettingPageDeflood::GetPageName()
+{
 	return LanguageManager::m_Ptr->m_sTexts[LAN_DEFLOOD];
 }
 //------------------------------------------------------------------------------
 
-void SettingPageDeflood::FocusLastItem() {
+void SettingPageDeflood::FocusLastItem()
+{
 	::SetFocus(m_hWndPageItems[EDT_MAX_USERS_LOGINS]);
 }
 //------------------------------------------------------------------------------

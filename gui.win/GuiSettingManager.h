@@ -23,7 +23,8 @@
 #include "GuiSettingIds.h"
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-class GuiSettingManager {
+class GuiSettingManager
+{
 public:
 	static GuiSettingManager * m_Ptr;
 

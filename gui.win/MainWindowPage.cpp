@@ -33,15 +33,18 @@
 static ATOM atomMainWindowPage = 0;
 //---------------------------------------------------------------------------
 
-MainWindowPage::MainWindowPage() : m_hWnd(nullptr) {
+MainWindowPage::MainWindowPage() : m_hWnd(nullptr)
+{
 	// ...
 }
 //---------------------------------------------------------------------------
 
-LRESULT CALLBACK MainWindowPage::StaticMainWindowPageProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK MainWindowPage::StaticMainWindowPageProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
 	MainWindowPage * pMainWindowPage = (MainWindowPage *)::GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
-	if(pMainWindowPage == nullptr) {
+	if(pMainWindowPage == nullptr)
+	{
 		return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
 
@@ -49,8 +52,10 @@ LRESULT CALLBACK MainWindowPage::StaticMainWindowPageProc(HWND hWnd, UINT uMsg, 
 }
 //---------------------------------------------------------------------------
 
-void MainWindowPage::CreateHWND(HWND hOwner) {
-	if(atomMainWindowPage == 0) {
+void MainWindowPage::CreateHWND(HWND hOwner)
+{
+	if(atomMainWindowPage == 0)
+	{
 		WNDCLASSEX m_wc;
 		memset(&m_wc, 0, sizeof(WNDCLASSEX));
 		m_wc.cbSize = sizeof(WNDCLASSEX);
@@ -70,21 +75,29 @@ void MainWindowPage::CreateHWND(HWND hOwner) {
 	m_hWnd = ::CreateWindowEx(WS_EX_CONTROLPARENT, MAKEINTATOM(atomMainWindowPage), nullptr, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 	                          0, GuiSettingManager::m_iEditHeight + 1, rcMain.right, rcMain.bottom - (GuiSettingManager::m_iEditHeight + 1), hOwner, nullptr, ServerManager::m_hInstance, nullptr);
 
-	if(m_hWnd != nullptr) {
+	if(m_hWnd != nullptr)
+	{
 		::SetWindowLongPtr(m_hWnd, GWLP_USERDATA, (LONG_PTR)this);
 		::SetWindowLongPtr(m_hWnd, GWLP_WNDPROC, (LONG_PTR)StaticMainWindowPageProc);
 	}
 }
 //---------------------------------------------------------------------------
 
-LRESULT FirstItemProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, WNDPROC wpOldProc) {
-	if(uMsg == WM_GETDLGCODE && wParam == VK_TAB) {
+LRESULT FirstItemProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, WNDPROC wpOldProc)
+{
+	if(uMsg == WM_GETDLGCODE && wParam == VK_TAB)
+	{
 		return DLGC_WANTTAB;
-	} else if(uMsg == WM_CHAR && wParam == VK_TAB) {
-		if((::GetKeyState(VK_SHIFT) & 0x8000) == 0) {
+	}
+	else if(uMsg == WM_CHAR && wParam == VK_TAB)
+	{
+		if((::GetKeyState(VK_SHIFT) & 0x8000) == 0)
+		{
 			::SetFocus(::GetNextDlgTabItem(MainWindow::m_Ptr->m_hWnd, hWnd, FALSE));
 			return 0;
-		} else {
+		}
+		else
+		{
 			::SetFocus(MainWindow::m_Ptr->m_hWndWindowItems[MainWindow::TC_TABS]);
 			return 0;
 		}
@@ -94,19 +107,27 @@ LRESULT FirstItemProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, WNDPRO
 }
 //---------------------------------------------------------------------------
 
-LRESULT CALLBACK FirstButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK FirstButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
 	return FirstItemProc(hWnd, uMsg, wParam, lParam, GuiSettingManager::m_wpOldButtonProc);
 }
 //------------------------------------------------------------------------------
 
-LRESULT LastItemProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, WNDPROC wpOldProc) {
-	if(uMsg == WM_GETDLGCODE && wParam == VK_TAB) {
+LRESULT LastItemProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, WNDPROC wpOldProc)
+{
+	if(uMsg == WM_GETDLGCODE && wParam == VK_TAB)
+	{
 		return DLGC_WANTTAB;
-	} else if(uMsg == WM_CHAR && wParam == VK_TAB) {
-		if((::GetKeyState(VK_SHIFT) & 0x8000) == 0) {
+	}
+	else if(uMsg == WM_CHAR && wParam == VK_TAB)
+	{
+		if((::GetKeyState(VK_SHIFT) & 0x8000) == 0)
+		{
 			::SetFocus(MainWindow::m_Ptr->m_hWndWindowItems[MainWindow::TC_TABS]);
 			return 0;
-		} else {
+		}
+		else
+		{
 			::SetFocus(::GetNextDlgTabItem(MainWindow::m_Ptr->m_hWnd, hWnd, TRUE));
 			return 0;
 		}
@@ -116,7 +137,8 @@ LRESULT LastItemProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, WNDPROC
 }
 //---------------------------------------------------------------------------
 
-LRESULT CALLBACK LastButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK LastButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
 	return LastItemProc(hWnd, uMsg, wParam, lParam, GuiSettingManager::m_wpOldButtonProc);
 }
 

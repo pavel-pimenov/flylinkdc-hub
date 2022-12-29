@@ -253,34 +253,25 @@
     <ClCompile Include="zlib\adler32.c">
       <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib\chunkset.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\compare258.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
     <ClCompile Include="zlib\compress.c">
       <Filter>zlib</Filter>
     </ClCompile>
     <ClCompile Include="zlib\crc32.c">
       <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib\crc32_comb.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
     <ClCompile Include="zlib\deflate.c">
       <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib\deflate_fast.c">
+    <ClCompile Include="zlib\gzclose.c">
       <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib\deflate_medium.c">
+    <ClCompile Include="zlib\gzlib.c">
       <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib\deflate_quick.c">
+    <ClCompile Include="zlib\gzread.c">
       <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib\deflate_slow.c">
+    <ClCompile Include="zlib\gzwrite.c">
       <Filter>zlib</Filter>
     </ClCompile>
     <ClCompile Include="zlib\infback.c">
@@ -295,9 +286,6 @@
     <ClCompile Include="zlib\inftrees.c">
       <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="zlib\insert_string.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
     <ClCompile Include="zlib\trees.c">
       <Filter>zlib</Filter>
     </ClCompile>
@@ -305,27 +293,6 @@
       <Filter>zlib</Filter>
     </ClCompile>
     <ClCompile Include="zlib\zutil.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\deflate_huff.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\deflate_stored.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\functable.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\deflate_rle.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\crc32_fold.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\insert_string_roll.c">
-      <Filter>zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="zlib\slide_hash.c">
       <Filter>zlib</Filter>
     </ClCompile>
   </ItemGroup>
@@ -602,7 +569,7 @@
       <UniqueIdentifier>{49aee817-015f-428f-845c-659b8f813081}</UniqueIdentifier>
     </Filter>
     <Filter Include="zlib">
-      <UniqueIdentifier>{3485dbac-b20e-4800-8072-3ee39ea8b54f}</UniqueIdentifier>
+      <UniqueIdentifier>{85dc35e5-54b9-41a6-9401-d5759fa7e765}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

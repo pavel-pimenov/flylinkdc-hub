@@ -23,7 +23,8 @@
 #include "SettingPage.h"
 //---------------------------------------------------------------------------
 
-class SettingPageBans : public SettingPage {
+class SettingPageBans : public SettingPage
+{
 public:
 	bool m_bUpdateTempBanRedirAddress, m_bUpdatePermBanRedirAddress;
 
@@ -45,7 +46,8 @@ public:
 private:
 	HWND m_hWndPageItems[27];
 
-	enum enmPageItems {
+	enum enmPageItems
+	{
 		GB_DEFAULT_TEMPBAN_TIME,
 		EDT_DEFAULT_TEMPBAN_TIME,
 		UD_DEFAULT_TEMPBAN_TIME,

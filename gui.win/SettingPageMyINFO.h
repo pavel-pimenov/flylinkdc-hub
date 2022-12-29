@@ -23,7 +23,8 @@
 #include "SettingPage.h"
 //---------------------------------------------------------------------------
 
-class SettingPageMyINFO : public SettingPage {
+class SettingPageMyINFO : public SettingPage
+{
 public:
 	bool m_bUpdateNoTagMessage;
 
@@ -45,7 +46,8 @@ public:
 private:
 	HWND m_hWndPageItems[21];
 
-	enum enmPageItems {
+	enum enmPageItems
+	{
 		GB_DESCRIPTION_TAG,
 		BTN_REPORT_SUSPICIOUS_TAG,
 		GB_NO_TAG_ACTION,

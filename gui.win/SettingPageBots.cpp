@@ -33,31 +33,39 @@
 
 SettingPageBots::SettingPageBots() : m_bUpdateHubSec(false), m_bUpdateMOTD(false), m_bUpdateHubNameWelcome(false), m_bUpdateRegOnlyMessage(false), m_bUpdateShareLimitMessage(false), m_bUpdateSlotsLimitMessage(false),
 	m_bUpdateHubSlotRatioMessage(false), m_bUpdateMaxHubsLimitMessage(false), m_bUpdateNoTagMessage(false), m_bUpdateNickLimitMessage(false), m_bUpdateBotsSameNick(false),
-	m_bBotNickChanged(false), m_bUpdateBot(false), m_bOpChatNickChanged(false), m_bUpdateOpChat(false) {
+	m_bBotNickChanged(false), m_bUpdateBot(false), m_bOpChatNickChanged(false), m_bUpdateOpChat(false)
+{
 	memset(&m_hWndPageItems, 0, sizeof(m_hWndPageItems));
 }
 //---------------------------------------------------------------------------
 
-LRESULT SettingPageBots::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_COMMAND) {
-		switch(LOWORD(wParam)) {
+LRESULT SettingPageBots::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(uMsg == WM_COMMAND)
+	{
+		switch(LOWORD(wParam))
+		{
 		case EDT_HUB_BOT_NICK:
 		case EDT_OP_CHAT_BOT_NICK:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				char buf[65];
 				::GetWindowText((HWND)lParam, buf, 65);
 
 				bool bChanged = false;
 
-				for(uint16_t ui16i = 0; buf[ui16i] != '\0'; ui16i++) {
-					if(buf[ui16i] == '|' || buf[ui16i] == '$' || buf[ui16i] == ' ') {
+				for(uint16_t ui16i = 0; buf[ui16i] != '\0'; ui16i++)
+				{
+					if(buf[ui16i] == '|' || buf[ui16i] == '$' || buf[ui16i] == ' ')
+					{
 						strcpy(buf+ui16i, buf+ui16i+1);
 						bChanged = true;
 						ui16i--;
 					}
 				}
 
-				if(bChanged == true) {
+				if(bChanged == true)
+				{
 					int iStart, iEnd;
 
 					::SendMessage((HWND)lParam, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
@@ -75,7 +83,8 @@ LRESULT SettingPageBots::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam
 		case EDT_HUB_BOT_EMAIL:
 		case EDT_OP_CHAT_BOT_DESCRIPTION:
 		case EDT_OP_CHAT_BOT_EMAIL:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				RemoveDollarsPipes((HWND)lParam);
 
 				return 0;
@@ -83,7 +92,8 @@ LRESULT SettingPageBots::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam
 
 			break;
 		case BTN_HUB_BOT_ENABLE:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				BOOL bEnable = ::SendMessage(m_hWndPageItems[BTN_HUB_BOT_ENABLE], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE;
 				::EnableWindow(m_hWndPageItems[EDT_HUB_BOT_NICK], bEnable);
 				::EnableWindow(m_hWndPageItems[BTN_HUB_BOT_IS_HUB_SEC], bEnable);
@@ -93,7 +103,8 @@ LRESULT SettingPageBots::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam
 
 			break;
 		case BTN_OP_CHAT_BOT_ENABLE:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				BOOL bEnable = ::SendMessage(m_hWndPageItems[BTN_OP_CHAT_BOT_ENABLE], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE;
 				::EnableWindow(m_hWndPageItems[EDT_OP_CHAT_BOT_NICK], bEnable);
 				::EnableWindow(m_hWndPageItems[EDT_OP_CHAT_BOT_DESCRIPTION], bEnable);
@@ -108,8 +119,10 @@ LRESULT SettingPageBots::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam
 }
 //------------------------------------------------------------------------------
 
-void SettingPageBots::Save() {
-	if(m_bCreated == false) {
+void SettingPageBots::Save()
+{
+	if(m_bCreated == false)
+	{
 		return;
 	}
 
@@ -121,11 +134,13 @@ void SettingPageBots::Save() {
 
 	bool bRegStateChange = false, bDescriptionChange = false, bEmailChange = false;
 
-	if(SettingManager::m_Ptr->m_bBools[SETBOOL_REG_BOT] != bRegBot) {
+	if(SettingManager::m_Ptr->m_bBools[SETBOOL_REG_BOT] != bRegBot)
+	{
 		bRegStateChange = true;
 	}
 
-	if(strcmp(sBot, SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_NICK]) != 0) {
+	if(strcmp(sBot, SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_NICK]) != 0)
+	{
 		m_bUpdateHubSec = true;
 		m_bUpdateMOTD = true;
 		m_bUpdateHubNameWelcome = true;
@@ -141,14 +156,16 @@ void SettingPageBots::Save() {
 		m_bUpdateBot = true;
 	}
 
-	if((m_bUpdateBot == false || m_bBotNickChanged == false) && (bRegBot == true && SettingManager::m_Ptr->m_bBools[SETBOOL_REG_BOT] == false)) {
+	if((m_bUpdateBot == false || m_bBotNickChanged == false) && (bRegBot == true && SettingManager::m_Ptr->m_bBools[SETBOOL_REG_BOT] == false))
+	{
 		m_bUpdateBot = true;
 		m_bBotNickChanged = true;
 	}
 
 	bool bHubBotIsHubSec = ::SendMessage(m_hWndPageItems[BTN_HUB_BOT_IS_HUB_SEC], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false;
 
-	if(bHubBotIsHubSec != SettingManager::m_Ptr->m_bBools[SETBOOL_USE_BOT_NICK_AS_HUB_SEC]) {
+	if(bHubBotIsHubSec != SettingManager::m_Ptr->m_bBools[SETBOOL_USE_BOT_NICK_AS_HUB_SEC])
+	{
 		m_bUpdateHubSec = true;
 		m_bUpdateMOTD = true;
 		m_bUpdateHubNameWelcome = true;
@@ -169,13 +186,15 @@ void SettingPageBots::Save() {
 	if(m_bUpdateBot == false &&
 	        ((SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_DESCRIPTION] == nullptr && iLen != 0) ||
 	         (SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_DESCRIPTION] != nullptr &&
-	          strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_DESCRIPTION]) != 0))) {
+	          strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_DESCRIPTION]) != 0)))
+	{
 		m_bUpdateBot = true;
 	}
 
 	if((SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_DESCRIPTION] == nullptr && iLen != 0) ||
 	        (SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_DESCRIPTION] != nullptr &&
-	         strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_DESCRIPTION]) != 0)) {
+	         strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_DESCRIPTION]) != 0))
+	{
 		bDescriptionChange = true;
 	}
 
@@ -186,19 +205,22 @@ void SettingPageBots::Save() {
 	if(m_bUpdateBot == false &&
 	        (SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_EMAIL] == nullptr && iLen != 0) ||
 	        (SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_EMAIL] != nullptr &&
-	         strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_EMAIL]) != 0)) {
+	         strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_EMAIL]) != 0))
+	{
 		m_bUpdateBot = true;
 	}
 
 	if((SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_EMAIL] == nullptr && iLen != 0) ||
 	        (SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_EMAIL] != nullptr &&
-	         strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_EMAIL]) != 0)) {
+	         strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_EMAIL]) != 0))
+	{
 		bEmailChange = true;
 	}
 
 	SettingManager::m_Ptr->SetText(SETTXT_BOT_EMAIL, buf, iLen);
 
-	if(SettingManager::m_Ptr->m_bBools[SETBOOL_REG_BOT] == true) {
+	if(SettingManager::m_Ptr->m_bBools[SETBOOL_REG_BOT] == true)
+	{
 		SettingManager::m_Ptr->m_bUpdateLocked = false;
 		SettingManager::m_Ptr->DisableBot((bBotHaveNewNick == true || bRegBot == false),
 		                                  (bRegStateChange == true || bBotHaveNewNick == true || bDescriptionChange == true || bEmailChange == true) ? true : false);
@@ -215,19 +237,22 @@ void SettingPageBots::Save() {
 
 	if(m_bUpdateBotsSameNick == false && (bRegBot != SettingManager::m_Ptr->m_bBools[SETBOOL_REG_BOT] ||
 	                                      bRegOpChat != SettingManager::m_Ptr->m_bBools[SETBOOL_REG_OP_CHAT] ||
-	                                      strcmp(sBot, SettingManager::m_Ptr->m_sTexts[SETTXT_OP_CHAT_NICK]) != 0)) {
+	                                      strcmp(sBot, SettingManager::m_Ptr->m_sTexts[SETTXT_OP_CHAT_NICK]) != 0))
+	{
 		m_bUpdateBotsSameNick = true;
 	}
 
 	SettingManager::m_Ptr->SetBool(SETBOOL_REG_BOT, bRegBot);
 
-	if(strcmp(sBot, SettingManager::m_Ptr->m_sTexts[SETTXT_OP_CHAT_NICK]) != 0) {
+	if(strcmp(sBot, SettingManager::m_Ptr->m_sTexts[SETTXT_OP_CHAT_NICK]) != 0)
+	{
 		m_bOpChatNickChanged = true;
 		m_bUpdateOpChat = true;
 	}
 
 	if((m_bUpdateOpChat == false || m_bOpChatNickChanged == false) &&
-	        (bRegOpChat == true && SettingManager::m_Ptr->m_bBools[SETBOOL_REG_OP_CHAT] == false)) {
+	        (bRegOpChat == true && SettingManager::m_Ptr->m_bBools[SETBOOL_REG_OP_CHAT] == false))
+	{
 		m_bUpdateOpChat = true;
 		m_bOpChatNickChanged = true;
 	}
@@ -237,7 +262,8 @@ void SettingPageBots::Save() {
 	if(m_bUpdateOpChat == false &&
 	        ((SettingManager::m_Ptr->m_sTexts[SETTXT_OP_CHAT_DESCRIPTION] == nullptr && iLen != 0) ||
 	         (SettingManager::m_Ptr->m_sTexts[SETTXT_OP_CHAT_DESCRIPTION] != nullptr &&
-	          strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_OP_CHAT_DESCRIPTION]) != 0))) {
+	          strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_OP_CHAT_DESCRIPTION]) != 0)))
+	{
 		m_bUpdateOpChat = true;
 	}
 
@@ -248,13 +274,15 @@ void SettingPageBots::Save() {
 	if(m_bUpdateOpChat == false &&
 	        (SettingManager::m_Ptr->m_sTexts[SETTXT_OP_CHAT_EMAIL] == nullptr && iLen != 0) ||
 	        (SettingManager::m_Ptr->m_sTexts[SETTXT_OP_CHAT_EMAIL] != nullptr &&
-	         strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_OP_CHAT_EMAIL]) != 0)) {
+	         strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_OP_CHAT_EMAIL]) != 0))
+	{
 		m_bUpdateOpChat = true;
 	}
 
 	SettingManager::m_Ptr->SetText(SETTXT_OP_CHAT_EMAIL, buf, iLen);
 
-	if(SettingManager::m_Ptr->m_bBools[SETBOOL_REG_OP_CHAT] == true) {
+	if(SettingManager::m_Ptr->m_bBools[SETBOOL_REG_OP_CHAT] == true)
+	{
 		SettingManager::m_Ptr->m_bUpdateLocked = false;
 		SettingManager::m_Ptr->DisableOpChat((bBotHaveNewNick == true || bRegOpChat == false));
 		SettingManager::m_Ptr->m_bUpdateLocked = true;
@@ -271,59 +299,77 @@ void SettingPageBots::GetUpdates(bool &bUpdatedHubNameWelcome, bool & /*bUpdated
                                  bool &bUpdatedSlotsLimitMessage, bool &bUpdatedHubSlotRatioMessage, bool &bUpdatedMaxHubsLimitMessage, bool &bUpdatedNoTagMessage,
                                  bool &bUpdatedNickLimitMessage, bool &bUpdatedBotsSameNick, bool &bUpdatedBotNick, bool &bUpdatedBot, bool &bUpdatedOpChatNick,
                                  bool &bUpdatedOpChat, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
-                                 bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/) {
-	if(bUpdatedHubNameWelcome == false) {
+                                 bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/)
+{
+	if(bUpdatedHubNameWelcome == false)
+	{
 		bUpdatedHubNameWelcome = m_bUpdateHubNameWelcome;
 	}
-	if(bUpdatedMOTD == false) {
+	if(bUpdatedMOTD == false)
+	{
 		bUpdatedMOTD = m_bUpdateMOTD;
 	}
-	if(bUpdatedHubSec == false) {
+	if(bUpdatedHubSec == false)
+	{
 		bUpdatedHubSec = m_bUpdateHubSec;
 	}
-	if(bUpdatedRegOnlyMessage == false) {
+	if(bUpdatedRegOnlyMessage == false)
+	{
 		bUpdatedRegOnlyMessage = m_bUpdateRegOnlyMessage;
 	}
-	if(bUpdatedShareLimitMessage == false) {
+	if(bUpdatedShareLimitMessage == false)
+	{
 		bUpdatedShareLimitMessage = m_bUpdateShareLimitMessage;
 	}
-	if(bUpdatedSlotsLimitMessage == false) {
+	if(bUpdatedSlotsLimitMessage == false)
+	{
 		bUpdatedSlotsLimitMessage = m_bUpdateSlotsLimitMessage;
 	}
-	if(bUpdatedHubSlotRatioMessage == false) {
+	if(bUpdatedHubSlotRatioMessage == false)
+	{
 		bUpdatedHubSlotRatioMessage = m_bUpdateHubSlotRatioMessage;
 	}
-	if(bUpdatedMaxHubsLimitMessage == false) {
+	if(bUpdatedMaxHubsLimitMessage == false)
+	{
 		bUpdatedMaxHubsLimitMessage = m_bUpdateMaxHubsLimitMessage;
 	}
-	if(bUpdatedNoTagMessage == false) {
+	if(bUpdatedNoTagMessage == false)
+	{
 		bUpdatedNoTagMessage = m_bUpdateNoTagMessage;
 	}
-	if(bUpdatedNickLimitMessage == false) {
+	if(bUpdatedNickLimitMessage == false)
+	{
 		bUpdatedNickLimitMessage = m_bUpdateNickLimitMessage;
 	}
-	if(bUpdatedBotsSameNick == false) {
+	if(bUpdatedBotsSameNick == false)
+	{
 		bUpdatedBotsSameNick = m_bUpdateBotsSameNick;
 	}
-	if(bUpdatedBotNick == false) {
+	if(bUpdatedBotNick == false)
+	{
 		bUpdatedBotNick = m_bBotNickChanged;
 	}
-	if(bUpdatedBot == false) {
+	if(bUpdatedBot == false)
+	{
 		bUpdatedBot = m_bUpdateBot;
 	}
-	if(bUpdatedOpChatNick == false) {
+	if(bUpdatedOpChatNick == false)
+	{
 		bUpdatedOpChatNick = m_bOpChatNickChanged;
 	}
-	if(bUpdatedOpChat == false) {
+	if(bUpdatedOpChat == false)
+	{
 		bUpdatedOpChat = m_bUpdateOpChat;
 	}
 }
 
 //------------------------------------------------------------------------------
-bool SettingPageBots::CreateSettingPage(HWND hOwner) {
+bool SettingPageBots::CreateSettingPage(HWND hOwner)
+{
 	CreateHWND(hOwner);
 
-	if(m_bCreated == false) {
+	if(m_bCreated == false)
+	{
 		return false;
 	}
 
@@ -389,8 +435,10 @@ bool SettingPageBots::CreateSettingPage(HWND hOwner) {
 	        13, iPosY + (2 * GuiSettingManager::m_iGroupBoxMargin) + GuiSettingManager::m_iCheckHeight + 1 + (2 * GuiSettingManager::m_iOneLineGB), m_iGBinGBEDT, GuiSettingManager::m_iEditHeight, m_hWnd, (HMENU)EDT_OP_CHAT_BOT_EMAIL, ServerManager::m_hInstance, nullptr);
 	::SendMessage(m_hWndPageItems[EDT_OP_CHAT_BOT_EMAIL], EM_SETLIMITTEXT, 64, 0);
 
-	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++) {
-		if(m_hWndPageItems[ui8i] == nullptr) {
+	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++)
+	{
+		if(m_hWndPageItems[ui8i] == nullptr)
+		{
 			return false;
 		}
 
@@ -412,12 +460,14 @@ bool SettingPageBots::CreateSettingPage(HWND hOwner) {
 }
 //------------------------------------------------------------------------------
 
-char * SettingPageBots::GetPageName() {
+char * SettingPageBots::GetPageName()
+{
 	return LanguageManager::m_Ptr->m_sTexts[LAN_DEFAULT_BOTS];
 }
 //------------------------------------------------------------------------------
 
-void SettingPageBots::FocusLastItem() {
+void SettingPageBots::FocusLastItem()
+{
 	::SetFocus(m_hWndPageItems[EDT_OP_CHAT_BOT_EMAIL]);
 }
 //------------------------------------------------------------------------------

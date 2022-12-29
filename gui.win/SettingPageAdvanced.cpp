@@ -30,19 +30,29 @@
 #include "SettingDialog.h"
 //---------------------------------------------------------------------------
 
-LRESULT CALLBACK EnableDbCheckProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_GETDLGCODE && wParam == VK_TAB) {
+LRESULT CALLBACK EnableDbCheckProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(uMsg == WM_GETDLGCODE && wParam == VK_TAB)
+	{
 		return DLGC_WANTTAB;
-	} else if(uMsg == WM_CHAR && wParam == VK_TAB) {
-		if((::GetKeyState(VK_SHIFT) & 0x8000) == 0) {
-			if(::SendMessage(hWnd, BM_GETCHECK, 0, 0) == BST_CHECKED) {
+	}
+	else if(uMsg == WM_CHAR && wParam == VK_TAB)
+	{
+		if((::GetKeyState(VK_SHIFT) & 0x8000) == 0)
+		{
+			if(::SendMessage(hWnd, BM_GETCHECK, 0, 0) == BST_CHECKED)
+			{
 				::SetFocus(::GetNextDlgTabItem(SettingDialog::m_Ptr->m_hWndWindowItems[SettingDialog::WINDOW_HANDLE], hWnd, FALSE));
-			} else {
+			}
+			else
+			{
 				::SetFocus(SettingDialog::m_Ptr->m_hWndWindowItems[SettingDialog::TV_TREE]);
 			}
 
 			return 0;
-		} else {
+		}
+		else
+		{
 			::SetFocus(::GetNextDlgTabItem(SettingDialog::m_Ptr->m_hWndWindowItems[SettingDialog::WINDOW_HANDLE], hWnd, TRUE));
 			return 0;
 		}
@@ -52,23 +62,29 @@ LRESULT CALLBACK EnableDbCheckProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 }
 //---------------------------------------------------------------------------
 
-SettingPageAdvanced::SettingPageAdvanced() : m_bUpdateSysTray(false), m_bUpdateScripting(false) {
+SettingPageAdvanced::SettingPageAdvanced() : m_bUpdateSysTray(false), m_bUpdateScripting(false)
+{
 	memset(&m_hWndPageItems, 0, sizeof(m_hWndPageItems));
 }
 //---------------------------------------------------------------------------
 
-LRESULT SettingPageAdvanced::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_COMMAND) {
-		switch(LOWORD(wParam)) {
+LRESULT SettingPageAdvanced::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(uMsg == WM_COMMAND)
+	{
+		switch(LOWORD(wParam))
+		{
 		case BTN_ENABLE_TRAY_ICON:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				::EnableWindow(m_hWndPageItems[BTN_MINIMIZE_ON_STARTUP],
 				               ::SendMessage(m_hWndPageItems[BTN_ENABLE_TRAY_ICON], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE);
 			}
 
 			break;
 		case BTN_ENABLE_SCRIPTING:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				BOOL bEnable = ::SendMessage(m_hWndPageItems[BTN_ENABLE_SCRIPTING], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE;
 				::EnableWindow(m_hWndPageItems[BTN_STOP_SCRIPT_ON_ERROR], bEnable);
 				::EnableWindow(m_hWndPageItems[BTN_SAVE_SCRIPT_ERRORS_TO_LOG], bEnable);
@@ -76,43 +92,52 @@ LRESULT SettingPageAdvanced::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case BTN_FILTER_KICK_MESSAGES:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				::EnableWindow(m_hWndPageItems[BTN_SEND_KICK_MESSAGES_TO_OPS],
 				               ::SendMessage(m_hWndPageItems[BTN_FILTER_KICK_MESSAGES], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE);
 			}
 
 			break;
 		case BTN_SEND_STATUS_MESSAGES_TO_OPS:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				::EnableWindow(m_hWndPageItems[BTN_SEND_STATUS_MESSAGES_IN_PM],
 				               ::SendMessage(m_hWndPageItems[BTN_SEND_STATUS_MESSAGES_TO_OPS], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE);
 			}
 
 			break;
 		case EDT_PREFIXES_FOR_HUB_COMMANDS:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				char buf[6];
 				::GetWindowText((HWND)lParam, buf, 6);
 
 				bool bChanged = false;
 
-				for(uint16_t ui16i = 0; buf[ui16i] != '\0'; ui16i++) {
-					if(buf[ui16i] == '|' || buf[ui16i] == ' ') {
+				for(uint16_t ui16i = 0; buf[ui16i] != '\0'; ui16i++)
+				{
+					if(buf[ui16i] == '|' || buf[ui16i] == ' ')
+					{
 						strcpy(buf+ui16i, buf+ui16i+1);
 						bChanged = true;
 						ui16i--;
 						continue;
 					}
 
-					for(uint16_t ui16j = 0; buf[ui16j] != '\0'; ui16j++) {
-						if(ui16j == ui16i) {
+					for(uint16_t ui16j = 0; buf[ui16j] != '\0'; ui16j++)
+					{
+						if(ui16j == ui16i)
+						{
 							continue;
 						}
 
-						if(buf[ui16j] == buf[ui16i]) {
+						if(buf[ui16j] == buf[ui16i])
+						{
 							strcpy(buf+ui16j, buf+ui16j+1);
 							bChanged = true;
-							if(ui16i > ui16j) {
+							if(ui16i > ui16j)
+							{
 								ui16i--;
 							}
 							ui16j--;
@@ -120,7 +145,8 @@ LRESULT SettingPageAdvanced::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 					}
 				}
 
-				if(bChanged == true) {
+				if(bChanged == true)
+				{
 					int iStart, iEnd;
 
 					::SendMessage((HWND)lParam, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
@@ -135,7 +161,8 @@ LRESULT SettingPageAdvanced::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case EDT_ADMIN_NICK:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				RemovePipes((HWND)lParam);
 
 				return 0;
@@ -144,7 +171,8 @@ LRESULT SettingPageAdvanced::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 			break;
 #if defined(_WITH_SQLITE) || defined(_WITH_POSTGRES) || defined(_WITH_MYSQL)
 		case CHK_ENABLE_DATABASE:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				BOOL bEnabled = ::SendMessage(m_hWndPageItems[CHK_ENABLE_DATABASE], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE;
 
 				::EnableWindow(m_hWndPageItems[LBL_REMOVE_OLD_RECORDS], bEnabled);
@@ -154,7 +182,8 @@ LRESULT SettingPageAdvanced::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case EDT_REMOVE_OLD_RECORDS:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 0, 32767);
 
 				return 0;
@@ -169,15 +198,18 @@ LRESULT SettingPageAdvanced::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 }
 //------------------------------------------------------------------------------
 
-void SettingPageAdvanced::Save() {
-	if(m_bCreated == false) {
+void SettingPageAdvanced::Save()
+{
+	if(m_bCreated == false)
+	{
 		return;
 	}
 
 	SettingManager::m_Ptr->SetBool(SETBOOL_AUTO_START, ::SendMessage(m_hWndPageItems[BTN_AUTO_START], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false);
 	SettingManager::m_Ptr->SetBool(SETBOOL_CHECK_NEW_RELEASES, ::SendMessage(m_hWndPageItems[BTN_CHECK_FOR_UPDATE], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false);
 
-	if((::SendMessage(m_hWndPageItems[BTN_ENABLE_TRAY_ICON], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false) != SettingManager::m_Ptr->m_bBools[SETBOOL_ENABLE_TRAY_ICON]) {
+	if((::SendMessage(m_hWndPageItems[BTN_ENABLE_TRAY_ICON], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false) != SettingManager::m_Ptr->m_bBools[SETBOOL_ENABLE_TRAY_ICON])
+	{
 		m_bUpdateSysTray = true;
 	}
 
@@ -190,7 +222,8 @@ void SettingPageAdvanced::Save() {
 
 	SettingManager::m_Ptr->SetBool(SETBOOL_REPLY_TO_HUB_COMMANDS_AS_PM, ::SendMessage(m_hWndPageItems[BTN_REPLY_TO_HUB_COMMANDS_IN_PM], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false);
 
-	if((::SendMessage(m_hWndPageItems[BTN_ENABLE_SCRIPTING], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false) != SettingManager::m_Ptr->m_bBools[SETBOOL_ENABLE_SCRIPTING]) {
+	if((::SendMessage(m_hWndPageItems[BTN_ENABLE_SCRIPTING], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false) != SettingManager::m_Ptr->m_bBools[SETBOOL_ENABLE_SCRIPTING])
+	{
 		m_bUpdateScripting = true;
 	}
 
@@ -212,12 +245,14 @@ void SettingPageAdvanced::Save() {
 
 	SettingManager::m_Ptr->SetBool(SETBOOL_ENABLE_DATABASE, ::SendMessage(m_hWndPageItems[CHK_ENABLE_DATABASE], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false);
 
-	if(bOldDbState != SettingManager::m_Ptr->m_bBools[SETBOOL_ENABLE_DATABASE]) {
+	if(bOldDbState != SettingManager::m_Ptr->m_bBools[SETBOOL_ENABLE_DATABASE])
+	{
 		SettingManager::m_Ptr->UpdateDatabase();
 	}
 
 	LRESULT lResult = ::SendMessage(m_hWndPageItems[UD_REMOVE_OLD_RECORDS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_DB_REMOVE_OLD_RECORDS, LOWORD(lResult));
 	}
 #endif
@@ -229,20 +264,25 @@ void SettingPageAdvanced::GetUpdates(bool & /*bUpdatedHubNameWelcome*/, bool & /
                                      bool & /*bUpdatedSlotsLimitMessage*/, bool & /*bUpdatedHubSlotRatioMessage*/, bool & /*bUpdatedMaxHubsLimitMessage*/, bool & /*bUpdatedNoTagMessage*/,
                                      bool & /*bUpdatedNickLimitMessage*/, bool & /*bUpdatedBotsSameNick*/, bool & /*bUpdatedBotNick*/, bool & /*bUpdatedBot*/, bool & /*bUpdatedOpChatNick*/,
                                      bool & /*bUpdatedOpChat*/, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
-                                     bool & /*bUpdatedPermBanRedirAddress*/, bool &bUpdatedSysTray, bool &bUpdatedScripting, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/) {
-	if(bUpdatedSysTray == false) {
+                                     bool & /*bUpdatedPermBanRedirAddress*/, bool &bUpdatedSysTray, bool &bUpdatedScripting, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/)
+{
+	if(bUpdatedSysTray == false)
+	{
 		bUpdatedSysTray = m_bUpdateSysTray;
 	}
-	if(bUpdatedScripting == false) {
+	if(bUpdatedScripting == false)
+	{
 		bUpdatedScripting = m_bUpdateScripting;
 	}
 }
 
 //------------------------------------------------------------------------------
-bool SettingPageAdvanced::CreateSettingPage(HWND hOwner) {
+bool SettingPageAdvanced::CreateSettingPage(HWND hOwner)
+{
 	CreateHWND(hOwner);
 
-	if(m_bCreated == false) {
+	if(m_bCreated == false)
+	{
 		return false;
 	}
 
@@ -358,8 +398,10 @@ bool SettingPageAdvanced::CreateSettingPage(HWND hOwner) {
 	          (WPARAM)m_hWndPageItems[EDT_REMOVE_OLD_RECORDS], (LPARAM)MAKELONG(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_DB_REMOVE_OLD_RECORDS], 0));
 #endif
 
-	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++) {
-		if(m_hWndPageItems[ui8i] == nullptr) {
+	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++)
+	{
+		if(m_hWndPageItems[ui8i] == nullptr)
+		{
 			return false;
 		}
 
@@ -376,13 +418,16 @@ bool SettingPageAdvanced::CreateSettingPage(HWND hOwner) {
 	::EnableWindow(m_hWndPageItems[BTN_SEND_STATUS_MESSAGES_IN_PM], SettingManager::m_Ptr->m_bBools[SETBOOL_SEND_STATUS_MESSAGES] == true ? TRUE : FALSE);
 
 #if defined(_WITH_SQLITE) || defined(_WITH_POSTGRES) || defined(_WITH_MYSQL)
-	if(SettingManager::m_Ptr->m_bBools[SETBOOL_ENABLE_DATABASE] == true) {
+	if(SettingManager::m_Ptr->m_bBools[SETBOOL_ENABLE_DATABASE] == true)
+	{
 		::SendMessage(m_hWndPageItems[CHK_ENABLE_DATABASE], BM_SETCHECK, BST_CHECKED, 0);
 
 		::EnableWindow(m_hWndPageItems[LBL_REMOVE_OLD_RECORDS], TRUE);
 		::EnableWindow(m_hWndPageItems[EDT_REMOVE_OLD_RECORDS], TRUE);
 		::EnableWindow(m_hWndPageItems[UD_REMOVE_OLD_RECORDS], TRUE);
-	} else {
+	}
+	else
+	{
 		::SendMessage(m_hWndPageItems[CHK_ENABLE_DATABASE], BM_SETCHECK, BST_UNCHECKED, 0);
 
 		::EnableWindow(m_hWndPageItems[LBL_REMOVE_OLD_RECORDS], FALSE);
@@ -404,16 +449,21 @@ bool SettingPageAdvanced::CreateSettingPage(HWND hOwner) {
 }
 //------------------------------------------------------------------------------
 
-char * SettingPageAdvanced::GetPageName() {
+char * SettingPageAdvanced::GetPageName()
+{
 	return LanguageManager::m_Ptr->m_sTexts[LAN_ADVANCED];
 }
 //------------------------------------------------------------------------------
 
-void SettingPageAdvanced::FocusLastItem() {
+void SettingPageAdvanced::FocusLastItem()
+{
 #if defined(_WITH_SQLITE) || defined(_WITH_POSTGRES) || defined(_WITH_MYSQL)
-	if(::SendMessage(m_hWndPageItems[CHK_ENABLE_DATABASE], BM_GETCHECK, 0, 0) == BST_CHECKED) {
+	if(::SendMessage(m_hWndPageItems[CHK_ENABLE_DATABASE], BM_GETCHECK, 0, 0) == BST_CHECKED)
+	{
 		::SetFocus(m_hWndPageItems[EDT_REMOVE_OLD_RECORDS]);
-	} else {
+	}
+	else
+	{
 		::SetFocus(m_hWndPageItems[CHK_ENABLE_DATABASE]);
 	}
 #else

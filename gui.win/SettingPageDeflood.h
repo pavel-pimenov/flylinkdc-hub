@@ -23,7 +23,8 @@
 #include "SettingPage.h"
 //---------------------------------------------------------------------------
 
-class SettingPageDeflood : public SettingPage {
+class SettingPageDeflood : public SettingPage
+{
 public:
 	SettingPageDeflood();
 	~SettingPageDeflood() { };
@@ -43,7 +44,8 @@ public:
 private:
 	HWND m_hWndPageItems[88];
 
-	enum enmPageItems {
+	enum enmPageItems
+	{
 		GB_GLOBAL_MAIN_CHAT,
 		EDT_GLOBAL_MAIN_CHAT_MSGS,
 		UD_GLOBAL_MAIN_CHAT_MSGS,

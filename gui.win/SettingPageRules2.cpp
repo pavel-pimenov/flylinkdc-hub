@@ -31,21 +31,26 @@
 #pragma hdrstop
 //---------------------------------------------------------------------------
 
-SettingPageRules2::SettingPageRules2() : m_bUpdateSlotsLimitMessage(false), m_bUpdateHubSlotRatioMessage(false), m_bUpdateMaxHubsLimitMessage(false) {
+SettingPageRules2::SettingPageRules2() : m_bUpdateSlotsLimitMessage(false), m_bUpdateHubSlotRatioMessage(false), m_bUpdateMaxHubsLimitMessage(false)
+{
 	memset(&m_hWndPageItems, 0, sizeof(m_hWndPageItems));
 }
 //---------------------------------------------------------------------------
 
-LRESULT SettingPageRules2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_COMMAND) {
-		switch(LOWORD(wParam)) {
+LRESULT SettingPageRules2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(uMsg == WM_COMMAND)
+	{
+		switch(LOWORD(wParam))
+		{
 		case EDT_SLOTS_MSG:
 		case EDT_SLOTS_REDIR_ADDR:
 		case EDT_HUBS_SLOTS_MSG:
 		case EDT_HUBS_SLOTS_REDIR_ADDR:
 		case EDT_HUBS_MSG:
 		case EDT_HUBS_REDIR_ADDR:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				RemovePipes((HWND)lParam);
 
 				return 0;
@@ -54,26 +59,32 @@ LRESULT SettingPageRules2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPar
 			break;
 		case EDT_SLOTS_MIN:
 		case EDT_SLOTS_MAX:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 0, 999);
 
 				uint16_t ui16Min = 0, ui16Max = 0;
 
 				LRESULT lResult = ::SendMessage(m_hWndPageItems[UD_SLOTS_MIN], UDM_GETPOS, 0, 0);
-				if(HIWORD(lResult) == 0) {
+				if(HIWORD(lResult) == 0)
+				{
 					ui16Min = LOWORD(lResult);
 				}
 
 				lResult = ::SendMessage(m_hWndPageItems[UD_SLOTS_MAX], UDM_GETPOS, 0, 0);
-				if(HIWORD(lResult) == 0) {
+				if(HIWORD(lResult) == 0)
+				{
 					ui16Max = LOWORD(lResult);
 				}
 
-				if(ui16Min == 0 && ui16Max == 0) {
+				if(ui16Min == 0 && ui16Max == 0)
+				{
 					::EnableWindow(m_hWndPageItems[EDT_SLOTS_MSG], FALSE);
 					::EnableWindow(m_hWndPageItems[BTN_SLOTS_REDIR], FALSE);
 					::EnableWindow(m_hWndPageItems[EDT_SLOTS_REDIR_ADDR], FALSE);
-				} else {
+				}
+				else
+				{
 					::EnableWindow(m_hWndPageItems[EDT_SLOTS_MSG], TRUE);
 					::EnableWindow(m_hWndPageItems[BTN_SLOTS_REDIR], TRUE);
 					::EnableWindow(m_hWndPageItems[EDT_SLOTS_REDIR_ADDR], ::SendMessage(m_hWndPageItems[BTN_SLOTS_REDIR], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE);
@@ -84,33 +95,40 @@ LRESULT SettingPageRules2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPar
 
 			break;
 		case BTN_SLOTS_REDIR:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				::EnableWindow(m_hWndPageItems[EDT_SLOTS_REDIR_ADDR], ::SendMessage(m_hWndPageItems[BTN_SLOTS_REDIR], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE);
 			}
 
 			break;
 		case EDT_HUBS:
 		case EDT_SLOTS:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 0, 999);
 
 				uint16_t ui16Hubs = 0, ui16Slots = 0;
 
 				LRESULT lResult = ::SendMessage(m_hWndPageItems[UD_HUBS], UDM_GETPOS, 0, 0);
-				if(HIWORD(lResult) == 0) {
+				if(HIWORD(lResult) == 0)
+				{
 					ui16Hubs = LOWORD(lResult);
 				}
 
 				lResult = ::SendMessage(m_hWndPageItems[UD_SLOTS], UDM_GETPOS, 0, 0);
-				if(HIWORD(lResult) == 0) {
+				if(HIWORD(lResult) == 0)
+				{
 					ui16Slots = LOWORD(lResult);
 				}
 
-				if(ui16Hubs == 0 || ui16Slots == 0) {
+				if(ui16Hubs == 0 || ui16Slots == 0)
+				{
 					::EnableWindow(m_hWndPageItems[EDT_HUBS_SLOTS_MSG], FALSE);
 					::EnableWindow(m_hWndPageItems[BTN_HUBS_SLOTS_REDIR], FALSE);
 					::EnableWindow(m_hWndPageItems[EDT_HUBS_SLOTS_REDIR_ADDR], FALSE);
-				} else {
+				}
+				else
+				{
 					::EnableWindow(m_hWndPageItems[EDT_HUBS_SLOTS_MSG], TRUE);
 					::EnableWindow(m_hWndPageItems[BTN_HUBS_SLOTS_REDIR], TRUE);
 					::EnableWindow(m_hWndPageItems[EDT_HUBS_SLOTS_REDIR_ADDR], ::SendMessage(m_hWndPageItems[BTN_HUBS_SLOTS_REDIR], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE);
@@ -121,27 +139,33 @@ LRESULT SettingPageRules2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPar
 
 			break;
 		case BTN_HUBS_SLOTS_REDIR:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				::EnableWindow(m_hWndPageItems[EDT_HUBS_SLOTS_REDIR_ADDR], ::SendMessage(m_hWndPageItems[BTN_HUBS_SLOTS_REDIR], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE);
 			}
 
 			break;
 		case EDT_MAX_HUBS:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 0, 999);
 
 				uint16_t ui16Hubs = 0;
 
 				LRESULT lResult = ::SendMessage(m_hWndPageItems[UD_MAX_HUBS], UDM_GETPOS, 0, 0);
-				if(HIWORD(lResult) == 0) {
+				if(HIWORD(lResult) == 0)
+				{
 					ui16Hubs = LOWORD(lResult);
 				}
 
-				if(ui16Hubs == 0) {
+				if(ui16Hubs == 0)
+				{
 					::EnableWindow(m_hWndPageItems[EDT_HUBS_MSG], FALSE);
 					::EnableWindow(m_hWndPageItems[BTN_HUBS_REDIR], FALSE);
 					::EnableWindow(m_hWndPageItems[EDT_HUBS_REDIR_ADDR], FALSE);
-				} else {
+				}
+				else
+				{
 					::EnableWindow(m_hWndPageItems[EDT_HUBS_MSG], TRUE);
 					::EnableWindow(m_hWndPageItems[BTN_HUBS_REDIR], TRUE);
 					::EnableWindow(m_hWndPageItems[EDT_HUBS_REDIR_ADDR], ::SendMessage(m_hWndPageItems[BTN_HUBS_REDIR], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE);
@@ -152,14 +176,16 @@ LRESULT SettingPageRules2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPar
 
 			break;
 		case BTN_HUBS_REDIR:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				::EnableWindow(m_hWndPageItems[EDT_HUBS_REDIR_ADDR], ::SendMessage(m_hWndPageItems[BTN_HUBS_REDIR], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE);
 			}
 
 			break;
 		case EDT_CTM_LEN:
 		case EDT_RCTM_LEN:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 1, 512);
 
 				return 0;
@@ -173,22 +199,28 @@ LRESULT SettingPageRules2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPar
 }
 //------------------------------------------------------------------------------
 
-void SettingPageRules2::Save() {
-	if(m_bCreated == false) {
+void SettingPageRules2::Save()
+{
+	if(m_bCreated == false)
+	{
 		return;
 	}
 
 	LRESULT lResult = ::SendMessage(m_hWndPageItems[UD_SLOTS_MIN], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
-		if(LOWORD(lResult) != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MIN_SLOTS_LIMIT]) {
+	if(HIWORD(lResult) == 0)
+	{
+		if(LOWORD(lResult) != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MIN_SLOTS_LIMIT])
+		{
 			m_bUpdateSlotsLimitMessage = true;
 		}
 		SettingManager::m_Ptr->SetShort(SETSHORT_MIN_SLOTS_LIMIT, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SLOTS_MAX], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
-		if(LOWORD(lResult) != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_SLOTS_LIMIT]) {
+	if(HIWORD(lResult) == 0)
+	{
+		if(LOWORD(lResult) != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_SLOTS_LIMIT])
+		{
 			m_bUpdateSlotsLimitMessage = true;
 		}
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_SLOTS_LIMIT, LOWORD(lResult));
@@ -197,7 +229,8 @@ void SettingPageRules2::Save() {
 	char buf[257];
 	int iLen = ::GetWindowText(m_hWndPageItems[EDT_SLOTS_MSG], buf, 257);
 
-	if(strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_SLOTS_LIMIT_MSG]) != 0) {
+	if(strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_SLOTS_LIMIT_MSG]) != 0)
+	{
 		m_bUpdateSlotsLimitMessage = true;
 	}
 
@@ -205,7 +238,8 @@ void SettingPageRules2::Save() {
 
 	bool bSlotsRedir = ::SendMessage(m_hWndPageItems[BTN_SLOTS_REDIR], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false;
 
-	if(bSlotsRedir != SettingManager::m_Ptr->m_bBools[SETBOOL_SLOTS_LIMIT_REDIR]) {
+	if(bSlotsRedir != SettingManager::m_Ptr->m_bBools[SETBOOL_SLOTS_LIMIT_REDIR])
+	{
 		m_bUpdateSlotsLimitMessage = true;
 	}
 
@@ -223,16 +257,20 @@ void SettingPageRules2::Save() {
 	SettingManager::m_Ptr->SetText(SETTXT_SLOTS_LIMIT_REDIR_ADDRESS, buf, iLen);
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_HUBS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
-		if(LOWORD(lResult) != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_HUB_SLOT_RATIO_HUBS]) {
+	if(HIWORD(lResult) == 0)
+	{
+		if(LOWORD(lResult) != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_HUB_SLOT_RATIO_HUBS])
+		{
 			m_bUpdateHubSlotRatioMessage = true;
 		}
 		SettingManager::m_Ptr->SetShort(SETSHORT_HUB_SLOT_RATIO_HUBS, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SLOTS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
-		if(LOWORD(lResult) != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_HUB_SLOT_RATIO_SLOTS]) {
+	if(HIWORD(lResult) == 0)
+	{
+		if(LOWORD(lResult) != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_HUB_SLOT_RATIO_SLOTS])
+		{
 			m_bUpdateHubSlotRatioMessage = true;
 		}
 		SettingManager::m_Ptr->SetShort(SETSHORT_HUB_SLOT_RATIO_SLOTS, LOWORD(lResult));
@@ -240,7 +278,8 @@ void SettingPageRules2::Save() {
 
 	iLen = ::GetWindowText(m_hWndPageItems[EDT_HUBS_SLOTS_MSG], buf, 257);
 
-	if(strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_SLOT_RATIO_MSG]) != 0) {
+	if(strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_SLOT_RATIO_MSG]) != 0)
+	{
 		m_bUpdateHubSlotRatioMessage = true;
 	}
 
@@ -248,7 +287,8 @@ void SettingPageRules2::Save() {
 
 	bool bHubsSlotsRedir = ::SendMessage(m_hWndPageItems[BTN_HUBS_SLOTS_REDIR], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false;
 
-	if(bHubsSlotsRedir != SettingManager::m_Ptr->m_bBools[SETBOOL_HUB_SLOT_RATIO_REDIR]) {
+	if(bHubsSlotsRedir != SettingManager::m_Ptr->m_bBools[SETBOOL_HUB_SLOT_RATIO_REDIR])
+	{
 		m_bUpdateHubSlotRatioMessage = true;
 	}
 
@@ -266,8 +306,10 @@ void SettingPageRules2::Save() {
 	SettingManager::m_Ptr->SetText(SETTXT_HUB_SLOT_RATIO_REDIR_ADDRESS, buf, iLen);
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_MAX_HUBS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
-		if(LOWORD(lResult) != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_HUBS_LIMIT]) {
+	if(HIWORD(lResult) == 0)
+	{
+		if(LOWORD(lResult) != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_HUBS_LIMIT])
+		{
 			m_bUpdateMaxHubsLimitMessage = true;
 		}
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_HUBS_LIMIT, LOWORD(lResult));
@@ -275,7 +317,8 @@ void SettingPageRules2::Save() {
 
 	iLen = ::GetWindowText(m_hWndPageItems[EDT_HUBS_MSG], buf, 257);
 
-	if(strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_MAX_HUBS_LIMIT_MSG]) != 0) {
+	if(strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_MAX_HUBS_LIMIT_MSG]) != 0)
+	{
 		m_bUpdateMaxHubsLimitMessage = true;
 	}
 
@@ -283,7 +326,8 @@ void SettingPageRules2::Save() {
 
 	bool bHubsRedir = ::SendMessage(m_hWndPageItems[BTN_HUBS_REDIR], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false;
 
-	if(bHubsRedir != SettingManager::m_Ptr->m_bBools[SETBOOL_MAX_HUBS_LIMIT_REDIR]) {
+	if(bHubsRedir != SettingManager::m_Ptr->m_bBools[SETBOOL_MAX_HUBS_LIMIT_REDIR])
+	{
 		m_bUpdateMaxHubsLimitMessage = true;
 	}
 
@@ -301,12 +345,14 @@ void SettingPageRules2::Save() {
 	SettingManager::m_Ptr->SetText(SETTXT_MAX_HUBS_LIMIT_REDIR_ADDRESS, buf, iLen);
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_CTM_LEN], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_CTM_LEN, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_RCTM_LEN], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_RCTM_LEN, LOWORD(lResult));
 	}
 }
@@ -317,24 +363,30 @@ void SettingPageRules2::GetUpdates(bool & /*bUpdateHubNameWelcome*/, bool & /*bU
                                    bool &bUpdatedSlotsLimitMessage, bool &bUpdatedHubSlotRatioMessage, bool &bUpdatedMaxHubsLimitMessage, bool & /*bUpdatedNoTagMessage*/,
                                    bool & /*bUpdatedNickLimitMessage*/, bool & /*bUpdatedBotsSameNick*/, bool & /*bUpdatedBotNick*/, bool & /*bUpdatedBot*/, bool & /*bUpdatedOpChatNick*/,
                                    bool & /*bUpdatedOpChat*/, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
-                                   bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/) {
-	if(bUpdatedSlotsLimitMessage == false) {
+                                   bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/)
+{
+	if(bUpdatedSlotsLimitMessage == false)
+	{
 		bUpdatedSlotsLimitMessage = m_bUpdateSlotsLimitMessage;
 	}
-	if(bUpdatedHubSlotRatioMessage == false) {
+	if(bUpdatedHubSlotRatioMessage == false)
+	{
 		bUpdatedHubSlotRatioMessage = m_bUpdateHubSlotRatioMessage;
 	}
-	if(bUpdatedMaxHubsLimitMessage == false) {
+	if(bUpdatedMaxHubsLimitMessage == false)
+	{
 		bUpdatedMaxHubsLimitMessage = m_bUpdateMaxHubsLimitMessage;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-bool SettingPageRules2::CreateSettingPage(HWND hOwner) {
+bool SettingPageRules2::CreateSettingPage(HWND hOwner)
+{
 	CreateHWND(hOwner);
 
-	if(m_bCreated == false) {
+	if(m_bCreated == false)
+	{
 		return false;
 	}
 
@@ -516,39 +568,50 @@ bool SettingPageRules2::CreateSettingPage(HWND hOwner) {
 	AddUpDown(m_hWndPageItems[UD_RCTM_LEN], (rcThis.right - rcThis.left) - GuiSettingManager::m_iUpDownWidth - 13, iPosY + GuiSettingManager::m_iGroupBoxMargin, GuiSettingManager::m_iUpDownWidth, GuiSettingManager::m_iEditHeight, (LPARAM)MAKELONG(512, 1),
 	          (WPARAM)m_hWndPageItems[EDT_RCTM_LEN], (LPARAM)MAKELONG(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_RCTM_LEN], 0));
 
-	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++) {
-		if(m_hWndPageItems[ui8i] == nullptr) {
+	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++)
+	{
+		if(m_hWndPageItems[ui8i] == nullptr)
+		{
 			return false;
 		}
 
 		::SendMessage(m_hWndPageItems[ui8i], WM_SETFONT, (WPARAM)GuiSettingManager::m_hFont, MAKELPARAM(TRUE, 0));
 	}
 
-	if(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MIN_SLOTS_LIMIT] == 0 && SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_SLOTS_LIMIT] == 0) {
+	if(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MIN_SLOTS_LIMIT] == 0 && SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_SLOTS_LIMIT] == 0)
+	{
 		::EnableWindow(m_hWndPageItems[EDT_SLOTS_MSG], FALSE);
 		::EnableWindow(m_hWndPageItems[BTN_SLOTS_REDIR], FALSE);
 		::EnableWindow(m_hWndPageItems[EDT_SLOTS_REDIR_ADDR], FALSE);
-	} else {
+	}
+	else
+	{
 		::EnableWindow(m_hWndPageItems[EDT_SLOTS_MSG], TRUE);
 		::EnableWindow(m_hWndPageItems[BTN_SLOTS_REDIR], TRUE);
 		::EnableWindow(m_hWndPageItems[EDT_SLOTS_REDIR_ADDR], SettingManager::m_Ptr->m_bBools[SETBOOL_SLOTS_LIMIT_REDIR] == true ? TRUE : FALSE);
 	}
 
-	if(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_HUB_SLOT_RATIO_HUBS] == 0 || SettingManager::m_Ptr->m_i16Shorts[SETSHORT_HUB_SLOT_RATIO_SLOTS] == 0) {
+	if(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_HUB_SLOT_RATIO_HUBS] == 0 || SettingManager::m_Ptr->m_i16Shorts[SETSHORT_HUB_SLOT_RATIO_SLOTS] == 0)
+	{
 		::EnableWindow(m_hWndPageItems[EDT_HUBS_SLOTS_MSG], FALSE);
 		::EnableWindow(m_hWndPageItems[BTN_HUBS_SLOTS_REDIR], FALSE);
 		::EnableWindow(m_hWndPageItems[EDT_HUBS_SLOTS_REDIR_ADDR], FALSE);
-	} else {
+	}
+	else
+	{
 		::EnableWindow(m_hWndPageItems[EDT_HUBS_SLOTS_MSG], TRUE);
 		::EnableWindow(m_hWndPageItems[BTN_HUBS_SLOTS_REDIR], TRUE);
 		::EnableWindow(m_hWndPageItems[EDT_HUBS_SLOTS_REDIR_ADDR], SettingManager::m_Ptr->m_bBools[SETBOOL_HUB_SLOT_RATIO_REDIR] == true ? TRUE : FALSE);
 	}
 
-	if(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_HUBS_LIMIT] == 0) {
+	if(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_HUBS_LIMIT] == 0)
+	{
 		::EnableWindow(m_hWndPageItems[EDT_HUBS_MSG], FALSE);
 		::EnableWindow(m_hWndPageItems[BTN_HUBS_REDIR], FALSE);
 		::EnableWindow(m_hWndPageItems[EDT_HUBS_REDIR_ADDR], FALSE);
-	} else {
+	}
+	else
+	{
 		::EnableWindow(m_hWndPageItems[EDT_HUBS_MSG], TRUE);
 		::EnableWindow(m_hWndPageItems[BTN_HUBS_REDIR], TRUE);
 		::EnableWindow(m_hWndPageItems[EDT_HUBS_REDIR_ADDR], SettingManager::m_Ptr->m_bBools[SETBOOL_MAX_HUBS_LIMIT_REDIR] == true ? TRUE : FALSE);
@@ -560,12 +623,14 @@ bool SettingPageRules2::CreateSettingPage(HWND hOwner) {
 }
 //------------------------------------------------------------------------------
 
-char * SettingPageRules2::GetPageName() {
+char * SettingPageRules2::GetPageName()
+{
 	return LanguageManager::m_Ptr->m_sTexts[LAN_MORE_RULES];
 }
 //------------------------------------------------------------------------------
 
-void SettingPageRules2::FocusLastItem() {
+void SettingPageRules2::FocusLastItem()
+{
 	::SetFocus(m_hWndPageItems[EDT_RCTM_LEN]);
 }
 //------------------------------------------------------------------------------

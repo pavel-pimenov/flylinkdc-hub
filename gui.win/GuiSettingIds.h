@@ -21,7 +21,8 @@
 #define GuiSettingIdsH
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-enum GuiSetBoolIds {
+enum GuiSetBoolIds
+{
 	GUISETBOOL_SHOW_CHAT,
 	GUISETBOOL_SHOW_COMMANDS,
 	GUISETBOOL_AUTO_UPDATE_USERLIST,
@@ -29,7 +30,8 @@ enum GuiSetBoolIds {
 };
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-enum GuiSetIntegerIds {
+enum GuiSetIntegerIds
+{
 	GUISETINT_MAIN_WINDOW_WIDTH,
 	GUISETINT_MAIN_WINDOW_HEIGHT,
 	GUISETINT_USERS_CHAT_SPLITTER,

@@ -34,16 +34,21 @@
 
 SettingPageGeneral2::SettingPageGeneral2() : m_bUpdateTextFiles(false), m_bUpdateRedirectAddress(false), m_bUpdateRegOnlyMessage(false), m_bUpdateShareLimitMessage(false), m_bUpdateSlotsLimitMessage(false),
 	m_bUpdateHubSlotRatioMessage(false), m_bUpdateMaxHubsLimitMessage(false), m_bUpdateNoTagMessage(false), m_bUpdateTempBanRedirAddress(false), m_bUpdatePermBanRedirAddress(false),
-	m_bUpdateNickLimitMessage(false) {
+	m_bUpdateNickLimitMessage(false)
+{
 	memset(&m_hWndPageItems, 0, sizeof(m_hWndPageItems));
 }
 //---------------------------------------------------------------------------
 
-LRESULT SettingPageGeneral2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_COMMAND) {
-		switch(LOWORD(wParam)) {
+LRESULT SettingPageGeneral2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(uMsg == WM_COMMAND)
+	{
+		switch(LOWORD(wParam))
+		{
 		case EDT_OWNER_EMAIL:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				RemoveDollarsPipes((HWND)lParam);
 
 				return 0;
@@ -53,7 +58,8 @@ LRESULT SettingPageGeneral2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 		case EDT_MAIN_REDIR_ADDR:
 		case EDT_MSG_TO_NON_REGS:
 		case EDT_NON_REG_REDIR_ADDR:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				RemovePipes((HWND)lParam);
 
 				return 0;
@@ -61,14 +67,16 @@ LRESULT SettingPageGeneral2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case BTN_ENABLE_TEXT_FILES:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				::EnableWindow(m_hWndPageItems[BTN_SEND_TEXT_FILES_AS_PM],
 				               ::SendMessage(m_hWndPageItems[BTN_ENABLE_TEXT_FILES], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE);
 			}
 
 			break;
 		case BTN_DONT_ALLOW_PINGER:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				BOOL bEnable = ::SendMessage(m_hWndPageItems[BTN_DONT_ALLOW_PINGER], BM_GETCHECK, 0, 0) == BST_CHECKED ? FALSE : TRUE;
 				::EnableWindow(m_hWndPageItems[BTN_REPORT_PINGER], bEnable);
 				::EnableWindow(m_hWndPageItems[EDT_OWNER_EMAIL], bEnable);
@@ -76,14 +84,16 @@ LRESULT SettingPageGeneral2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case BTN_REDIR_ALL:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				::EnableWindow(m_hWndPageItems[BTN_REDIR_HUB_FULL],
 				               ::SendMessage(m_hWndPageItems[BTN_REDIR_ALL], BM_GETCHECK, 0, 0) == BST_CHECKED ? FALSE : TRUE);
 			}
 
 			break;
 		case BTN_ALLOW_ONLY_REGS:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				BOOL bEnable = ::SendMessage(m_hWndPageItems[BTN_ALLOW_ONLY_REGS], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE;
 				::EnableWindow(m_hWndPageItems[EDT_MSG_TO_NON_REGS], bEnable);
 				::EnableWindow(m_hWndPageItems[BTN_NON_REG_REDIR_ENABLE], bEnable);
@@ -93,7 +103,8 @@ LRESULT SettingPageGeneral2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case BTN_NON_REG_REDIR_ENABLE:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				::EnableWindow(m_hWndPageItems[EDT_NON_REG_REDIR_ADDR],
 				               ::SendMessage(m_hWndPageItems[BTN_NON_REG_REDIR_ENABLE], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE);
 			}
@@ -107,12 +118,15 @@ LRESULT SettingPageGeneral2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 }
 //------------------------------------------------------------------------------
 
-void SettingPageGeneral2::Save() {
-	if(m_bCreated == false) {
+void SettingPageGeneral2::Save()
+{
+	if(m_bCreated == false)
+	{
 		return;
 	}
 
-	if((::SendMessage(m_hWndPageItems[BTN_ENABLE_TEXT_FILES], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false) != SettingManager::m_Ptr->m_bBools[SETBOOL_ENABLE_TEXT_FILES]) {
+	if((::SendMessage(m_hWndPageItems[BTN_ENABLE_TEXT_FILES], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false) != SettingManager::m_Ptr->m_bBools[SETBOOL_ENABLE_TEXT_FILES])
+	{
 		m_bUpdateTextFiles = true;
 	}
 
@@ -128,7 +142,8 @@ void SettingPageGeneral2::Save() {
 
 	iLen = ::GetWindowText(m_hWndPageItems[EDT_MAIN_REDIR_ADDR], buf, 257);
 
-	if((SettingManager::m_Ptr->m_sTexts[SETTXT_REDIRECT_ADDRESS] == nullptr && iLen != 0) || (SettingManager::m_Ptr->m_sTexts[SETTXT_REDIRECT_ADDRESS] != nullptr && strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_REDIRECT_ADDRESS]) != 0)) {
+	if((SettingManager::m_Ptr->m_sTexts[SETTXT_REDIRECT_ADDRESS] == nullptr && iLen != 0) || (SettingManager::m_Ptr->m_sTexts[SETTXT_REDIRECT_ADDRESS] != nullptr && strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_REDIRECT_ADDRESS]) != 0))
+	{
 		m_bUpdateRedirectAddress = true;
 		m_bUpdateRegOnlyMessage = true;
 		m_bUpdateShareLimitMessage = true;
@@ -176,7 +191,8 @@ void SettingPageGeneral2::Save() {
 	SettingManager::m_Ptr->SetBool(SETBOOL_HASH_PASSWORDS, ::SendMessage(m_hWndPageItems[BTN_HASH_PASSWORDS], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false);
 	SettingManager::m_Ptr->SetBool(SETBOOL_NO_QUACK_SUPPORTS, ::SendMessage(m_hWndPageItems[BTN_KILL_THAT_DUCK], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false);
 
-	if(SettingManager::m_Ptr->m_bBools[SETBOOL_HASH_PASSWORDS] == true) {
+	if(SettingManager::m_Ptr->m_bBools[SETBOOL_HASH_PASSWORDS] == true)
+	{
 		RegManager::m_Ptr->HashPasswords();
 	}
 }
@@ -187,47 +203,61 @@ void SettingPageGeneral2::GetUpdates(bool & /*bUpdatedHubNameWelcome*/, bool & /
                                      bool &bUpdatedSlotsLimitMessage, bool &bUpdatedHubSlotRatioMessage, bool &bUpdatedMaxHubsLimitMessage, bool &bUpdatedNoTagMessage,
                                      bool &bUpdatedNickLimitMessage, bool &/*bUpdatedBotsSameNick*/, bool &/*bUpdatedBotNick*/, bool &/*bUpdatedBot*/, bool &/*bUpdatedOpChatNick*/,
                                      bool &/*bUpdatedOpChat*/, bool & /*bUpdatedLanguage*/, bool &bUpdatedTextFiles, bool &bUpdatedRedirectAddress, bool &bUpdatedTempBanRedirAddress,
-                                     bool &bUpdatedPermBanRedirAddress, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/) {
-	if(bUpdatedTextFiles == false) {
+                                     bool &bUpdatedPermBanRedirAddress, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/)
+{
+	if(bUpdatedTextFiles == false)
+	{
 		bUpdatedTextFiles = m_bUpdateTextFiles;
 	}
-	if(bUpdatedRedirectAddress == false) {
+	if(bUpdatedRedirectAddress == false)
+	{
 		bUpdatedRedirectAddress = m_bUpdateRedirectAddress;
 	}
-	if(bUpdatedRegOnlyMessage == false) {
+	if(bUpdatedRegOnlyMessage == false)
+	{
 		bUpdatedRegOnlyMessage = m_bUpdateRegOnlyMessage;
 	}
-	if(bUpdatedShareLimitMessage == false) {
+	if(bUpdatedShareLimitMessage == false)
+	{
 		bUpdatedShareLimitMessage = m_bUpdateShareLimitMessage;
 	}
-	if(bUpdatedSlotsLimitMessage == false) {
+	if(bUpdatedSlotsLimitMessage == false)
+	{
 		bUpdatedSlotsLimitMessage = m_bUpdateSlotsLimitMessage;
 	}
-	if(bUpdatedHubSlotRatioMessage == false) {
+	if(bUpdatedHubSlotRatioMessage == false)
+	{
 		bUpdatedHubSlotRatioMessage = m_bUpdateHubSlotRatioMessage;
 	}
-	if(bUpdatedMaxHubsLimitMessage == false) {
+	if(bUpdatedMaxHubsLimitMessage == false)
+	{
 		bUpdatedMaxHubsLimitMessage = m_bUpdateMaxHubsLimitMessage;
 	}
-	if(bUpdatedNoTagMessage == false) {
+	if(bUpdatedNoTagMessage == false)
+	{
 		bUpdatedNoTagMessage = m_bUpdateNoTagMessage;
 	}
-	if(bUpdatedTempBanRedirAddress == false) {
+	if(bUpdatedTempBanRedirAddress == false)
+	{
 		bUpdatedTempBanRedirAddress = m_bUpdateTempBanRedirAddress;
 	}
-	if(bUpdatedPermBanRedirAddress == false) {
+	if(bUpdatedPermBanRedirAddress == false)
+	{
 		bUpdatedPermBanRedirAddress = m_bUpdatePermBanRedirAddress;
 	}
-	if(bUpdatedNickLimitMessage == false) {
+	if(bUpdatedNickLimitMessage == false)
+	{
 		bUpdatedNickLimitMessage = m_bUpdateNickLimitMessage;
 	}
 }
 
 //------------------------------------------------------------------------------
-bool SettingPageGeneral2::CreateSettingPage(HWND hOwner) {
+bool SettingPageGeneral2::CreateSettingPage(HWND hOwner)
+{
 	CreateHWND(hOwner);
 
-	if(m_bCreated == false) {
+	if(m_bCreated == false)
+	{
 		return false;
 	}
 
@@ -329,8 +359,10 @@ bool SettingPageGeneral2::CreateSettingPage(HWND hOwner) {
 	                                      8, iPosY + GuiSettingManager::m_iGroupBoxMargin + (2 * GuiSettingManager::m_iCheckHeight) + 6, m_iFullEDT, GuiSettingManager::m_iCheckHeight, m_hWnd, nullptr, ServerManager::m_hInstance, nullptr);
 	::SendMessage(m_hWndPageItems[BTN_KILL_THAT_DUCK], BM_SETCHECK, (SettingManager::m_Ptr->m_bBools[SETBOOL_NO_QUACK_SUPPORTS] == true ? BST_CHECKED : BST_UNCHECKED), 0);
 
-	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++) {
-		if(m_hWndPageItems[ui8i] == nullptr) {
+	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++)
+	{
+		if(m_hWndPageItems[ui8i] == nullptr)
+		{
 			return false;
 		}
 
@@ -355,12 +387,14 @@ bool SettingPageGeneral2::CreateSettingPage(HWND hOwner) {
 }
 //------------------------------------------------------------------------------
 
-char * SettingPageGeneral2::GetPageName() {
+char * SettingPageGeneral2::GetPageName()
+{
 	return LanguageManager::m_Ptr->m_sTexts[LAN_MORE_GENERAL];
 }
 //------------------------------------------------------------------------------
 
-void SettingPageGeneral2::FocusLastItem() {
+void SettingPageGeneral2::FocusLastItem()
+{
 	::SetFocus(m_hWndPageItems[BTN_KILL_THAT_DUCK]);
 }
 //------------------------------------------------------------------------------

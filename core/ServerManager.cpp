@@ -1145,29 +1145,38 @@ void ServerManager::UpdateAutoRegState()
 #endif
 //---------------------------------------------------------------------------
 
-void ServerManager::CreateServerThread(const int iAddrFamily, const uint16_t ui16PortNumber, const bool bResume/* = false*/) {
+void ServerManager::CreateServerThread(const int iAddrFamily, const uint16_t ui16PortNumber, const bool bResume/* = false*/)
+{
 	ServerThread * pServer = new (std::nothrow) ServerThread(iAddrFamily, ui16PortNumber);
-    if(pServer == NULL) {
+	if(pServer == NULL)
+	{
 		AppendDebugLog("%s - [MEM] Cannot allocate pServer in ServerCreateServerThread\n");
 		exit(EXIT_FAILURE);
 	}
 
-	if(pServer->Listen() == true) {
-		if(m_pServersE == NULL) {
+	if(pServer->Listen() == true)
+	{
+		if(m_pServersE == NULL)
+		{
 			m_pServersS = pServer;
 			m_pServersE = pServer;
-        } else {
+		}
+		else
+		{
 			pServer->m_pPrev = m_pServersE;
 			m_pServersE->m_pNext = pServer;
 			m_pServersE = pServer;
 		}
 
-		if(bResume == true) {
-		pServer->Resume();
+		if(bResume == true)
+		{
+			pServer->Resume();
+		}
 	}
-    } else {
-        delete pServer;
-    }
+	else
+	{
+		delete pServer;
+	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

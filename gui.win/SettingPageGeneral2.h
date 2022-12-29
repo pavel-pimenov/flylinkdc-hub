@@ -23,7 +23,8 @@
 #include "SettingPage.h"
 //---------------------------------------------------------------------------
 
-class SettingPageGeneral2 : public SettingPage {
+class SettingPageGeneral2 : public SettingPage
+{
 public:
 	bool m_bUpdateTextFiles, m_bUpdateRedirectAddress, m_bUpdateRegOnlyMessage, m_bUpdateShareLimitMessage, m_bUpdateSlotsLimitMessage, m_bUpdateHubSlotRatioMessage,
 	     m_bUpdateMaxHubsLimitMessage, m_bUpdateNoTagMessage, m_bUpdateTempBanRedirAddress, m_bUpdatePermBanRedirAddress, m_bUpdateNickLimitMessage;
@@ -46,7 +47,8 @@ public:
 private:
 	HWND m_hWndPageItems[23];
 
-	enum enmPageItems {
+	enum enmPageItems
+	{
 		GB_TEXT_FILES,
 		BTN_ENABLE_TEXT_FILES,
 		BTN_SEND_TEXT_FILES_AS_PM,

@@ -21,14 +21,16 @@
 #define GuiSettingStrH
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-const char* GuiSetBoolStr[] = {
+const char* GuiSetBoolStr[] =
+{
 	"ShowChat",
 	"ShowCommands",
 	"AutoUpdateUserlist",
 };
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-const char* GuiSetIntegerStr[] = {
+const char* GuiSetIntegerStr[] =
+{
 	"MainWindowWidth",
 	"MainWindowHeight",
 	"UserChatSplitter",

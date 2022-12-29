@@ -964,7 +964,8 @@ bool ScriptManager::Arrival(DcCommand * pDcCommand, const uint8_t ui8Type)
 		cur = next;
 		next = cur->m_pNext;
 
-		if(cur->m_pLua == NULL) {
+		if(cur->m_pLua == NULL)
+		{
 			continue;
 		}
 
@@ -1085,7 +1086,8 @@ bool ScriptManager::UserConnected(User * pUser)
 		cur = next;
 		next = cur->m_pNext;
 
-		if(cur->m_pLua == NULL) {
+		if(cur->m_pLua == NULL)
+		{
 			continue;
 		}
 
@@ -1208,7 +1210,8 @@ void ScriptManager::UserDisconnected(User * pUser, Script * pScript/* = NULL*/)
 			return;
 		}
 
-        if(cur->m_pLua == NULL) {
+		if(cur->m_pLua == NULL)
+		{
 			continue;
 		}
 

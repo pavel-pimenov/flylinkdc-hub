@@ -21,11 +21,13 @@
 #define ScriptEditorDialogH
 //------------------------------------------------------------------------------
 
-class ScriptEditorDialog {
+class ScriptEditorDialog
+{
 public:
 	HWND m_hWndWindowItems[5];
 
-	enum enmWindowItems {
+	enum enmWindowItems
+	{
 		WINDOW_HANDLE,
 		REDT_SCRIPT,
 		BTN_LOAD_SCRIPT,

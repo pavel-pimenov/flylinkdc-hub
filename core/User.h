@@ -339,7 +339,8 @@ struct User
 	//  u->ui32BoolBits |= BIT_PRCSD_MYINFO;   <- set to 1
 	//  u->ui32BoolBits &= ~BIT_PRCSD_MYINFO;  <- set to 0
 	//  (u->ui32BoolBits & BIT_PRCSD_MYINFO) == BIT_PRCSD_MYINFO    <- test if is 1/true
-	enum UserBits {
+	enum UserBits
+	{
 		BIT_HASHED                     = 0x1,
 		BIT_ERROR                      = 0x2,
 		BIT_OPERATOR                   = 0x4,

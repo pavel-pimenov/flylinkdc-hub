@@ -36,19 +36,23 @@
 static ATOM atomRangeBanDialog = 0;
 //---------------------------------------------------------------------------
 
-RangeBanDialog::RangeBanDialog() : m_pRangeBanToChange(nullptr) {
+RangeBanDialog::RangeBanDialog() : m_pRangeBanToChange(nullptr)
+{
 	memset(&m_hWndWindowItems, 0, sizeof(m_hWndWindowItems));
 }
 //---------------------------------------------------------------------------
 
-RangeBanDialog::~RangeBanDialog() {
+RangeBanDialog::~RangeBanDialog()
+{
 }
 //---------------------------------------------------------------------------
 
-LRESULT CALLBACK RangeBanDialog::StaticRangeBanDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK RangeBanDialog::StaticRangeBanDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
 	RangeBanDialog * pRangeBanDialog = (RangeBanDialog *)::GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
-	if(pRangeBanDialog == nullptr) {
+	if(pRangeBanDialog == nullptr)
+	{
 		return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
 
@@ -56,26 +60,32 @@ LRESULT CALLBACK RangeBanDialog::StaticRangeBanDialogProc(HWND hWnd, UINT uMsg, 
 }
 //------------------------------------------------------------------------------
 
-LRESULT RangeBanDialog::RangeBanDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	switch(uMsg) {
+LRESULT RangeBanDialog::RangeBanDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch(uMsg)
+	{
 	case WM_COMMAND:
-		switch(LOWORD(wParam)) {
+		switch(LOWORD(wParam))
+		{
 		case IDOK:
-			if(OnAccept() == false) {
+			if(OnAccept() == false)
+			{
 				return 0;
 			}
 		case IDCANCEL:
 			::PostMessage(m_hWndWindowItems[WINDOW_HANDLE], WM_CLOSE, 0, 0);
 			return 0;
 		case RB_PERM_BAN:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				::EnableWindow(m_hWndWindowItems[DT_TEMP_BAN_EXPIRE_DATE], FALSE);
 				::EnableWindow(m_hWndWindowItems[DT_TEMP_BAN_EXPIRE_TIME], FALSE);
 			}
 
 			break;
 		case RB_TEMP_BAN:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				::EnableWindow(m_hWndWindowItems[DT_TEMP_BAN_EXPIRE_DATE], TRUE);
 				::EnableWindow(m_hWndWindowItems[DT_TEMP_BAN_EXPIRE_TIME], TRUE);
 			}
@@ -88,7 +98,8 @@ LRESULT RangeBanDialog::RangeBanDialogProc(UINT uMsg, WPARAM wParam, LPARAM lPar
 		::EnableWindow(::GetParent(m_hWndWindowItems[WINDOW_HANDLE]), TRUE);
 		ServerManager::m_hWndActiveDialog = nullptr;
 		break;
-	case WM_NCDESTROY: {
+	case WM_NCDESTROY:
+	{
 		HWND hWnd = m_hWndWindowItems[WINDOW_HANDLE];
 		delete this;
 		return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
@@ -103,10 +114,12 @@ LRESULT RangeBanDialog::RangeBanDialogProc(UINT uMsg, WPARAM wParam, LPARAM lPar
 }
 //------------------------------------------------------------------------------
 
-void RangeBanDialog::DoModal(HWND hWndParent, RangeBanItem * pRangeBan/* = nullptr*/) {
+void RangeBanDialog::DoModal(HWND hWndParent, RangeBanItem * pRangeBan/* = nullptr*/)
+{
 	m_pRangeBanToChange = pRangeBan;
 
-	if(atomRangeBanDialog == 0) {
+	if(atomRangeBanDialog == 0)
+	{
 		WNDCLASSEX m_wc;
 		memset(&m_wc, 0, sizeof(WNDCLASSEX));
 		m_wc.cbSize = sizeof(WNDCLASSEX);
@@ -130,7 +143,8 @@ void RangeBanDialog::DoModal(HWND hWndParent, RangeBanItem * pRangeBan/* = nullp
 	                                   WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, iX >= 5 ? iX : 5, iY >= 5 ? iY : 5, ScaleGui(300), ScaleGui(307),
 	                                   hWndParent, nullptr, ServerManager::m_hInstance, nullptr);
 
-	if(m_hWndWindowItems[WINDOW_HANDLE] == nullptr) {
+	if(m_hWndWindowItems[WINDOW_HANDLE] == nullptr)
+	{
 		return;
 	}
 
@@ -146,7 +160,8 @@ void RangeBanDialog::DoModal(HWND hWndParent, RangeBanItem * pRangeBan/* = nullp
 
 		int iDiff = rcParent.bottom - iHeight;
 
-		if(iDiff != 0) {
+		if(iDiff != 0)
+		{
 			::GetWindowRect(hWndParent, &rcParent);
 
 			iY = (rcParent.top + ((rcParent.bottom-rcParent.top)/2)) - ((ScaleGui(307) - iDiff) / 2);
@@ -223,31 +238,38 @@ void RangeBanDialog::DoModal(HWND hWndParent, RangeBanItem * pRangeBan/* = nullp
 	m_hWndWindowItems[BTN_DISCARD] = ::CreateWindowEx(0, WC_BUTTON, LanguageManager::m_Ptr->m_sTexts[LAN_DISCARD], WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
 	                                 (rcParent.right / 2) + 2, iPosY, (rcParent.right / 2) - 4, GuiSettingManager::m_iEditHeight, m_hWndWindowItems[WINDOW_HANDLE], (HMENU)IDCANCEL, ServerManager::m_hInstance, nullptr);
 
-	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndWindowItems) / sizeof(m_hWndWindowItems[0])); ui8i++) {
-		if(m_hWndWindowItems[ui8i] == nullptr) {
+	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndWindowItems) / sizeof(m_hWndWindowItems[0])); ui8i++)
+	{
+		if(m_hWndWindowItems[ui8i] == nullptr)
+		{
 			return;
 		}
 
 		::SendMessage(m_hWndWindowItems[ui8i], WM_SETFONT, (WPARAM)GuiSettingManager::m_hFont, MAKELPARAM(TRUE, 0));
 	}
 
-	if(m_pRangeBanToChange != nullptr) {
+	if(m_pRangeBanToChange != nullptr)
+	{
 		::SetWindowText(m_hWndWindowItems[EDT_FROM_IP], m_pRangeBanToChange->m_sIpFrom);
 		::SetWindowText(m_hWndWindowItems[EDT_TO_IP], m_pRangeBanToChange->m_sIpTo);
 
-		if(((m_pRangeBanToChange->m_ui8Bits & BanManager::FULL) == BanManager::FULL) == true) {
+		if(((m_pRangeBanToChange->m_ui8Bits & BanManager::FULL) == BanManager::FULL) == true)
+		{
 			::SendMessage(m_hWndWindowItems[BTN_FULL_BAN], BM_SETCHECK, BST_CHECKED, 0);
 		}
 
-		if(m_pRangeBanToChange->m_sReason != nullptr) {
+		if(m_pRangeBanToChange->m_sReason != nullptr)
+		{
 			::SetWindowText(m_hWndWindowItems[EDT_REASON], m_pRangeBanToChange->m_sReason);
 		}
 
-		if(m_pRangeBanToChange->m_sBy != nullptr) {
+		if(m_pRangeBanToChange->m_sBy != nullptr)
+		{
 			::SetWindowText(m_hWndWindowItems[EDT_BY], m_pRangeBanToChange->m_sBy);
 		}
 
-		if(((m_pRangeBanToChange->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == true) {
+		if(((m_pRangeBanToChange->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == true)
+		{
 			::SendMessage(m_hWndWindowItems[RB_PERM_BAN], BM_SETCHECK, BST_UNCHECKED, 0);
 			::SendMessage(m_hWndWindowItems[RB_TEMP_BAN], BM_SETCHECK, BST_CHECKED, 0);
 
@@ -277,7 +299,8 @@ void RangeBanDialog::DoModal(HWND hWndParent, RangeBanItem * pRangeBan/* = nullp
 }
 //------------------------------------------------------------------------------
 
-bool RangeBanDialog::OnAccept() {
+bool RangeBanDialog::OnAccept()
+{
 	int iIpFromLen = ::GetWindowTextLength(m_hWndWindowItems[EDT_FROM_IP]);
 
 	char sFromIP[40];
@@ -286,10 +309,13 @@ bool RangeBanDialog::OnAccept() {
 	uint8_t ui128FromIpHash[16];
 	memset(ui128FromIpHash, 0, 16);
 
-	if(iIpFromLen == 0) {
+	if(iIpFromLen == 0)
+	{
 		::MessageBox(m_hWndWindowItems[WINDOW_HANDLE], LanguageManager::m_Ptr->m_sTexts[LAN_NO_VALID_IP_SPECIFIED], g_sPtokaXTitle, MB_OK | MB_ICONEXCLAMATION);
 		return false;
-	} else if(HashIP(sFromIP, ui128FromIpHash) == false) {
+	}
+	else if(HashIP(sFromIP, ui128FromIpHash) == false)
+	{
 		::MessageBox(m_hWndWindowItems[WINDOW_HANDLE], (string(sFromIP) + " " + LanguageManager::m_Ptr->m_sTexts[LAN_IS_NOT_VALID_IP_ADDRESS]).c_str(), g_sPtokaXTitle, MB_OK | MB_ICONEXCLAMATION);
 		return false;
 	}
@@ -302,15 +328,19 @@ bool RangeBanDialog::OnAccept() {
 	uint8_t ui128ToIpHash[16];
 	memset(ui128ToIpHash, 0, 16);
 
-	if(iIpToLen == 0) {
+	if(iIpToLen == 0)
+	{
 		::MessageBox(m_hWndWindowItems[WINDOW_HANDLE], LanguageManager::m_Ptr->m_sTexts[LAN_NO_VALID_IP_SPECIFIED], g_sPtokaXTitle, MB_OK | MB_ICONEXCLAMATION);
 		return false;
-	} else if(HashIP(sToIP, ui128ToIpHash) == false) {
+	}
+	else if(HashIP(sToIP, ui128ToIpHash) == false)
+	{
 		::MessageBox(m_hWndWindowItems[WINDOW_HANDLE], (string(sToIP) + " " + LanguageManager::m_Ptr->m_sTexts[LAN_IS_NOT_VALID_IP_ADDRESS]).c_str(), g_sPtokaXTitle, MB_OK | MB_ICONEXCLAMATION);
 		return false;
 	}
 
-	if(memcmp(ui128ToIpHash, ui128FromIpHash, 16) <= 0) {
+	if(memcmp(ui128ToIpHash, ui128FromIpHash, 16) <= 0)
+	{
 		::MessageBox(m_hWndWindowItems[WINDOW_HANDLE], LanguageManager::m_Ptr->m_sTexts[LAN_NO_VALID_IP_RANGE_SPECIFIED], g_sPtokaXTitle, MB_OK | MB_ICONEXCLAMATION);
 		return false;
 	}
@@ -322,11 +352,13 @@ bool RangeBanDialog::OnAccept() {
 
 	bool bTempBan = ::SendMessage(m_hWndWindowItems[RB_TEMP_BAN], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false;
 
-	if(bTempBan == true) {
+	if(bTempBan == true)
+	{
 		SYSTEMTIME stDate = { 0 };
 		SYSTEMTIME stTime = { 0 };
 
-		if(::SendMessage(m_hWndWindowItems[DT_TEMP_BAN_EXPIRE_DATE], DTM_GETSYSTEMTIME, 0, (LPARAM)&stDate) != GDT_VALID || ::SendMessage(m_hWndWindowItems[DT_TEMP_BAN_EXPIRE_TIME], DTM_GETSYSTEMTIME, 0, (LPARAM)&stTime) != GDT_VALID) {
+		if(::SendMessage(m_hWndWindowItems[DT_TEMP_BAN_EXPIRE_DATE], DTM_GETSYSTEMTIME, 0, (LPARAM)&stDate) != GDT_VALID || ::SendMessage(m_hWndWindowItems[DT_TEMP_BAN_EXPIRE_TIME], DTM_GETSYSTEMTIME, 0, (LPARAM)&stTime) != GDT_VALID)
+		{
 			::MessageBox(m_hWndWindowItems[WINDOW_HANDLE], LanguageManager::m_Ptr->m_sTexts[LAN_BAD_TIME_SPECIFIED], g_sPtokaXTitle, MB_OK | MB_ICONEXCLAMATION);
 
 			return false;
@@ -346,24 +378,30 @@ bool RangeBanDialog::OnAccept() {
 
 		ban_time = mktime(tm);
 
-		if(ban_time <= acc_time || ban_time == (time_t)-1) {
+		if(ban_time <= acc_time || ban_time == (time_t)-1)
+		{
 			::MessageBox(m_hWndWindowItems[WINDOW_HANDLE], LanguageManager::m_Ptr->m_sTexts[LAN_BAD_TIME_SPECIFIED_BAN_EXPIRED], g_sPtokaXTitle, MB_OK | MB_ICONEXCLAMATION);
 
 			return false;
 		}
 	}
 
-	if(m_pRangeBanToChange == nullptr) {
+	if(m_pRangeBanToChange == nullptr)
+	{
 		RangeBanItem * pRangeBan = new (std::nothrow) RangeBanItem();
-		if(pRangeBan == nullptr) {
+		if(pRangeBan == nullptr)
+		{
 			AppendDebugLog("%s - [MEM] Cannot allocate pRangeBan in RangeBanDialog::OnAccept\n");
 			return false;
 		}
 
-		if(bTempBan == true) {
+		if(bTempBan == true)
+		{
 			pRangeBan->m_ui8Bits |= BanManager::TEMP;
 			pRangeBan->m_tTempBanExpire = ban_time;
-		} else {
+		}
+		else
+		{
 			pRangeBan->m_ui8Bits |= BanManager::PERM;
 		}
 
@@ -373,7 +411,8 @@ bool RangeBanDialog::OnAccept() {
 		strcpy(pRangeBan->m_sIpTo, sToIP);
 		memcpy(pRangeBan->m_ui128ToIpHash, ui128ToIpHash, 16);
 
-		if(::SendMessage(m_hWndWindowItems[BTN_FULL_BAN], BM_GETCHECK, 0, 0) == BST_CHECKED) {
+		if(::SendMessage(m_hWndWindowItems[BTN_FULL_BAN], BM_GETCHECK, 0, 0) == BST_CHECKED)
+		{
 			pRangeBan->m_ui8Bits |= BanManager::FULL;
 		}
 
@@ -381,18 +420,21 @@ bool RangeBanDialog::OnAccept() {
 		               * nxtBan = BanManager::m_Ptr->m_pRangeBanListS;
 
 		// PPK ... don't add range ban if is already here same range ban
-		while(nxtBan != nullptr) {
+		while(nxtBan != nullptr)
+		{
 			curBan = nxtBan;
 			nxtBan = curBan->m_pNext;
 
-			if(((curBan->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == true && acc_time > curBan->m_tTempBanExpire) {
+			if(((curBan->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == true && acc_time > curBan->m_tTempBanExpire)
+			{
 				BanManager::m_Ptr->RemRange(curBan);
 				delete curBan;
 
 				continue;
 			}
 
-			if(memcmp(curBan->m_ui128FromIpHash, pRangeBan->m_ui128FromIpHash, 16) == 0 && memcmp(curBan->m_ui128ToIpHash, pRangeBan->m_ui128ToIpHash, 16) == 0) {
+			if(memcmp(curBan->m_ui128FromIpHash, pRangeBan->m_ui128FromIpHash, 16) == 0 && memcmp(curBan->m_ui128ToIpHash, pRangeBan->m_ui128ToIpHash, 16) == 0)
+			{
 				delete pRangeBan;
 
 				::MessageBox(m_hWndWindowItems[WINDOW_HANDLE], LanguageManager::m_Ptr->m_sTexts[LAN_SIMILAR_BAN_EXIST], g_sPtokaXTitle, MB_OK | MB_ICONEXCLAMATION);
@@ -402,9 +444,11 @@ bool RangeBanDialog::OnAccept() {
 
 		int iReasonLen = ::GetWindowTextLength(m_hWndWindowItems[EDT_REASON]);
 
-		if(iReasonLen != 0) {
+		if(iReasonLen != 0)
+		{
 			pRangeBan->m_sReason = (char *)malloc(iReasonLen+1);
-			if(pRangeBan->m_sReason == nullptr) {
+			if(pRangeBan->m_sReason == nullptr)
+			{
 				AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for m_sReason in RangeBanDialog::OnAccept\n", iReasonLen+1);
 
 				delete pRangeBan;
@@ -417,9 +461,11 @@ bool RangeBanDialog::OnAccept() {
 
 		int iByLen = ::GetWindowTextLength(m_hWndWindowItems[EDT_BY]);
 
-		if(iByLen != 0) {
+		if(iByLen != 0)
+		{
 			pRangeBan->m_sBy = (char *)malloc(iByLen+1);
-			if(pRangeBan->m_sBy == nullptr) {
+			if(pRangeBan->m_sBy == nullptr)
+			{
 				AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for m_sBy in RangeBanDialog::OnAccept\n", iByLen+1);
 
 				delete pRangeBan;
@@ -433,13 +479,18 @@ bool RangeBanDialog::OnAccept() {
 		BanManager::m_Ptr->AddRange(pRangeBan);
 
 		return true;
-	} else {
-		if(bTempBan == true) {
+	}
+	else
+	{
+		if(bTempBan == true)
+		{
 			m_pRangeBanToChange->m_ui8Bits &= ~BanManager::PERM;
 
 			m_pRangeBanToChange->m_ui8Bits |= BanManager::TEMP;
 			m_pRangeBanToChange->m_tTempBanExpire = ban_time;
-		} else {
+		}
+		else
+		{
 			m_pRangeBanToChange->m_ui8Bits &= ~BanManager::TEMP;
 
 			m_pRangeBanToChange->m_ui8Bits |= BanManager::PERM;
@@ -451,18 +502,23 @@ bool RangeBanDialog::OnAccept() {
 		strcpy(m_pRangeBanToChange->m_sIpTo, sToIP);
 		memcpy(m_pRangeBanToChange->m_ui128ToIpHash, ui128ToIpHash, 16);
 
-		if(::SendMessage(m_hWndWindowItems[BTN_FULL_BAN], BM_GETCHECK, 0, 0) == BST_CHECKED) {
+		if(::SendMessage(m_hWndWindowItems[BTN_FULL_BAN], BM_GETCHECK, 0, 0) == BST_CHECKED)
+		{
 			m_pRangeBanToChange->m_ui8Bits |= BanManager::FULL;
-		} else {
+		}
+		else
+		{
 			m_pRangeBanToChange->m_ui8Bits &= ~BanManager::FULL;
 		}
 
 		int iReasonLen = ::GetWindowTextLength(m_hWndWindowItems[EDT_REASON]);
 
 		char * sReason = nullptr;
-		if(iReasonLen != 0) {
+		if(iReasonLen != 0)
+		{
 			sReason = (char *)malloc(iReasonLen+1);
-			if(sReason == nullptr) {
+			if(sReason == nullptr)
+			{
 				AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for sReason in RangeBanDialog::OnAccept\n", iReasonLen+1);
 
 				return false;
@@ -471,30 +527,38 @@ bool RangeBanDialog::OnAccept() {
 			::GetWindowText(m_hWndWindowItems[EDT_REASON], sReason, iReasonLen+1);
 		}
 
-		if(iReasonLen != 0) {
-			if(m_pRangeBanToChange->m_sReason == nullptr || strcmp(m_pRangeBanToChange->m_sReason, sReason) != 0) {
-				if(m_pRangeBanToChange->m_sReason != nullptr) {
+		if(iReasonLen != 0)
+		{
+			if(m_pRangeBanToChange->m_sReason == nullptr || strcmp(m_pRangeBanToChange->m_sReason, sReason) != 0)
+			{
+				if(m_pRangeBanToChange->m_sReason != nullptr)
+				{
 					free(m_pRangeBanToChange->m_sReason);
 					m_pRangeBanToChange->m_sReason = nullptr;
 				}
 
 				m_pRangeBanToChange->m_sReason = sReason;
 			}
-		} else if(m_pRangeBanToChange->m_sReason != nullptr) {
+		}
+		else if(m_pRangeBanToChange->m_sReason != nullptr)
+		{
 			free(m_pRangeBanToChange->m_sReason);
 			m_pRangeBanToChange->m_sReason = nullptr;
 		}
 
-		if(sReason != nullptr && (m_pRangeBanToChange->m_sReason != sReason)) {
+		if(sReason != nullptr && (m_pRangeBanToChange->m_sReason != sReason))
+		{
 			free(sReason);
 		}
 
 		int iByLen = ::GetWindowTextLength(m_hWndWindowItems[EDT_BY]);
 
 		char * sBy = nullptr;
-		if(iByLen != 0) {
+		if(iByLen != 0)
+		{
 			sBy = (char *)malloc(iByLen+1);
-			if(sBy == nullptr) {
+			if(sBy == nullptr)
+			{
 				AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for sBy in RangeBanDialog::OnAccept\n", iByLen+1);
 
 				return false;
@@ -503,25 +567,32 @@ bool RangeBanDialog::OnAccept() {
 			::GetWindowText(m_hWndWindowItems[EDT_BY], sBy, iByLen+1);
 		}
 
-		if(iByLen != 0) {
-			if(m_pRangeBanToChange->m_sBy == nullptr || strcmp(m_pRangeBanToChange->m_sBy, sBy) != 0) {
-				if(m_pRangeBanToChange->m_sBy != nullptr) {
+		if(iByLen != 0)
+		{
+			if(m_pRangeBanToChange->m_sBy == nullptr || strcmp(m_pRangeBanToChange->m_sBy, sBy) != 0)
+			{
+				if(m_pRangeBanToChange->m_sBy != nullptr)
+				{
 					free(m_pRangeBanToChange->m_sBy);
 					m_pRangeBanToChange->m_sBy = nullptr;
 				}
 
 				m_pRangeBanToChange->m_sBy = sBy;
 			}
-		} else if(m_pRangeBanToChange->m_sBy != nullptr) {
+		}
+		else if(m_pRangeBanToChange->m_sBy != nullptr)
+		{
 			free(m_pRangeBanToChange->m_sBy);
 			m_pRangeBanToChange->m_sBy = nullptr;
 		}
 
-		if(sBy != nullptr && (m_pRangeBanToChange->m_sBy != sBy)) {
+		if(sBy != nullptr && (m_pRangeBanToChange->m_sBy != sBy))
+		{
 			free(sBy);
 		}
 
-		if(RangeBansDialog::m_Ptr != nullptr) {
+		if(RangeBansDialog::m_Ptr != nullptr)
+		{
 			RangeBansDialog::m_Ptr->RemoveRangeBan(m_pRangeBanToChange);
 			RangeBansDialog::m_Ptr->AddRangeBan(m_pRangeBanToChange);
 		}
@@ -531,8 +602,10 @@ bool RangeBanDialog::OnAccept() {
 }
 //------------------------------------------------------------------------------
 
-void RangeBanDialog::RangeBanDeleted(RangeBanItem * pRangeBan) {
-	if(m_pRangeBanToChange == nullptr || pRangeBan != m_pRangeBanToChange) {
+void RangeBanDialog::RangeBanDeleted(RangeBanItem * pRangeBan)
+{
+	if(m_pRangeBanToChange == nullptr || pRangeBan != m_pRangeBanToChange)
+	{
 		return;
 	}
 

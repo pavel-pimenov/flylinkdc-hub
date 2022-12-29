@@ -55,14 +55,17 @@ static const char sPtokaXGUISettings[] = "PtokaX GUI Settings";
 static const size_t szPtokaXGUISettingsLen = sizeof("PtokaX GUI Settings")-1;
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-GuiSettingManager::GuiSettingManager(void) {
+GuiSettingManager::GuiSettingManager(void)
+{
 	// Read default bools
-	for(size_t szi = 0; szi < GUISETBOOL_IDS_END; szi++) {
+	for(size_t szi = 0; szi < GUISETBOOL_IDS_END; szi++)
+	{
 		SetBool(szi, GuiSetBoolDef[szi]);
 	}
 
 	// Read default integers
-	for(size_t szi = 0; szi < GUISETINT_IDS_END; szi++) {
+	for(size_t szi = 0; szi < GUISETINT_IDS_END; szi++)
+	{
 		SetInteger(szi, GuiSetIntegerDef[szi]);
 	}
 
@@ -71,35 +74,41 @@ GuiSettingManager::GuiSettingManager(void) {
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-GuiSettingManager::~GuiSettingManager(void) {
+GuiSettingManager::~GuiSettingManager(void)
+{
 	// ...
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void GuiSettingManager::Load() {
+void GuiSettingManager::Load()
+{
 	PXBReader pxbSettings;
 
 	// Open setting file
-	if(pxbSettings.OpenFileRead((ServerManager::m_sPath + "\\cfg\\GuiSettigs.pxb").c_str(), 2) == false) {
+	if(pxbSettings.OpenFileRead((ServerManager::m_sPath + "\\cfg\\GuiSettigs.pxb").c_str(), 2) == false)
+	{
 		return;
 	}
 
 	// Read file header
 	uint16_t ui16Identificators[2] = { *((uint16_t *)"FI"), *((uint16_t *)"FV") };
 
-	if(pxbSettings.ReadNextItem(ui16Identificators, 2) == false) {
+	if(pxbSettings.ReadNextItem(ui16Identificators, 2) == false)
+	{
 		return;
 	}
 
 	// Check header if we have correct file
-	if(pxbSettings.m_ui16ItemLengths[0] != szPtokaXGUISettingsLen || strncmp((char *)pxbSettings.m_pItemDatas[0], sPtokaXGUISettings, szPtokaXGUISettingsLen) != 0) {
+	if(pxbSettings.m_ui16ItemLengths[0] != szPtokaXGUISettingsLen || strncmp((char *)pxbSettings.m_pItemDatas[0], sPtokaXGUISettings, szPtokaXGUISettingsLen) != 0)
+	{
 		return;
 	}
 
 	{
 		uint32_t ui32FileVersion = ntohl(*((uint32_t *)(pxbSettings.m_pItemDatas[1])));
 
-		if(ui32FileVersion < 1) {
+		if(ui32FileVersion < 1)
+		{
 			return;
 		}
 	}
@@ -111,15 +120,20 @@ void GuiSettingManager::Load() {
 	bool bSuccess = pxbSettings.ReadNextItem(ui16Identificators, 2);
 	size_t szi = 0;
 
-	while(bSuccess == true) {
-		for(szi = 0; szi < GUISETBOOL_IDS_END; szi++) {
-			if(pxbSettings.m_ui16ItemLengths[0] == strlen(GuiSetBoolStr[szi]) && strncmp((char *)pxbSettings.m_pItemDatas[0], GuiSetBoolStr[szi], pxbSettings.m_ui16ItemLengths[0]) == 0) {
+	while(bSuccess == true)
+	{
+		for(szi = 0; szi < GUISETBOOL_IDS_END; szi++)
+		{
+			if(pxbSettings.m_ui16ItemLengths[0] == strlen(GuiSetBoolStr[szi]) && strncmp((char *)pxbSettings.m_pItemDatas[0], GuiSetBoolStr[szi], pxbSettings.m_ui16ItemLengths[0]) == 0)
+			{
 				SetBool(szi, ((char *)pxbSettings.m_pItemDatas[1])[0] == '0' ? false : true);
 			}
 		}
 
-		for(szi = 0; szi < GUISETINT_IDS_END; szi++) {
-			if(pxbSettings.m_ui16ItemLengths[0] == strlen(GuiSetIntegerStr[szi]) && strncmp((char *)pxbSettings.m_pItemDatas[0], GuiSetIntegerStr[szi], pxbSettings.m_ui16ItemLengths[0]) == 0) {
+		for(szi = 0; szi < GUISETINT_IDS_END; szi++)
+		{
+			if(pxbSettings.m_ui16ItemLengths[0] == strlen(GuiSetIntegerStr[szi]) && strncmp((char *)pxbSettings.m_pItemDatas[0], GuiSetIntegerStr[szi], pxbSettings.m_ui16ItemLengths[0]) == 0)
+			{
 				SetInteger(szi, ntohl(*((uint32_t *)(pxbSettings.m_pItemDatas[1]))));
 			}
 		}
@@ -129,11 +143,13 @@ void GuiSettingManager::Load() {
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void GuiSettingManager::Save() const {
+void GuiSettingManager::Save() const
+{
 	PXBReader pxbSettings;
 
 	// Open setting file
-	if(pxbSettings.OpenFileSave((ServerManager::m_sPath + "\\cfg\\GuiSettigs.pxb").c_str(), 2) == false) {
+	if(pxbSettings.OpenFileSave((ServerManager::m_sPath + "\\cfg\\GuiSettigs.pxb").c_str(), 2) == false)
+	{
 		return;
 	}
 
@@ -151,7 +167,8 @@ void GuiSettingManager::Save() const {
 	pxbSettings.m_pItemDatas[1] = (void *)&ui32Version;
 	pxbSettings.m_ui8ItemValues[1] = PXBReader::PXB_FOUR_BYTES;
 
-	if(pxbSettings.WriteNextItem(szPtokaXGUISettingsLen+4, 2) == false) {
+	if(pxbSettings.WriteNextItem(szPtokaXGUISettingsLen+4, 2) == false)
+	{
 		return;
 	}
 
@@ -160,9 +177,11 @@ void GuiSettingManager::Save() const {
 	pxbSettings.m_sItemIdentifiers[2] = 'S';
 	pxbSettings.m_sItemIdentifiers[3] = 'V';
 
-	for(size_t szi = 0; szi < GUISETBOOL_IDS_END; szi++) {
+	for(size_t szi = 0; szi < GUISETBOOL_IDS_END; szi++)
+	{
 		// Don't save setting with default value
-		if(m_bBools[szi] == GuiSetBoolDef[szi]) {
+		if(m_bBools[szi] == GuiSetBoolDef[szi])
+		{
 			continue;
 		}
 
@@ -174,14 +193,17 @@ void GuiSettingManager::Save() const {
 		pxbSettings.m_pItemDatas[1] = (m_bBools[szi] == true ? (void *)1 : 0);
 		pxbSettings.m_ui8ItemValues[1] = PXBReader::PXB_BYTE;
 
-		if(pxbSettings.WriteNextItem(pxbSettings.m_ui16ItemLengths[0] + pxbSettings.m_ui16ItemLengths[1], 2) == false) {
+		if(pxbSettings.WriteNextItem(pxbSettings.m_ui16ItemLengths[0] + pxbSettings.m_ui16ItemLengths[1], 2) == false)
+		{
 			break;
 		}
 	}
 
-	for(size_t szi = 0; szi < GUISETINT_IDS_END; szi++) {
+	for(size_t szi = 0; szi < GUISETINT_IDS_END; szi++)
+	{
 		// Don't save setting with default value
-		if(m_i32Integers[szi] == GuiSetIntegerDef[szi]) {
+		if(m_i32Integers[szi] == GuiSetIntegerDef[szi])
+		{
 			continue;
 		}
 
@@ -193,7 +215,8 @@ void GuiSettingManager::Save() const {
 		pxbSettings.m_pItemDatas[1] = (void *)&m_i32Integers[szi];
 		pxbSettings.m_ui8ItemValues[1] = PXBReader::PXB_FOUR_BYTES;
 
-		if(pxbSettings.WriteNextItem(pxbSettings.m_ui16ItemLengths[0] + pxbSettings.m_ui16ItemLengths[1], 2) == false) {
+		if(pxbSettings.WriteNextItem(pxbSettings.m_ui16ItemLengths[0] + pxbSettings.m_ui16ItemLengths[1], 2) == false)
+		{
 			break;
 		}
 	}
@@ -202,18 +225,22 @@ void GuiSettingManager::Save() const {
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-bool GuiSettingManager::GetDefaultBool(const size_t szBoolId) {
+bool GuiSettingManager::GetDefaultBool(const size_t szBoolId)
+{
 	return GuiSetBoolDef[szBoolId];
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-int32_t GuiSettingManager::GetDefaultInteger(const size_t szIntegerId) {
+int32_t GuiSettingManager::GetDefaultInteger(const size_t szIntegerId)
+{
 	return GuiSetIntegerDef[szIntegerId];
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void GuiSettingManager::SetBool(const size_t szBoolId, const bool bValue) {
-	if(m_bBools[szBoolId] == bValue) {
+void GuiSettingManager::SetBool(const size_t szBoolId, const bool bValue)
+{
+	if(m_bBools[szBoolId] == bValue)
+	{
 		return;
 	}
 
@@ -221,8 +248,10 @@ void GuiSettingManager::SetBool(const size_t szBoolId, const bool bValue) {
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void GuiSettingManager::SetInteger(const size_t szIntegerId, const int32_t i32Value) {
-	if(i32Value < 0 || m_i32Integers[szIntegerId] == i32Value) {
+void GuiSettingManager::SetInteger(const size_t szIntegerId, const int32_t i32Value)
+{
+	if(i32Value < 0 || m_i32Integers[szIntegerId] == i32Value)
+	{
 		return;
 	}
 

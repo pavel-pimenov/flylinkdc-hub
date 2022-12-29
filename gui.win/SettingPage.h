@@ -21,7 +21,8 @@
 #define SettingPageH
 //------------------------------------------------------------------------------
 
-class SettingPage {
+class SettingPage
+{
 public:
 	HWND m_hWnd;
 

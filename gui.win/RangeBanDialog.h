@@ -23,11 +23,13 @@
 struct RangeBanItem;
 //------------------------------------------------------------------------------
 
-class RangeBanDialog {
+class RangeBanDialog
+{
 public:
 	HWND m_hWndWindowItems[17];
 
-	enum enmWindowItems {
+	enum enmWindowItems
+	{
 		WINDOW_HANDLE,
 		GB_RANGE,
 		EDT_FROM_IP,

@@ -21,7 +21,8 @@
 #define LineDialogH
 //------------------------------------------------------------------------------
 
-class LineDialog {
+class LineDialog
+{
 public:
 	explicit LineDialog(void (*pOnOkFunction)(char * sLine, const int iLen));
 	~LineDialog();
@@ -32,7 +33,8 @@ public:
 private:
 	HWND m_hWndWindowItems[5];
 
-	enum enmWindowItems {
+	enum enmWindowItems
+	{
 		WINDOW_HANDLE,
 		GB_LINE,
 		EDT_LINE,

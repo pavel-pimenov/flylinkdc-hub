@@ -27,7 +27,8 @@
 #define WM_UPDATE_CHECK_DATA (WM_USER+13)
 //------------------------------------------------------------------------------
 
-class MainWindow {
+class MainWindow
+{
 public:
 	static MainWindow * m_Ptr;
 
@@ -35,11 +36,13 @@ public:
 
 	HWND m_hWndWindowItems[1];
 
-	enum enmWindowItems {
+	enum enmWindowItems
+	{
 		TC_TABS
 	};
 
-	enum enmMenuItems {
+	enum enmMenuItems
+	{
 		IDC_SETTINGS = 100,
 		IDC_EXIT,
 		IDC_REG_USERS,

@@ -22,7 +22,8 @@
 #define AboutDialogH
 //------------------------------------------------------------------------------
 
-class AboutDialog {
+class AboutDialog
+{
 public:
 	AboutDialog();
 	~AboutDialog();
@@ -37,7 +38,8 @@ private:
 
 	HWND m_hWndWindowItems[4];
 
-	enum enmWindowItems {
+	enum enmWindowItems
+	{
 		WINDOW_HANDLE,
 		LBL_PTOKAX_VERSION,
 		LBL_LUA_VERSION,

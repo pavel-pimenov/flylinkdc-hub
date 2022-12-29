@@ -31,19 +31,24 @@
 #pragma hdrstop
 //---------------------------------------------------------------------------
 
-SettingPageRules::SettingPageRules() : m_bUpdateNickLimitMessage(false), m_bUpdateMinShare(false), m_bUpdateMaxShare(false), m_bUpdateShareLimitMessage(false) {
+SettingPageRules::SettingPageRules() : m_bUpdateNickLimitMessage(false), m_bUpdateMinShare(false), m_bUpdateMaxShare(false), m_bUpdateShareLimitMessage(false)
+{
 	memset(&m_hWndPageItems, 0, sizeof(m_hWndPageItems));
 }
 //---------------------------------------------------------------------------
 
-LRESULT SettingPageRules::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_COMMAND) {
-		switch(LOWORD(wParam)) {
+LRESULT SettingPageRules::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(uMsg == WM_COMMAND)
+	{
+		switch(LOWORD(wParam))
+		{
 		case EDT_NICK_LEN_MSG:
 		case EDT_NICK_LEN_REDIR_ADDR:
 		case EDT_SHARE_MSG:
 		case EDT_SHARE_REDIR_ADDR:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				RemovePipes((HWND)lParam);
 
 				return 0;
@@ -52,26 +57,32 @@ LRESULT SettingPageRules::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPara
 			break;
 		case EDT_MIN_NICK_LEN:
 		case EDT_MAX_NICK_LEN:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 0, 64);
 
 				uint16_t ui16Min = 0, ui16Max = 0;
 
 				LRESULT lResult = ::SendMessage(m_hWndPageItems[UD_MIN_NICK_LEN], UDM_GETPOS, 0, 0);
-				if(HIWORD(lResult) == 0) {
+				if(HIWORD(lResult) == 0)
+				{
 					ui16Min = LOWORD(lResult);
 				}
 
 				lResult = ::SendMessage(m_hWndPageItems[UD_MAX_NICK_LEN], UDM_GETPOS, 0, 0);
-				if(HIWORD(lResult) == 0) {
+				if(HIWORD(lResult) == 0)
+				{
 					ui16Max = LOWORD(lResult);
 				}
 
-				if(ui16Min == 0 && ui16Max == 0) {
+				if(ui16Min == 0 && ui16Max == 0)
+				{
 					::EnableWindow(m_hWndPageItems[EDT_NICK_LEN_MSG], FALSE);
 					::EnableWindow(m_hWndPageItems[BTN_NICK_LEN_REDIR], FALSE);
 					::EnableWindow(m_hWndPageItems[EDT_NICK_LEN_REDIR_ADDR], FALSE);
-				} else {
+				}
+				else
+				{
 					::EnableWindow(m_hWndPageItems[EDT_NICK_LEN_MSG], TRUE);
 					::EnableWindow(m_hWndPageItems[BTN_NICK_LEN_REDIR], TRUE);
 					::EnableWindow(m_hWndPageItems[EDT_NICK_LEN_REDIR_ADDR], ::SendMessage(m_hWndPageItems[BTN_NICK_LEN_REDIR], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE);
@@ -82,33 +93,40 @@ LRESULT SettingPageRules::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 			break;
 		case BTN_NICK_LEN_REDIR:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				::EnableWindow(m_hWndPageItems[EDT_NICK_LEN_REDIR_ADDR], ::SendMessage(m_hWndPageItems[BTN_NICK_LEN_REDIR], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE);
 			}
 
 			break;
 		case EDT_MIN_SHARE:
 		case EDT_MAX_SHARE:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 0, 9999);
 
 				uint16_t ui16Min = 0, ui16Max = 0;
 
 				LRESULT lResult = ::SendMessage(m_hWndPageItems[UD_MIN_SHARE], UDM_GETPOS, 0, 0);
-				if(HIWORD(lResult) == 0) {
+				if(HIWORD(lResult) == 0)
+				{
 					ui16Min = LOWORD(lResult);
 				}
 
 				lResult = ::SendMessage(m_hWndPageItems[UD_MAX_SHARE], UDM_GETPOS, 0, 0);
-				if(HIWORD(lResult) == 0) {
+				if(HIWORD(lResult) == 0)
+				{
 					ui16Max = LOWORD(lResult);
 				}
 
-				if(ui16Min == 0 && ui16Max == 0) {
+				if(ui16Min == 0 && ui16Max == 0)
+				{
 					::EnableWindow(m_hWndPageItems[EDT_SHARE_MSG], FALSE);
 					::EnableWindow(m_hWndPageItems[BTN_SHARE_REDIR], FALSE);
 					::EnableWindow(m_hWndPageItems[EDT_SHARE_REDIR_ADDR], FALSE);
-				} else {
+				}
+				else
+				{
 					::EnableWindow(m_hWndPageItems[EDT_SHARE_MSG], TRUE);
 					::EnableWindow(m_hWndPageItems[BTN_SHARE_REDIR], TRUE);
 					::EnableWindow(m_hWndPageItems[EDT_SHARE_REDIR_ADDR], ::SendMessage(m_hWndPageItems[BTN_SHARE_REDIR], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE);
@@ -119,14 +137,16 @@ LRESULT SettingPageRules::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 			break;
 		case BTN_SHARE_REDIR:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				::EnableWindow(m_hWndPageItems[EDT_SHARE_REDIR_ADDR], ::SendMessage(m_hWndPageItems[BTN_SHARE_REDIR], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE);
 			}
 
 			break;
 		case UD_MAIN_CHAT_LEN:
 		case UD_PM_LEN:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 0, 32767);
 
 				return 0;
@@ -137,7 +157,8 @@ LRESULT SettingPageRules::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPara
 		case UD_PM_LINES:
 		case UD_SEARCH_MIN_LEN:
 		case UD_SEARCH_MAX_LEN:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 0, 999);
 
 				return 0;
@@ -151,22 +172,28 @@ LRESULT SettingPageRules::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPara
 }
 //------------------------------------------------------------------------------
 
-void SettingPageRules::Save() {
-	if(m_bCreated == false) {
+void SettingPageRules::Save()
+{
+	if(m_bCreated == false)
+	{
 		return;
 	}
 
 	LRESULT lResult = ::SendMessage(m_hWndPageItems[UD_MIN_NICK_LEN], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
-		if(LOWORD(lResult) != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MIN_NICK_LEN]) {
+	if(HIWORD(lResult) == 0)
+	{
+		if(LOWORD(lResult) != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MIN_NICK_LEN])
+		{
 			m_bUpdateNickLimitMessage = true;
 		}
 		SettingManager::m_Ptr->SetShort(SETSHORT_MIN_NICK_LEN, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_MAX_NICK_LEN], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
-		if(LOWORD(lResult) != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_NICK_LEN]) {
+	if(HIWORD(lResult) == 0)
+	{
+		if(LOWORD(lResult) != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_NICK_LEN])
+		{
 			m_bUpdateNickLimitMessage = true;
 		}
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_NICK_LEN, LOWORD(lResult));
@@ -175,7 +202,8 @@ void SettingPageRules::Save() {
 	char buf[257];
 	int iLen = ::GetWindowText(m_hWndPageItems[EDT_NICK_LEN_MSG], buf, 257);
 
-	if(strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_NICK_LIMIT_MSG]) != 0) {
+	if(strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_NICK_LIMIT_MSG]) != 0)
+	{
 		m_bUpdateNickLimitMessage = true;
 	}
 
@@ -183,7 +211,8 @@ void SettingPageRules::Save() {
 
 	bool bNickRedir = ::SendMessage(m_hWndPageItems[BTN_NICK_LEN_REDIR], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false;
 
-	if(bNickRedir != SettingManager::m_Ptr->m_bBools[SETBOOL_NICK_LIMIT_REDIR]) {
+	if(bNickRedir != SettingManager::m_Ptr->m_bBools[SETBOOL_NICK_LIMIT_REDIR])
+	{
 		m_bUpdateNickLimitMessage = true;
 	}
 
@@ -201,8 +230,10 @@ void SettingPageRules::Save() {
 	SettingManager::m_Ptr->SetText(SETTXT_NICK_LIMIT_REDIR_ADDRESS, buf, iLen);
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_MIN_SHARE], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
-		if(LOWORD(lResult) != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MIN_SHARE_LIMIT]) {
+	if(HIWORD(lResult) == 0)
+	{
+		if(LOWORD(lResult) != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MIN_SHARE_LIMIT])
+		{
 			m_bUpdateMinShare = true;
 			m_bUpdateShareLimitMessage = true;
 		}
@@ -211,7 +242,8 @@ void SettingPageRules::Save() {
 
 	uint16_t ui16MinShareUnits = (int16_t)::SendMessage(m_hWndPageItems[CB_MIN_SHARE], CB_GETCURSEL, 0, 0);
 
-	if(ui16MinShareUnits != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MIN_SHARE_UNITS]) {
+	if(ui16MinShareUnits != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MIN_SHARE_UNITS])
+	{
 		m_bUpdateMinShare = true;
 		m_bUpdateShareLimitMessage = true;
 	}
@@ -219,8 +251,10 @@ void SettingPageRules::Save() {
 	SettingManager::m_Ptr->SetShort(SETSHORT_MIN_SHARE_UNITS, ui16MinShareUnits);
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_MAX_SHARE], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
-		if(LOWORD(lResult) != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_SHARE_LIMIT]) {
+	if(HIWORD(lResult) == 0)
+	{
+		if(LOWORD(lResult) != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_SHARE_LIMIT])
+		{
 			m_bUpdateMaxShare = true;
 			m_bUpdateShareLimitMessage = true;
 		}
@@ -229,7 +263,8 @@ void SettingPageRules::Save() {
 
 	uint16_t ui16MaxShareUnits = (int16_t)::SendMessage(m_hWndPageItems[CB_MAX_SHARE], CB_GETCURSEL, 0, 0);
 
-	if(ui16MaxShareUnits != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_SHARE_UNITS]) {
+	if(ui16MaxShareUnits != SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_SHARE_UNITS])
+	{
 		m_bUpdateMaxShare = true;
 		m_bUpdateShareLimitMessage = true;
 	}
@@ -238,7 +273,8 @@ void SettingPageRules::Save() {
 
 	iLen = ::GetWindowText(m_hWndPageItems[EDT_SHARE_MSG], buf, 257);
 
-	if(strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_SHARE_LIMIT_MSG]) != 0) {
+	if(strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_SHARE_LIMIT_MSG]) != 0)
+	{
 		m_bUpdateShareLimitMessage = true;
 	}
 
@@ -246,7 +282,8 @@ void SettingPageRules::Save() {
 
 	bool bShareRedir = ::SendMessage(m_hWndPageItems[BTN_SHARE_REDIR], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false;
 
-	if(bShareRedir != SettingManager::m_Ptr->m_bBools[SETBOOL_SHARE_LIMIT_REDIR]) {
+	if(bShareRedir != SettingManager::m_Ptr->m_bBools[SETBOOL_SHARE_LIMIT_REDIR])
+	{
 		m_bUpdateShareLimitMessage = true;
 	}
 
@@ -264,32 +301,38 @@ void SettingPageRules::Save() {
 	SettingManager::m_Ptr->SetText(SETTXT_SHARE_LIMIT_REDIR_ADDRESS, buf, iLen);
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_MAIN_CHAT_LEN], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_CHAT_LEN, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_MAIN_CHAT_LINES], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_CHAT_LINES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_PM_LEN], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_PM_LEN, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_PM_LINES], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_PM_LINES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SEARCH_MIN_LEN], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MIN_SEARCH_LEN, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SEARCH_MAX_LEN], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_SEARCH_LEN, LOWORD(lResult));
 	}
 }
@@ -300,27 +343,34 @@ void SettingPageRules::GetUpdates(bool & /*bUpdateHubNameWelcome*/, bool & /*bUp
                                   bool & /*bUpdatedSlotsLimitMessage*/, bool & /*bUpdatedHubSlotRatioMessage*/, bool & /*bUpdatedMaxHubsLimitMessage*/, bool & /*bUpdatedNoTagMessage*/,
                                   bool &bUpdatedNickLimitMessage, bool & /*bUpdatedBotsSameNick*/, bool & /*bUpdatedBotNick*/, bool & /*bUpdatedBot*/, bool & /*bUpdatedOpChatNick*/,
                                   bool & /*bUpdatedOpChat*/, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
-                                  bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool &bUpdatedMinShare, bool &bUpdatedMaxShare) {
-	if(bUpdatedNickLimitMessage == false) {
+                                  bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool &bUpdatedMinShare, bool &bUpdatedMaxShare)
+{
+	if(bUpdatedNickLimitMessage == false)
+	{
 		bUpdatedNickLimitMessage = m_bUpdateNickLimitMessage;
 	}
-	if(bUpdatedShareLimitMessage == false) {
+	if(bUpdatedShareLimitMessage == false)
+	{
 		bUpdatedShareLimitMessage = m_bUpdateShareLimitMessage;
 	}
-	if(bUpdatedMinShare == false) {
+	if(bUpdatedMinShare == false)
+	{
 		bUpdatedMinShare = m_bUpdateMinShare;
 	}
-	if(bUpdatedMaxShare == false) {
+	if(bUpdatedMaxShare == false)
+	{
 		bUpdatedMaxShare = m_bUpdateMaxShare;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-bool SettingPageRules::CreateSettingPage(HWND hOwner) {
+bool SettingPageRules::CreateSettingPage(HWND hOwner)
+{
 	CreateHWND(hOwner);
 
-	if(m_bCreated == false) {
+	if(m_bCreated == false)
+	{
 		return false;
 	}
 
@@ -532,29 +582,37 @@ bool SettingPageRules::CreateSettingPage(HWND hOwner) {
 	AddUpDown(m_hWndPageItems[UD_SEARCH_MAX_LEN], (rcThis.right - rcThis.left) - 13 - GuiSettingManager::m_iUpDownWidth, iPosY + GuiSettingManager::m_iGroupBoxMargin, GuiSettingManager::m_iUpDownWidth, GuiSettingManager::m_iEditHeight, (LPARAM)MAKELONG(999, 0),
 	          (WPARAM)m_hWndPageItems[EDT_SEARCH_MAX_LEN], (LPARAM)MAKELONG(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_SEARCH_LEN], 0));
 
-	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++) {
-		if(m_hWndPageItems[ui8i] == nullptr) {
+	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++)
+	{
+		if(m_hWndPageItems[ui8i] == nullptr)
+		{
 			return false;
 		}
 
 		::SendMessage(m_hWndPageItems[ui8i], WM_SETFONT, (WPARAM)GuiSettingManager::m_hFont, MAKELPARAM(TRUE, 0));
 	}
 
-	if(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MIN_SHARE_LIMIT] == 0 && SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_SHARE_LIMIT] == 0) {
+	if(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MIN_SHARE_LIMIT] == 0 && SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_SHARE_LIMIT] == 0)
+	{
 		::EnableWindow(m_hWndPageItems[EDT_NICK_LEN_MSG], FALSE);
 		::EnableWindow(m_hWndPageItems[BTN_NICK_LEN_REDIR], FALSE);
 		::EnableWindow(m_hWndPageItems[EDT_NICK_LEN_REDIR_ADDR], FALSE);
-	} else {
+	}
+	else
+	{
 		::EnableWindow(m_hWndPageItems[EDT_NICK_LEN_MSG], TRUE);
 		::EnableWindow(m_hWndPageItems[BTN_NICK_LEN_REDIR], TRUE);
 		::EnableWindow(m_hWndPageItems[EDT_NICK_LEN_REDIR_ADDR], SettingManager::m_Ptr->m_bBools[SETBOOL_NICK_LIMIT_REDIR] == true ? TRUE : FALSE);
 	}
 
-	if(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MIN_NICK_LEN] == 0 && SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_NICK_LEN] == 0) {
+	if(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MIN_NICK_LEN] == 0 && SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_NICK_LEN] == 0)
+	{
 		::EnableWindow(m_hWndPageItems[EDT_SHARE_MSG], FALSE);
 		::EnableWindow(m_hWndPageItems[BTN_SHARE_REDIR], FALSE);
 		::EnableWindow(m_hWndPageItems[EDT_SHARE_REDIR_ADDR], FALSE);
-	} else {
+	}
+	else
+	{
 		::EnableWindow(m_hWndPageItems[EDT_SHARE_MSG], TRUE);
 		::EnableWindow(m_hWndPageItems[BTN_SHARE_REDIR], TRUE);
 		::EnableWindow(m_hWndPageItems[EDT_SHARE_REDIR_ADDR], SettingManager::m_Ptr->m_bBools[SETBOOL_SHARE_LIMIT_REDIR] == true ? TRUE : FALSE);
@@ -566,12 +624,14 @@ bool SettingPageRules::CreateSettingPage(HWND hOwner) {
 }
 //------------------------------------------------------------------------------
 
-char * SettingPageRules::GetPageName() {
+char * SettingPageRules::GetPageName()
+{
 	return LanguageManager::m_Ptr->m_sTexts[LAN_RULES];
 }
 //------------------------------------------------------------------------------
 
-void SettingPageRules::FocusLastItem() {
+void SettingPageRules::FocusLastItem()
+{
 	::SetFocus(m_hWndPageItems[EDT_SEARCH_MAX_LEN]);
 }
 //------------------------------------------------------------------------------

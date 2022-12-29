@@ -31,14 +31,18 @@
 #pragma hdrstop
 //---------------------------------------------------------------------------
 
-SettingPageDeflood3::SettingPageDeflood3() {
+SettingPageDeflood3::SettingPageDeflood3()
+{
 	memset(&m_hWndPageItems, 0, sizeof(m_hWndPageItems));
 }
 //---------------------------------------------------------------------------
 
-LRESULT SettingPageDeflood3::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_COMMAND) {
-		switch(LOWORD(wParam)) {
+LRESULT SettingPageDeflood3::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(uMsg == WM_COMMAND)
+	{
+		switch(LOWORD(wParam))
+		{
 		case EDT_SEARCH_MSGS:
 		case EDT_SEARCH_SECS:
 		case EDT_SEARCH_MSGS2:
@@ -53,7 +57,8 @@ LRESULT SettingPageDeflood3::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 		case EDT_MYINFO_SECS:
 		case EDT_MYINFO_MSGS2:
 		case EDT_MYINFO_SECS2:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 1, 999);
 
 				return 0;
@@ -62,7 +67,8 @@ LRESULT SettingPageDeflood3::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 			break;
 		case EDT_SR_MSGS:
 		case EDT_SR_MSGS2:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 1, 32767);
 
 				return 0;
@@ -71,7 +77,8 @@ LRESULT SettingPageDeflood3::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 			break;
 		case EDT_SR_SECS:
 		case EDT_SR_SECS2:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 1, 9999);
 
 				return 0;
@@ -79,7 +86,8 @@ LRESULT SettingPageDeflood3::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case EDT_SR_TO_PASSIVE_LIMIT:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 0, 32767);
 
 				return 0;
@@ -87,7 +95,8 @@ LRESULT SettingPageDeflood3::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case EDT_SR_LEN:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 1, 8192);
 
 				return 0;
@@ -95,7 +104,8 @@ LRESULT SettingPageDeflood3::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case EDT_MYINFO_LEN:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 64, 512);
 
 				return 0;
@@ -103,7 +113,8 @@ LRESULT SettingPageDeflood3::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case EDT_RECONNECT_TIME:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 1, 256);
 
 				return 0;
@@ -111,7 +122,8 @@ LRESULT SettingPageDeflood3::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case CB_SEARCH:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_SEARCH], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_SEARCH_MSGS], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_SEARCH_MSGS], ui32Action == 0 ? FALSE : TRUE);
@@ -123,7 +135,8 @@ LRESULT SettingPageDeflood3::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case CB_SEARCH2:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_SEARCH2], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_SEARCH_MSGS2], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_SEARCH_MSGS2], ui32Action == 0 ? FALSE : TRUE);
@@ -135,7 +148,8 @@ LRESULT SettingPageDeflood3::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case CB_SAME_SEARCH:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_SAME_SEARCH], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_SAME_SEARCH_MSGS], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_SAME_SEARCH_MSGS], ui32Action == 0 ? FALSE : TRUE);
@@ -147,7 +161,8 @@ LRESULT SettingPageDeflood3::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case CB_SR:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_SR], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_SR_MSGS], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_SR_MSGS], ui32Action == 0 ? FALSE : TRUE);
@@ -159,7 +174,8 @@ LRESULT SettingPageDeflood3::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case CB_SR2:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_SR2], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_SR_MSGS2], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_SR_MSGS2], ui32Action == 0 ? FALSE : TRUE);
@@ -171,7 +187,8 @@ LRESULT SettingPageDeflood3::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case CB_GETNICKLIST:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_GETNICKLIST], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_GETNICKLIST_MSGS], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_GETNICKLIST_MSGS], ui32Action == 0 ? FALSE : TRUE);
@@ -183,7 +200,8 @@ LRESULT SettingPageDeflood3::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case CB_MYINFO:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_MYINFO], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_MYINFO_MSGS], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_MYINFO_MSGS], ui32Action == 0 ? FALSE : TRUE);
@@ -195,7 +213,8 @@ LRESULT SettingPageDeflood3::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case CB_MYINFO2:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_MYINFO2], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_MYINFO_MSGS2], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_MYINFO_MSGS2], ui32Action == 0 ? FALSE : TRUE);
@@ -213,134 +232,158 @@ LRESULT SettingPageDeflood3::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 }
 //------------------------------------------------------------------------------
 
-void SettingPageDeflood3::Save() {
-	if(m_bCreated == false) {
+void SettingPageDeflood3::Save()
+{
+	if(m_bCreated == false)
+	{
 		return;
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_SEARCH_ACTION, (int16_t)::SendMessage(m_hWndPageItems[CB_SEARCH], CB_GETCURSEL, 0, 0));
 
 	LRESULT lResult = ::SendMessage(m_hWndPageItems[UD_SEARCH_MSGS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SEARCH_MESSAGES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SEARCH_SECS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SEARCH_TIME, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_SEARCH_ACTION2, (int16_t)::SendMessage(m_hWndPageItems[CB_SEARCH2], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SEARCH_MSGS2], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SEARCH_MESSAGES2, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SEARCH_SECS2], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SEARCH_TIME2, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SEARCH_INTERVAL_MSGS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SEARCH_INTERVAL_MESSAGES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SEARCH_INTERVAL_SECS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SEARCH_INTERVAL_TIME, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_SAME_SEARCH_ACTION, (int16_t)::SendMessage(m_hWndPageItems[CB_SAME_SEARCH], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SAME_SEARCH_MSGS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SAME_SEARCH_MESSAGES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SAME_SEARCH_SECS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SAME_SEARCH_TIME, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_SR_ACTION, (int16_t)::SendMessage(m_hWndPageItems[CB_SR], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SR_MSGS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SR_MESSAGES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SR_SECS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SR_TIME, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_SR_ACTION2, (int16_t)::SendMessage(m_hWndPageItems[CB_SR2], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SR_MSGS2], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SR_MESSAGES2, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SR_SECS2], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SR_TIME2, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SR_TO_PASSIVE_LIMIT], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_PASIVE_SR, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SR_LEN], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_SR_LEN, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_GETNICKLIST_ACTION, (int16_t)::SendMessage(m_hWndPageItems[CB_GETNICKLIST], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_GETNICKLIST_MSGS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_GETNICKLIST_MESSAGES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_GETNICKLIST_MINS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_GETNICKLIST_TIME, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_MYINFO_ACTION, (int16_t)::SendMessage(m_hWndPageItems[CB_MYINFO], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_MYINFO_MSGS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MYINFO_MESSAGES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_MYINFO_SECS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MYINFO_TIME, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_MYINFO_ACTION2, (int16_t)::SendMessage(m_hWndPageItems[CB_MYINFO2], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_MYINFO_MSGS2], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MYINFO_MESSAGES2, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_MYINFO_SECS2], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MYINFO_TIME2, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_MYINFO_LEN], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_MYINFO_LEN, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_RECONNECT_TIME], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MIN_RECONN_TIME, LOWORD(lResult));
 	}
 }
@@ -351,14 +394,17 @@ void SettingPageDeflood3::GetUpdates(bool & /*bUpdateHubNameWelcome*/, bool & /*
                                      bool & /*bUpdatedSlotsLimitMessage*/, bool & /*bUpdatedHubSlotRatioMessage*/, bool & /*bUpdatedMaxHubsLimitMessage*/, bool & /*bUpdatedNoTagMessage*/,
                                      bool & /*bUpdatedNickLimitMessage*/, bool & /*bUpdatedBotsSameNick*/, bool & /*bUpdatedBotNick*/, bool & /*bUpdatedBot*/, bool & /*bUpdatedOpChatNick*/,
                                      bool & /*bUpdatedOpChat*/, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
-                                     bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/) {
+                                     bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/)
+{
 }
 //------------------------------------------------------------------------------
 
-bool SettingPageDeflood3::CreateSettingPage(HWND hOwner) {
+bool SettingPageDeflood3::CreateSettingPage(HWND hOwner)
+{
 	CreateHWND(hOwner);
 
-	if(m_bCreated == false) {
+	if(m_bCreated == false)
+	{
 		return false;
 	}
 
@@ -729,8 +775,10 @@ bool SettingPageDeflood3::CreateSettingPage(HWND hOwner) {
 	        ((rcThis.right - rcThis.left - 5) / 2) + ScaleGui(110) + GuiSettingManager::m_iUpDownWidth + 21, iPosY + GuiSettingManager::m_iGroupBoxMargin + ((GuiSettingManager::m_iEditHeight - GuiSettingManager::m_iTextHeight) / 2),
 	        (rcThis.right - rcThis.left) - (ScaleGui(210) + (2 * GuiSettingManager::m_iUpDownWidth) + 37), GuiSettingManager::m_iTextHeight, m_hWnd, nullptr, ServerManager::m_hInstance, nullptr);
 
-	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++) {
-		if(m_hWndPageItems[ui8i] == nullptr) {
+	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++)
+	{
+		if(m_hWndPageItems[ui8i] == nullptr)
+		{
 			return false;
 		}
 
@@ -799,12 +847,14 @@ bool SettingPageDeflood3::CreateSettingPage(HWND hOwner) {
 }
 //------------------------------------------------------------------------------
 
-char * SettingPageDeflood3::GetPageName() {
+char * SettingPageDeflood3::GetPageName()
+{
 	return LanguageManager::m_Ptr->m_sTexts[LAN_MORE_MORE_DEFLOOD];
 }
 //------------------------------------------------------------------------------
 
-void SettingPageDeflood3::FocusLastItem() {
+void SettingPageDeflood3::FocusLastItem()
+{
 	::SetFocus(m_hWndPageItems[EDT_RECONNECT_TIME]);
 }
 //------------------------------------------------------------------------------

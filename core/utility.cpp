@@ -293,30 +293,33 @@ char * WSErrorStr(const uint32_t ui32Error)
 	}
 }
 #else
-	const char * ErrnoStr(const uint32_t ui32Error) {
-		static const char *errStrings[] = {
+const char * ErrnoStr(const uint32_t ui32Error)
+{
+	static const char *errStrings[] =
+	{
 		"UNDEFINED",
 		"EADDRINUSE",
-            "EADDRNOTAVAIL",
+		"EADDRNOTAVAIL",
 		"ECONNRESET",
 		"ETIMEDOUT",
 		"ECONNREFUSED",
 		"EHOSTUNREACH",
 	};
 
-		switch(ui32Error) {
+	switch(ui32Error)
+	{
 	case 98:
 		return errStrings[1];
-			case 99:
+	case 99:
 		return errStrings[2];
-			case 104:
+	case 104:
 		return errStrings[3];
-			case 110:
+	case 110:
 		return errStrings[4];
-			case 111:
+	case 111:
 		return errStrings[5];
-			case 113:
-		    	return errStrings[6];
+	case 113:
+		return errStrings[6];
 	default :
 		return errStrings[0];
 	}
@@ -1007,15 +1010,19 @@ bool HaveOnlyNumbers(char *sData, const uint16_t ui16Len)
 }
 //---------------------------------------------------------------------------
 // + alex82 ... from MOD
-bool CheckSprintf(const int &iRetVal, const size_t &szMax, const char * sMsg) {
-	if (iRetVal > 0) {
-		if (szMax != 0 && iRetVal >= (int)szMax) {
+bool CheckSprintf(const int &iRetVal, const size_t &szMax, const char * sMsg)
+{
+	if (iRetVal > 0)
+	{
+		if (szMax != 0 && iRetVal >= (int)szMax)
+		{
 			px_string sDbgstr = "%s - [ERR] sprintf high value " + px_string(iRetVal) + "/" + px_string((uint64_t)szMax) + " in " + px_string(sMsg) + "\n";
 			AppendDebugLog(sDbgstr.c_str()/*, 0*/);
 			return false;
 		}
 	}
-	else {
+	else
+	{
 		px_string sDbgstr = "%s - [ERR] sprintf low value " + px_string(iRetVal) + " in " + px_string(sMsg) + "\n";
 		AppendDebugLog(sDbgstr.c_str()/*, 0*/);
 		return false;
@@ -1024,15 +1031,19 @@ bool CheckSprintf(const int &iRetVal, const size_t &szMax, const char * sMsg) {
 }
 //---------------------------------------------------------------------------
 
-bool CheckSprintf1(const int &iRetVal, const size_t &szLenVal, const size_t &szMax, const char * sMsg) {
-	if (iRetVal > 0) {
-		if (szMax != 0 && szLenVal >= szMax) {
+bool CheckSprintf1(const int &iRetVal, const size_t &szLenVal, const size_t &szMax, const char * sMsg)
+{
+	if (iRetVal > 0)
+	{
+		if (szMax != 0 && szLenVal >= szMax)
+		{
 			px_string sDbgstr = "%s - [ERR] sprintf high value " + px_string((uint64_t)szLenVal) + "/" + px_string((uint64_t)szMax) + " in " + px_string(sMsg) + "\n";
 			AppendDebugLog(sDbgstr.c_str()/*, 0*/);
 			return false;
 		}
 	}
-	else {
+	else
+	{
 		px_string sDbgstr = "%s - [ERR] sprintf low value " + px_string(iRetVal) + " in " + px_string(sMsg) + "\n";
 		AppendDebugLog(sDbgstr.c_str()/*, 0*/);
 		return false;
@@ -1271,7 +1282,14 @@ void SetupOsVersion()
 	{
 		if (ver.dwMinorVersion == 0)
 		{
-			ServerManager::m_sOS = "Windows 10";
+			if(ver.dwBuildNumber >= 22000)
+			{
+				ServerManager::m_sOS = "Windows 11 (Build " + string((uint32_t)ver.dwBuildNumber) + ")";
+			}
+			else
+			{
+				ServerManager::m_sOS = "Windows 10 (Build " + string((uint32_t)ver.dwBuildNumber) + ")";
+			}
 			return;
 		}
 	}
