@@ -472,7 +472,7 @@ void ServiceLoop::AcceptUser(AcceptedSocket *pAccptSocket)
 			}
 			shutdown_and_close(pAccptSocket->m_Socket, SHUT_RD);
 
-//			UdpDebug::m_Ptr->BroadcastFormat("[SYS] Banned ip %s - connection closed.", sIP);
+//          UdpDebug::m_Ptr->BroadcastFormat("[SYS] Banned ip %s - connection closed.", sIP);
 
 			return;
 		}

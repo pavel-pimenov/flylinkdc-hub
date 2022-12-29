@@ -869,7 +869,7 @@ bool User::MakeLock()
 #endif
 	}
 
-//	Memo(string(m_pSendBuf, m_ui32SendBufDataLen));
+//  Memo(string(m_pSendBuf, m_ui32SendBufDataLen));
 
 	m_LogInOut.m_pBuffer = (char *)malloc(64);
 	if (m_LogInOut.m_pBuffer == NULL)
