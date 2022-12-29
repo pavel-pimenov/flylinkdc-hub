@@ -1,7 +1,7 @@
 /*
  * PtokaX - hub server for Direct Connect peer to peer network.
 
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -37,7 +37,7 @@ struct ScriptBot
 	~ScriptBot();
 
 	static ScriptBot * CreateScriptBot(const char * sBotNick, const size_t szNickLen, const char * sDescription, const size_t szDscrLen, const char * sEmail, const size_t szEmailLen, const bool bOP);
-	// alex82 ... RegBot / Добавили альтернативную функцию для создания бота с полноценным $MyINFO
+	// alex82 ... RegBot / пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ $MyINFO
 	static ScriptBot * CreateScriptBot(const char * sNick, const size_t szNickLen, const char * sBotMyINFO, const size_t szMyINFOLen, const bool bOP);
 	DISALLOW_COPY_AND_ASSIGN(ScriptBot);
 };

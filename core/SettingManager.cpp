@@ -1,7 +1,7 @@
 /*
  * PtokaX - hub server for Direct Connect peer to peer network.
 
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -536,13 +536,13 @@ void SettingManager::Save()
 	for (size_t szi = 0; szi < SETBOOL_IDS_END; szi++)
 	{
 		// Don't save empty hint
-		if (SetBoolCom[szi] != NULL)
+		if(SetBoolCom[szi][0] != '\0')
 		{
 			fputs(SetBoolCom[szi], fSettingsFile);
 		}
 
 		// Don't save setting with empty id
-		if (SetBoolStr[szi][0] == NULL)
+		if (SetBoolStr[szi][0] == '\0')
 		{
 			continue;
 		}
@@ -565,13 +565,13 @@ void SettingManager::Save()
 	for (size_t szi = 0; szi < SETSHORT_IDS_END; szi++)
 	{
 		// Don't save empty hint
-		if (SetShortCom[szi] != NULL)
+		if (SetShortCom[szi][0] != '\0')
 		{
 			fputs(SetShortCom[szi], fSettingsFile);
 		}
 
 		// Don't save setting with empty id
-		if (SetShortStr[szi][0] == NULL)
+		if (SetShortStr[szi][0] == '\0')
 		{
 			continue;
 		}
@@ -594,13 +594,13 @@ void SettingManager::Save()
 	for (size_t szi = 0; szi < SETTXT_IDS_END; szi++)
 	{
 		// Don't save empty hint
-		if (SetTxtCom[szi] != NULL)
+		if (SetTxtCom[szi][0] != '\0')
 		{
 			fputs(SetTxtCom[szi], fSettingsFile);
 		}
 
 		// Don't save setting with empty id
-		if (SetTxtStr[szi][0] == NULL)
+		if (SetTxtStr[szi][0] == '\0')
 		{
 			continue;
 		}

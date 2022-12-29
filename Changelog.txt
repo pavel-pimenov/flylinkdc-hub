@@ -1,10 +1,20 @@
 ﻿PtokaX DC hub software - Ptaczek/Frontline3k/aMutex (c) 2oo2/2oo3
 PtokaX DC hub software - Ptaczek/PPK (c) 2004/2005
-PtokaX DC hub software - PPK (c) 2006/2017
+PtokaX DC hub software - PPK (c) 2006/2022
 ------------------------------------------------------------------------------
 
 
-----------------------------------------Next Release...---------------------------------------
+-------------------------------------0.5.3.0 29 December 2022-------------------------------------
+Added: Support for Lua 5.4.
+Fixed: Missing reason from !tembanip and !fulltempbanip command (thx The-Master for report).
+Fixed: Move up/down script in gui caused invalid memory usage for disabled script (thx The-Master for report).
+Fixed: Not working SQL wildcards in !getipinfo command (thx Alexey for report).
+Fixed: Crash when script stopped next running script in some cases (thx Cęńoßy†ę for report).
+Fixed: Crash on script error in OnTimer when timer was removed (thx Alexey for report).
+Fixes: C stack overflow, invalid share and user count. Caused by Disconnect from Lua scipt called in (Op, Reg, User)Disconnect (thx Cęńoßy†ę for report).
+Fixed: Issues with Ban commands caused wrong nick and reason length counting (thx [NL]-Quasar for report).
+Fixed: OP was able to redirect yourself (thx Cęńoßy†ę for report).
+
 
 -------------------------------------0.5.2.2 11 April 2017-------------------------------------
 Added: Reconnect to database on connection failure or connection lost.

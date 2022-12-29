@@ -2,7 +2,7 @@
  * PtokaX - hub server for Direct Connect peer to peer network.
 
  * Copyright (C) 2002-2005  Ptaczek, Ptaczek at PtokaX dot org
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -293,30 +293,30 @@ char * WSErrorStr(const uint32_t ui32Error)
 	}
 }
 #else
-const char * ErrnoStr(const uint32_t ui32Error)
-{
-	static const char *errStrings[] =
-	{
+	const char * ErrnoStr(const uint32_t ui32Error) {
+		static const char *errStrings[] = {
 		"UNDEFINED",
 		"EADDRINUSE",
+            "EADDRNOTAVAIL",
 		"ECONNRESET",
 		"ETIMEDOUT",
 		"ECONNREFUSED",
 		"EHOSTUNREACH",
 	};
 
-	switch (ui32Error)
-	{
+		switch(ui32Error) {
 	case 98:
 		return errStrings[1];
-	case 104:
+			case 99:
 		return errStrings[2];
-	case 110:
+			case 104:
 		return errStrings[3];
-	case 111:
+			case 110:
 		return errStrings[4];
-	case 113:
+			case 111:
 		return errStrings[5];
+			case 113:
+		    	return errStrings[6];
 	default :
 		return errStrings[0];
 	}

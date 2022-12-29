@@ -1,7 +1,7 @@
 /*
  * PtokaX - hub server for Direct Connect peer to peer network.
 
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -318,6 +318,7 @@ const char * DeFloodGetMessage(const uint8_t ui8DefloodType, const uint8_t ui8Ms
 		case 2:
 			return LanguageManager::m_Ptr->m_sTexts[LAN_GetNickList_FLOODER];
 		}
+            break;
 	case DEFLOOD_MYINFO:
 		switch (ui8MsgId)
 		{
@@ -328,6 +329,7 @@ const char * DeFloodGetMessage(const uint8_t ui8DefloodType, const uint8_t ui8Ms
 		case 2:
 			return LanguageManager::m_Ptr->m_sTexts[LAN_MyINFO_FLOODER];
 		}
+            break;
 	case DEFLOOD_SEARCH:
 		switch (ui8MsgId)
 		{
@@ -338,6 +340,7 @@ const char * DeFloodGetMessage(const uint8_t ui8DefloodType, const uint8_t ui8Ms
 		case 2:
 			return LanguageManager::m_Ptr->m_sTexts[LAN_SEARCH_FLOODER];
 		}
+            break;
 	case DEFLOOD_CHAT:
 		switch (ui8MsgId)
 		{
@@ -348,6 +351,7 @@ const char * DeFloodGetMessage(const uint8_t ui8DefloodType, const uint8_t ui8Ms
 		case 2:
 			return LanguageManager::m_Ptr->m_sTexts[LAN_CHAT_FLOODER];
 		}
+            break;
 	case DEFLOOD_PM:
 		switch (ui8MsgId)
 		{
@@ -358,6 +362,7 @@ const char * DeFloodGetMessage(const uint8_t ui8DefloodType, const uint8_t ui8Ms
 		case 2:
 			return LanguageManager::m_Ptr->m_sTexts[LAN_PM_FLOODER];
 		}
+            break;
 	case DEFLOOD_SAME_SEARCH:
 		switch (ui8MsgId)
 		{
@@ -368,6 +373,7 @@ const char * DeFloodGetMessage(const uint8_t ui8DefloodType, const uint8_t ui8Ms
 		case 2:
 			return LanguageManager::m_Ptr->m_sTexts[LAN_SAME_SEARCH_FLOODER];
 		}
+            break;
 	case DEFLOOD_SAME_PM:
 		switch (ui8MsgId)
 		{
@@ -378,6 +384,7 @@ const char * DeFloodGetMessage(const uint8_t ui8DefloodType, const uint8_t ui8Ms
 		case 2:
 			return LanguageManager::m_Ptr->m_sTexts[LAN_SAME_PM_FLOODER];
 		}
+            break;
 	case DEFLOOD_SAME_CHAT:
 		switch (ui8MsgId)
 		{
@@ -388,6 +395,7 @@ const char * DeFloodGetMessage(const uint8_t ui8DefloodType, const uint8_t ui8Ms
 		case 2:
 			return LanguageManager::m_Ptr->m_sTexts[LAN_SAME_CHAT_FLOODER];
 		}
+            break;
 	case DEFLOOD_SAME_MULTI_PM:
 		switch (ui8MsgId)
 		{
@@ -398,6 +406,7 @@ const char * DeFloodGetMessage(const uint8_t ui8DefloodType, const uint8_t ui8Ms
 		case 2:
 			return LanguageManager::m_Ptr->m_sTexts[LAN_SAME_MULTI_PM_FLOODER];
 		}
+            break;
 	case DEFLOOD_SAME_MULTI_CHAT:
 		switch (ui8MsgId)
 		{
@@ -408,6 +417,7 @@ const char * DeFloodGetMessage(const uint8_t ui8DefloodType, const uint8_t ui8Ms
 		case 2:
 			return LanguageManager::m_Ptr->m_sTexts[LAN_SAME_MULTI_CHAT_FLOODER];
 		}
+            break;
 	case DEFLOOD_CTM:
 		switch (ui8MsgId)
 		{
@@ -418,6 +428,7 @@ const char * DeFloodGetMessage(const uint8_t ui8DefloodType, const uint8_t ui8Ms
 		case 2:
 			return LanguageManager::m_Ptr->m_sTexts[LAN_CTM_FLOODER];
 		}
+            break;
 	case DEFLOOD_RCTM:
 		switch (ui8MsgId)
 		{
@@ -428,6 +439,7 @@ const char * DeFloodGetMessage(const uint8_t ui8DefloodType, const uint8_t ui8Ms
 		case 2:
 			return LanguageManager::m_Ptr->m_sTexts[LAN_RCTM_FLOODER];
 		}
+            break;
 	case DEFLOOD_SR:
 		switch (ui8MsgId)
 		{
@@ -438,6 +450,7 @@ const char * DeFloodGetMessage(const uint8_t ui8DefloodType, const uint8_t ui8Ms
 		case 2:
 			return LanguageManager::m_Ptr->m_sTexts[LAN_SR_FLOODER];
 		}
+            break;
 	case DEFLOOD_MAX_DOWN:
 		switch (ui8MsgId)
 		{
@@ -448,6 +461,7 @@ const char * DeFloodGetMessage(const uint8_t ui8DefloodType, const uint8_t ui8Ms
 		case 2:
 			return LanguageManager::m_Ptr->m_sTexts[LAN_DATA_FLOODER];
 		}
+            break;
 	case INTERVAL_CHAT:
 		return LanguageManager::m_Ptr->m_sTexts[LAN_SECONDS_BEFORE_NEXT_CHAT_MSG];
 	case INTERVAL_PM:

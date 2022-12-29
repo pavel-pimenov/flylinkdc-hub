@@ -1,7 +1,7 @@
 /*
  * PtokaX - hub server for Direct Connect peer to peer network.
 
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -131,7 +131,7 @@ ScriptBot * ScriptBot::CreateScriptBot(const char * sBotNick, const size_t szNic
 	return pScriptBot;
 }
 //------------------------------------------------------------------------------
-// alex82 ... RegBot / Добавили альтернативную функцию для создания бота с полноценным $MyINFO
+// alex82 ... RegBot / пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ $MyINFO
 ScriptBot * ScriptBot::CreateScriptBot(const char * sBotNick, const size_t szNickLen, const char * sBotMyINFO, const size_t szMyINFOLen, const bool bOP)
 {
 	ScriptBot * pScriptBot = new (std::nothrow) ScriptBot();
@@ -1279,17 +1279,17 @@ void ScriptPushUserExtended(lua_State * pLua, User * pUser, const int iTable)
 
 	lua_rawset(pLua, iTable);
 
-	// alex82 ... HideUser / Скрытие юзера
+	// alex82 ... HideUser / пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	lua_pushliteral(pLua, "bHidden");
 	(pUser->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN ? lua_pushboolean(pLua, 1) : lua_pushboolean(pLua, 0);
 	lua_rawset(pLua, iTable);
 
-	// alex82 ... NoQuit / Подавляем $Quit для юзера
+	// alex82 ... NoQuit / пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ $Quit пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	lua_pushliteral(pLua, "bNoQuit");
 	(pUser->m_ui32InfoBits & User::INFOBIT_NO_QUIT) == User::INFOBIT_NO_QUIT ? lua_pushboolean(pLua, 1) : lua_pushboolean(pLua, 0);
 	lua_rawset(pLua, iTable);
 
-	// alex82 ... HideUserKey / Прячем ключ юзера
+	// alex82 ... HideUserKey / пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	lua_pushliteral(pLua, "bHiddenKey");
 	(pUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY ? lua_pushboolean(pLua, 1) : lua_pushboolean(pLua, 0);
 	lua_rawset(pLua, iTable);
@@ -1429,9 +1429,9 @@ void ScriptOnTimer(const uint64_t &ui64ActualMillis)
 			// 1 passed parameters, 0 returned
 			if (lua_pcall(pCurTmr->m_pLua, 1, 0, iTraceback) != 0)
 			{
-				ScriptError(ScriptManager::m_Ptr->FindScript(pCurTmr->m_pLua));
+				ScriptError(ScriptManager::m_Ptr->FindScript(pLuaState));
 
-				lua_settop(pCurTmr->m_pLua, 0);
+				lua_settop(pLuaState, 0);
 #if defined(_WIN32) && !defined(_WIN_IOT)
 				return;
 #else

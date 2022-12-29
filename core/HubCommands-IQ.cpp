@@ -2,7 +2,7 @@
  * PtokaX - hub server for Direct Connect peer to peer network.
 
  * Copyright (C) 2002-2005  Ptaczek, Ptaczek at PtokaX dot org
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -421,7 +421,7 @@ bool HubCommands::Op(ChatCommand * pChatCommand)   // !op nick
 	bool bAllowedOpChat = ProfileManager::m_Ptr->IsAllowed(pOtherUser, ProfileManager::ALLOWEDOPCHAT);
 	pOtherUser->m_i32Profile = iProfileIndex;
 	pOtherUser->m_ui32BoolBits |= User::BIT_TEMP_OPERATOR; // to disallow adding more tempop by tempop user ;)
-	// alex82 ... HideUserKey / Прячем ключ юзера
+	// alex82 ... HideUserKey / пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	if (((pOtherUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false) {
 		Users::m_Ptr->Add2OpList(pOtherUser);
 	}
@@ -434,7 +434,7 @@ bool HubCommands::Op(ChatCommand * pChatCommand)   // !op nick
 	{
 		pOtherUser->SendFormat("HubCommands::Op7", true, "<%s> *** %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_GOT_TEMP_OP]);
 	}
-	// alex82 ... Прячем ключ юзера
+	// alex82 ... пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	if (((pOtherUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false) {
 		GlobalDataQueue::m_Ptr->OpListStore(pOtherUser->m_sNick);
 	}

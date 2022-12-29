@@ -1,7 +1,7 @@
 /*
  * PtokaX - hub server for Direct Connect peer to peer network.
 
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -89,8 +89,8 @@ RegUser * RegUser::CreateReg(const char * sRegNick, const size_t szRegNickLen, c
 		memcpy(pReg->m_ui8PassHash, ui8RegPassHash, 64);
 		pReg->m_bPassHash = true;
 	}
-	else
-	{
+	else if(sRegPassword != NULL)
+  	       {
 		pReg->m_sPass = (char *)malloc(szRegPassLen + 1);
 		if (pReg->m_sPass == NULL)
 		{
@@ -101,6 +101,11 @@ RegUser * RegUser::CreateReg(const char * sRegNick, const size_t szRegNickLen, c
 		}
 		memcpy(pReg->m_sPass, sRegPassword, szRegPassLen);
 		pReg->m_sPass[szRegPassLen] = '\0';
+    } else {
+        AppendDebugLogFormat("[ERR] Empty ui8RegPassHash and sRegPassword in RegUser::RegUser\n");
+
+        delete pReg;
+        return NULL;
 	}
 
 	pReg->m_ui16Profile = ui16RegProfile;
@@ -272,7 +277,7 @@ bool RegManager::AddNew(const char * sNick, const char * sPasswd, const uint16_t
 
 			if (((AddedUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == true)
 			{
-				// alex82 ... HideUserKey / Прячем ключ юзера
+				// alex82 ... HideUserKey / пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 				if (((AddedUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false)
 				{
 					Users::m_Ptr->Add2OpList(AddedUser);
@@ -374,7 +379,7 @@ void RegManager::ChangeReg(RegUser * pReg, const char * sNewPasswd, const uint16
 			if (ProfileManager::m_Ptr->IsAllowed(ChangedUser, ProfileManager::HASKEYICON) == true)
 			{
 				ChangedUser->m_ui32BoolBits |= User::BIT_OPERATOR;
-				// alex82 ... HideUserKey / Прячем ключ юзера
+				// alex82 ... HideUserKey / пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 				if (((ChangedUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false) {
 					Users::m_Ptr->Add2OpList(ChangedUser);
 					GlobalDataQueue::m_Ptr->OpListStore(ChangedUser->m_sNick);
@@ -383,9 +388,9 @@ void RegManager::ChangeReg(RegUser * pReg, const char * sNewPasswd, const uint16
 			else
 			{
 				ChangedUser->m_ui32BoolBits &= ~User::BIT_OPERATOR;
-				// alex82 ... HideUserKey / Прячем ключ юзера
+				// alex82 ... HideUserKey / пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 				if (((ChangedUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false) {
-					// alex82 ... Исправили отправку OpList
+					// alex82 ... пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ OpList
 					int imsgLen = sprintf(ServerManager::m_pGlobalBuffer, "$Quit %s|", ChangedUser->m_sNick);
 					if (CheckSprintf(imsgLen, 128, "RegManager::ChangeReg1") == true) {
 						GlobalDataQueue::m_Ptr->AddQueueItem(ServerManager::m_pGlobalBuffer, imsgLen, NULL, 0, GlobalDataQueue::CMD_QUIT);

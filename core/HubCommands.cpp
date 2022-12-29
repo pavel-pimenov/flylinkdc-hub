@@ -2,7 +2,7 @@
  * PtokaX - hub server for Direct Connect peer to peer network.
 
  * Copyright (C) 2002-2005  Ptaczek, Ptaczek at PtokaX dot org
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -495,30 +495,27 @@ bool HubCommands::DoCommand(User * pUser, char * sCommand, const uint32_t ui32Cm
 }
 //---------------------------------------------------------------------------
 
-bool HubCommands::Ban(ChatCommand * pChatCommand, const bool bFull)
-{
+bool HubCommands::Ban(ChatCommand * pChatCommand, const bool bFull) {
 	char * sReason = strchr(pChatCommand->m_sCommand, ' ');
-	if (sReason != NULL)
-	{
+    if(sReason != NULL) {
+        sReason[0] = '\0';
+
+        if(sReason[1] == '\0') {
 		pChatCommand->m_ui32CommandLen = (uint32_t)(sReason - pChatCommand->m_sCommand);
 
-		sReason[0] = '\0';
-		if (sReason[1] == '\0')
-		{
 			sReason = NULL;
-		}
-		else
-		{
+        } else {
 			sReason++;
 
 			uint32_t ui32ReasonLen = (uint32_t)(pChatCommand->m_ui32CommandLen - (sReason - pChatCommand->m_sCommand));
-			if (ui32ReasonLen > 511)
-			{
+			if(ui32ReasonLen > 511) {
 				sReason[508] = '.';
 				sReason[509] = '.';
 				sReason[510] = '.';
 				sReason[511] = '\0';
 			}
+
+            pChatCommand->m_ui32CommandLen = (uint32_t)(sReason - pChatCommand->m_sCommand) - 1;
 		}
 	}
 
@@ -910,7 +907,7 @@ bool HubCommands::TempBanIp(ChatCommand * pChatCommand, const bool bFull)
 			// are we on last space ???
 			if (ui8Part == 1)
 			{
-				sCmdParts[2] = pChatCommand->m_sCommand + pChatCommand->m_ui32CommandLen + 1;
+				sCmdParts[2] = pChatCommand->m_sCommand + ui32i + 1;
 				ui16CmdPartsLen[2] = (uint16_t)(pChatCommand->m_ui32CommandLen - ui32i - 1);
 
 				break;

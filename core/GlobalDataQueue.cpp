@@ -2,7 +2,7 @@
  * PtokaX - hub server for Direct Connect peer to peer network.
 
  * Copyright (C) 2002-2005  Ptaczek, Ptaczek at PtokaX dot org
- * Copyright (C) 2004-2017  Petr Kozelka, PPK at PtokaX dot org
+ * Copyright (C) 2004-2022  Petr Kozelka, PPK at PtokaX dot org
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3
@@ -225,7 +225,7 @@ void GlobalDataQueue::OpListStore(const char * sNick)
 
 				return;
 			}
-			m_OpListQueue.m_szSize = (uint32_t)(szAllignLen - 1);
+			m_OpListQueue.m_szSize = szAllignLen - 1;
 		}
 
 		int iDataLen = snprintf(m_OpListQueue.m_pBuffer + m_OpListQueue.m_szLen - 1, m_OpListQueue.m_szSize - (m_OpListQueue.m_szLen - 1), "%s$$|", sNick);
@@ -273,7 +273,7 @@ void GlobalDataQueue::UserIPStore(User * pUser)
 
 				return;
 			}
-			m_UserIPQueue.m_szSize = (uint32_t)(szAllignLen - 1);
+			m_UserIPQueue.m_szSize = szAllignLen - 1;
 		}
 
 		if (m_UserIPQueue.m_bHaveDollars == false)
