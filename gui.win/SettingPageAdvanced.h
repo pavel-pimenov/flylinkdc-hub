@@ -23,7 +23,8 @@
 #include "SettingPage.h"
 //---------------------------------------------------------------------------
 
-class SettingPageAdvanced : public SettingPage {
+class SettingPageAdvanced : public SettingPage
+{
 public:
 	bool m_bUpdateSysTray, m_bUpdateScripting;
 
@@ -49,7 +50,8 @@ private:
 	HWND m_hWndPageItems[21];
 #endif
 
-	enum enmPageItems {
+	enum enmPageItems
+	{
 		GB_HUB_STARTUP_AND_TRAY,
 		BTN_AUTO_START,
 		BTN_CHECK_FOR_UPDATE,

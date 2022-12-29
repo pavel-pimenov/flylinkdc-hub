@@ -23,13 +23,15 @@
 struct BanItem;
 //------------------------------------------------------------------------------
 
-class BansDialog {
+class BansDialog
+{
 public:
 	static BansDialog * m_Ptr;
 
 	HWND m_hWndWindowItems[8];
 
-	enum enmWindowItems {
+	enum enmWindowItems
+	{
 		WINDOW_HANDLE,
 		BTN_ADD_BAN,
 		LV_BANS,

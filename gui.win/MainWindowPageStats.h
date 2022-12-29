@@ -23,11 +23,13 @@
 #include "MainWindowPage.h"
 //------------------------------------------------------------------------------
 
-class MainWindowPageStats : public MainWindowPage {
+class MainWindowPageStats : public MainWindowPage
+{
 public:
 	HWND m_hWndPageItems[20];
 
-	enum enmPageItems {
+	enum enmPageItems
+	{
 		BTN_START_STOP,
 		GB_STATS,
 		LBL_STATUS,

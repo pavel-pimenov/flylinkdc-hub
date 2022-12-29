@@ -23,11 +23,13 @@
 struct BanItem;
 //------------------------------------------------------------------------------
 
-class BanDialog {
+class BanDialog
+{
 public:
 	HWND m_hWndWindowItems[20];
 
-	enum enmWindowItems {
+	enum enmWindowItems
+	{
 		WINDOW_HANDLE,
 		GB_NICK,
 		EDT_NICK,

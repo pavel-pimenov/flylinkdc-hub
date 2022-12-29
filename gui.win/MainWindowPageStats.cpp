@@ -39,23 +39,31 @@
 #include "MainWindow.h"
 //---------------------------------------------------------------------------
 
-MainWindowPageStats::MainWindowPageStats() {
+MainWindowPageStats::MainWindowPageStats()
+{
 	memset(&m_hWndPageItems, 0, sizeof(m_hWndPageItems));
 }
 //---------------------------------------------------------------------------
 
-LRESULT MainWindowPageStats::MainWindowPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	switch(uMsg) {
+LRESULT MainWindowPageStats::MainWindowPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch(uMsg)
+	{
 	case WM_COMMAND:
-		switch(LOWORD(wParam)) {
+		switch(LOWORD(wParam))
+		{
 		case BTN_START_STOP:
-			if(ServerManager::m_bServerRunning == false) {
-				if(ServerManager::Start() == false) {
+			if(ServerManager::m_bServerRunning == false)
+			{
+				if(ServerManager::Start() == false)
+				{
 					::SetWindowText(m_hWndPageItems[LBL_STATUS_VALUE],
 					                (string(LanguageManager::m_Ptr->m_sTexts[LAN_READY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_READY])+".").c_str());
 				}
 				::SetFocus(m_hWndPageItems[BTN_START_STOP]);
-			} else {
+			}
+			else
+			{
 				ServerManager::Stop();
 				::SetFocus(MainWindow::m_Ptr->m_hWndWindowItems[MainWindow::TC_TABS]);
 			}
@@ -70,7 +78,8 @@ LRESULT MainWindowPageStats::MainWindowPageProc(UINT uMsg, WPARAM wParam, LPARAM
 		}
 
 		break;
-	case WM_WINDOWPOSCHANGED: {
+	case WM_WINDOWPOSCHANGED:
+	{
 		int iX = ((WINDOWPOS*)lParam)->cx;
 
 		::SetWindowPos(m_hWndPageItems[BTN_START_STOP], nullptr, 0, 0, iX - 8, ScaleGui(40), SWP_NOMOVE | SWP_NOZORDER);
@@ -97,12 +106,18 @@ LRESULT MainWindowPageStats::MainWindowPageProc(UINT uMsg, WPARAM wParam, LPARAM
 }
 //------------------------------------------------------------------------------
 
-LRESULT CALLBACK SSButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_GETDLGCODE && wParam == VK_TAB) {
+LRESULT CALLBACK SSButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(uMsg == WM_GETDLGCODE && wParam == VK_TAB)
+	{
 		return DLGC_WANTTAB;
-	} else if(uMsg == WM_CHAR && wParam == VK_TAB) {
-		if((::GetKeyState(VK_SHIFT) & 0x8000) == 0) {
-			if(ServerManager::m_bServerRunning == true) {
+	}
+	else if(uMsg == WM_CHAR && wParam == VK_TAB)
+	{
+		if((::GetKeyState(VK_SHIFT) & 0x8000) == 0)
+		{
+			if(ServerManager::m_bServerRunning == true)
+			{
 				::SetFocus(::GetNextDlgTabItem(MainWindow::m_Ptr->m_hWnd, hWnd, FALSE));
 				return 0;
 			}
@@ -116,7 +131,8 @@ LRESULT CALLBACK SSButtonProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 }
 //---------------------------------------------------------------------------
 
-bool MainWindowPageStats::CreateMainWindowPage(HWND hOwner) {
+bool MainWindowPageStats::CreateMainWindowPage(HWND hOwner)
+{
 	CreateHWND(hOwner);
 
 	RECT rcMain;
@@ -195,8 +211,10 @@ bool MainWindowPageStats::CreateMainWindowPage(HWND hOwner) {
 	m_hWndPageItems[BTN_MASS_MSG] = ::CreateWindowEx(0, WC_BUTTON, LanguageManager::m_Ptr->m_sTexts[LAN_MASS_MSG], WS_CHILD | WS_VISIBLE | WS_DISABLED | WS_TABSTOP | BS_PUSHBUTTON,
 	                                4, iPosY + GuiSettingManager::m_iEditHeight + 8, rcMain.right-8, GuiSettingManager::m_iEditHeight, m_hWnd, (HMENU)BTN_MASS_MSG, ServerManager::m_hInstance, nullptr);
 
-	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++) {
-		if(m_hWndPageItems[ui8i] == nullptr) {
+	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++)
+	{
+		if(m_hWndPageItems[ui8i] == nullptr)
+		{
 			return false;
 		}
 
@@ -210,11 +228,15 @@ bool MainWindowPageStats::CreateMainWindowPage(HWND hOwner) {
 }
 //------------------------------------------------------------------------------
 
-void MainWindowPageStats::UpdateLanguage() {
-	if(ServerManager::m_bServerRunning == false) {
+void MainWindowPageStats::UpdateLanguage()
+{
+	if(ServerManager::m_bServerRunning == false)
+	{
 		::SetWindowText(m_hWndPageItems[BTN_START_STOP], LanguageManager::m_Ptr->m_sTexts[LAN_START_HUB]);
 		::SetWindowText(m_hWndPageItems[LBL_STATUS_VALUE], (string(LanguageManager::m_Ptr->m_sTexts[LAN_READY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_READY])+".").c_str());
-	} else {
+	}
+	else
+	{
 		::SetWindowText(m_hWndPageItems[BTN_START_STOP], LanguageManager::m_Ptr->m_sTexts[LAN_STOP_HUB]);
 		::SetWindowText(m_hWndPageItems[LBL_STATUS_VALUE], (string(LanguageManager::m_Ptr->m_sTexts[LAN_RUNNING], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RUNNING])+"...").c_str());
 	}
@@ -233,27 +255,32 @@ void MainWindowPageStats::UpdateLanguage() {
 }
 //---------------------------------------------------------------------------
 
-char * MainWindowPageStats::GetPageName() {
+char * MainWindowPageStats::GetPageName()
+{
 	return LanguageManager::m_Ptr->m_sTexts[LAN_STATS];
 }
 //------------------------------------------------------------------------------
 
-void OnRedirectAllOk(char * sLine, const int iLen) {
+void OnRedirectAllOk(char * sLine, const int iLen)
+{
 	char *sMSG = (char *)malloc(iLen+16);
-	if(sMSG == nullptr) {
+	if(sMSG == nullptr)
+	{
 		AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for sMSG in OnRedirectAllOk\n", iLen+16);
 		return;
 	}
 
 	int iMsgLen = snprintf(sMSG, iLen+16, "$ForceMove %s|", sLine);
-	if(iMsgLen <= 0) {
+	if(iMsgLen <= 0)
+	{
 		return;
 	}
 
 	User * pCur = nullptr,
 	       * pNext = Users::m_Ptr->m_pUserListS;
 
-	while(pNext != nullptr) {
+	while(pNext != nullptr)
+	{
 		pCur = pNext;
 		pNext = pCur->m_pNext;
 
@@ -266,29 +293,34 @@ void OnRedirectAllOk(char * sLine, const int iLen) {
 }
 //---------------------------------------------------------------------------
 
-void MainWindowPageStats::OnRedirectAll() {
+void MainWindowPageStats::OnRedirectAll()
+{
 	const char sRedirectAll[] = "[SYS] Redirect All.";
 	UdpDebug::m_Ptr->Broadcast(sRedirectAll, sizeof(sRedirectAll)-1);
 
 	LineDialog * pRedirectAllDlg = new (std::nothrow) LineDialog(&OnRedirectAllOk);
 
-	if(pRedirectAllDlg != nullptr) {
+	if(pRedirectAllDlg != nullptr)
+	{
 		pRedirectAllDlg->DoModal(::GetParent(m_hWnd), LanguageManager::m_Ptr->m_sTexts[LAN_REDIRECT_ALL_USERS_TO],
 		                         SettingManager::m_Ptr->m_sTexts[SETTXT_REDIRECT_ADDRESS] == nullptr ? "" : SettingManager::m_Ptr->m_sTexts[SETTXT_REDIRECT_ADDRESS]);
 	}
 }
 //---------------------------------------------------------------------------
 
-void OnMassMessageOk(char * sLine, const int iLen) {
+void OnMassMessageOk(char * sLine, const int iLen)
+{
 	char *sMSG = (char *)malloc(iLen+256);
-	if(sMSG == nullptr) {
+	if(sMSG == nullptr)
+	{
 		AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for sMSG in OnMassMessageOk\n", iLen+256);
 		return;
 	}
 
 	int iMsgLen = snprintf(sMSG, iLen+256, "%s $<%s> %s|", SettingManager::m_Ptr->m_bBools[SETBOOL_REG_BOT] == false ? SettingManager::m_Ptr->m_sTexts[SETTXT_ADMIN_NICK] : SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_NICK],
 	                       SettingManager::m_Ptr->m_bBools[SETBOOL_REG_BOT] == false ? SettingManager::m_Ptr->m_sTexts[SETTXT_ADMIN_NICK] : SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_NICK], sLine);
-	if(iMsgLen <= 0) {
+	if(iMsgLen <= 0)
+	{
 		return;
 	}
 
@@ -299,24 +331,31 @@ void OnMassMessageOk(char * sLine, const int iLen) {
 
 //---------------------------------------------------------------------------
 
-void MainWindowPageStats::OnMassMessage() {
+void MainWindowPageStats::OnMassMessage()
+{
 	LineDialog * pMassMsgDlg = new (std::nothrow) LineDialog(&OnMassMessageOk);
 
-	if(pMassMsgDlg != nullptr) {
+	if(pMassMsgDlg != nullptr)
+	{
 		pMassMsgDlg->DoModal(::GetParent(m_hWnd), LanguageManager::m_Ptr->m_sTexts[LAN_MASS_MSG], "");
 	}
 }
 //---------------------------------------------------------------------------
 
-void MainWindowPageStats::FocusFirstItem() {
+void MainWindowPageStats::FocusFirstItem()
+{
 	::SetFocus(m_hWndPageItems[BTN_START_STOP]);
 }
 //------------------------------------------------------------------------------
 
-void MainWindowPageStats::FocusLastItem() {
-	if(ServerManager::m_bServerRunning == true) {
+void MainWindowPageStats::FocusLastItem()
+{
+	if(ServerManager::m_bServerRunning == true)
+	{
 		::SetFocus(m_hWndPageItems[BTN_MASS_MSG]);
-	} else {
+	}
+	else
+	{
 		::SetFocus(m_hWndPageItems[BTN_START_STOP]);
 	}
 }

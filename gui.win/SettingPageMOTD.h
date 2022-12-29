@@ -23,7 +23,8 @@
 #include "SettingPage.h"
 //---------------------------------------------------------------------------
 
-class SettingPageMOTD : public SettingPage {
+class SettingPageMOTD : public SettingPage
+{
 public:
 	bool m_bUpdateMOTD;
 
@@ -45,7 +46,8 @@ public:
 private:
 	HWND m_hWndPageItems[4];
 
-	enum enmPageItems {
+	enum enmPageItems
+	{
 		GB_MOTD,
 		EDT_MOTD,
 		BTN_MOTD_AS_PM,

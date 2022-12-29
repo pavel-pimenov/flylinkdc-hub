@@ -108,7 +108,7 @@
 #include "pxstring.h"
 //---------------------------------------------------------------------------
 #define PtokaXVersionString "0.5.3.2"
-#define BUILD_NUMBER "567"
+#define BUILD_NUMBER "666"
 #define ModString " / Alex82 Mod's support v.04 (part.)"
 
 #ifndef USE_FLYLINKDC_EXT_JSON

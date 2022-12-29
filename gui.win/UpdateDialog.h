@@ -21,7 +21,8 @@
 #define UpdateDialogH
 //------------------------------------------------------------------------------
 
-class UpdateDialog {
+class UpdateDialog
+{
 public:
 	static UpdateDialog * m_Ptr;
 
@@ -36,7 +37,8 @@ public:
 private:
 	HWND m_hWndWindowItems[2];
 
-	enum enmWindowItems {
+	enum enmWindowItems
+	{
 		WINDOW_HANDLE,
 		REDT_UPDATE
 	};

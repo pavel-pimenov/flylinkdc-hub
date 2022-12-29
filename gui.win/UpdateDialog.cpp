@@ -36,26 +36,33 @@ UpdateDialog * UpdateDialog::m_Ptr = nullptr;
 static ATOM atomUpdateDialog = 0;
 //---------------------------------------------------------------------------
 
-UpdateDialog::UpdateDialog() {
+UpdateDialog::UpdateDialog()
+{
 	memset(&m_hWndWindowItems, 0, sizeof(m_hWndWindowItems));
 }
 //---------------------------------------------------------------------------
 
-UpdateDialog::~UpdateDialog() {
+UpdateDialog::~UpdateDialog()
+{
 	UpdateDialog::m_Ptr = nullptr;
 }
 //---------------------------------------------------------------------------
 
-LRESULT CALLBACK UpdateDialog::StaticUpdateDialogProc(HWND /*hWnd*/, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK UpdateDialog::StaticUpdateDialogProc(HWND /*hWnd*/, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
 	return UpdateDialog::m_Ptr->UpdateDialogProc(uMsg, wParam, lParam);
 }
 //------------------------------------------------------------------------------
 
-LRESULT UpdateDialog::UpdateDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	switch(uMsg) {
+LRESULT UpdateDialog::UpdateDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch(uMsg)
+	{
 	case WM_NOTIFY:
-		if(((LPNMHDR)lParam)->hwndFrom == m_hWndWindowItems[REDT_UPDATE] && ((LPNMHDR)lParam)->code == EN_LINK) {
-			if(((ENLINK *)lParam)->msg == WM_LBUTTONUP) {
+		if(((LPNMHDR)lParam)->hwndFrom == m_hWndWindowItems[REDT_UPDATE] && ((LPNMHDR)lParam)->code == EN_LINK)
+		{
+			if(((ENLINK *)lParam)->msg == WM_LBUTTONUP)
+			{
 				RichEditOpenLink(m_hWndWindowItems[REDT_UPDATE], (ENLINK *)lParam);
 			}
 		}
@@ -65,13 +72,15 @@ LRESULT UpdateDialog::UpdateDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam) 
 		::EnableWindow(::GetParent(m_hWndWindowItems[WINDOW_HANDLE]), TRUE);
 		ServerManager::m_hWndActiveDialog = nullptr;
 		break;
-	case WM_NCDESTROY: {
+	case WM_NCDESTROY:
+	{
 		HWND hWnd = m_hWndWindowItems[WINDOW_HANDLE];
 		delete this;
 		return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
 	case WM_COMMAND:
-		switch(LOWORD(wParam)) {
+		switch(LOWORD(wParam))
+		{
 		case IDOK:
 		case IDCANCEL:
 			::PostMessage(m_hWndWindowItems[WINDOW_HANDLE], WM_CLOSE, 0, 0);
@@ -88,8 +97,10 @@ LRESULT UpdateDialog::UpdateDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam) 
 }
 //------------------------------------------------------------------------------
 
-void UpdateDialog::DoModal(HWND hWndParent) {
-	if(atomUpdateDialog == 0) {
+void UpdateDialog::DoModal(HWND hWndParent)
+{
+	if(atomUpdateDialog == 0)
+	{
 		WNDCLASSEX m_wc;
 		memset(&m_wc, 0, sizeof(WNDCLASSEX));
 		m_wc.cbSize = sizeof(WNDCLASSEX);
@@ -113,7 +124,8 @@ void UpdateDialog::DoModal(HWND hWndParent) {
 	                                   WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, iX >= 5 ? iX : 5, iY >= 5 ? iY : 5, ScaleGui(500), ScaleGui(460),
 	                                   hWndParent, nullptr, ServerManager::m_hInstance, nullptr);
 
-	if(m_hWndWindowItems[WINDOW_HANDLE] == nullptr) {
+	if(m_hWndWindowItems[WINDOW_HANDLE] == nullptr)
+	{
 		return;
 	}
 
@@ -136,11 +148,13 @@ void UpdateDialog::DoModal(HWND hWndParent) {
 }
 //---------------------------------------------------------------------------
 
-void UpdateDialog::Message(char * sData) {
+void UpdateDialog::Message(char * sData)
+{
 	RichEditAppendText(m_hWndWindowItems[REDT_UPDATE], sData);
 }
 //---------------------------------------------------------------------------
-bool UpdateDialog::ParseData(char * sData, HWND hWndParent) {
+bool UpdateDialog::ParseData(char * sData, HWND hWndParent)
+{
 	char * sVersion = nullptr;
 	char * sBuildNumber = nullptr;
 	char * sReleaseDate = nullptr;
@@ -151,31 +165,42 @@ bool UpdateDialog::ParseData(char * sData, HWND hWndParent) {
 
 	size_t szLen = 0;
 
-	while(sTemp != nullptr) {
+	while(sTemp != nullptr)
+	{
 		sTemp[0] = '\0';
 		szLen = sTemp - sBegin;
 
-		if(szLen == 7) {
-			if(strcmp(sBegin, "Version") == 0) {
+		if(szLen == 7)
+		{
+			if(strcmp(sBegin, "Version") == 0)
+			{
 				sVersion = sTemp + 1;
-			} else if(strcmp(sBegin, "Release") == 0) {
+			}
+			else if(strcmp(sBegin, "Release") == 0)
+			{
 				sReleaseDate = sTemp + 1;
-			} else if(strcmp(sBegin, "Changes") == 0) {
+			}
+			else if(strcmp(sBegin, "Changes") == 0)
+			{
 				sChanges = sTemp + 1;
 
 				sTemp = strstr(sTemp + 1, "TestingVersion=");
-				if(sTemp != nullptr) {
+				if(sTemp != nullptr)
+				{
 					sTemp[0] = '\0';
 				}
 
 				break;
 			}
-		} else if(szLen == 5 && strcmp(sBegin, "Build") == 0) {
+		}
+		else if(szLen == 5 && strcmp(sBegin, "Build") == 0)
+		{
 			sBuildNumber = sTemp + 1;
 		}
 
 		sTemp = strchr(sTemp + 1, '\n');
-		if(sTemp == nullptr) {
+		if(sTemp == nullptr)
+		{
 			break;
 		}
 
@@ -185,14 +210,16 @@ bool UpdateDialog::ParseData(char * sData, HWND hWndParent) {
 
 		sTemp--;
 
-		if(sTemp[0] == '\r') {
+		if(sTemp[0] == '\r')
+		{
 			sTemp[0] = '\0';
 		}
 
 		sTemp = strchr(sBegin, '=');
 	}
 
-	if(sVersion == nullptr || sBuildNumber == nullptr || sReleaseDate == nullptr || sChanges == nullptr) {
+	if(sVersion == nullptr || sBuildNumber == nullptr || sReleaseDate == nullptr || sChanges == nullptr)
+	{
 		RichEditAppendText(m_hWndWindowItems[REDT_UPDATE], LanguageManager::m_Ptr->m_sTexts[LAN_UPDATE_CHECK_FAILED]);
 		return false;
 	}
@@ -200,22 +227,27 @@ bool UpdateDialog::ParseData(char * sData, HWND hWndParent) {
 	uint64_t ui64BuildNumber = _strtoui64(BUILD_NUMBER, nullptr, 10);
 	uint64_t ui64NewBuildNumber = _strtoui64(sBuildNumber, nullptr, 10);
 
-	if(ui64NewBuildNumber > ui64BuildNumber) {
+	if(ui64NewBuildNumber > ui64BuildNumber)
+	{
 		string sMsg = string(LanguageManager::m_Ptr->m_sTexts[LAN_NEW_VERSION], LanguageManager::m_Ptr->m_ui16TextsLens[LAN_NEW_VERSION]) + " " + sVersion + " [build: " + sBuildNumber + "] " +
 		              LanguageManager::m_Ptr->m_sTexts[LAN_RELEASED_ON] + " " + sReleaseDate + " " + LanguageManager::m_Ptr->m_sTexts[LAN_IS_AVAILABLE] + ".\r\n\r\n" + LanguageManager::m_Ptr->m_sTexts[LAN_CHANGES] + ":\r\n" +
 		              sChanges;
 
-		if(m_hWndWindowItems[WINDOW_HANDLE] == nullptr) {
+		if(m_hWndWindowItems[WINDOW_HANDLE] == nullptr)
+		{
 			DoModal(hWndParent);
 			RichEditAppendText(m_hWndWindowItems[REDT_UPDATE], sMsg.c_str(), false);
-		} else {
+		}
+		else
+		{
 			RichEditAppendText(m_hWndWindowItems[REDT_UPDATE], sMsg.c_str());
 		}
 
 		return true;
 	}
 
-	if(m_hWndWindowItems[WINDOW_HANDLE] != nullptr) {
+	if(m_hWndWindowItems[WINDOW_HANDLE] != nullptr)
+	{
 		RichEditAppendText(m_hWndWindowItems[REDT_UPDATE], LanguageManager::m_Ptr->m_sTexts[LAN_SORRY_NO_NEW_VERSION_AVAILABLE]);
 	}
 

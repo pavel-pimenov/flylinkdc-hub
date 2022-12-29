@@ -23,13 +23,15 @@
 #include "SettingPage.h"
 //------------------------------------------------------------------------------
 
-class SettingDialog {
+class SettingDialog
+{
 public:
 	static SettingDialog * m_Ptr;
 
 	HWND m_hWndWindowItems[4];
 
-	enum enmWindowItems {
+	enum enmWindowItems
+	{
 		WINDOW_HANDLE,
 		TV_TREE,
 		BTN_OK,

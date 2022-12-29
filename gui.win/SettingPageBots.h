@@ -23,7 +23,8 @@
 #include "SettingPage.h"
 //---------------------------------------------------------------------------
 
-class SettingPageBots : public SettingPage {
+class SettingPageBots : public SettingPage
+{
 public:
 	bool m_bUpdateHubSec, m_bUpdateMOTD, m_bUpdateHubNameWelcome, m_bUpdateRegOnlyMessage, m_bUpdateShareLimitMessage, m_bUpdateSlotsLimitMessage,
 	     m_bUpdateHubSlotRatioMessage, m_bUpdateMaxHubsLimitMessage, m_bUpdateNoTagMessage, m_bUpdateNickLimitMessage, m_bUpdateBotsSameNick, m_bBotNickChanged,
@@ -47,7 +48,8 @@ public:
 private:
 	HWND m_hWndPageItems[17];
 
-	enum enmPageItems {
+	enum enmPageItems
+	{
 		GB_HUB_BOT,
 		BTN_HUB_BOT_ENABLE,
 		GB_HUB_BOT_NICK,

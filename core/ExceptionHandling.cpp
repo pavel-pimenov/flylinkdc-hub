@@ -256,7 +256,8 @@ LONG WINAPI PtokaX_UnhandledExceptionFilter(LPEXCEPTION_POINTERS ExceptionInfo)
 		memset(&ver, 0, sizeof(OSVERSIONINFOEX));
 		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 
-        if(GetVersionEx((OSVERSIONINFO*)&ver) != 0) {
+		if(GetVersionEx((OSVERSIONINFO*)&ver) != 0)
+		{
 			fprintf(pFile, "Windows version: %lu.%lu Build: %lu SP: %hu\n", ver.dwMajorVersion, ver.dwMinorVersion, ver.dwBuildNumber, ver.wServicePackMajor);
 		}
 	}

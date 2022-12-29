@@ -26,13 +26,15 @@
 struct User;
 //---------------------------------------------------------------------------
 
-class MainWindowPageUsersChat : public MainWindowPage, private BasicSplitter {
+class MainWindowPageUsersChat : public MainWindowPage, private BasicSplitter
+{
 public:
 	static MainWindowPageUsersChat * m_Ptr;
 
 	HWND m_hWndPageItems[7];
 
-	enum enmPageItems {
+	enum enmPageItems
+	{
 		BTN_SHOW_CHAT,
 		BTN_SHOW_COMMANDS,
 		REDT_CHAT,
@@ -42,7 +44,8 @@ public:
 		BTN_UPDATE_USERS
 	};
 
-	enum enmMenuItems {
+	enum enmMenuItems
+	{
 		IDC_REG_USER = 100,
 		IDC_DISCONNECT_USER,
 		IDC_KICK_USER,

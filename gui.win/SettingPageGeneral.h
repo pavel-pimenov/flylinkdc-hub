@@ -23,7 +23,8 @@
 #include "SettingPage.h"
 //---------------------------------------------------------------------------
 
-class SettingPageGeneral : public SettingPage {
+class SettingPageGeneral : public SettingPage
+{
 public:
 	bool m_bUpdateHubNameWelcome, m_bUpdateHubName, m_bUpdateTCPPorts, m_bUpdateUDPPort, m_bUpdateAutoReg, m_bUpdateLanguage;
 
@@ -45,7 +46,8 @@ public:
 private:
 	HWND m_hWndPageItems[27];
 
-	enum enmPageItems {
+	enum enmPageItems
+	{
 		GB_LANGUAGE,
 		CB_LANGUAGE,
 		GB_MAX_USERS,

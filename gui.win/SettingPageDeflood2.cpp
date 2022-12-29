@@ -31,14 +31,18 @@
 #pragma hdrstop
 //---------------------------------------------------------------------------
 
-SettingPageDeflood2::SettingPageDeflood2() {
+SettingPageDeflood2::SettingPageDeflood2()
+{
 	memset(&m_hWndPageItems, 0, sizeof(m_hWndPageItems));
 }
 //---------------------------------------------------------------------------
 
-LRESULT SettingPageDeflood2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_COMMAND) {
-		switch(LOWORD(wParam)) {
+LRESULT SettingPageDeflood2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(uMsg == WM_COMMAND)
+	{
+		switch(LOWORD(wParam))
+		{
 		case EDT_PM_MSGS:
 		case EDT_PM_SECS:
 		case EDT_PM_MSGS2:
@@ -50,7 +54,8 @@ LRESULT SettingPageDeflood2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 		case EDT_WARN_COUNT:
 		case EDT_NEW_CONNS_FROM_SAME_IP_COUNT:
 		case EDT_NEW_CONNS_FROM_SAME_IP_TIME:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 1, 999);
 
 				return 0;
@@ -59,7 +64,8 @@ LRESULT SettingPageDeflood2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 			break;
 		case EDT_SAME_MULTI_PM_MSGS:
 		case EDT_SAME_MULTI_PM_LINES:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 2, 999);
 
 				return 0;
@@ -67,7 +73,8 @@ LRESULT SettingPageDeflood2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case EDT_PM_LIMIT_TO_ONE_USER_FROM_MULTIPLE_USERS:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 0, 999);
 
 				return 0;
@@ -78,7 +85,8 @@ LRESULT SettingPageDeflood2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 		case EDT_RECEIVED_DATA_SECS:
 		case EDT_RECEIVED_DATA_KB2:
 		case EDT_RECEIVED_DATA_SECS2:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 1, 9999);
 
 				return 0;
@@ -86,7 +94,8 @@ LRESULT SettingPageDeflood2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case EDT_MAX_USERS_FROM_SAME_IP:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 1, 256);
 
 				return 0;
@@ -94,7 +103,8 @@ LRESULT SettingPageDeflood2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case CB_PM:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_PM], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_PM_MSGS], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_PM_MSGS], ui32Action == 0 ? FALSE : TRUE);
@@ -106,7 +116,8 @@ LRESULT SettingPageDeflood2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case CB_PM2:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_PM2], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_PM_MSGS2], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_PM_MSGS2], ui32Action == 0 ? FALSE : TRUE);
@@ -118,7 +129,8 @@ LRESULT SettingPageDeflood2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case CB_SAME_PM:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_SAME_PM], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_SAME_PM_MSGS], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_SAME_PM_MSGS], ui32Action == 0 ? FALSE : TRUE);
@@ -130,7 +142,8 @@ LRESULT SettingPageDeflood2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case CB_SAME_MULTI_PM:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_SAME_MULTI_PM], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_SAME_MULTI_PM_MSGS], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_SAME_MULTI_PM_MSGS], ui32Action == 0 ? FALSE : TRUE);
@@ -142,7 +155,8 @@ LRESULT SettingPageDeflood2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case CB_RECEIVED_DATA:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_RECEIVED_DATA], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_RECEIVED_DATA_KB], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_RECEIVED_DATA_KB], ui32Action == 0 ? FALSE : TRUE);
@@ -154,7 +168,8 @@ LRESULT SettingPageDeflood2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 
 			break;
 		case CB_RECEIVED_DATA2:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_RECEIVED_DATA2], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_RECEIVED_DATA_KB2], ui32Action == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[UD_RECEIVED_DATA_KB2], ui32Action == 0 ? FALSE : TRUE);
@@ -172,117 +187,138 @@ LRESULT SettingPageDeflood2::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 }
 //------------------------------------------------------------------------------
 
-void SettingPageDeflood2::Save() {
-	if(m_bCreated == false) {
+void SettingPageDeflood2::Save()
+{
+	if(m_bCreated == false)
+	{
 		return;
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_PM_ACTION, (int16_t)::SendMessage(m_hWndPageItems[CB_PM], CB_GETCURSEL, 0, 0));
 
 	LRESULT lResult = ::SendMessage(m_hWndPageItems[UD_PM_MSGS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_PM_MESSAGES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_PM_SECS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_PM_TIME, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_PM_ACTION2, (int16_t)::SendMessage(m_hWndPageItems[CB_PM2], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_PM_MSGS2], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_PM_MESSAGES2, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_PM_SECS2], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_PM_TIME2, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_PM_INTERVAL_MSGS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_PM_INTERVAL_MESSAGES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_PM_INTERVAL_SECS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_PM_INTERVAL_TIME, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_SAME_PM_ACTION, (int16_t)::SendMessage(m_hWndPageItems[CB_SAME_PM], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SAME_PM_MSGS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SAME_PM_MESSAGES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SAME_PM_SECS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SAME_PM_TIME, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_SAME_MULTI_PM_ACTION, (int16_t)::SendMessage(m_hWndPageItems[CB_SAME_MULTI_PM], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SAME_MULTI_PM_MSGS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SAME_MULTI_PM_MESSAGES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_SAME_MULTI_PM_LINES], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_SAME_MULTI_PM_LINES, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_PM_LIMIT_TO_ONE_USER_FROM_MULTIPLE_USERS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_PM_COUNT_TO_USER, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_MAX_DOWN_ACTION, (int16_t)::SendMessage(m_hWndPageItems[CB_RECEIVED_DATA], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_RECEIVED_DATA_KB], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_DOWN_KB, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_RECEIVED_DATA_SECS], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_DOWN_TIME, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_MAX_DOWN_ACTION2, (int16_t)::SendMessage(m_hWndPageItems[CB_RECEIVED_DATA2], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_RECEIVED_DATA_KB2], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_DOWN_KB2, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_RECEIVED_DATA_SECS2], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_DOWN_TIME2, LOWORD(lResult));
 	}
 
 	SettingManager::m_Ptr->SetShort(SETSHORT_DEFLOOD_WARNING_ACTION, (int16_t)::SendMessage(m_hWndPageItems[CB_WARN_ACTION], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_WARN_COUNT], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_DEFLOOD_WARNING_COUNT, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_NEW_CONNS_FROM_SAME_IP_COUNT], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_NEW_CONNECTIONS_COUNT, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_NEW_CONNS_FROM_SAME_IP_TIME], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_NEW_CONNECTIONS_TIME, LOWORD(lResult));
 	}
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_MAX_USERS_FROM_SAME_IP], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MAX_CONN_SAME_IP, LOWORD(lResult));
 	}
 
@@ -295,14 +331,17 @@ void SettingPageDeflood2::GetUpdates(bool & /*bUpdateHubNameWelcome*/, bool & /*
                                      bool & /*bUpdatedSlotsLimitMessage*/, bool & /*bUpdatedHubSlotRatioMessage*/, bool & /*bUpdatedMaxHubsLimitMessage*/, bool & /*bUpdatedNoTagMessage*/,
                                      bool & /*bUpdatedNickLimitMessage*/, bool & /*bUpdatedBotsSameNick*/, bool & /*bUpdatedBotNick*/, bool & /*bUpdatedBot*/, bool & /*bUpdatedOpChatNick*/,
                                      bool & /*bUpdatedOpChat*/, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
-                                     bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/) {
+                                     bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/)
+{
 }
 //------------------------------------------------------------------------------
 
-bool SettingPageDeflood2::CreateSettingPage(HWND hOwner) {
+bool SettingPageDeflood2::CreateSettingPage(HWND hOwner)
+{
 	CreateHWND(hOwner);
 
-	if(m_bCreated == false) {
+	if(m_bCreated == false)
+	{
 		return false;
 	}
 
@@ -633,8 +672,10 @@ bool SettingPageDeflood2::CreateSettingPage(HWND hOwner) {
 	        0, iPosY + 5, m_iFullGB, GuiSettingManager::m_iCheckHeight, m_hWnd, nullptr, ServerManager::m_hInstance, nullptr);
 	::SendMessage(m_hWndPageItems[BTN_REPORT_FLOOD_TO_OPS], BM_SETCHECK, (SettingManager::m_Ptr->m_bBools[SETBOOL_DEFLOOD_REPORT] == true ? BST_CHECKED : BST_UNCHECKED), 0);
 
-	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++) {
-		if(m_hWndPageItems[ui8i] == nullptr) {
+	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++)
+	{
+		if(m_hWndPageItems[ui8i] == nullptr)
+		{
 			return false;
 		}
 
@@ -675,12 +716,14 @@ bool SettingPageDeflood2::CreateSettingPage(HWND hOwner) {
 }
 //------------------------------------------------------------------------------
 
-char * SettingPageDeflood2::GetPageName() {
+char * SettingPageDeflood2::GetPageName()
+{
 	return LanguageManager::m_Ptr->m_sTexts[LAN_MORE_DEFLOOD];
 }
 //------------------------------------------------------------------------------
 
-void SettingPageDeflood2::FocusLastItem() {
+void SettingPageDeflood2::FocusLastItem()
+{
 	::SetFocus(m_hWndPageItems[BTN_REPORT_FLOOD_TO_OPS]);
 }
 //------------------------------------------------------------------------------

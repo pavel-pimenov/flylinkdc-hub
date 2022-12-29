@@ -31,16 +31,21 @@
 #pragma hdrstop
 //---------------------------------------------------------------------------
 
-SettingPageMyINFO::SettingPageMyINFO() : m_bUpdateNoTagMessage(false) {
+SettingPageMyINFO::SettingPageMyINFO() : m_bUpdateNoTagMessage(false)
+{
 	memset(&m_hWndPageItems, 0, sizeof(m_hWndPageItems));
 }
 //---------------------------------------------------------------------------
 
-LRESULT SettingPageMyINFO::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_COMMAND) {
-		switch(LOWORD(wParam)) {
+LRESULT SettingPageMyINFO::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(uMsg == WM_COMMAND)
+	{
+		switch(LOWORD(wParam))
+		{
 		case CB_NO_TAG_ACTION:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32NoTagAction = (uint32_t)::SendMessage(m_hWndPageItems[CB_NO_TAG_ACTION], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[EDT_NO_TAG_MESSAGE], ui32NoTagAction != 0 ? TRUE : FALSE);
 				::EnableWindow(m_hWndPageItems[EDT_NO_TAG_REDIRECT], ui32NoTagAction == 2 ? TRUE : FALSE);
@@ -50,7 +55,8 @@ LRESULT SettingPageMyINFO::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPar
 			break;
 		case EDT_NO_TAG_MESSAGE:
 		case EDT_NO_TAG_REDIRECT:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				RemovePipes((HWND)lParam);
 
 				return 0;
@@ -58,7 +64,8 @@ LRESULT SettingPageMyINFO::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPar
 
 			break;
 		case EDT_MINUTES_BEFORE_ACCEPT_NEW_MYINFO:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 0, 999);
 
 				return 0;
@@ -66,7 +73,8 @@ LRESULT SettingPageMyINFO::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPar
 
 			break;
 		case CB_ORIGINAL_MYINFO_ACTION:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				BOOL bEnable = ((uint32_t)::SendMessage(m_hWndPageItems[CB_ORIGINAL_MYINFO_ACTION], CB_GETCURSEL, 0, 0) == 0 ? FALSE : TRUE);
 				::EnableWindow(m_hWndPageItems[BTN_REMOVE_DESCRIPTION], bEnable);
 				::EnableWindow(m_hWndPageItems[BTN_REMOVE_TAG], bEnable);
@@ -84,8 +92,10 @@ LRESULT SettingPageMyINFO::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPar
 }
 //------------------------------------------------------------------------------
 
-void SettingPageMyINFO::Save() {
-	if(m_bCreated == false) {
+void SettingPageMyINFO::Save()
+{
+	if(m_bCreated == false)
+	{
 		return;
 	}
 
@@ -116,7 +126,8 @@ void SettingPageMyINFO::Save() {
 	SettingManager::m_Ptr->SetBool(SETBOOL_REPORT_SUSPICIOUS_TAG, ::SendMessage(m_hWndPageItems[BTN_REPORT_SUSPICIOUS_TAG], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false);
 
 	LRESULT lResult = ::SendMessage(m_hWndPageItems[UD_MINUTES_BEFORE_ACCEPT_NEW_MYINFO], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_MYINFO_DELAY, LOWORD(lResult));
 	}
 
@@ -136,17 +147,21 @@ void SettingPageMyINFO::GetUpdates(bool & /*bUpdateHubNameWelcome*/, bool & /*bU
                                    bool & /*bUpdatedSlotsLimitMessage*/, bool & /*bUpdatedHubSlotRatioMessage*/, bool & /*bUpdatedMaxHubsLimitMessage*/, bool & bUpdatedNoTagMessage,
                                    bool & /*bUpdatedNickLimitMessage*/, bool & /*bUpdatedBotsSameNick*/, bool & /*bUpdatedBotNick*/, bool & /*bUpdatedBot*/, bool & /*bUpdatedOpChatNick*/,
                                    bool & /*bUpdatedOpChat*/, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
-                                   bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/) {
-	if(bUpdatedNoTagMessage == false) {
+                                   bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/)
+{
+	if(bUpdatedNoTagMessage == false)
+	{
 		bUpdatedNoTagMessage = m_bUpdateNoTagMessage;
 	}
 }
 
 //------------------------------------------------------------------------------
-bool SettingPageMyINFO::CreateSettingPage(HWND hOwner) {
+bool SettingPageMyINFO::CreateSettingPage(HWND hOwner)
+{
 	CreateHWND(hOwner);
 
-	if(m_bCreated == false) {
+	if(m_bCreated == false)
+	{
 		return false;
 	}
 
@@ -247,8 +262,10 @@ bool SettingPageMyINFO::CreateSettingPage(HWND hOwner) {
 	AddUpDown(m_hWndPageItems[UD_MINUTES_BEFORE_ACCEPT_NEW_MYINFO], (rcThis.right - rcThis.left) - GuiSettingManager::m_iUpDownWidth - 13, iPosY + 5, GuiSettingManager::m_iUpDownWidth, GuiSettingManager::m_iEditHeight,
 	          (LPARAM)MAKELONG(999, 0), (WPARAM)m_hWndPageItems[EDT_MINUTES_BEFORE_ACCEPT_NEW_MYINFO], (LPARAM)MAKELONG(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MYINFO_DELAY], 0));
 
-	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++) {
-		if(m_hWndPageItems[ui8i] == nullptr) {
+	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++)
+	{
+		if(m_hWndPageItems[ui8i] == nullptr)
+		{
 			return false;
 		}
 
@@ -272,12 +289,14 @@ bool SettingPageMyINFO::CreateSettingPage(HWND hOwner) {
 }
 //------------------------------------------------------------------------------
 
-char * SettingPageMyINFO::GetPageName() {
+char * SettingPageMyINFO::GetPageName()
+{
 	return LanguageManager::m_Ptr->m_sTexts[LAN_MYINFO_PROCESSING];
 }
 //------------------------------------------------------------------------------
 
-void SettingPageMyINFO::FocusLastItem() {
+void SettingPageMyINFO::FocusLastItem()
+{
 	::SetFocus(m_hWndPageItems[BTN_MODE_TO_DESCRIPTION]);
 }
 //------------------------------------------------------------------------------

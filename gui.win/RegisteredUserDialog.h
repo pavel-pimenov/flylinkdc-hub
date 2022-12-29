@@ -23,13 +23,15 @@
 struct RegUser;
 //------------------------------------------------------------------------------
 
-class RegisteredUserDialog {
+class RegisteredUserDialog
+{
 public:
 	static RegisteredUserDialog * m_Ptr;
 
 	HWND m_hWndWindowItems[9];
 
-	enum enmWindowItems {
+	enum enmWindowItems
+	{
 		WINDOW_HANDLE,
 		GB_NICK,
 		EDT_NICK,

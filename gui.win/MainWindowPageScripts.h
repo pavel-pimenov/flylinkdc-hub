@@ -26,13 +26,15 @@
 class ScriptEditorDialog;
 //------------------------------------------------------------------------------
 
-class MainWindowPageScripts : public MainWindowPage, private BasicSplitter {
+class MainWindowPageScripts : public MainWindowPage, private BasicSplitter
+{
 public:
 	static MainWindowPageScripts * m_Ptr;
 
 	HWND m_hWndPageItems[8];
 
-	enum enmPageItems {
+	enum enmPageItems
+	{
 		GB_SCRIPTS_ERRORS,
 		REDT_SCRIPTS_ERRORS,
 		BTN_OPEN_SCRIPT_EDITOR,

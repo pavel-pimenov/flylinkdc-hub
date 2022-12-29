@@ -21,13 +21,15 @@
 #define ProfilesDialogH
 //------------------------------------------------------------------------------
 
-class ProfilesDialog {
+class ProfilesDialog
+{
 public:
 	static ProfilesDialog * m_Ptr;
 
 	HWND m_hWndWindowItems[9];
 
-	enum enmWindowItems {
+	enum enmWindowItems
+	{
 		WINDOW_HANDLE,
 		BTN_ADD_PROFILE,
 		LV_PROFILES,

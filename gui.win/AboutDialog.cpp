@@ -43,7 +43,8 @@
 static ATOM atomAboutDialog = 0;
 //---------------------------------------------------------------------------
 
-AboutDialog::AboutDialog() {
+AboutDialog::AboutDialog()
+{
 	memset(&m_hWndWindowItems, 0, sizeof(m_hWndWindowItems));
 
 	m_hSpider = (HICON)::LoadImage(ServerManager::m_hInstance, MAKEINTRESOURCE(IDR_MAINICONBIG), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR);
@@ -52,9 +53,12 @@ AboutDialog::AboutDialog() {
 	LOGFONT lfFont;
 	::GetObject((HFONT)::GetStockObject(DEFAULT_GUI_FONT), sizeof(LOGFONT), &lfFont);
 
-	if(lfFont.lfHeight > 0) {
+	if(lfFont.lfHeight > 0)
+	{
 		lfFont.lfHeight = ScaleGui(20);
-	} else {
+	}
+	else
+	{
 		lfFont.lfHeight = ScaleGui(-20);
 	}
 
@@ -64,7 +68,8 @@ AboutDialog::AboutDialog() {
 }
 //---------------------------------------------------------------------------
 
-AboutDialog::~AboutDialog() {
+AboutDialog::~AboutDialog()
+{
 	::DeleteObject(m_hSpider);
 	::DeleteObject(m_hLua);
 
@@ -72,10 +77,12 @@ AboutDialog::~AboutDialog() {
 }
 //---------------------------------------------------------------------------
 
-LRESULT CALLBACK AboutDialog::StaticAboutDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK AboutDialog::StaticAboutDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
 	AboutDialog * pAboutDialog = (AboutDialog *)::GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
-	if(pAboutDialog == nullptr) {
+	if(pAboutDialog == nullptr)
+	{
 		return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
 
@@ -83,9 +90,12 @@ LRESULT CALLBACK AboutDialog::StaticAboutDialogProc(HWND hWnd, UINT uMsg, WPARAM
 }
 //------------------------------------------------------------------------------
 
-LRESULT AboutDialog::AboutDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	switch(uMsg) {
-	case WM_PAINT: {
+LRESULT AboutDialog::AboutDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch(uMsg)
+	{
+	case WM_PAINT:
+	{
 		RECT rcParent;
 		::GetClientRect(m_hWndWindowItems[WINDOW_HANDLE], &rcParent);
 
@@ -97,8 +107,10 @@ LRESULT AboutDialog::AboutDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		return 0;
 	}
 	case WM_NOTIFY:
-		if(((LPNMHDR)lParam)->hwndFrom == m_hWndWindowItems[REDT_ABOUT] && ((LPNMHDR)lParam)->code == EN_LINK) {
-			if(((ENLINK *)lParam)->msg == WM_LBUTTONUP) {
+		if(((LPNMHDR)lParam)->hwndFrom == m_hWndWindowItems[REDT_ABOUT] && ((LPNMHDR)lParam)->code == EN_LINK)
+		{
+			if(((ENLINK *)lParam)->msg == WM_LBUTTONUP)
+			{
 				RichEditOpenLink(m_hWndWindowItems[REDT_ABOUT], (ENLINK *)lParam);
 			}
 		}
@@ -107,13 +119,15 @@ LRESULT AboutDialog::AboutDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		::EnableWindow(::GetParent(m_hWndWindowItems[WINDOW_HANDLE]), TRUE);
 		ServerManager::m_hWndActiveDialog = nullptr;
 		break;
-	case WM_NCDESTROY: {
+	case WM_NCDESTROY:
+	{
 		HWND hWnd = m_hWndWindowItems[WINDOW_HANDLE];
 		delete this;
 		return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
 	case WM_COMMAND:
-		switch(LOWORD(wParam)) {
+		switch(LOWORD(wParam))
+		{
 		case IDOK:
 		case IDCANCEL:
 			::PostMessage(m_hWndWindowItems[WINDOW_HANDLE], WM_CLOSE, 0, 0);
@@ -121,7 +135,8 @@ LRESULT AboutDialog::AboutDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		}
 
 		break;
-	case WM_SETFOCUS: {
+	case WM_SETFOCUS:
+	{
 		CHARRANGE cr = { 0, 0 };
 		::SendMessage(m_hWndWindowItems[REDT_ABOUT], EM_EXSETSEL, 0, (LPARAM)&cr);
 		::SetFocus(m_hWndWindowItems[REDT_ABOUT]);
@@ -133,8 +148,10 @@ LRESULT AboutDialog::AboutDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 }
 //------------------------------------------------------------------------------
 
-void AboutDialog::DoModal(HWND hWndParent) {
-	if(atomAboutDialog == 0) {
+void AboutDialog::DoModal(HWND hWndParent)
+{
+	if(atomAboutDialog == 0)
+	{
 		WNDCLASSEX m_wc;
 		memset(&m_wc, 0, sizeof(WNDCLASSEX));
 		m_wc.cbSize = sizeof(WNDCLASSEX);
@@ -159,7 +176,8 @@ void AboutDialog::DoModal(HWND hWndParent) {
 	                                   WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, iX >= 5 ? iX : 5, iY >= 5 ? iY : 5, ScaleGui(443), ScaleGui(454),
 	                                   hWndParent, nullptr, ServerManager::m_hInstance, nullptr);
 
-	if(m_hWndWindowItems[WINDOW_HANDLE] == nullptr) {
+	if(m_hWndWindowItems[WINDOW_HANDLE] == nullptr)
+	{
 		return;
 	}
 

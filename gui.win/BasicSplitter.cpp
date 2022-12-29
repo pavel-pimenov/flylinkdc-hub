@@ -27,13 +27,16 @@
 #pragma hdrstop
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-BasicSplitter::BasicSplitter() : m_iSplitterPos(0), m_iPercentagePos(0), m_bUpdatePercentagePos(true) {
+BasicSplitter::BasicSplitter() : m_iSplitterPos(0), m_iPercentagePos(0), m_bUpdatePercentagePos(true)
+{
 	::SetRectEmpty(&m_rcSplitter);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-bool BasicSplitter::BasicSplitterProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	switch(uMsg) {
+bool BasicSplitter::BasicSplitterProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch(uMsg)
+	{
 	case WM_MOUSEMOVE:
 		return OnMouseMove(wParam, lParam);
 	case WM_LBUTTONDOWN:
@@ -48,22 +51,30 @@ bool BasicSplitter::BasicSplitterProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-bool BasicSplitter::OnMouseMove(WPARAM wParam, LPARAM lParam) {
+bool BasicSplitter::OnMouseMove(WPARAM wParam, LPARAM lParam)
+{
 	int ixPos = GET_X_LPARAM(lParam);
 	int iyPos = GET_Y_LPARAM(lParam);
 
-	if((wParam & MK_LBUTTON) && ::GetCapture() == GetWindowHandle()) {
+	if((wParam & MK_LBUTTON) && ::GetCapture() == GetWindowHandle())
+	{
 		int iNewSplitPos = ixPos - m_rcSplitter.left;
 
-		if(m_iSplitterPos != iNewSplitPos) {
+		if(m_iSplitterPos != iNewSplitPos)
+		{
 			SetSplitterPosition(iNewSplitPos, true);
 		}
 
 		return true;
-	} else {
-		if(IsCursorOverSplitter(ixPos, iyPos) == true) {
+	}
+	else
+	{
+		if(IsCursorOverSplitter(ixPos, iyPos) == true)
+		{
 			::SetCursor(GuiSettingManager::m_hVerticalCursor);
-		} else {
+		}
+		else
+		{
 			::SetCursor(GuiSettingManager::m_hArrowCursor);
 		}
 
@@ -72,28 +83,33 @@ bool BasicSplitter::OnMouseMove(WPARAM wParam, LPARAM lParam) {
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void BasicSplitter::OnLButtonDown(LPARAM lParam) {
+void BasicSplitter::OnLButtonDown(LPARAM lParam)
+{
 	int ixPos = GET_X_LPARAM(lParam);
 	int iyPos = GET_Y_LPARAM(lParam);
 
-	if(IsCursorOverSplitter(ixPos, iyPos) == true) {
+	if(IsCursorOverSplitter(ixPos, iyPos) == true)
+	{
 		::SetCapture(GetWindowHandle());
 		::SetCursor(GuiSettingManager::m_hVerticalCursor);
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void BasicSplitter::OnLButtonUp() {
+void BasicSplitter::OnLButtonUp()
+{
 	::ReleaseCapture();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void BasicSplitter::SetSplitterRect(const LPRECT lpRect) {
+void BasicSplitter::SetSplitterRect(const LPRECT lpRect)
+{
 	m_rcSplitter = *lpRect;
 
 	int iTotal = (m_rcSplitter.right - m_rcSplitter.left - 4);
 
-	if(iTotal > 0) {
+	if(iTotal > 0)
+	{
 		m_bUpdatePercentagePos = false;
 
 		int iNewPos = (m_iPercentagePos * iTotal) / 100;
@@ -105,12 +121,17 @@ void BasicSplitter::SetSplitterRect(const LPRECT lpRect) {
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void BasicSplitter::SetSplitterPosition(int iPos, const bool bUpdate/* = true*/) {
-	if(iPos < 100) {
+void BasicSplitter::SetSplitterPosition(int iPos, const bool bUpdate/* = true*/)
+{
+	if(iPos < 100)
+	{
 		iPos = 100;
-	} else {
+	}
+	else
+	{
 		int iMaxPos = (m_rcSplitter.right - m_rcSplitter.left) - 100;
-		if(iPos > iMaxPos) {
+		if(iPos > iMaxPos)
+		{
 			iPos = iMaxPos;
 		}
 	}
@@ -119,30 +140,40 @@ void BasicSplitter::SetSplitterPosition(int iPos, const bool bUpdate/* = true*/)
 
 	m_iSplitterPos = iPos;
 
-	if(m_bUpdatePercentagePos == true) {
+	if(m_bUpdatePercentagePos == true)
+	{
 		int iTotal = (m_rcSplitter.right - m_rcSplitter.left - 4);
 
-		if(iTotal > 0) {
+		if(iTotal > 0)
+		{
 			m_iPercentagePos = (m_iSplitterPos * 100)/ iTotal;
-		} else {
+		}
+		else
+		{
 			m_iPercentagePos = 0;
 		}
-	} else {
+	}
+	else
+	{
 		m_bUpdatePercentagePos = true;
 	}
 
-	if(bUpdate == true && bPosChanged == true) {
+	if(bUpdate == true && bPosChanged == true)
+	{
 		UpdateSplitterParts();
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-bool BasicSplitter::IsCursorOverSplitter(const int iX, const int iY) const {
-	if(iX == -1 || iY == -1 || iX < m_rcSplitter.left || iX > m_rcSplitter.right || iY < m_rcSplitter.top || iY > m_rcSplitter.bottom) {
+bool BasicSplitter::IsCursorOverSplitter(const int iX, const int iY) const
+{
+	if(iX == -1 || iY == -1 || iX < m_rcSplitter.left || iX > m_rcSplitter.right || iY < m_rcSplitter.top || iY > m_rcSplitter.bottom)
+	{
 		return false;
 	}
 
-	if(iX > (m_rcSplitter.left + m_iSplitterPos - 2) && iX < (m_rcSplitter.left + m_iSplitterPos + 2)) {
+	if(iX > (m_rcSplitter.left + m_iSplitterPos - 2) && iX < (m_rcSplitter.left + m_iSplitterPos + 2))
+	{
 		return true;
 	}
 

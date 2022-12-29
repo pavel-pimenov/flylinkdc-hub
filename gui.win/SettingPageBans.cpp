@@ -31,16 +31,21 @@
 #pragma hdrstop
 //---------------------------------------------------------------------------
 
-SettingPageBans::SettingPageBans() : m_bUpdateTempBanRedirAddress(false), m_bUpdatePermBanRedirAddress(false) {
+SettingPageBans::SettingPageBans() : m_bUpdateTempBanRedirAddress(false), m_bUpdatePermBanRedirAddress(false)
+{
 	memset(&m_hWndPageItems, 0, sizeof(m_hWndPageItems));
 }
 //---------------------------------------------------------------------------
 
-LRESULT SettingPageBans::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_COMMAND) {
-		switch(LOWORD(wParam)) {
+LRESULT SettingPageBans::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(uMsg == WM_COMMAND)
+	{
+		switch(LOWORD(wParam))
+		{
 		case EDT_DEFAULT_TEMPBAN_TIME:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 1, 32767);
 
 				return 0;
@@ -50,7 +55,8 @@ LRESULT SettingPageBans::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam
 		case EDT_ADD_MESSAGE:
 		case EDT_TEMP_BAN_REDIR:
 		case EDT_PERM_BAN_REDIR:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				RemovePipes((HWND)lParam);
 
 				return 0;
@@ -58,21 +64,24 @@ LRESULT SettingPageBans::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam
 
 			break;
 		case BTN_TEMP_BAN_REDIR_ENABLE:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				::EnableWindow(m_hWndPageItems[EDT_TEMP_BAN_REDIR],
 				               ::SendMessage(m_hWndPageItems[BTN_TEMP_BAN_REDIR_ENABLE], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE);
 			}
 
 			break;
 		case BTN_PERM_BAN_REDIR_ENABLE:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				::EnableWindow(m_hWndPageItems[EDT_PERM_BAN_REDIR],
 				               ::SendMessage(m_hWndPageItems[BTN_PERM_BAN_REDIR_ENABLE], BM_GETCHECK, 0, 0) == BST_CHECKED ? TRUE : FALSE);
 			}
 
 			break;
 		case CB_BRUTE_FORCE_PASSWORD_PROTECTION_ACTION:
-			if(HIWORD(wParam) == CBN_SELCHANGE) {
+			if(HIWORD(wParam) == CBN_SELCHANGE)
+			{
 				uint32_t ui32Action = (uint32_t)::SendMessage(m_hWndPageItems[CB_BRUTE_FORCE_PASSWORD_PROTECTION_ACTION], CB_GETCURSEL, 0, 0);
 				::EnableWindow(m_hWndPageItems[LBL_TEMP_BAN_TIME], ui32Action == 2 ? TRUE : FALSE);
 				::EnableWindow(m_hWndPageItems[EDT_TEMP_BAN_TIME], ui32Action == 2 ? TRUE : FALSE);
@@ -83,7 +92,8 @@ LRESULT SettingPageBans::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam
 
 			break;
 		case EDT_TEMP_BAN_TIME:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				MinMaxCheck((HWND)lParam, 1, 999);
 
 				return 0;
@@ -97,13 +107,16 @@ LRESULT SettingPageBans::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam
 }
 //------------------------------------------------------------------------------
 
-void SettingPageBans::Save() {
-	if(m_bCreated == false) {
+void SettingPageBans::Save()
+{
+	if(m_bCreated == false)
+	{
 		return;
 	}
 
 	LRESULT lResult = ::SendMessage(m_hWndPageItems[UD_DEFAULT_TEMPBAN_TIME], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_DEFAULT_TEMP_BAN_TIME, LOWORD(lResult));
 	}
 
@@ -123,7 +136,8 @@ void SettingPageBans::Save() {
 
 	if((SettingManager::m_Ptr->m_sTexts[SETTXT_TEMP_BAN_REDIR_ADDRESS] == nullptr && iLen != 0) ||
 	        (SettingManager::m_Ptr->m_sTexts[SETTXT_TEMP_BAN_REDIR_ADDRESS] != nullptr &&
-	         strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_TEMP_BAN_REDIR_ADDRESS]) != 0)) {
+	         strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_TEMP_BAN_REDIR_ADDRESS]) != 0))
+	{
 		m_bUpdateTempBanRedirAddress = true;
 	}
 
@@ -135,7 +149,8 @@ void SettingPageBans::Save() {
 
 	if((SettingManager::m_Ptr->m_sTexts[SETTXT_PERM_BAN_REDIR_ADDRESS] == nullptr && iLen != 0) ||
 	        (SettingManager::m_Ptr->m_sTexts[SETTXT_PERM_BAN_REDIR_ADDRESS] != nullptr &&
-	         strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_PERM_BAN_REDIR_ADDRESS]) != 0)) {
+	         strcmp(buf, SettingManager::m_Ptr->m_sTexts[SETTXT_PERM_BAN_REDIR_ADDRESS]) != 0))
+	{
 		m_bUpdatePermBanRedirAddress = true;
 	}
 
@@ -147,7 +162,8 @@ void SettingPageBans::Save() {
 	SettingManager::m_Ptr->SetShort(SETSHORT_BRUTE_FORCE_PASS_PROTECT_BAN_TYPE, (int16_t)::SendMessage(m_hWndPageItems[CB_BRUTE_FORCE_PASSWORD_PROTECTION_ACTION], CB_GETCURSEL, 0, 0));
 
 	lResult = ::SendMessage(m_hWndPageItems[UD_TEMP_BAN_TIME], UDM_GETPOS, 0, 0);
-	if(HIWORD(lResult) == 0) {
+	if(HIWORD(lResult) == 0)
+	{
 		SettingManager::m_Ptr->SetShort(SETSHORT_BRUTE_FORCE_PASS_PROTECT_TEMP_BAN_TIME, LOWORD(lResult));
 	}
 
@@ -160,20 +176,25 @@ void SettingPageBans::GetUpdates(bool & /*bUpdateHubNameWelcome*/, bool & /*bUpd
                                  bool & /*bUpdatedSlotsLimitMessage*/, bool & /*bUpdatedHubSlotRatioMessage*/, bool & /*bUpdatedMaxHubsLimitMessage*/, bool & /*bUpdatedNoTagMessage*/,
                                  bool & /*bUpdatedNickLimitMessage*/, bool & /*bUpdatedBotsSameNick*/, bool & /*bUpdatedBotNick*/, bool & /*bUpdatedBot*/, bool & /*bUpdatedOpChatNick*/,
                                  bool & /*bUpdatedOpChat*/, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & bUpdatedTempBanRedirAddress,
-                                 bool & bUpdatedPermBanRedirAddress, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/) {
-	if(bUpdatedTempBanRedirAddress == false) {
+                                 bool & bUpdatedPermBanRedirAddress, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/)
+{
+	if(bUpdatedTempBanRedirAddress == false)
+	{
 		bUpdatedTempBanRedirAddress = m_bUpdateTempBanRedirAddress;
 	}
-	if(bUpdatedPermBanRedirAddress == false) {
+	if(bUpdatedPermBanRedirAddress == false)
+	{
 		bUpdatedPermBanRedirAddress = m_bUpdatePermBanRedirAddress;
 	}
 }
 
 //------------------------------------------------------------------------------
-bool SettingPageBans::CreateSettingPage(HWND hOwner) {
+bool SettingPageBans::CreateSettingPage(HWND hOwner)
+{
 	CreateHWND(hOwner);
 
-	if(m_bCreated == false) {
+	if(m_bCreated == false)
+	{
 		return false;
 	}
 
@@ -294,8 +315,10 @@ bool SettingPageBans::CreateSettingPage(HWND hOwner) {
 	        13, iPosY + (2 * GuiSettingManager::m_iGroupBoxMargin) + GuiSettingManager::m_iCheckHeight + (2 * GuiSettingManager::m_iEditHeight) + 10, m_iGBinGBEDT, GuiSettingManager::m_iCheckHeight, m_hWnd, nullptr, ServerManager::m_hInstance, nullptr);
 	::SendMessage(m_hWndPageItems[BTN_REPORT_3X_BAD_PASS], BM_SETCHECK, (SettingManager::m_Ptr->m_bBools[SETBOOL_REPORT_3X_BAD_PASS] == true ? BST_CHECKED : BST_UNCHECKED), 0);
 
-	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++) {
-		if(m_hWndPageItems[ui8i] == nullptr) {
+	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++)
+	{
+		if(m_hWndPageItems[ui8i] == nullptr)
+		{
 			return false;
 		}
 
@@ -318,12 +341,14 @@ bool SettingPageBans::CreateSettingPage(HWND hOwner) {
 }
 //------------------------------------------------------------------------------
 
-char * SettingPageBans::GetPageName() {
+char * SettingPageBans::GetPageName()
+{
 	return LanguageManager::m_Ptr->m_sTexts[LAN_BAN_HANDLING];
 }
 //------------------------------------------------------------------------------
 
-void SettingPageBans::FocusLastItem() {
+void SettingPageBans::FocusLastItem()
+{
 	::SetFocus(m_hWndPageItems[BTN_REPORT_3X_BAD_PASS]);
 }
 //------------------------------------------------------------------------------

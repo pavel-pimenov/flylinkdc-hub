@@ -48,10 +48,14 @@ MainWindowPageUsersChat * MainWindowPageUsersChat::m_Ptr = nullptr;
 static WNDPROC wpOldMultiEditProc = nullptr;
 //---------------------------------------------------------------------------
 
-static LRESULT CALLBACK MultiRichEditProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_GETDLGCODE && wParam == VK_TAB) {
+static LRESULT CALLBACK MultiRichEditProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(uMsg == WM_GETDLGCODE && wParam == VK_TAB)
+	{
 		return 0;
-	} else if(uMsg == WM_KEYDOWN && wParam == VK_ESCAPE) {
+	}
+	else if(uMsg == WM_KEYDOWN && wParam == VK_ESCAPE)
+	{
 		return 0;
 	}
 
@@ -59,7 +63,8 @@ static LRESULT CALLBACK MultiRichEditProc(HWND hWnd, UINT uMsg, WPARAM wParam, L
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-MainWindowPageUsersChat::MainWindowPageUsersChat() {
+MainWindowPageUsersChat::MainWindowPageUsersChat()
+{
 	MainWindowPageUsersChat::m_Ptr = this;
 
 	memset(&m_hWndPageItems, 0, sizeof(m_hWndPageItems));
@@ -68,18 +73,22 @@ MainWindowPageUsersChat::MainWindowPageUsersChat() {
 }
 //---------------------------------------------------------------------------
 
-MainWindowPageUsersChat::~MainWindowPageUsersChat() {
+MainWindowPageUsersChat::~MainWindowPageUsersChat()
+{
 	MainWindowPageUsersChat::m_Ptr = nullptr;
 }
 //---------------------------------------------------------------------------
 
-LRESULT MainWindowPageUsersChat::MainWindowPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	switch(uMsg) {
+LRESULT MainWindowPageUsersChat::MainWindowPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch(uMsg)
+	{
 	case WM_SETFOCUS:
 		::SetFocus(m_hWndPageItems[BTN_SHOW_CHAT]);
 
 		return 0;
-	case WM_WINDOWPOSCHANGED: {
+	case WM_WINDOWPOSCHANGED:
+	{
 		RECT rcMain = { 0, GuiSettingManager::m_iCheckHeight, ((WINDOWPOS*)lParam)->cx, ((WINDOWPOS*)lParam)->cy };
 
 		::SetWindowPos(m_hWndPageItems[BTN_SHOW_CHAT], nullptr, 0, 0, ((rcMain.right - ScaleGui(150)) / 2) - 3, GuiSettingManager::m_iCheckHeight, SWP_NOMOVE | SWP_NOZORDER);
@@ -92,11 +101,15 @@ LRESULT MainWindowPageUsersChat::MainWindowPageProc(UINT uMsg, WPARAM wParam, LP
 		return 0;
 	}
 	case WM_NOTIFY:
-		if(((LPNMHDR)lParam)->hwndFrom == m_hWndPageItems[REDT_CHAT] && ((LPNMHDR)lParam)->code == EN_LINK) {
-			if(((ENLINK *)lParam)->msg == WM_LBUTTONUP) {
+		if(((LPNMHDR)lParam)->hwndFrom == m_hWndPageItems[REDT_CHAT] && ((LPNMHDR)lParam)->code == EN_LINK)
+		{
+			if(((ENLINK *)lParam)->msg == WM_LBUTTONUP)
+			{
 				RichEditOpenLink(m_hWndPageItems[REDT_CHAT], (ENLINK *)lParam);
 			}
-		} else if(((LPNMHDR)lParam)->hwndFrom == m_hWndPageItems[LV_USERS] && ((LPNMHDR)lParam)->code == LVN_GETINFOTIP) {
+		}
+		else if(((LPNMHDR)lParam)->hwndFrom == m_hWndPageItems[LV_USERS] && ((LPNMHDR)lParam)->code == LVN_GETINFOTIP)
+		{
 			NMLVGETINFOTIP * pGetInfoTip = (LPNMLVGETINFOTIP)lParam;
 
 			char msg[1024];
@@ -107,16 +120,19 @@ LRESULT MainWindowPageUsersChat::MainWindowPageProc(UINT uMsg, WPARAM wParam, LP
 			lvItem.pszText = msg;
 			lvItem.cchTextMax = 1024;
 
-			if((BOOL)::SendMessage(m_hWndPageItems[LV_USERS], LVM_GETITEM, 0, (LPARAM)&lvItem) == FALSE) {
+			if((BOOL)::SendMessage(m_hWndPageItems[LV_USERS], LVM_GETITEM, 0, (LPARAM)&lvItem) == FALSE)
+			{
 				return 0;
 			}
 
 			User * curUser = reinterpret_cast<User *>(lvItem.lParam);
 
-			if(::SendMessage(m_hWndPageItems[BTN_AUTO_UPDATE_USERLIST], BM_GETCHECK, 0, 0) == BST_UNCHECKED) {
+			if(::SendMessage(m_hWndPageItems[BTN_AUTO_UPDATE_USERLIST], BM_GETCHECK, 0, 0) == BST_UNCHECKED)
+			{
 				User * testUser = HashManager::m_Ptr->FindUser(lvItem.pszText, strlen(lvItem.pszText));
 
-				if(testUser == nullptr || testUser != curUser) {
+				if(testUser == nullptr || testUser != curUser)
+				{
 					return 0;
 				}
 			}
@@ -132,16 +148,19 @@ LRESULT MainWindowPageUsersChat::MainWindowPageProc(UINT uMsg, WPARAM wParam, LP
 			            "\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_SLOTS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_SLOTS]) + ": " + px_string(curUser->m_ui32Slots) +
 			            "\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_HUBS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_HUBS]) + ": " + px_string(curUser->m_ui32Hubs);
 
-			if(curUser->m_ui32OLimit != 0) {
+			if(curUser->m_ui32OLimit != 0)
+			{
 				sInfoTip += "\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_AUTO_OPEN_SLOT_WHEN_UP_UNDER], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_AUTO_OPEN_SLOT_WHEN_UP_UNDER]) + " " +
 				            px_string(curUser->m_ui32OLimit)+" kB/s";
 			}
 
-			if(curUser->m_ui32DLimit != 0) {
+			if(curUser->m_ui32DLimit != 0)
+			{
 				sInfoTip += "\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_LIMITER], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_LIMITER])+ " D:" + px_string(curUser->m_ui32DLimit) + " kB/s";
 			}
 
-			if(curUser->m_ui32LLimit != 0) {
+			if(curUser->m_ui32LLimit != 0)
+			{
 				sInfoTip += "\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_LIMITER], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_LIMITER])+ " L:" + px_string(curUser->m_ui32LLimit) + " kB/s";
 			}
 
@@ -156,12 +175,15 @@ LRESULT MainWindowPageUsersChat::MainWindowPageProc(UINT uMsg, WPARAM wParam, LP
 		}
 		break;
 	case WM_COMMAND:
-		switch(LOWORD(wParam)) {
+		switch(LOWORD(wParam))
+		{
 		case BTN_AUTO_UPDATE_USERLIST:
-			if(HIWORD(wParam) == BN_CLICKED && ServerManager::m_bServerRunning == true) {
+			if(HIWORD(wParam) == BN_CLICKED && ServerManager::m_bServerRunning == true)
+			{
 				bool bChecked = ::SendMessage(m_hWndPageItems[BTN_AUTO_UPDATE_USERLIST], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false;
 				::EnableWindow(m_hWndPageItems[BTN_UPDATE_USERS], bChecked == true ? FALSE : TRUE);
-				if(bChecked == true) {
+				if(bChecked == true)
+				{
 					UpdateUserList();
 				}
 
@@ -173,12 +195,14 @@ LRESULT MainWindowPageUsersChat::MainWindowPageProc(UINT uMsg, WPARAM wParam, LP
 			UpdateUserList();
 			return 0;
 		case EDT_CHAT:
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				int iLen = ::GetWindowTextLength((HWND)lParam);
 
 				char * buf = (char *)malloc(iLen+1);
 
-				if(buf == nullptr) {
+				if(buf == nullptr)
+				{
 					AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for buf in MainWindowPageUsersChat::MainWindowPageProc\n", iLen+1);
 					return 0;
 				}
@@ -187,15 +211,18 @@ LRESULT MainWindowPageUsersChat::MainWindowPageProc(UINT uMsg, WPARAM wParam, LP
 
 				bool bChanged = false;
 
-				for(uint16_t ui16i = 0; buf[ui16i] != '\0'; ui16i++) {
-					if(buf[ui16i] == '|') {
+				for(uint16_t ui16i = 0; buf[ui16i] != '\0'; ui16i++)
+				{
+					if(buf[ui16i] == '|')
+					{
 						strcpy(buf+ui16i, buf+ui16i+1);
 						bChanged = true;
 						ui16i--;
 					}
 				}
 
-				if(bChanged == true) {
+				if(bChanged == true)
+				{
 					int iStart, iEnd;
 
 					::SendMessage((HWND)lParam, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
@@ -211,10 +238,12 @@ LRESULT MainWindowPageUsersChat::MainWindowPageProc(UINT uMsg, WPARAM wParam, LP
 			}
 
 			break;
-		case IDC_REG_USER: {
+		case IDC_REG_USER:
+		{
 			int iSel = (int)::SendMessage(m_hWndPageItems[LV_USERS], LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED);
 
-			if(iSel == -1) {
+			if(iSel == -1)
+			{
 				return 0;
 			}
 
@@ -231,7 +260,8 @@ LRESULT MainWindowPageUsersChat::MainWindowPageProc(UINT uMsg, WPARAM wParam, LP
 
 			RegisteredUserDialog::m_Ptr = new (std::nothrow) RegisteredUserDialog();
 
-			if(RegisteredUserDialog::m_Ptr != nullptr) {
+			if(RegisteredUserDialog::m_Ptr != nullptr)
+			{
 				RegisteredUserDialog::m_Ptr->DoModal(MainWindow::m_Ptr->m_hWnd, nullptr, sNick);
 			}
 
@@ -251,7 +281,8 @@ LRESULT MainWindowPageUsersChat::MainWindowPageProc(UINT uMsg, WPARAM wParam, LP
 			return 0;
 		}
 
-		if(RichEditCheckMenuCommands(m_hWndPageItems[REDT_CHAT], LOWORD(wParam)) == true) {
+		if(RichEditCheckMenuCommands(m_hWndPageItems[REDT_CHAT], LOWORD(wParam)) == true)
+		{
 			return 0;
 		}
 
@@ -269,7 +300,8 @@ LRESULT MainWindowPageUsersChat::MainWindowPageProc(UINT uMsg, WPARAM wParam, LP
 		break;
 	}
 
-	if(BasicSplitterProc(uMsg, wParam, lParam) == true) {
+	if(BasicSplitterProc(uMsg, wParam, lParam) == true)
+	{
 		return 0;
 	}
 
@@ -277,26 +309,39 @@ LRESULT MainWindowPageUsersChat::MainWindowPageProc(UINT uMsg, WPARAM wParam, LP
 }
 //------------------------------------------------------------------------------
 
-static LRESULT CALLBACK MultiEditProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_KEYDOWN) {
-		if(wParam == VK_RETURN && (::GetKeyState(VK_CONTROL) & 0x8000) == 0) {
+static LRESULT CALLBACK MultiEditProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(uMsg == WM_KEYDOWN)
+	{
+		if(wParam == VK_RETURN && (::GetKeyState(VK_CONTROL) & 0x8000) == 0)
+		{
 			MainWindowPageUsersChat * pParent = (MainWindowPageUsersChat *)::GetWindowLongPtr(hWnd, GWLP_USERDATA);
-			if(pParent != nullptr) {
-				if(pParent->OnEditEnter() == true) {
+			if(pParent != nullptr)
+			{
+				if(pParent->OnEditEnter() == true)
+				{
 					return 0;
 				}
 			}
-		} else if(wParam == '|') {
-			return 0;
 		}
-	} else if(uMsg == WM_CHAR || uMsg == WM_KEYUP) {
-		if(wParam == VK_RETURN && (::GetKeyState(VK_CONTROL) & 0x8000) == 0) {
-			return 0;
-		} else if(wParam == '|') {
+		else if(wParam == '|')
+		{
 			return 0;
 		}
 	}
-	if(uMsg == WM_GETDLGCODE && wParam == VK_TAB) {
+	else if(uMsg == WM_CHAR || uMsg == WM_KEYUP)
+	{
+		if(wParam == VK_RETURN && (::GetKeyState(VK_CONTROL) & 0x8000) == 0)
+		{
+			return 0;
+		}
+		else if(wParam == '|')
+		{
+			return 0;
+		}
+	}
+	if(uMsg == WM_GETDLGCODE && wParam == VK_TAB)
+	{
 		return 0;
 	}
 
@@ -305,21 +350,31 @@ static LRESULT CALLBACK MultiEditProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 
 //------------------------------------------------------------------------------
 
-static LRESULT CALLBACK ListProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if(uMsg == WM_GETDLGCODE && wParam == VK_TAB) {
+static LRESULT CALLBACK ListProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	if(uMsg == WM_GETDLGCODE && wParam == VK_TAB)
+	{
 		return DLGC_WANTTAB;
-	} else if(uMsg == WM_CHAR && wParam == VK_TAB) {
-		if((::GetKeyState(VK_SHIFT) & 0x8000) == 0) {
+	}
+	else if(uMsg == WM_CHAR && wParam == VK_TAB)
+	{
+		if((::GetKeyState(VK_SHIFT) & 0x8000) == 0)
+		{
 			MainWindowPageUsersChat * pParent = (MainWindowPageUsersChat *)::GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
-			if(pParent != nullptr && ::IsWindowEnabled(pParent->m_hWndPageItems[MainWindowPageUsersChat::BTN_UPDATE_USERS])) {
+			if(pParent != nullptr && ::IsWindowEnabled(pParent->m_hWndPageItems[MainWindowPageUsersChat::BTN_UPDATE_USERS]))
+			{
 				::SetFocus(pParent->m_hWndPageItems[MainWindowPageUsersChat::BTN_UPDATE_USERS]);
-			} else {
+			}
+			else
+			{
 				::SetFocus(MainWindow::m_Ptr->m_hWndWindowItems[MainWindow::TC_TABS]);
 			}
 
 			return 0;
-		} else {
+		}
+		else
+		{
 			::SetFocus(::GetNextDlgTabItem(MainWindow::m_Ptr->m_hWnd, hWnd, TRUE));
 			return 0;
 		}
@@ -329,7 +384,8 @@ static LRESULT CALLBACK ListProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 }
 //---------------------------------------------------------------------------
 
-bool MainWindowPageUsersChat::CreateMainWindowPage(HWND hOwner) {
+bool MainWindowPageUsersChat::CreateMainWindowPage(HWND hOwner)
+{
 	CreateHWND(hOwner);
 
 	RECT rcMain;
@@ -363,8 +419,10 @@ bool MainWindowPageUsersChat::CreateMainWindowPage(HWND hOwner) {
 	                                    rcMain.right - ScaleGui(150) - 3, rcMain.bottom - GuiSettingManager::m_iEditHeight - 2, (rcMain.right - (rcMain.right - ScaleGui(150) - 2)) - 2, GuiSettingManager::m_iEditHeight,
 	                                    m_hWnd, (HMENU)BTN_UPDATE_USERS, ServerManager::m_hInstance, nullptr);
 
-	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++) {
-		if(m_hWndPageItems[ui8i] == nullptr) {
+	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndPageItems) / sizeof(m_hWndPageItems[0])); ui8i++)
+	{
+		if(m_hWndPageItems[ui8i] == nullptr)
+		{
 			return false;
 		}
 
@@ -404,7 +462,8 @@ bool MainWindowPageUsersChat::CreateMainWindowPage(HWND hOwner) {
 }
 //------------------------------------------------------------------------------
 
-void MainWindowPageUsersChat::UpdateLanguage() {
+void MainWindowPageUsersChat::UpdateLanguage()
+{
 	::SetWindowText(m_hWndPageItems[BTN_SHOW_CHAT], LanguageManager::m_Ptr->m_sTexts[LAN_CHAT]);
 	::SetWindowText(m_hWndPageItems[BTN_SHOW_COMMANDS], LanguageManager::m_Ptr->m_sTexts[LAN_CMDS]);
 	::SetWindowText(m_hWndPageItems[BTN_AUTO_UPDATE_USERLIST], LanguageManager::m_Ptr->m_sTexts[LAN_AUTO]);
@@ -412,25 +471,30 @@ void MainWindowPageUsersChat::UpdateLanguage() {
 }
 //---------------------------------------------------------------------------
 
-char * MainWindowPageUsersChat::GetPageName() {
+char * MainWindowPageUsersChat::GetPageName()
+{
 	return LanguageManager::m_Ptr->m_sTexts[LAN_USERS_CHAT];
 }
 //------------------------------------------------------------------------------
 
-bool MainWindowPageUsersChat::OnEditEnter() {
-	if(ServerManager::m_bServerRunning == false) {
+bool MainWindowPageUsersChat::OnEditEnter()
+{
+	if(ServerManager::m_bServerRunning == false)
+	{
 		return false;
 	}
 
 	int iAllocLen = ::GetWindowTextLength(m_hWndPageItems[EDT_CHAT]);
 
-	if(iAllocLen == 0) {
+	if(iAllocLen == 0)
+	{
 		return false;
 	}
 
 	char * buf = (char *)malloc(iAllocLen+4+SettingManager::m_Ptr->m_ui16TextsLens[SETTXT_ADMIN_NICK]);
 
-	if(buf == nullptr) {
+	if(buf == nullptr)
+	{
 		AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for buf in MainWindowPageUsersChat::OnEditEnter\n", iAllocLen+4+SettingManager::m_Ptr->m_ui16TextsLens[SETTXT_ADMIN_NICK]);
 		return false;
 	}
@@ -456,7 +520,8 @@ bool MainWindowPageUsersChat::OnEditEnter() {
 }
 //------------------------------------------------------------------------------
 
-void MainWindowPageUsersChat::AddUser(const User * pUser) {
+void MainWindowPageUsersChat::AddUser(const User * pUser)
+{
 	LVITEM lvItem = { 0 };
 	lvItem.mask = LVIF_PARAM | LVIF_TEXT;
 	lvItem.iItem = 0;
@@ -467,20 +532,23 @@ void MainWindowPageUsersChat::AddUser(const User * pUser) {
 }
 //------------------------------------------------------------------------------
 
-void MainWindowPageUsersChat::RemoveUser(const User * pUser) {
+void MainWindowPageUsersChat::RemoveUser(const User * pUser)
+{
 	LVFINDINFO lvFindItem = { 0 };
 	lvFindItem.flags = LVFI_PARAM;
 	lvFindItem.lParam = (LPARAM)pUser;
 
 	int iItem = (int)::SendMessage(m_hWndPageItems[LV_USERS], LVM_FINDITEM, (WPARAM)-1, (LPARAM)&lvFindItem);
 
-	if(iItem != -1) {
+	if(iItem != -1)
+	{
 		::SendMessage(m_hWndPageItems[LV_USERS], LVM_DELETEITEM, iItem, 0);
 	}
 }
 //------------------------------------------------------------------------------
 
-void MainWindowPageUsersChat::UpdateUserList() {
+void MainWindowPageUsersChat::UpdateUserList()
+{
 	::SendMessage(m_hWndPageItems[LV_USERS], WM_SETREDRAW, (WPARAM)FALSE, 0);
 
 	::SendMessage(m_hWndPageItems[LV_USERS], LVM_DELETEALLITEMS, 0, 0);
@@ -490,13 +558,15 @@ void MainWindowPageUsersChat::UpdateUserList() {
 	User * pCur = nullptr,
 	       * pNext = Users::m_Ptr->m_pUserListS;
 
-	while(pNext != nullptr) {
+	while(pNext != nullptr)
+	{
 		ui32Total++;
 
 		pCur = pNext;
 		pNext = pCur->m_pNext;
 
-		switch(pCur->m_ui8State) {
+		switch(pCur->m_ui8State)
+		{
 		case User::STATE_ADDED:
 			ui32LoggedIn++;
 
@@ -524,13 +594,18 @@ void MainWindowPageUsersChat::UpdateUserList() {
 }
 //------------------------------------------------------------------------------
 
-void MainWindowPageUsersChat::OnContextMenu(HWND hWindow, LPARAM lParam) {
-	if(hWindow == m_hWndPageItems[REDT_CHAT]) {
+void MainWindowPageUsersChat::OnContextMenu(HWND hWindow, LPARAM lParam)
+{
+	if(hWindow == m_hWndPageItems[REDT_CHAT])
+	{
 		RichEditPopupMenu(m_hWndPageItems[REDT_CHAT], m_hWnd, lParam);
-	} else if(hWindow == m_hWndPageItems[LV_USERS]) {
+	}
+	else if(hWindow == m_hWndPageItems[LV_USERS])
+	{
 		int iSel = (int)::SendMessage(m_hWndPageItems[LV_USERS], LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED);
 
-		if(iSel == -1) {
+		if(iSel == -1)
+		{
 			return;
 		}
 
@@ -547,7 +622,8 @@ void MainWindowPageUsersChat::OnContextMenu(HWND hWindow, LPARAM lParam) {
 
 		::SendMessage(m_hWndPageItems[LV_USERS], LVM_GETITEM, 0, (LPARAM)&lvItem);
 
-		if(RegManager::m_Ptr->Find(sNick, strlen(sNick)) == nullptr) {
+		if(RegManager::m_Ptr->Find(sNick, strlen(sNick)) == nullptr)
+		{
 			::AppendMenu(hMenu, MF_STRING, IDC_REG_USER, LanguageManager::m_Ptr->m_sTexts[LAN_MENU_REG_USER]);
 			::AppendMenu(hMenu, MF_SEPARATOR, 0, nullptr);
 		}
@@ -571,10 +647,12 @@ void MainWindowPageUsersChat::OnContextMenu(HWND hWindow, LPARAM lParam) {
 }
 //------------------------------------------------------------------------------
 
-User * MainWindowPageUsersChat::GetUser() {
+User * MainWindowPageUsersChat::GetUser()
+{
 	int iSel = (int)::SendMessage(m_hWndPageItems[LV_USERS], LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED);
 
-	if(iSel == -1) {
+	if(iSel == -1)
+	{
 		return nullptr;
 	}
 
@@ -586,19 +664,23 @@ User * MainWindowPageUsersChat::GetUser() {
 	lvItem.pszText = msg;
 	lvItem.cchTextMax = 1024;
 
-	if((BOOL)::SendMessage(m_hWndPageItems[LV_USERS], LVM_GETITEM, 0, (LPARAM)&lvItem) == FALSE) {
+	if((BOOL)::SendMessage(m_hWndPageItems[LV_USERS], LVM_GETITEM, 0, (LPARAM)&lvItem) == FALSE)
+	{
 		return nullptr;
 	}
 
 	User * curUser = reinterpret_cast<User *>(lvItem.lParam);
 
-	if(::SendMessage(m_hWndPageItems[BTN_AUTO_UPDATE_USERLIST], BM_GETCHECK, 0, 0) == BST_UNCHECKED) {
+	if(::SendMessage(m_hWndPageItems[BTN_AUTO_UPDATE_USERLIST], BM_GETCHECK, 0, 0) == BST_UNCHECKED)
+	{
 		User * testUser = HashManager::m_Ptr->FindUser(lvItem.pszText, strlen(lvItem.pszText));
 
-		if(testUser == nullptr || testUser != curUser) {
+		if(testUser == nullptr || testUser != curUser)
+		{
 			char buf[1024];
 			int iMsgLen = snprintf(buf, 1024, "<%s> *** %s %s.", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], lvItem.pszText, LanguageManager::m_Ptr->m_sTexts[LAN_IS_NOT_ONLINE]);
-			if(iMsgLen > 0) {
+			if(iMsgLen > 0)
+			{
 				RichEditAppendText(m_hWndPageItems[REDT_CHAT], buf);
 			}
 
@@ -610,10 +692,12 @@ User * MainWindowPageUsersChat::GetUser() {
 }
 //------------------------------------------------------------------------------
 
-void MainWindowPageUsersChat::DisconnectUser() {
+void MainWindowPageUsersChat::DisconnectUser()
+{
 	User * curUser = GetUser();
 
-	if(curUser == nullptr) {
+	if(curUser == nullptr)
+	{
 		return;
 	}
 
@@ -622,32 +706,40 @@ void MainWindowPageUsersChat::DisconnectUser() {
 
 	curUser->Close();
 
-	if(SettingManager::m_Ptr->m_bBools[SETBOOL_SEND_STATUS_MESSAGES] == true) {
+	if(SettingManager::m_Ptr->m_bBools[SETBOOL_SEND_STATUS_MESSAGES] == true)
+	{
 		GlobalDataQueue::m_Ptr->StatusMessageFormat("MainWindowPageUsersChat::DisconnectUser", "<%s> *** %s %s %s %s %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], curUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_WITH_IP], curUser->m_sIP,
 		        LanguageManager::m_Ptr->m_sTexts[LAN_WAS_CLOSED_BY], SettingManager::m_Ptr->m_sTexts[SETTXT_ADMIN_NICK]);
 	}
 
 	char msg[1024];
 	int iMsgLen = snprintf(msg, 1024, "<%s> *** %s %s %s %s.", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], curUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_WITH_IP], curUser->m_sIP, LanguageManager::m_Ptr->m_sTexts[LAN_WAS_CLOSED]);
-	if(iMsgLen > 0) {
+	if(iMsgLen > 0)
+	{
 		RichEditAppendText(m_hWndPageItems[REDT_CHAT], msg);
 	}
 }
 //------------------------------------------------------------------------------
 
-void OnKickOk(char * sLine, const int iLen) {
+void OnKickOk(char * sLine, const int iLen)
+{
 	User * pUser = MainWindowPageUsersChat::m_Ptr->GetUser();
 
-	if(pUser == nullptr) {
+	if(pUser == nullptr)
+	{
 		return;
 	}
 
 	BanManager::m_Ptr->TempBan(pUser, iLen == 0 ? nullptr : sLine, SettingManager::m_Ptr->m_sTexts[SETTXT_ADMIN_NICK], 0, 0, false);
 
-	if(iLen == 0) {
+	if(iLen == 0)
+	{
 		pUser->SendFormat("OnKickOk1", false, "<%s> %s...|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_ARE_BEING_KICKED]);
-	} else {
-		if(iLen > 512) {
+	}
+	else
+	{
+		if(iLen > 512)
+		{
 			sLine[513] = '\0';
 			sLine[512] = '.';
 			sLine[511] = '.';
@@ -657,14 +749,16 @@ void OnKickOk(char * sLine, const int iLen) {
 		pUser->SendFormat("OnKickOk2", false, "<%s> %s: %s|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_BEING_KICKED_BCS], sLine);
 	}
 
-	if(SettingManager::m_Ptr->m_bBools[SETBOOL_SEND_STATUS_MESSAGES] == true) {
+	if(SettingManager::m_Ptr->m_bBools[SETBOOL_SEND_STATUS_MESSAGES] == true)
+	{
 		GlobalDataQueue::m_Ptr->StatusMessageFormat("OnKickOk", "<%s> *** %s %s %s %s %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], pUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_WITH_IP], pUser->m_sIP, LanguageManager::m_Ptr->m_sTexts[LAN_WAS_KICKED_BY],
 		        SettingManager::m_Ptr->m_sTexts[SETTXT_ADMIN_NICK]);
 	}
 
 	char msg[1024];
 	int iMsgLen = snprintf(msg, 1024, "<%s> *** %s %s %s %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], pUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_WITH_IP], pUser->m_sIP, LanguageManager::m_Ptr->m_sTexts[LAN_WAS_KICKED]);
-	if(iMsgLen > 0) {
+	if(iMsgLen > 0)
+	{
 		RichEditAppendText(MainWindowPageUsersChat::m_Ptr->m_hWndPageItems[MainWindowPageUsersChat::REDT_CHAT], msg);
 	}
 
@@ -675,34 +769,43 @@ void OnKickOk(char * sLine, const int iLen) {
 }
 //------------------------------------------------------------------------------
 
-void MainWindowPageUsersChat::KickUser() {
+void MainWindowPageUsersChat::KickUser()
+{
 	User * curUser = GetUser();
 
-	if(curUser == nullptr) {
+	if(curUser == nullptr)
+	{
 		return;
 	}
 
 	LineDialog * pKickDlg = new (std::nothrow) LineDialog(&OnKickOk);
 
-	if(pKickDlg != nullptr) {
+	if(pKickDlg != nullptr)
+	{
 		pKickDlg->DoModal(::GetParent(m_hWnd), LanguageManager::m_Ptr->m_sTexts[LAN_PLEASE_ENTER_REASON], "");
 	}
 }
 //------------------------------------------------------------------------------
 
-void OnBanOk(char * sLine, const int iLen) {
+void OnBanOk(char * sLine, const int iLen)
+{
 	User * pUser = MainWindowPageUsersChat::m_Ptr->GetUser();
 
-	if(pUser == nullptr) {
+	if(pUser == nullptr)
+	{
 		return;
 	}
 
 	BanManager::m_Ptr->Ban(pUser, iLen == 0 ? nullptr : sLine, SettingManager::m_Ptr->m_sTexts[SETTXT_ADMIN_NICK], false);
 
-	if(iLen == 0) {
+	if(iLen == 0)
+	{
 		pUser->SendFormat("OnBanOk1", false, "<%s> %s...|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_ARE_BEING_KICKED]);
-	} else {
-		if(iLen > 512) {
+	}
+	else
+	{
+		if(iLen > 512)
+		{
 			sLine[513] = '\0';
 			sLine[512] = '.';
 			sLine[511] = '.';
@@ -712,14 +815,16 @@ void OnBanOk(char * sLine, const int iLen) {
 		pUser->SendFormat("OnBanOk2", false, "<%s> %s: %s|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_ARE_BEING_BANNED_BECAUSE], sLine);
 	}
 
-	if(SettingManager::m_Ptr->m_bBools[SETBOOL_SEND_STATUS_MESSAGES] == true) {
+	if(SettingManager::m_Ptr->m_bBools[SETBOOL_SEND_STATUS_MESSAGES] == true)
+	{
 		GlobalDataQueue::m_Ptr->StatusMessageFormat("OnBanOk", "<%s> *** %s %s %s %s %s %s %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], pUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_WITH_IP], pUser->m_sIP, LanguageManager::m_Ptr->m_sTexts[LAN_HAS_BEEN],
 		        LanguageManager::m_Ptr->m_sTexts[LAN_BANNED_LWR], LanguageManager::m_Ptr->m_sTexts[LAN_BY_LWR], SettingManager::m_Ptr->m_sTexts[SETTXT_ADMIN_NICK]);
 	}
 
 	char msg[1024];
 	int iMsgLen = snprintf(msg, 1024, "<%s> *** %s %s %s %s %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], pUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_WITH_IP], pUser->m_sIP, LanguageManager::m_Ptr->m_sTexts[LAN_HAS_BEEN], LanguageManager::m_Ptr->m_sTexts[LAN_BANNED_LWR]);
-	if(iMsgLen > 0) {
+	if(iMsgLen > 0)
+	{
 		RichEditAppendText(MainWindowPageUsersChat::m_Ptr->m_hWndPageItems[MainWindowPageUsersChat::REDT_CHAT], msg);
 	}
 
@@ -730,38 +835,45 @@ void OnBanOk(char * sLine, const int iLen) {
 }
 //------------------------------------------------------------------------------
 
-void MainWindowPageUsersChat::BanUser() {
+void MainWindowPageUsersChat::BanUser()
+{
 	User * curUser = GetUser();
 
-	if(curUser == nullptr) {
+	if(curUser == nullptr)
+	{
 		return;
 	}
 
 	LineDialog * pBanDlg = new (std::nothrow) LineDialog(&OnBanOk);
 
-	if(pBanDlg != nullptr) {
+	if(pBanDlg != nullptr)
+	{
 		pBanDlg->DoModal(::GetParent(m_hWnd), LanguageManager::m_Ptr->m_sTexts[LAN_PLEASE_ENTER_REASON], "");
 	}
 }
 //------------------------------------------------------------------------------
 
-void OnRedirectOk(char * sLine, const int iLen) {
+void OnRedirectOk(char * sLine, const int iLen)
+{
 	User * pUser = MainWindowPageUsersChat::m_Ptr->GetUser();
 
-	if(pUser == nullptr || iLen == 0 || iLen > 512) {
+	if(pUser == nullptr || iLen == 0 || iLen > 512)
+	{
 		return;
 	}
 
 	pUser->SendFormat("OnRedirectOk", false, "<%s> %s %s %s %s.|$ForceMove %s|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_ARE_REDIRECTED_TO], sLine, LanguageManager::m_Ptr->m_sTexts[LAN_BY_LWR], SettingManager::m_Ptr->m_sTexts[SETTXT_ADMIN_NICK], sLine);
 
-	if(SettingManager::m_Ptr->m_bBools[SETBOOL_SEND_STATUS_MESSAGES] == true) {
+	if(SettingManager::m_Ptr->m_bBools[SETBOOL_SEND_STATUS_MESSAGES] == true)
+	{
 		GlobalDataQueue::m_Ptr->StatusMessageFormat("OnRedirectOk", "<%s> *** %s %s %s %s %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], pUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_WAS_REDIRECTED_TO], sLine, LanguageManager::m_Ptr->m_sTexts[LAN_BY_LWR],
 		        SettingManager::m_Ptr->m_sTexts[SETTXT_ADMIN_NICK]);
 	}
 
 	char msg[2048];
 	int iMsgLen = snprintf(msg, 2048, "<%s> *** %s %s %s|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], pUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_WAS_REDIRECTED_TO], sLine);
-	if(iMsgLen > 0) {
+	if(iMsgLen > 0)
+	{
 		RichEditAppendText(MainWindowPageUsersChat::m_Ptr->m_hWndPageItems[MainWindowPageUsersChat::REDT_CHAT], msg);
 	}
 
@@ -772,42 +884,52 @@ void OnRedirectOk(char * sLine, const int iLen) {
 }
 //------------------------------------------------------------------------------
 
-void MainWindowPageUsersChat::RedirectUser() {
+void MainWindowPageUsersChat::RedirectUser()
+{
 	User * curUser = GetUser();
 
-	if(curUser == nullptr) {
+	if(curUser == nullptr)
+	{
 		return;
 	}
 
 	LineDialog * pRedirectDlg = new (std::nothrow) LineDialog(&OnRedirectOk);
 
-	if(pRedirectDlg != nullptr) {
+	if(pRedirectDlg != nullptr)
+	{
 		pRedirectDlg->DoModal(::GetParent(m_hWnd), LanguageManager::m_Ptr->m_sTexts[LAN_PLEASE_ENTER_REDIRECT_ADDRESS],
 		                      SettingManager::m_Ptr->m_sTexts[SETTXT_REDIRECT_ADDRESS] == nullptr ? "" : SettingManager::m_Ptr->m_sTexts[SETTXT_REDIRECT_ADDRESS]);
 	}
 }
 //------------------------------------------------------------------------------
 
-void MainWindowPageUsersChat::FocusFirstItem() {
+void MainWindowPageUsersChat::FocusFirstItem()
+{
 	::SetFocus(m_hWndPageItems[BTN_SHOW_CHAT]);
 }
 //------------------------------------------------------------------------------
 
-void MainWindowPageUsersChat::FocusLastItem() {
-	if(::IsWindowEnabled(m_hWndPageItems[BTN_UPDATE_USERS])) {
+void MainWindowPageUsersChat::FocusLastItem()
+{
+	if(::IsWindowEnabled(m_hWndPageItems[BTN_UPDATE_USERS]))
+	{
 		::SetFocus(m_hWndPageItems[BTN_UPDATE_USERS]);
-	} else {
+	}
+	else
+	{
 		::SetFocus(m_hWndPageItems[LV_USERS]);
 	}
 }
 //------------------------------------------------------------------------------
 
-HWND MainWindowPageUsersChat::GetWindowHandle() {
+HWND MainWindowPageUsersChat::GetWindowHandle()
+{
 	return m_hWnd;
 }
 //----------------------------------------------------------------------------------------------------------------------------------------------------
 
-void MainWindowPageUsersChat::UpdateSplitterParts() {
+void MainWindowPageUsersChat::UpdateSplitterParts()
+{
 	::SetWindowPos(m_hWndPageItems[REDT_CHAT], nullptr, 0, 0, m_iSplitterPos - 2, m_rcSplitter.bottom - GuiSettingManager::m_iEditHeight - GuiSettingManager::m_iCheckHeight - 4, SWP_NOMOVE | SWP_NOZORDER);
 	::SendMessage(m_hWndPageItems[REDT_CHAT], WM_VSCROLL, SB_BOTTOM, 0);
 	::SetWindowPos(m_hWndPageItems[LV_USERS], nullptr, m_iSplitterPos + 2, GuiSettingManager::m_iCheckHeight, m_rcSplitter.right - (m_iSplitterPos + 4), m_rcSplitter.bottom - GuiSettingManager::m_iEditHeight - GuiSettingManager::m_iCheckHeight - 4, SWP_NOZORDER);

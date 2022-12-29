@@ -765,7 +765,7 @@ void DcCommands::PreProcessData(DcCommand * pDcCommand)
 					OpForceMove(pDcCommand);
 					return;
 				}
-                        break;
+				break;
 			default:
 				break;
 			}
@@ -2410,8 +2410,8 @@ void DcCommands::MyPass(DcCommand * pDcCommand)
 				{
 					m_pPasswdBfCheck->m_pPrev = PassBfItem;
 					PassBfItem->m_pNext = m_pPasswdBfCheck;
-					m_pPasswdBfCheck = PassBfItem;
 				}
+				
 				m_pPasswdBfCheck = PassBfItem;
 			}
 			else
@@ -2607,35 +2607,38 @@ void DcCommands::OpForceMove(DcCommand * pDcCommand)
 	}
 
 	User *OtherUser = HashManager::m_Ptr->FindUser(sCmdParts[0], iCmdPartsLen[0]);
-    if(OtherUser) {
-        // Self redirect
-        if(OtherUser == pDcCommand->m_pUser) {
+	if(OtherUser)
+	{
+		// Self redirect
+		if(OtherUser == pDcCommand->m_pUser)
+		{
 			pDcCommand->m_pUser->SendFormat("DcCommands::OpForceMove2", true, "<%s> %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_CANT_REDIRECT_YOURSELF]);
 			return;
 		}
 
-   	    if(OtherUser->m_i32Profile != -1 && pDcCommand->m_pUser->m_i32Profile > OtherUser->m_i32Profile) {
+		if(OtherUser->m_i32Profile != -1 && pDcCommand->m_pUser->m_i32Profile > OtherUser->m_i32Profile)
+		{
 			pDcCommand->m_pUser->SendFormat("DcCommands::OpForceMove3", true, "<%s> %s %s|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_ARE_NOT_ALLOWED_TO_REDIRECT], OtherUser->m_sNick);
-            return;
-        }
+			return;
+		}
 
-        OtherUser->SendFormat("DcCommands::OpForceMove4", false, "<%s> %s %s %s %s. %s: %s|$ForceMove %s|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_ARE_REDIRECTED_TO], sCmdParts[1]+6, 
-			                      LanguageManager::m_Ptr->m_sTexts[LAN_BY_LWR], pDcCommand->m_pUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_MESSAGE], sCmdParts[2] + 4, sCmdParts[1] + 6);
+		OtherUser->SendFormat("DcCommands::OpForceMove4", false, "<%s> %s %s %s %s. %s: %s|$ForceMove %s|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_ARE_REDIRECTED_TO], sCmdParts[1]+6,
+		                      LanguageManager::m_Ptr->m_sTexts[LAN_BY_LWR], pDcCommand->m_pUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_MESSAGE], sCmdParts[2] + 4, sCmdParts[1] + 6);
 
-			// PPK ... close user !!!
-			UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) redirected by %s", OtherUser->m_sNick, OtherUser->m_sIP, pDcCommand->m_pUser->m_sNick);
+		// PPK ... close user !!!
+		UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) redirected by %s", OtherUser->m_sNick, OtherUser->m_sIP, pDcCommand->m_pUser->m_sNick);
 
-			OtherUser->Close();
+		OtherUser->Close();
 
-			if (SettingManager::m_Ptr->m_bBools[SETBOOL_SEND_STATUS_MESSAGES] == true)
-			{
-				GlobalDataQueue::m_Ptr->StatusMessageFormat("DcCommands::OpForceMove", "<%s> *** %s %s %s %s %s. %s: %s|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], OtherUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_IS_REDIRECTED_TO], sCmdParts[1] + 6,
-				        LanguageManager::m_Ptr->m_sTexts[LAN_BY_LWR], pDcCommand->m_pUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_MESSAGE], sCmdParts[2] + 4);
-			}
+		if (SettingManager::m_Ptr->m_bBools[SETBOOL_SEND_STATUS_MESSAGES] == true)
+		{
+			GlobalDataQueue::m_Ptr->StatusMessageFormat("DcCommands::OpForceMove", "<%s> *** %s %s %s %s %s. %s: %s|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], OtherUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_IS_REDIRECTED_TO], sCmdParts[1] + 6,
+			        LanguageManager::m_Ptr->m_sTexts[LAN_BY_LWR], pDcCommand->m_pUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_MESSAGE], sCmdParts[2] + 4);
+		}
 
-			if (SettingManager::m_Ptr->m_bBools[SETBOOL_SEND_STATUS_MESSAGES] == false || ((pDcCommand->m_pUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == false)
-			{
-				pDcCommand->m_pUser->SendFormat("DcCommands::OpForceMove4", true, "<%s> *** %s %s %s. %s: %s|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], OtherUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_IS_REDIRECTED_TO], sCmdParts[1] + 6, LanguageManager::m_Ptr->m_sTexts[LAN_MESSAGE], sCmdParts[2] + 4);
+		if (SettingManager::m_Ptr->m_bBools[SETBOOL_SEND_STATUS_MESSAGES] == false || ((pDcCommand->m_pUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == false)
+		{
+			pDcCommand->m_pUser->SendFormat("DcCommands::OpForceMove4", true, "<%s> *** %s %s %s. %s: %s|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], OtherUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_IS_REDIRECTED_TO], sCmdParts[1] + 6, LanguageManager::m_Ptr->m_sTexts[LAN_MESSAGE], sCmdParts[2] + 4);
 		}
 	}
 }
@@ -4213,7 +4216,8 @@ void DcCommands::ProcessCmds(User * pUser)
 			pUser->HasSuspiciousTag();
 		}
 		// alex82 ... HideUser / ������� �����
-		if (((pUser->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == false) {
+		if (((pUser->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == false)
+		{
 			if (SettingManager::m_Ptr->m_ui8FullMyINFOOption == 0)
 			{
 				if (pUser->GenerateMyInfoLong() == false)

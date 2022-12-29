@@ -36,19 +36,23 @@
 static ATOM atomBanDialog = 0;
 //---------------------------------------------------------------------------
 
-BanDialog::BanDialog() : m_pBanToChange(nullptr) {
+BanDialog::BanDialog() : m_pBanToChange(nullptr)
+{
 	memset(&m_hWndWindowItems, 0, sizeof(m_hWndWindowItems));
 }
 //---------------------------------------------------------------------------
 
-BanDialog::~BanDialog() {
+BanDialog::~BanDialog()
+{
 }
 //---------------------------------------------------------------------------
 
-LRESULT CALLBACK BanDialog::StaticBanDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK BanDialog::StaticBanDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
 	BanDialog * pBanDialog = (BanDialog *)::GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
-	if(pBanDialog == nullptr) {
+	if(pBanDialog == nullptr)
+	{
 		return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
 
@@ -56,33 +60,41 @@ LRESULT CALLBACK BanDialog::StaticBanDialogProc(HWND hWnd, UINT uMsg, WPARAM wPa
 }
 //------------------------------------------------------------------------------
 
-LRESULT BanDialog::BanDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	switch(uMsg) {
+LRESULT BanDialog::BanDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch(uMsg)
+	{
 	case WM_COMMAND:
-		switch(LOWORD(wParam)) {
+		switch(LOWORD(wParam))
+		{
 		case IDOK:
-			if(OnAccept() == false) {
+			if(OnAccept() == false)
+			{
 				return 0;
 			}
 		case IDCANCEL:
 			::PostMessage(m_hWndWindowItems[WINDOW_HANDLE], WM_CLOSE, 0, 0);
 			return 0;
 		case (EDT_NICK+100):
-			if(HIWORD(wParam) == EN_CHANGE) {
+			if(HIWORD(wParam) == EN_CHANGE)
+			{
 				char buf[65];
 				::GetWindowText((HWND)lParam, buf, 65);
 
 				bool bChanged = false;
 
-				for(uint16_t ui16i = 0; buf[ui16i] != '\0'; ui16i++) {
-					if(buf[ui16i] == '|' || buf[ui16i] == '$' || buf[ui16i] == ' ') {
+				for(uint16_t ui16i = 0; buf[ui16i] != '\0'; ui16i++)
+				{
+					if(buf[ui16i] == '|' || buf[ui16i] == '$' || buf[ui16i] == ' ')
+					{
 						strcpy(buf+ui16i, buf+ui16i+1);
 						bChanged = true;
 						ui16i--;
 					}
 				}
 
-				if(bChanged == true) {
+				if(bChanged == true)
+				{
 					int iStart, iEnd;
 
 					::SendMessage((HWND)lParam, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
@@ -97,7 +109,8 @@ LRESULT BanDialog::BanDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 			break;
 		case BTN_IP_BAN:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				bool bChecked = ::SendMessage(m_hWndWindowItems[BTN_IP_BAN], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false;
 				::EnableWindow(m_hWndWindowItems[BTN_FULL_BAN], bChecked == true ? TRUE : FALSE);
 
@@ -106,14 +119,16 @@ LRESULT BanDialog::BanDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 			break;
 		case RB_PERM_BAN:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				::EnableWindow(m_hWndWindowItems[DT_TEMP_BAN_EXPIRE_DATE], FALSE);
 				::EnableWindow(m_hWndWindowItems[DT_TEMP_BAN_EXPIRE_TIME], FALSE);
 			}
 
 			break;
 		case RB_TEMP_BAN:
-			if(HIWORD(wParam) == BN_CLICKED) {
+			if(HIWORD(wParam) == BN_CLICKED)
+			{
 				::EnableWindow(m_hWndWindowItems[DT_TEMP_BAN_EXPIRE_DATE], TRUE);
 				::EnableWindow(m_hWndWindowItems[DT_TEMP_BAN_EXPIRE_TIME], TRUE);
 			}
@@ -126,7 +141,8 @@ LRESULT BanDialog::BanDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		::EnableWindow(::GetParent(m_hWndWindowItems[WINDOW_HANDLE]), TRUE);
 		ServerManager::m_hWndActiveDialog = nullptr;
 		break;
-	case WM_NCDESTROY: {
+	case WM_NCDESTROY:
+	{
 		HWND hWnd = m_hWndWindowItems[WINDOW_HANDLE];
 		delete this;
 		return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
@@ -140,10 +156,12 @@ LRESULT BanDialog::BanDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 }
 //------------------------------------------------------------------------------
 
-void BanDialog::DoModal(HWND hWndParent, BanItem * pBan/* = nullptr*/) {
+void BanDialog::DoModal(HWND hWndParent, BanItem * pBan/* = nullptr*/)
+{
 	m_pBanToChange = pBan;
 
-	if(atomBanDialog == 0) {
+	if(atomBanDialog == 0)
+	{
 		WNDCLASSEX m_wc;
 		memset(&m_wc, 0, sizeof(WNDCLASSEX));
 		m_wc.cbSize = sizeof(WNDCLASSEX);
@@ -167,7 +185,8 @@ void BanDialog::DoModal(HWND hWndParent, BanItem * pBan/* = nullptr*/) {
 	                                   WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, iX >= 5 ? iX : 5, iY >= 5 ? iY : 5, ScaleGui(300), ScaleGui(394),
 	                                   hWndParent, nullptr, ServerManager::m_hInstance, nullptr);
 
-	if(m_hWndWindowItems[WINDOW_HANDLE] == nullptr) {
+	if(m_hWndWindowItems[WINDOW_HANDLE] == nullptr)
+	{
 		return;
 	}
 
@@ -183,7 +202,8 @@ void BanDialog::DoModal(HWND hWndParent, BanItem * pBan/* = nullptr*/) {
 
 		int iDiff = rcParent.bottom - iHeight;
 
-		if(iDiff != 0) {
+		if(iDiff != 0)
+		{
 			::GetWindowRect(hWndParent, &rcParent);
 
 			iY = (rcParent.top + ((rcParent.bottom-rcParent.top)/2)) - ((ScaleGui(307) - iDiff) / 2);
@@ -271,44 +291,54 @@ void BanDialog::DoModal(HWND hWndParent, BanItem * pBan/* = nullptr*/) {
 	m_hWndWindowItems[BTN_DISCARD] = ::CreateWindowEx(0, WC_BUTTON, LanguageManager::m_Ptr->m_sTexts[LAN_DISCARD], WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
 	                                 (rcParent.right / 2) + 2, iPosY, (rcParent.right / 2) - 4, GuiSettingManager::m_iEditHeight, m_hWndWindowItems[WINDOW_HANDLE], (HMENU)IDCANCEL, ServerManager::m_hInstance, nullptr);
 
-	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndWindowItems) / sizeof(m_hWndWindowItems[0])); ui8i++) {
-		if(m_hWndWindowItems[ui8i] == nullptr) {
+	for(uint8_t ui8i = 0; ui8i < (sizeof(m_hWndWindowItems) / sizeof(m_hWndWindowItems[0])); ui8i++)
+	{
+		if(m_hWndWindowItems[ui8i] == nullptr)
+		{
 			return;
 		}
 
 		::SendMessage(m_hWndWindowItems[ui8i], WM_SETFONT, (WPARAM)GuiSettingManager::m_hFont, MAKELPARAM(TRUE, 0));
 	}
 
-	if(m_pBanToChange != nullptr) {
-		if(m_pBanToChange->m_sNick != nullptr) {
+	if(m_pBanToChange != nullptr)
+	{
+		if(m_pBanToChange->m_sNick != nullptr)
+		{
 			::SetWindowText(m_hWndWindowItems[EDT_NICK], m_pBanToChange->m_sNick);
 
-			if(((m_pBanToChange->m_ui8Bits & BanManager::NICK) == BanManager::NICK) == true) {
+			if(((m_pBanToChange->m_ui8Bits & BanManager::NICK) == BanManager::NICK) == true)
+			{
 				::SendMessage(m_hWndWindowItems[BTN_NICK_BAN], BM_SETCHECK, BST_CHECKED, 0);
 			}
 		}
 
 		::SetWindowText(m_hWndWindowItems[EDT_IP], m_pBanToChange->m_sIp);
 
-		if(((m_pBanToChange->m_ui8Bits & BanManager::IP) == BanManager::IP) == true) {
+		if(((m_pBanToChange->m_ui8Bits & BanManager::IP) == BanManager::IP) == true)
+		{
 			::SendMessage(m_hWndWindowItems[BTN_IP_BAN], BM_SETCHECK, BST_CHECKED, 0);
 
 			::EnableWindow(m_hWndWindowItems[BTN_FULL_BAN], TRUE);
 
-			if(((m_pBanToChange->m_ui8Bits & BanManager::FULL) == BanManager::FULL) == true) {
+			if(((m_pBanToChange->m_ui8Bits & BanManager::FULL) == BanManager::FULL) == true)
+			{
 				::SendMessage(m_hWndWindowItems[BTN_FULL_BAN], BM_SETCHECK, BST_CHECKED, 0);
 			}
 		}
 
-		if(m_pBanToChange->m_sReason != nullptr) {
+		if(m_pBanToChange->m_sReason != nullptr)
+		{
 			::SetWindowText(m_hWndWindowItems[EDT_REASON], m_pBanToChange->m_sReason);
 		}
 
-		if(m_pBanToChange->m_sBy != nullptr) {
+		if(m_pBanToChange->m_sBy != nullptr)
+		{
 			::SetWindowText(m_hWndWindowItems[EDT_BY], m_pBanToChange->m_sBy);
 		}
 
-		if(((m_pBanToChange->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == true) {
+		if(((m_pBanToChange->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == true)
+		{
 			::SendMessage(m_hWndWindowItems[RB_PERM_BAN], BM_SETCHECK, BST_UNCHECKED, 0);
 			::SendMessage(m_hWndWindowItems[RB_TEMP_BAN], BM_SETCHECK, BST_CHECKED, 0);
 
@@ -338,18 +368,21 @@ void BanDialog::DoModal(HWND hWndParent, BanItem * pBan/* = nullptr*/) {
 }
 //------------------------------------------------------------------------------
 
-bool BanDialog::OnAccept() {
+bool BanDialog::OnAccept()
+{
 	bool bNickBan = ::SendMessage(m_hWndWindowItems[BTN_NICK_BAN], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false;
 	bool bIpBan = ::SendMessage(m_hWndWindowItems[BTN_IP_BAN], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false;
 
-	if(bNickBan == false && bIpBan == false) {
+	if(bNickBan == false && bIpBan == false)
+	{
 		::MessageBox(m_hWndWindowItems[WINDOW_HANDLE], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_CANT_CREATE_BAN_WITHOUT_NICK_OR_IP], g_sPtokaXTitle, MB_OK | MB_ICONEXCLAMATION);
 		return false;
 	}
 
 	int iNickLen = ::GetWindowTextLength(m_hWndWindowItems[EDT_NICK]);
 
-	if(bNickBan == true && iNickLen == 0) {
+	if(bNickBan == true && iNickLen == 0)
+	{
 		::MessageBox(m_hWndWindowItems[WINDOW_HANDLE], LanguageManager::m_Ptr->m_sTexts[LAN_FOR_NICK_BAN_SPECIFY_NICK], g_sPtokaXTitle, MB_OK | MB_ICONEXCLAMATION);
 		return false;
 	}
@@ -362,11 +395,15 @@ bool BanDialog::OnAccept() {
 	uint8_t ui128IpHash[16];
 	memset(ui128IpHash, 0, 16);
 
-	if(bIpBan == true) {
-		if(iIpLen == 0) {
+	if(bIpBan == true)
+	{
+		if(iIpLen == 0)
+		{
 			::MessageBox(m_hWndWindowItems[WINDOW_HANDLE], LanguageManager::m_Ptr->m_sTexts[LAN_FOR_IP_BAN_SPECIFY_IP], g_sPtokaXTitle, MB_OK | MB_ICONEXCLAMATION);
 			return false;
-		} else if(HashIP(sIP, ui128IpHash) == false) {
+		}
+		else if(HashIP(sIP, ui128IpHash) == false)
+		{
 			::MessageBox(m_hWndWindowItems[WINDOW_HANDLE], (string(sIP) + " " + LanguageManager::m_Ptr->m_sTexts[LAN_IS_NOT_VALID_IP_ADDRESS]).c_str(), g_sPtokaXTitle, MB_OK | MB_ICONEXCLAMATION);
 			return false;
 		}
@@ -379,11 +416,13 @@ bool BanDialog::OnAccept() {
 
 	bool bTempBan = ::SendMessage(m_hWndWindowItems[RB_TEMP_BAN], BM_GETCHECK, 0, 0) == BST_CHECKED ? true : false;
 
-	if(bTempBan == true) {
+	if(bTempBan == true)
+	{
 		SYSTEMTIME stDate = { 0 };
 		SYSTEMTIME stTime = { 0 };
 
-		if(::SendMessage(m_hWndWindowItems[DT_TEMP_BAN_EXPIRE_DATE], DTM_GETSYSTEMTIME, 0, (LPARAM)&stDate) != GDT_VALID || ::SendMessage(m_hWndWindowItems[DT_TEMP_BAN_EXPIRE_TIME], DTM_GETSYSTEMTIME, 0, (LPARAM)&stTime) != GDT_VALID) {
+		if(::SendMessage(m_hWndWindowItems[DT_TEMP_BAN_EXPIRE_DATE], DTM_GETSYSTEMTIME, 0, (LPARAM)&stDate) != GDT_VALID || ::SendMessage(m_hWndWindowItems[DT_TEMP_BAN_EXPIRE_TIME], DTM_GETSYSTEMTIME, 0, (LPARAM)&stTime) != GDT_VALID)
+		{
 			::MessageBox(m_hWndWindowItems[WINDOW_HANDLE], LanguageManager::m_Ptr->m_sTexts[LAN_BAD_TIME_SPECIFIED], g_sPtokaXTitle, MB_OK | MB_ICONEXCLAMATION);
 
 			return false;
@@ -403,43 +442,54 @@ bool BanDialog::OnAccept() {
 
 		ban_time = mktime(tm);
 
-		if(ban_time == (time_t)-1 || ban_time <= acc_time) {
+		if(ban_time == (time_t)-1 || ban_time <= acc_time)
+		{
 			::MessageBox(m_hWndWindowItems[WINDOW_HANDLE], LanguageManager::m_Ptr->m_sTexts[LAN_BAD_TIME_SPECIFIED_BAN_EXPIRED], g_sPtokaXTitle, MB_OK | MB_ICONEXCLAMATION);
 
 			return false;
 		}
 	}
 
-	if(m_pBanToChange == nullptr) {
+	if(m_pBanToChange == nullptr)
+	{
 		BanItem * pBan = new (std::nothrow) BanItem();
-		if(pBan == nullptr) {
+		if(pBan == nullptr)
+		{
 			AppendDebugLog("%s - [MEM] Cannot allocate Ban in BanDialog::OnAccept\n");
 			return false;
 		}
 
-		if(iIpLen != 0) {
+		if(iIpLen != 0)
+		{
 			strcpy(pBan->m_sIp, sIP);
 			memcpy(pBan->m_ui128IpHash, ui128IpHash, 16);
 
-			if(bIpBan == true) {
+			if(bIpBan == true)
+			{
 				pBan->m_ui8Bits |= BanManager::IP;
 
-				if(::SendMessage(m_hWndWindowItems[BTN_FULL_BAN], BM_GETCHECK, 0, 0) == BST_CHECKED) {
+				if(::SendMessage(m_hWndWindowItems[BTN_FULL_BAN], BM_GETCHECK, 0, 0) == BST_CHECKED)
+				{
 					pBan->m_ui8Bits |= BanManager::FULL;
 				}
 			}
 		}
 
-		if(bTempBan == true) {
+		if(bTempBan == true)
+		{
 			pBan->m_ui8Bits |= BanManager::TEMP;
 			pBan->m_tTempBanExpire = ban_time;
-		} else {
+		}
+		else
+		{
 			pBan->m_ui8Bits |= BanManager::PERM;
 		}
 
-		if(iNickLen != 0) {
+		if(iNickLen != 0)
+		{
 			pBan->m_sNick = (char *)malloc(iNickLen+1);
-			if(pBan->m_sNick == nullptr) {
+			if(pBan->m_sNick == nullptr)
+			{
 				AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for sNick in BanDialog::OnAccept\n", iNickLen+1);
 				delete pBan;
 
@@ -449,13 +499,15 @@ bool BanDialog::OnAccept() {
 			::GetWindowText(m_hWndWindowItems[EDT_NICK], pBan->m_sNick, iNickLen+1);
 			pBan->m_ui32NickHash = HashNick(pBan->m_sNick, iNickLen);
 
-			if(bNickBan == true) {
+			if(bNickBan == true)
+			{
 				pBan->m_ui8Bits |= BanManager::NICK;
 
 				// PPK ... not allow same nickbans !
 				BanItem *nxtBan = BanManager::m_Ptr->FindNick(pBan->m_ui32NickHash, acc_time, pBan->m_sNick);
 
-				if(nxtBan != nullptr) {
+				if(nxtBan != nullptr)
+				{
 					// PPK ... same ban exist, delete new
 					delete pBan;
 
@@ -465,10 +517,12 @@ bool BanDialog::OnAccept() {
 			}
 		}
 
-		if(bIpBan == true) {
+		if(bIpBan == true)
+		{
 			BanItem *nxtBan = BanManager::m_Ptr->FindIP(pBan->m_ui128IpHash, acc_time);
 
-			if(nxtBan != nullptr) {
+			if(nxtBan != nullptr)
+			{
 				// PPK ... same ban exist, delete new
 				delete pBan;
 
@@ -479,9 +533,11 @@ bool BanDialog::OnAccept() {
 
 		int iReasonLen = ::GetWindowTextLength(m_hWndWindowItems[EDT_REASON]);
 
-		if(iReasonLen != 0) {
+		if(iReasonLen != 0)
+		{
 			pBan->m_sReason = (char *)malloc(iReasonLen+1);
-			if(pBan->m_sReason == nullptr) {
+			if(pBan->m_sReason == nullptr)
+			{
 				AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for sReason in BanDialog::OnAccept\n", iReasonLen+1);
 
 				delete pBan;
@@ -494,9 +550,11 @@ bool BanDialog::OnAccept() {
 
 		int iByLen = ::GetWindowTextLength(m_hWndWindowItems[EDT_BY]);
 
-		if(iByLen != 0) {
+		if(iByLen != 0)
+		{
 			pBan->m_sBy = (char *)malloc(iByLen+1);
-			if(pBan->m_sBy == nullptr) {
+			if(pBan->m_sBy == nullptr)
+			{
 				AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for sBy in BanDialog::OnAccept\n", iByLen+1);
 
 				delete pBan;
@@ -507,15 +565,20 @@ bool BanDialog::OnAccept() {
 			::GetWindowText(m_hWndWindowItems[EDT_BY], pBan->m_sBy, iByLen+1);
 		}
 
-		if(BanManager::m_Ptr->Add(pBan) == false) {
+		if(BanManager::m_Ptr->Add(pBan) == false)
+		{
 			delete pBan;
 			return false;
 		}
 
 		return true;
-	} else {
-		if(m_pBanToChange->m_sIp[0] != '\0' && iIpLen == 0) {
-			if(((m_pBanToChange->m_ui8Bits & BanManager::IP) == BanManager::IP) == true) {
+	}
+	else
+	{
+		if(m_pBanToChange->m_sIp[0] != '\0' && iIpLen == 0)
+		{
+			if(((m_pBanToChange->m_ui8Bits & BanManager::IP) == BanManager::IP) == true)
+			{
 				BanManager::m_Ptr->RemFromIpTable(m_pBanToChange);
 			}
 
@@ -524,25 +587,33 @@ bool BanDialog::OnAccept() {
 
 			m_pBanToChange->m_ui8Bits &= ~BanManager::IP;
 			m_pBanToChange->m_ui8Bits &= ~BanManager::FULL;
-		} else if((m_pBanToChange->m_sIp[0] == '\0' && iIpLen != 0) ||
-		          (m_pBanToChange->m_sIp[0] != '\0' && iIpLen != 0 && strcmp(m_pBanToChange->m_sIp, sIP) != 0)) {
-			if(((m_pBanToChange->m_ui8Bits & BanManager::IP) == BanManager::IP) == true) {
+		}
+		else if((m_pBanToChange->m_sIp[0] == '\0' && iIpLen != 0) ||
+		        (m_pBanToChange->m_sIp[0] != '\0' && iIpLen != 0 && strcmp(m_pBanToChange->m_sIp, sIP) != 0))
+		{
+			if(((m_pBanToChange->m_ui8Bits & BanManager::IP) == BanManager::IP) == true)
+			{
 				BanManager::m_Ptr->RemFromIpTable(m_pBanToChange);
 			}
 
 			strcpy(m_pBanToChange->m_sIp, sIP);
 			memcpy(m_pBanToChange->m_ui128IpHash, ui128IpHash, 16);
 
-			if(bIpBan == true) {
+			if(bIpBan == true)
+			{
 				m_pBanToChange->m_ui8Bits |= BanManager::IP;
 
-				if(::SendMessage(m_hWndWindowItems[BTN_FULL_BAN], BM_GETCHECK, 0, 0) == BST_CHECKED) {
+				if(::SendMessage(m_hWndWindowItems[BTN_FULL_BAN], BM_GETCHECK, 0, 0) == BST_CHECKED)
+				{
 					m_pBanToChange->m_ui8Bits |= BanManager::FULL;
-				} else {
+				}
+				else
+				{
 					m_pBanToChange->m_ui8Bits &= ~BanManager::FULL;
 				}
 
-				if(BanManager::m_Ptr->Add2IpTable(m_pBanToChange) == false) {
+				if(BanManager::m_Ptr->Add2IpTable(m_pBanToChange) == false)
+				{
 					BanManager::m_Ptr->Rem(m_pBanToChange);
 
 					delete m_pBanToChange;
@@ -550,16 +621,22 @@ bool BanDialog::OnAccept() {
 
 					return false;
 				}
-			} else {
+			}
+			else
+			{
 				m_pBanToChange->m_ui8Bits &= ~BanManager::IP;
 				m_pBanToChange->m_ui8Bits &= ~BanManager::FULL;
 			}
 		}
 
-		if(iIpLen != 0) {
-			if(bIpBan == true) {
-				if(((m_pBanToChange->m_ui8Bits & BanManager::IP) == BanManager::IP) == false) {
-					if(BanManager::m_Ptr->Add2IpTable(m_pBanToChange) == false) {
+		if(iIpLen != 0)
+		{
+			if(bIpBan == true)
+			{
+				if(((m_pBanToChange->m_ui8Bits & BanManager::IP) == BanManager::IP) == false)
+				{
+					if(BanManager::m_Ptr->Add2IpTable(m_pBanToChange) == false)
+					{
 						BanManager::m_Ptr->Rem(m_pBanToChange);
 
 						delete m_pBanToChange;
@@ -571,13 +648,19 @@ bool BanDialog::OnAccept() {
 
 				m_pBanToChange->m_ui8Bits |= BanManager::IP;
 
-				if(::SendMessage(m_hWndWindowItems[BTN_FULL_BAN], BM_GETCHECK, 0, 0) == BST_CHECKED) {
+				if(::SendMessage(m_hWndWindowItems[BTN_FULL_BAN], BM_GETCHECK, 0, 0) == BST_CHECKED)
+				{
 					m_pBanToChange->m_ui8Bits |= BanManager::FULL;
-				} else {
+				}
+				else
+				{
 					m_pBanToChange->m_ui8Bits &= ~BanManager::FULL;
 				}
-			} else {
-				if(((m_pBanToChange->m_ui8Bits & BanManager::IP) == BanManager::IP) == true) {
+			}
+			else
+			{
+				if(((m_pBanToChange->m_ui8Bits & BanManager::IP) == BanManager::IP) == true)
+				{
 					BanManager::m_Ptr->RemFromIpTable(m_pBanToChange);
 				}
 
@@ -586,23 +669,33 @@ bool BanDialog::OnAccept() {
 			}
 		}
 
-		if(bTempBan == true) {
-			if(((m_pBanToChange->m_ui8Bits & BanManager::PERM) == BanManager::PERM) == true) {
+		if(bTempBan == true)
+		{
+			if(((m_pBanToChange->m_ui8Bits & BanManager::PERM) == BanManager::PERM) == true)
+			{
 				m_pBanToChange->m_ui8Bits &= ~BanManager::PERM;
 
 				// remove from perm
-				if(m_pBanToChange->m_pPrev == nullptr) {
-					if(m_pBanToChange->m_pNext == nullptr) {
+				if(m_pBanToChange->m_pPrev == nullptr)
+				{
+					if(m_pBanToChange->m_pNext == nullptr)
+					{
 						BanManager::m_Ptr->m_pPermBanListS = nullptr;
 						BanManager::m_Ptr->m_pPermBanListE = nullptr;
-					} else {
+					}
+					else
+					{
 						m_pBanToChange->m_pNext->m_pPrev = nullptr;
 						BanManager::m_Ptr->m_pPermBanListS = m_pBanToChange->m_pNext;
 					}
-				} else if(m_pBanToChange->m_pNext == nullptr) {
+				}
+				else if(m_pBanToChange->m_pNext == nullptr)
+				{
 					m_pBanToChange->m_pPrev->m_pNext = nullptr;
 					BanManager::m_Ptr->m_pPermBanListE = m_pBanToChange->m_pPrev;
-				} else {
+				}
+				else
+				{
 					m_pBanToChange->m_pPrev->m_pNext = m_pBanToChange->m_pNext;
 					m_pBanToChange->m_pNext->m_pPrev = m_pBanToChange->m_pPrev;
 				}
@@ -611,10 +704,13 @@ bool BanDialog::OnAccept() {
 				m_pBanToChange->m_pNext = nullptr;
 
 				// add to temp
-				if(BanManager::m_Ptr->m_pTempBanListE == nullptr) {
+				if(BanManager::m_Ptr->m_pTempBanListE == nullptr)
+				{
 					BanManager::m_Ptr->m_pTempBanListS = m_pBanToChange;
 					BanManager::m_Ptr->m_pTempBanListE = m_pBanToChange;
-				} else {
+				}
+				else
+				{
 					BanManager::m_Ptr->m_pTempBanListE->m_pNext = m_pBanToChange;
 					m_pBanToChange->m_pPrev = BanManager::m_Ptr->m_pTempBanListE;
 					BanManager::m_Ptr->m_pTempBanListE = m_pBanToChange;
@@ -623,23 +719,34 @@ bool BanDialog::OnAccept() {
 
 			m_pBanToChange->m_ui8Bits |= BanManager::TEMP;
 			m_pBanToChange->m_tTempBanExpire = ban_time;
-		} else {
-			if(((m_pBanToChange->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == true) {
+		}
+		else
+		{
+			if(((m_pBanToChange->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == true)
+			{
 				m_pBanToChange->m_ui8Bits &= ~BanManager::TEMP;
 
 				// remove from temp
-				if(m_pBanToChange->m_pPrev == nullptr) {
-					if(m_pBanToChange->m_pNext == nullptr) {
+				if(m_pBanToChange->m_pPrev == nullptr)
+				{
+					if(m_pBanToChange->m_pNext == nullptr)
+					{
 						BanManager::m_Ptr->m_pTempBanListS = nullptr;
 						BanManager::m_Ptr->m_pTempBanListE = nullptr;
-					} else {
+					}
+					else
+					{
 						m_pBanToChange->m_pNext->m_pPrev = nullptr;
 						BanManager::m_Ptr->m_pTempBanListS = m_pBanToChange->m_pNext;
 					}
-				} else if(m_pBanToChange->m_pNext == nullptr) {
+				}
+				else if(m_pBanToChange->m_pNext == nullptr)
+				{
 					m_pBanToChange->m_pPrev->m_pNext = nullptr;
 					BanManager::m_Ptr->m_pTempBanListE = m_pBanToChange->m_pPrev;
-				} else {
+				}
+				else
+				{
 					m_pBanToChange->m_pPrev->m_pNext = m_pBanToChange->m_pNext;
 					m_pBanToChange->m_pNext->m_pPrev = m_pBanToChange->m_pPrev;
 				}
@@ -648,10 +755,13 @@ bool BanDialog::OnAccept() {
 				m_pBanToChange->m_pNext = nullptr;
 
 				// add to perm
-				if(BanManager::m_Ptr->m_pPermBanListE == nullptr) {
+				if(BanManager::m_Ptr->m_pPermBanListE == nullptr)
+				{
 					BanManager::m_Ptr->m_pPermBanListS = m_pBanToChange;
 					BanManager::m_Ptr->m_pPermBanListE = m_pBanToChange;
-				} else {
+				}
+				else
+				{
 					BanManager::m_Ptr->m_pPermBanListE->m_pNext = m_pBanToChange;
 					m_pBanToChange->m_pPrev = BanManager::m_Ptr->m_pPermBanListE;
 					BanManager::m_Ptr->m_pPermBanListE = m_pBanToChange;
@@ -663,9 +773,11 @@ bool BanDialog::OnAccept() {
 		}
 
 		char * sNick = nullptr;
-		if(iNickLen != 0) {
+		if(iNickLen != 0)
+		{
 			sNick = (char *)malloc(iNickLen+1);
-			if(sNick == nullptr) {
+			if(sNick == nullptr)
+			{
 				AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for sNick in BanDialog::OnAccept\n", iNickLen+1);
 
 				return false;
@@ -674,8 +786,10 @@ bool BanDialog::OnAccept() {
 			::GetWindowText(m_hWndWindowItems[EDT_NICK], sNick, iNickLen+1);
 		}
 
-		if(m_pBanToChange->m_sNick != nullptr && iNickLen == 0) {
-			if(((m_pBanToChange->m_ui8Bits & BanManager::NICK) == BanManager::NICK) == true) {
+		if(m_pBanToChange->m_sNick != nullptr && iNickLen == 0)
+		{
+			if(((m_pBanToChange->m_ui8Bits & BanManager::NICK) == BanManager::NICK) == true)
+			{
 				BanManager::m_Ptr->RemFromNickTable(m_pBanToChange);
 			}
 
@@ -685,13 +799,17 @@ bool BanDialog::OnAccept() {
 			m_pBanToChange->m_ui32NickHash = 0;
 
 			m_pBanToChange->m_ui8Bits &= ~BanManager::NICK;
-		} else if((m_pBanToChange->m_sNick == nullptr && iNickLen != 0) ||
-		          (m_pBanToChange->m_sNick != nullptr && iNickLen != 0 && strcmp(m_pBanToChange->m_sNick, sNick) != 0)) {
-			if(((m_pBanToChange->m_ui8Bits & BanManager::NICK) == BanManager::NICK) == true) {
+		}
+		else if((m_pBanToChange->m_sNick == nullptr && iNickLen != 0) ||
+		        (m_pBanToChange->m_sNick != nullptr && iNickLen != 0 && strcmp(m_pBanToChange->m_sNick, sNick) != 0))
+		{
+			if(((m_pBanToChange->m_ui8Bits & BanManager::NICK) == BanManager::NICK) == true)
+			{
 				BanManager::m_Ptr->RemFromNickTable(m_pBanToChange);
 			}
 
-			if(m_pBanToChange->m_sNick != nullptr) {
+			if(m_pBanToChange->m_sNick != nullptr)
+			{
 				free(m_pBanToChange->m_sNick);
 				m_pBanToChange->m_sNick = nullptr;
 			}
@@ -700,28 +818,38 @@ bool BanDialog::OnAccept() {
 
 			m_pBanToChange->m_ui32NickHash = HashNick(m_pBanToChange->m_sNick, iNickLen);
 
-			if(bNickBan == true) {
+			if(bNickBan == true)
+			{
 				m_pBanToChange->m_ui8Bits |= BanManager::NICK;
 
 				BanManager::m_Ptr->Add2NickTable(m_pBanToChange);
-			} else {
+			}
+			else
+			{
 				m_pBanToChange->m_ui8Bits &= ~BanManager::NICK;
 			}
 		}
 
-		if(sNick != nullptr && (m_pBanToChange->m_sNick != sNick)) {
+		if(sNick != nullptr && (m_pBanToChange->m_sNick != sNick))
+		{
 			free(sNick);
 		}
 
-		if(iNickLen != 0) {
-			if(bNickBan == true) {
-				if(((m_pBanToChange->m_ui8Bits & BanManager::NICK) == BanManager::NICK) == false) {
+		if(iNickLen != 0)
+		{
+			if(bNickBan == true)
+			{
+				if(((m_pBanToChange->m_ui8Bits & BanManager::NICK) == BanManager::NICK) == false)
+				{
 					BanManager::m_Ptr->Add2NickTable(m_pBanToChange);
 				}
 
 				m_pBanToChange->m_ui8Bits |= BanManager::NICK;
-			} else {
-				if(((m_pBanToChange->m_ui8Bits & BanManager::NICK) == BanManager::NICK) == true) {
+			}
+			else
+			{
+				if(((m_pBanToChange->m_ui8Bits & BanManager::NICK) == BanManager::NICK) == true)
+				{
 					BanManager::m_Ptr->RemFromNickTable(m_pBanToChange);
 				}
 
@@ -733,9 +861,11 @@ bool BanDialog::OnAccept() {
 		int iReasonLen = ::GetWindowTextLength(m_hWndWindowItems[EDT_REASON]);
 
 		char * sReason = nullptr;
-		if(iReasonLen != 0) {
+		if(iReasonLen != 0)
+		{
 			sReason = (char *)malloc(iReasonLen+1);
-			if(sReason == nullptr) {
+			if(sReason == nullptr)
+			{
 				AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for sReason in BanDialog::OnAccept\n", iReasonLen+1);
 
 				return false;
@@ -744,30 +874,38 @@ bool BanDialog::OnAccept() {
 			::GetWindowText(m_hWndWindowItems[EDT_REASON], sReason, iReasonLen+1);
 		}
 
-		if(iReasonLen != 0) {
-			if(m_pBanToChange->m_sReason == nullptr || strcmp(m_pBanToChange->m_sReason, sReason) != 0) {
-				if(m_pBanToChange->m_sReason != nullptr) {
+		if(iReasonLen != 0)
+		{
+			if(m_pBanToChange->m_sReason == nullptr || strcmp(m_pBanToChange->m_sReason, sReason) != 0)
+			{
+				if(m_pBanToChange->m_sReason != nullptr)
+				{
 					free(m_pBanToChange->m_sReason);
 					m_pBanToChange->m_sReason = nullptr;
 				}
 
 				m_pBanToChange->m_sReason = sReason;
 			}
-		} else if(m_pBanToChange->m_sReason != nullptr) {
+		}
+		else if(m_pBanToChange->m_sReason != nullptr)
+		{
 			free(m_pBanToChange->m_sReason);
 			m_pBanToChange->m_sReason = nullptr;
 		}
 
-		if(sReason != nullptr && (m_pBanToChange->m_sReason != sReason)) {
+		if(sReason != nullptr && (m_pBanToChange->m_sReason != sReason))
+		{
 			free(sReason);
 		}
 
 		int iByLen = ::GetWindowTextLength(m_hWndWindowItems[EDT_BY]);
 
 		char * sBy = nullptr;
-		if(iByLen != 0) {
+		if(iByLen != 0)
+		{
 			sBy = (char *)malloc(iByLen+1);
-			if(sBy == nullptr) {
+			if(sBy == nullptr)
+			{
 				AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for sBy in BanDialog::OnAccept\n", iByLen+1);
 
 				return false;
@@ -776,25 +914,32 @@ bool BanDialog::OnAccept() {
 			::GetWindowText(m_hWndWindowItems[EDT_BY], sBy, iByLen+1);
 		}
 
-		if(iByLen != 0) {
-			if(m_pBanToChange->m_sBy == nullptr || strcmp(m_pBanToChange->m_sBy, sBy) != 0) {
-				if(m_pBanToChange->m_sBy != nullptr) {
+		if(iByLen != 0)
+		{
+			if(m_pBanToChange->m_sBy == nullptr || strcmp(m_pBanToChange->m_sBy, sBy) != 0)
+			{
+				if(m_pBanToChange->m_sBy != nullptr)
+				{
 					free(m_pBanToChange->m_sBy);
 					m_pBanToChange->m_sBy = nullptr;
 				}
 
 				m_pBanToChange->m_sBy = sBy;
 			}
-		} else if(m_pBanToChange->m_sBy != nullptr) {
+		}
+		else if(m_pBanToChange->m_sBy != nullptr)
+		{
 			free(m_pBanToChange->m_sBy);
 			m_pBanToChange->m_sBy = nullptr;
 		}
 
-		if(sBy != nullptr && (m_pBanToChange->m_sBy != sBy)) {
+		if(sBy != nullptr && (m_pBanToChange->m_sBy != sBy))
+		{
 			free(sBy);
 		}
 
-		if(BansDialog::m_Ptr != nullptr) {
+		if(BansDialog::m_Ptr != nullptr)
+		{
 			BansDialog::m_Ptr->RemoveBan(m_pBanToChange);
 			BansDialog::m_Ptr->AddBan(m_pBanToChange);
 		}
@@ -804,8 +949,10 @@ bool BanDialog::OnAccept() {
 }
 //------------------------------------------------------------------------------
 
-void BanDialog::BanDeleted(BanItem * pBan) {
-	if(m_pBanToChange == nullptr || pBan != m_pBanToChange) {
+void BanDialog::BanDeleted(BanItem * pBan)
+{
+	if(m_pBanToChange == nullptr || pBan != m_pBanToChange)
+	{
 		return;
 	}
 

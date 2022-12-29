@@ -189,7 +189,8 @@ bool HubCommands::AddRegUser(ChatCommand * pChatCommand)
 			if (((pOtherUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == true)
 			{
 				// alex82 ... HideUserKey / ������ ���� �����
-				if (((pOtherUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false) {
+				if (((pOtherUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false)
+				{
 					Users::m_Ptr->Add2OpList(pOtherUser);
 					GlobalDataQueue::m_Ptr->OpListStore(pOtherUser->m_sNick);
 				}

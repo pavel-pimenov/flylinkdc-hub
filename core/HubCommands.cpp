@@ -495,27 +495,33 @@ bool HubCommands::DoCommand(User * pUser, char * sCommand, const uint32_t ui32Cm
 }
 //---------------------------------------------------------------------------
 
-bool HubCommands::Ban(ChatCommand * pChatCommand, const bool bFull) {
+bool HubCommands::Ban(ChatCommand * pChatCommand, const bool bFull)
+{
 	char * sReason = strchr(pChatCommand->m_sCommand, ' ');
-    if(sReason != NULL) {
-        sReason[0] = '\0';
+	if(sReason != NULL)
+	{
+		sReason[0] = '\0';
 
-        if(sReason[1] == '\0') {
-		pChatCommand->m_ui32CommandLen = (uint32_t)(sReason - pChatCommand->m_sCommand);
+		if(sReason[1] == '\0')
+		{
+			pChatCommand->m_ui32CommandLen = (uint32_t)(sReason - pChatCommand->m_sCommand);
 
 			sReason = NULL;
-        } else {
+		}
+		else
+		{
 			sReason++;
 
 			uint32_t ui32ReasonLen = (uint32_t)(pChatCommand->m_ui32CommandLen - (sReason - pChatCommand->m_sCommand));
-			if(ui32ReasonLen > 511) {
+			if(ui32ReasonLen > 511)
+			{
 				sReason[508] = '.';
 				sReason[509] = '.';
 				sReason[510] = '.';
 				sReason[511] = '\0';
 			}
 
-            pChatCommand->m_ui32CommandLen = (uint32_t)(sReason - pChatCommand->m_sCommand) - 1;
+			pChatCommand->m_ui32CommandLen = (uint32_t)(sReason - pChatCommand->m_sCommand) - 1;
 		}
 	}
 

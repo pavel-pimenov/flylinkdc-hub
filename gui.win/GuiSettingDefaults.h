@@ -21,14 +21,16 @@
 #define GuiSettingDefaultsH
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-bool GuiSetBoolDef[] = {
+bool GuiSetBoolDef[] =
+{
 	false, // SHOW_CHAT
 	false, // SHOW_COMMANDS
 	false, // AUTO_UPDATE_USERLIST
 };
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-int32_t GuiSetIntegerDef[] = {
+int32_t GuiSetIntegerDef[] =
+{
 	400, // MAIN_WINDOW_WIDTH
 	318, // MAIN_WINDOW_HEIGHT
 	60, // USERS_CHAT_SPLITTER

@@ -23,13 +23,15 @@
 struct RangeBanItem;
 //------------------------------------------------------------------------------
 
-class RangeBansDialog {
+class RangeBansDialog
+{
 public:
 	static RangeBansDialog * m_Ptr;
 
 	HWND m_hWndWindowItems[8];
 
-	enum enmWindowItems {
+	enum enmWindowItems
+	{
 		WINDOW_HANDLE,
 		BTN_ADD_RANGE_BAN,
 		LV_RANGE_BANS,

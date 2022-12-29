@@ -23,7 +23,8 @@
 #include "SettingPage.h"
 //---------------------------------------------------------------------------
 
-class SettingPageRules2 : public SettingPage {
+class SettingPageRules2 : public SettingPage
+{
 public:
 	bool m_bUpdateSlotsLimitMessage, m_bUpdateHubSlotRatioMessage, m_bUpdateMaxHubsLimitMessage;
 
@@ -45,7 +46,8 @@ public:
 private:
 	HWND m_hWndPageItems[42];
 
-	enum enmPageItems {
+	enum enmPageItems
+	{
 		GB_SLOTS_LIMITS,
 		EDT_SLOTS_MIN,
 		UD_SLOTS_MIN,

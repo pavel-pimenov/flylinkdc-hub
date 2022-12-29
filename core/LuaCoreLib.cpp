@@ -191,9 +191,12 @@ static int RegBot(lua_State * pLua)
 		}
 
 		/*ScriptBot * */pNewBot = ScriptBot::CreateScriptBot(nick, szNickLen, description, szDescrLen, email, szEmailLen, bIsOP);
-	} else {
+	}
+	else
+	{
 		// alex82 ... RegBot /
-		if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING || lua_type(pLua, 3) != LUA_TBOOLEAN) {
+		if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING || lua_type(pLua, 3) != LUA_TBOOLEAN)
+		{
 			luaL_checktype(pLua, 1, LUA_TSTRING);
 			luaL_checktype(pLua, 2, LUA_TSTRING);
 			luaL_checktype(pLua, 3, LUA_TBOOLEAN);
@@ -212,7 +215,8 @@ static int RegBot(lua_State * pLua)
 		bool bIsOP = lua_toboolean(pLua, 3) == 0 ? false : true;
 
 		if (szNickLen == 0 || szNickLen > 64 || strpbrk(nick, " $|") != NULL ||
-		        HashManager::m_Ptr->FindUser(nick, szNickLen) != NULL || ReservedNicksManager::m_Ptr->CheckReserved(nick, HashNick(nick, szNickLen)) != false) {
+		        HashManager::m_Ptr->FindUser(nick, szNickLen) != NULL || ReservedNicksManager::m_Ptr->CheckReserved(nick, HashNick(nick, szNickLen)) != false)
+		{
 			lua_settop(pLua, 0);
 
 			lua_pushnil(pLua);
@@ -221,7 +225,8 @@ static int RegBot(lua_State * pLua)
 
 		char test_myinfo[(64 + 15)];
 		sprintf(test_myinfo, "$MyINFO $ALL %s ", nick);
-		if (memcmp(test_myinfo, myinfo, szNickLen + 14) != 0) {
+		if (memcmp(test_myinfo, myinfo, szNickLen + 14) != 0)
+		{
 			luaL_error(pLua, "invalid MyINFO string");
 			lua_settop(pLua, 0);
 
@@ -3100,11 +3105,11 @@ static int SetUserInfo(lua_State * pLua)
 				pUser->m_ui32InfoBits &= ~User::INFOBIT_SHARE_LONG_PERM;
 			}
 		}
-               else 
-                 {
-                   lua_settop(pLua, 0);
-                   return 0;
-                 }
+		else
+		{
+			lua_settop(pLua, 0);
+			return 0;
+		}
 	}
 	else
 	{
@@ -3118,8 +3123,10 @@ static int SetUserInfo(lua_State * pLua)
 }
 
 // alex82 ... HideUser / ������� �����
-static int HideUser(lua_State * L) {
-	if (lua_gettop(L) != 2) {
+static int HideUser(lua_State * L)
+{
+	if (lua_gettop(L) != 2)
+	{
 		luaL_error(L, "bad argument count to 'HideUser' (2 expected, got %d)", lua_gettop(L));
 		lua_settop(L, 0);
 
@@ -3127,7 +3134,8 @@ static int HideUser(lua_State * L) {
 		return 1;
 	}
 
-	if (lua_type(L, 1) != LUA_TTABLE || lua_type(L, 2) != LUA_TBOOLEAN) {
+	if (lua_type(L, 1) != LUA_TTABLE || lua_type(L, 2) != LUA_TBOOLEAN)
+	{
 		luaL_checktype(L, 1, LUA_TTABLE);
 		luaL_checktype(L, 2, LUA_TBOOLEAN);
 
@@ -3143,58 +3151,73 @@ static int HideUser(lua_State * L) {
 
 	lua_settop(L, 0);
 
-	if (u != NULL) {
-		if (bHide == true && ((u->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == false) {
+	if (u != NULL)
+	{
+		if (bHide == true && ((u->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == false)
+		{
 			char msg[72];
 
 			u->m_ui32InfoBits |= User::INFOBIT_HIDDEN;
 
-			if (u->m_ui8State >= User::STATE_ADDME_2LOOP) {
+			if (u->m_ui8State >= User::STATE_ADDME_2LOOP)
+			{
 				Users::m_Ptr->DelFromNickList(u->m_sNick, ((u->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR && ((u->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false));   // + HideUserKey
 
 				Users::m_Ptr->DelFromUserIP(u);
 
 				int imsgLen = sprintf(msg, "$Quit %s|", u->m_sNick);
-				if (CheckSprintf(imsgLen, 1024, "HideUser") == true) {
+				if (CheckSprintf(imsgLen, 1024, "HideUser") == true)
+				{
 					GlobalDataQueue::m_Ptr->AddQueueItem(msg, imsgLen, NULL, 0, GlobalDataQueue::CMD_QUIT);
 				}
 
-				if (((u->m_ui32BoolBits & User::BIT_HAVE_SHARECOUNTED) == User::BIT_HAVE_SHARECOUNTED) == true) {
+				if (((u->m_ui32BoolBits & User::BIT_HAVE_SHARECOUNTED) == User::BIT_HAVE_SHARECOUNTED) == true)
+				{
 					ServerManager::m_ui64TotalShare -= u->m_ui64SharedSize;
 					u->m_ui32BoolBits &= ~User::BIT_HAVE_SHARECOUNTED;
 				}
 
-				if (u->m_sMyInfoLong) {
-					if (SettingManager::m_Ptr->m_ui8FullMyINFOOption != 2) {
+				if (u->m_sMyInfoLong)
+				{
+					if (SettingManager::m_Ptr->m_ui8FullMyINFOOption != 2)
+					{
 						Users::m_Ptr->DelFromMyInfosTag(u);
 					}
 				}
 
-				if (u->m_sMyInfoShort) {
-					if (SettingManager::m_Ptr->m_ui8FullMyINFOOption != 0) {
+				if (u->m_sMyInfoShort)
+				{
+					if (SettingManager::m_Ptr->m_ui8FullMyINFOOption != 0)
+					{
 						Users::m_Ptr->DelFromMyInfos(u);
 					}
 				}
 			}
-			if (u->m_ui8State > User::STATE_ADDME_2LOOP) {
+			if (u->m_ui8State > User::STATE_ADDME_2LOOP)
+			{
 				ServerManager::m_ui32Logged--;
 			}
 		}
-		else if (bHide == false && ((u->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == true) {
-			if (u->m_ui8State > User::STATE_ADDME_2LOOP) {
+		else if (bHide == false && ((u->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == true)
+		{
+			if (u->m_ui8State > User::STATE_ADDME_2LOOP)
+			{
 				ServerManager::m_ui32Logged++;
 			}
-			if (u->m_ui8State >= User::STATE_ADDME_2LOOP) {
+			if (u->m_ui8State >= User::STATE_ADDME_2LOOP)
+			{
 				u->Add2Userlist();
 
-				if (((u->m_ui32BoolBits & User::BIT_HAVE_SHARECOUNTED) == User::BIT_HAVE_SHARECOUNTED) == false) {
+				if (((u->m_ui32BoolBits & User::BIT_HAVE_SHARECOUNTED) == User::BIT_HAVE_SHARECOUNTED) == false)
+				{
 					ServerManager::m_ui64TotalShare += u->m_ui64SharedSize;
 					u->m_ui32BoolBits |= User::BIT_HAVE_SHARECOUNTED;
 				}
 
 				GlobalDataQueue::m_Ptr->UserIPStore(u);
 
-				switch (SettingManager::m_Ptr->m_ui8FullMyINFOOption) {
+				switch (SettingManager::m_Ptr->m_ui8FullMyINFOOption)
+				{
 				case 0:
 					GlobalDataQueue::m_Ptr->AddQueueItem(u->m_sMyInfoLong, u->m_ui16MyInfoLongLen, NULL, 0, GlobalDataQueue::CMD_MYINFO);
 					break;
@@ -3208,7 +3231,8 @@ static int HideUser(lua_State * L) {
 					break;
 				}
 				// alex82 ... HideUserKey / ������ ���� �����
-				if (((u->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == true && ((u->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false) {
+				if (((u->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == true && ((u->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false)
+				{
 					GlobalDataQueue::m_Ptr->OpListStore(u->m_sNick);
 				}
 			}
@@ -3217,7 +3241,8 @@ static int HideUser(lua_State * L) {
 		}
 		lua_pushboolean(L, 1);
 	}
-	else {
+	else
+	{
 		lua_pushnil(L);
 	}
 
@@ -3226,8 +3251,10 @@ static int HideUser(lua_State * L) {
 
 //------------------------------------------------------------------------------
 // alex82 ... NoQuit / ��������� $Quit ��� �����
-static int UserNoQuit(lua_State * L) {
-	if (lua_gettop(L) != 2) {
+static int UserNoQuit(lua_State * L)
+{
+	if (lua_gettop(L) != 2)
+	{
 		luaL_error(L, "bad argument count to 'UserNoQuit' (2 expected, got %d)", lua_gettop(L));
 		lua_settop(L, 0);
 
@@ -3235,7 +3262,8 @@ static int UserNoQuit(lua_State * L) {
 		return 1;
 	}
 
-	if (lua_type(L, 1) != LUA_TTABLE || lua_type(L, 2) != LUA_TBOOLEAN) {
+	if (lua_type(L, 1) != LUA_TTABLE || lua_type(L, 2) != LUA_TBOOLEAN)
+	{
 		luaL_checktype(L, 1, LUA_TTABLE);
 		luaL_checktype(L, 2, LUA_TBOOLEAN);
 
@@ -3251,16 +3279,20 @@ static int UserNoQuit(lua_State * L) {
 
 	lua_settop(L, 0);
 
-	if (u != NULL) {
-		if (bNoQuit == true && ((u->m_ui32InfoBits & User::INFOBIT_NO_QUIT) == User::INFOBIT_NO_QUIT) == false) {
+	if (u != NULL)
+	{
+		if (bNoQuit == true && ((u->m_ui32InfoBits & User::INFOBIT_NO_QUIT) == User::INFOBIT_NO_QUIT) == false)
+		{
 			u->m_ui32InfoBits |= User::INFOBIT_NO_QUIT;
 		}
-		else if (bNoQuit == false && ((u->m_ui32InfoBits & User::INFOBIT_NO_QUIT) == User::INFOBIT_NO_QUIT) == true) {
+		else if (bNoQuit == false && ((u->m_ui32InfoBits & User::INFOBIT_NO_QUIT) == User::INFOBIT_NO_QUIT) == true)
+		{
 			u->m_ui32InfoBits &= ~User::INFOBIT_NO_QUIT;
 		}
 		lua_pushboolean(L, 1);
 	}
-	else {
+	else
+	{
 		lua_pushnil(L);
 	}
 
@@ -3269,8 +3301,10 @@ static int UserNoQuit(lua_State * L) {
 
 //------------------------------------------------------------------------------
 // alex82 ... HideUserKey / ������ ���� �����
-static int HideUserKey(lua_State * L) {
-	if (lua_gettop(L) != 2) {
+static int HideUserKey(lua_State * L)
+{
+	if (lua_gettop(L) != 2)
+	{
 		luaL_error(L, "bad argument count to 'HideUserKey' (2 expected, got %d)", lua_gettop(L));
 		lua_settop(L, 0);
 
@@ -3278,7 +3312,8 @@ static int HideUserKey(lua_State * L) {
 		return 1;
 	}
 
-	if (lua_type(L, 1) != LUA_TTABLE || lua_type(L, 2) != LUA_TBOOLEAN) {
+	if (lua_type(L, 1) != LUA_TTABLE || lua_type(L, 2) != LUA_TBOOLEAN)
+	{
 		luaL_checktype(L, 1, LUA_TTABLE);
 		luaL_checktype(L, 2, LUA_TBOOLEAN);
 
@@ -3294,20 +3329,25 @@ static int HideUserKey(lua_State * L) {
 
 	lua_settop(L, 0);
 
-	if (u != NULL) {
+	if (u != NULL)
+	{
 		char msg[80];
-		if (bHide == true && ((u->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false) {
+		if (bHide == true && ((u->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false)
+		{
 
 			u->m_ui32InfoBits |= User::INFOBIT_HIDE_KEY;
 
-			if (((u->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == true && u->m_ui8State >= User::STATE_ADDME_2LOOP && ((u->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == false) {
+			if (((u->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == true && u->m_ui8State >= User::STATE_ADDME_2LOOP && ((u->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == false)
+			{
 				Users::m_Ptr->DelFromOpList(u->m_sNick);
 
 				int imsgLen = sprintf(msg, "$Quit %s|", u->m_sNick);
-				if (CheckSprintf(imsgLen, 80, "HideUserKey") == true) {
+				if (CheckSprintf(imsgLen, 80, "HideUserKey") == true)
+				{
 					GlobalDataQueue::m_Ptr->AddQueueItem(msg, imsgLen, NULL, 0, GlobalDataQueue::CMD_QUIT);
 				}
-				switch (SettingManager::m_Ptr->m_ui8FullMyINFOOption) {
+				switch (SettingManager::m_Ptr->m_ui8FullMyINFOOption)
+				{
 				case 0:
 					GlobalDataQueue::m_Ptr->AddQueueItem(u->m_sMyInfoLong, u->m_ui16MyInfoLongLen, NULL, 0, GlobalDataQueue::CMD_MYINFO);
 					break;
@@ -3322,8 +3362,10 @@ static int HideUserKey(lua_State * L) {
 				}
 			}
 		}
-		else if (bHide == false && ((u->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == true) {
-			if (((u->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == true && u->m_ui8State >= User::STATE_ADDME_2LOOP && ((u->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == false) {
+		else if (bHide == false && ((u->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == true)
+		{
+			if (((u->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == true && u->m_ui8State >= User::STATE_ADDME_2LOOP && ((u->m_ui32InfoBits & User::INFOBIT_HIDDEN) == User::INFOBIT_HIDDEN) == false)
+			{
 				Users::m_Ptr->Add2OpList(u);
 				GlobalDataQueue::m_Ptr->OpListStore(u->m_sNick);
 			}
@@ -3332,7 +3374,8 @@ static int HideUserKey(lua_State * L) {
 		}
 		lua_pushboolean(L, 1);
 	}
-	else {
+	else
+	{
 		lua_pushnil(L);
 	}
 

@@ -1072,12 +1072,9 @@ void ServiceLoop::ReceiveLoop()
 					GlobalDataQueue::m_Ptr->AddQueueItem(curUser->m_pCmdPassiveSearch->m_sCommand, curUser->m_pCmdPassiveSearch->m_ui32Len, NULL, 0, ui8CmdType);
 
 					User::DeletePrcsdUsrCmd(curUser->m_pCmdPassiveSearch);
-				}
 			}
 
 			// PPK ... deflood memory cleanup, if is not needed anymore
-			if (ServerManager::m_ui8SrCntr == 0)
-			{
 				if (curUser->m_sLastChat != NULL && curUser->m_ui16LastChatLines < 2 &&
 				        (curUser->m_ui64SameChatsTick + SettingManager::m_Ptr->m_i16Shorts[SETSHORT_SAME_MAIN_CHAT_TIME]) < ServerManager::m_ui64ActualTick)
 				{
