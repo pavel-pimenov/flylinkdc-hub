@@ -17,14 +17,6 @@
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release Lua 5.1.5|x64">
-      <Configuration>Release Lua 5.1.5</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release Lua 5.1.5|Win32">
-      <Configuration>Release Lua 5.1.5</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{34750F97-E9AE-4D1D-9240-24C4A85ED070}</ProjectGuid>
@@ -39,19 +31,11 @@
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
@@ -64,16 +48,10 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -81,46 +59,32 @@
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Testing|x64'">compiled\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">compiled\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'">compiled\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">compiled\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">compiled\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">compiled\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Testing|x64'">obj\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">obj\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'">obj\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">obj\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">obj\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">obj\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Testing|x64'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">false</LinkIncremental>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Testing|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Testing|x64'" />
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'" />
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'" />
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Testing|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'" />
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Testing|x64'">$(ProjectName)-x64</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectName)-x64</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'">$(ProjectName)-x64</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">PtokaX</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PtokaX</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">PtokaX</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Testing|x64'">
     <ClCompile>
@@ -247,70 +211,6 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|x64'">
-    <ClCompile>
-      <Optimization>Full</Optimization>
-      <AdditionalIncludeDirectories>lua-515\src;tinyxml;zlib;skein\Optimized_32bit;sqlite;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>FLYLINKDC_USE_DB;NDEBUG;_CRT_SECURE_NO_WARNINGS;_WITH_SQLITE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>true</StringPooling>
-      <MinimalRebuild>true</MinimalRebuild>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <MultiProcessorCompilation>false</MultiProcessorCompilation>
-      <OmitFramePointers>false</OmitFramePointers>
-      <FunctionLevelLinking>false</FunctionLevelLinking>
-      <FloatingPointExceptions>false</FloatingPointExceptions>
-      <CreateHotpatchableImage>false</CreateHotpatchableImage>
-      <OpenMPSupport>false</OpenMPSupport>
-      <CallingConvention>Cdecl</CallingConvention>
-      <CompileAs>CompileAsCpp</CompileAs>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-    </ClCompile>
-    <ResourceCompile>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <ShowProgress>NotSet</ShowProgress>
-      <AdditionalDependencies>ws2_32.lib;Iphlpapi.lib;psapi.lib;Dbghelp.lib;tinyxml-x64.lib;zlib-x64.lib;PXLua-x64.lib;skein-x64.lib;sqlite-x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)PtokaX-x64.exe</OutputFile>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>lua-515;tinyxml;zlib;skein;sqlite;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreSpecificDefaultLibraries>kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>dbghelp.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <GenerateMapFile>false</GenerateMapFile>
-      <SubSystem>Console</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <SetChecksum>true</SetChecksum>
-      <RandomizedBaseAddress>true</RandomizedBaseAddress>
-      <FixedBaseAddress>false</FixedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
-      <TargetMachine>MachineX64</TargetMachine>
-      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <LargeAddressAware>true</LargeAddressAware>
-      <TerminalServerAware>false</TerminalServerAware>
-    </Link>
-    <Manifest>
-      <AssemblyIdentity>PtokaX,version=0.5.2.1,processorArchitecture=amd64,type=win32</AssemblyIdentity>
-    </Manifest>
-    <ProjectReference>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-    </ProjectReference>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
@@ -412,69 +312,6 @@
       <OutputFile>$(OutDir)PtokaX.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>lua;tinyxml;zlib;skein;sqlite;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreSpecificDefaultLibraries>kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>dbghelp.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <GenerateMapFile>false</GenerateMapFile>
-      <SubSystem>Console</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <SetChecksum>true</SetChecksum>
-      <RandomizedBaseAddress>true</RandomizedBaseAddress>
-      <FixedBaseAddress>false</FixedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
-      <TargetMachine>MachineX86</TargetMachine>
-      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <LargeAddressAware>false</LargeAddressAware>
-      <TerminalServerAware>false</TerminalServerAware>
-    </Link>
-    <Manifest>
-      <AssemblyIdentity>PtokaX,version=0.5.2.1,processorArchitecture=x86,type=win32</AssemblyIdentity>
-    </Manifest>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">
-    <ClCompile>
-      <Optimization>Full</Optimization>
-      <AdditionalIncludeDirectories>lua-515\src;tinyxml;zlib;skein\Optimized_32bit;sqlite;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>FLYLINKDC_USE_DB;NDEBUG;_CRT_SECURE_NO_WARNINGS;_WITH_SQLITE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>true</StringPooling>
-      <MinimalRebuild>true</MinimalRebuild>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level4</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <CallingConvention>Cdecl</CallingConvention>
-      <MultiProcessorCompilation>false</MultiProcessorCompilation>
-      <FunctionLevelLinking>false</FunctionLevelLinking>
-      <FloatingPointExceptions>false</FloatingPointExceptions>
-      <CreateHotpatchableImage>false</CreateHotpatchableImage>
-      <OpenMPSupport>false</OpenMPSupport>
-      <CompileAs>CompileAsCpp</CompileAs>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-    </ClCompile>
-    <ResourceCompile>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <ProjectReference>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-    </ProjectReference>
-    <Link>
-      <AdditionalDependencies>ws2_32.lib;Iphlpapi.lib;psapi.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ShowProgress>NotSet</ShowProgress>
-      <OutputFile>$(OutDir)PtokaX.exe</OutputFile>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>lua-515;tinyxml;zlib;skein;sqlite;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>kernel32.lib advapi32.lib user32.lib gdi32.lib shell32.lib comdlg32.lib version.lib mpr.lib rasapi32.lib winmm.lib winspool.lib vfw32.lib secur32.lib oleacc.lib oledlg.lib sensapi.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>dbghelp.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -635,17 +472,14 @@
     <ClCompile Include="core\ZlibUtility.cpp" />
     <ClCompile Include="lua\src\lcorolib.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="lua\src\lctype.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="lua\src\lutf8lib.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="sqlite\sqlite3.c">
@@ -871,77 +705,62 @@
     <ClCompile Include="tinyxml\tinyxmlparser.cpp" />
     <ClCompile Include="zlib\adler32.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="zlib\compress.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="zlib\crc32.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="zlib\deflate.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="zlib\gzclose.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="zlib\gzlib.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="zlib\gzread.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="zlib\gzwrite.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="zlib\infback.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="zlib\inffast.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="zlib\inflate.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="zlib\inftrees.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="zlib\trees.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="zlib\uncompr.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="zlib\zutil.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
     </ClCompile>
   </ItemGroup>
