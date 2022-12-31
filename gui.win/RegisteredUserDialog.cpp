@@ -97,7 +97,7 @@ LRESULT RegisteredUserDialog::RegisteredUserDialogProc(UINT uMsg, WPARAM wParam,
 				
 				if(bChanged == true)
 				{
-					int iStart, iEnd;
+					int iStart = 0, iEnd = 0;
 					
 					::SendMessage((HWND)lParam, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
 					
@@ -130,7 +130,7 @@ LRESULT RegisteredUserDialog::RegisteredUserDialogProc(UINT uMsg, WPARAM wParam,
 				
 				if(bChanged == true)
 				{
-					int iStart, iEnd;
+					int iStart = 0, iEnd = 0;
 					
 					::SendMessage((HWND)lParam, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
 					

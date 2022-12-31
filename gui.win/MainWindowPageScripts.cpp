@@ -563,6 +563,11 @@ void MainWindowPageScripts::ScriptToList(const uint8_t ui8ScriptId, const bool b
 	else
 	{
 		i = (int)::SendMessage(m_hWndPageItems[LV_SCRIPTS], LVM_SETITEM, 0, (LPARAM)&lvItem);
+		
+		if(ScriptManager::m_Ptr->m_ppScriptTable[ui8ScriptId]->m_bEnabled == false)
+		{
+			ClearMemUsage(ui8ScriptId);
+		}
 	}
 	
 	if(i != -1 || bInsert == false)

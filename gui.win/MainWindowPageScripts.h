@@ -48,11 +48,11 @@ public:
 	MainWindowPageScripts();
 	~MainWindowPageScripts();
 	
-	bool CreateMainWindowPage(HWND hOwner);
-	void UpdateLanguage();
-	char * GetPageName();
-	void FocusFirstItem();
-	void FocusLastItem();
+	bool CreateMainWindowPage(HWND hOwner) override;
+	void UpdateLanguage() override;
+	char * GetPageName() override;
+	void FocusFirstItem() override;
+	void FocusLastItem() override;
 	
 	void ClearMemUsageAll();
 	void UpdateMemUsage();
@@ -67,7 +67,7 @@ private:
 	MainWindowPageScripts(const MainWindowPageScripts&) = delete;
 	const MainWindowPageScripts& operator=(const MainWindowPageScripts&) = delete;
 	
-	LRESULT MainWindowPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT MainWindowPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 	
 	void OnContextMenu(HWND hWindow, LPARAM lParam);
 	static void OpenScriptEditor(const char * sScript = nullptr);
@@ -82,8 +82,8 @@ private:
 	void DeleteScript();
 	void ClearMemUsage(const uint8_t ui8ScriptId);
 	
-	HWND GetWindowHandle();
-	void UpdateSplitterParts();
+	HWND GetWindowHandle() override;
+	void UpdateSplitterParts() override;
 };
 //---------------------------------------------------------------------------
 

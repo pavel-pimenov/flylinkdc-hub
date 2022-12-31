@@ -114,7 +114,7 @@ void SettingPage::RemoveDollarsPipes(HWND hWnd)
 	
 	if(bChanged == true)
 	{
-		int iStart, iEnd;
+		int iStart = 0, iEnd = 0;
 		
 		::SendMessage(hWnd, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
 		
@@ -144,7 +144,7 @@ void SettingPage::RemovePipes(HWND hWnd)
 	
 	if(bChanged == true)
 	{
-		int iStart, iEnd;
+		int iStart = 0, iEnd = 0;
 		
 		::SendMessage(hWnd, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
 		
@@ -162,7 +162,7 @@ void SettingPage::MinMaxCheck(HWND hWnd, const int iMin, const int iMax)
 	
 	int iValue = atoi(buf);
 	
-	int iStart, iEnd;
+	int iStart = 0, iEnd = 0;
 	
 	::SendMessage(hWnd, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
 	
