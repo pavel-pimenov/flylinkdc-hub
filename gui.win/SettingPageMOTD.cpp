@@ -66,7 +66,7 @@ LRESULT SettingPageMOTD::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam
 			{
 				int iLen = ::GetWindowTextLength((HWND)lParam);
 				
-				char * buf = (char *)HeapAlloc(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, iLen+1);
+				char * buf = (char *)malloc(iLen+1);
 				
 				if(buf == nullptr)
 				{
@@ -90,7 +90,7 @@ LRESULT SettingPageMOTD::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam
 				
 				if(bChanged == true)
 				{
-					int iStart = 0, iEnd = 0;
+					int iStart, iEnd;
 					
 					::SendMessage((HWND)lParam, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
 					
@@ -99,10 +99,7 @@ LRESULT SettingPageMOTD::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam
 					::SendMessage((HWND)lParam, EM_SETSEL, iStart, iEnd);
 				}
 				
-				if(HeapFree(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, (void *)buf) == 0)
-				{
-					AppendDebugLog("%s - [MEM] Cannot deallocate buf in SettingPageMOTD::PageMOTDProc\n");
-				}
+				free(buf);
 				
 				return 0;
 			}
@@ -134,7 +131,7 @@ void SettingPageMOTD::Save()
 	
 	int iAllocLen = ::GetWindowTextLength(m_hWndPageItems[EDT_MOTD]);
 	
-	char * buf = (char *)HeapAlloc(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, iAllocLen+1);
+	char * buf = (char *)malloc(iAllocLen+1);
 	
 	if(buf == nullptr)
 	{
@@ -152,10 +149,7 @@ void SettingPageMOTD::Save()
 	
 	SettingManager::m_Ptr->SetMOTD(buf, iLen);
 	
-	if(HeapFree(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, (void *)buf) == 0)
-	{
-		AppendDebugLog("%s - [MEM] Cannot deallocate buf in SettingPageMOTD::Save\n");
-	}
+	free(buf);
 	
 	SettingManager::m_Ptr->SetBool(SETBOOL_MOTD_AS_PM, bMOTDAsPM);
 	

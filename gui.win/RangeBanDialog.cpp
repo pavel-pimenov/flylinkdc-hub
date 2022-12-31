@@ -446,7 +446,7 @@ bool RangeBanDialog::OnAccept()
 		
 		if(iReasonLen != 0)
 		{
-			pRangeBan->m_sReason = (char *)HeapAlloc(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, iReasonLen+1);
+			pRangeBan->m_sReason = (char *)malloc(iReasonLen+1);
 			if(pRangeBan->m_sReason == nullptr)
 			{
 				AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for m_sReason in RangeBanDialog::OnAccept\n", iReasonLen+1);
@@ -463,7 +463,7 @@ bool RangeBanDialog::OnAccept()
 		
 		if(iByLen != 0)
 		{
-			pRangeBan->m_sBy = (char *)HeapAlloc(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, iByLen+1);
+			pRangeBan->m_sBy = (char *)malloc(iByLen+1);
 			if(pRangeBan->m_sBy == nullptr)
 			{
 				AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for m_sBy in RangeBanDialog::OnAccept\n", iByLen+1);
@@ -516,7 +516,7 @@ bool RangeBanDialog::OnAccept()
 		char * sReason = nullptr;
 		if(iReasonLen != 0)
 		{
-			sReason = (char *)HeapAlloc(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, iReasonLen+1);
+			sReason = (char *)malloc(iReasonLen+1);
 			if(sReason == nullptr)
 			{
 				AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for sReason in RangeBanDialog::OnAccept\n", iReasonLen+1);
@@ -525,15 +525,15 @@ bool RangeBanDialog::OnAccept()
 			}
 			
 			::GetWindowText(m_hWndWindowItems[EDT_REASON], sReason, iReasonLen+1);
-			
+		}
+		
+		if(iReasonLen != 0)
+		{
 			if(m_pRangeBanToChange->m_sReason == nullptr || strcmp(m_pRangeBanToChange->m_sReason, sReason) != 0)
 			{
 				if(m_pRangeBanToChange->m_sReason != nullptr)
 				{
-					if(HeapFree(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, (void *)m_pRangeBanToChange->m_sReason) == 0)
-					{
-						AppendDebugLog("%s - [MEM] Cannot deallocate sReason in RangeBanDialog::OnAccept\n");
-					}
+					free(m_pRangeBanToChange->m_sReason);
 					m_pRangeBanToChange->m_sReason = nullptr;
 				}
 				
@@ -542,20 +542,13 @@ bool RangeBanDialog::OnAccept()
 		}
 		else if(m_pRangeBanToChange->m_sReason != nullptr)
 		{
-			if(HeapFree(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, (void *)m_pRangeBanToChange->m_sReason) == 0)
-			{
-				AppendDebugLog("%s - [MEM] Cannot deallocate sReason in BanDialog::OnAccept\n");
-			}
-			
+			free(m_pRangeBanToChange->m_sReason);
 			m_pRangeBanToChange->m_sReason = nullptr;
 		}
 		
 		if(sReason != nullptr && (m_pRangeBanToChange->m_sReason != sReason))
 		{
-			if(HeapFree(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, (void *)sReason) == 0)
-			{
-				AppendDebugLog("%s - [MEM] Cannot deallocate sReason in RangeBanDialog::OnAccept\n");
-			}
+			free(sReason);
 		}
 		
 		int iByLen = ::GetWindowTextLength(m_hWndWindowItems[EDT_BY]);
@@ -563,7 +556,7 @@ bool RangeBanDialog::OnAccept()
 		char * sBy = nullptr;
 		if(iByLen != 0)
 		{
-			sBy = (char *)HeapAlloc(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, iByLen+1);
+			sBy = (char *)malloc(iByLen+1);
 			if(sBy == nullptr)
 			{
 				AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for sBy in RangeBanDialog::OnAccept\n", iByLen+1);
@@ -572,15 +565,15 @@ bool RangeBanDialog::OnAccept()
 			}
 			
 			::GetWindowText(m_hWndWindowItems[EDT_BY], sBy, iByLen+1);
-			
+		}
+		
+		if(iByLen != 0)
+		{
 			if(m_pRangeBanToChange->m_sBy == nullptr || strcmp(m_pRangeBanToChange->m_sBy, sBy) != 0)
 			{
 				if(m_pRangeBanToChange->m_sBy != nullptr)
 				{
-					if(HeapFree(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, (void *)m_pRangeBanToChange->m_sBy) == 0)
-					{
-						AppendDebugLog("%s - [MEM] Cannot deallocate sBy in RangeBanDialog::OnAccept\n");
-					}
+					free(m_pRangeBanToChange->m_sBy);
 					m_pRangeBanToChange->m_sBy = nullptr;
 				}
 				
@@ -589,19 +582,13 @@ bool RangeBanDialog::OnAccept()
 		}
 		else if(m_pRangeBanToChange->m_sBy != nullptr)
 		{
-			if(HeapFree(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, (void *)m_pRangeBanToChange->m_sBy) == 0)
-			{
-				AppendDebugLog("%s - [MEM] Cannot deallocate sBy in RangeBanDialog::OnAccept\n");
-			}
+			free(m_pRangeBanToChange->m_sBy);
 			m_pRangeBanToChange->m_sBy = nullptr;
 		}
 		
 		if(sBy != nullptr && (m_pRangeBanToChange->m_sBy != sBy))
 		{
-			if(HeapFree(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, (void *)sBy) == 0)
-			{
-				AppendDebugLog("%s - [MEM] Cannot deallocate sBy in RangeBanDialog::OnAccept\n");
-			}
+			free(sBy);
 		}
 		
 		if(RangeBansDialog::m_Ptr != nullptr)

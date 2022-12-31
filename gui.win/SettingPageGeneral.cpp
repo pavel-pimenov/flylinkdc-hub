@@ -76,7 +76,7 @@ LRESULT SettingPageGeneral::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lPa
 				
 				if(bChanged == true)
 				{
-					int iStart = 0, iEnd = 0;
+					int iStart, iEnd;
 					
 					::SendMessage((HWND)lParam, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
 					
@@ -241,7 +241,7 @@ void SettingPageGeneral::Save()
 	{
 		uint32_t ui32Len = (uint32_t)::SendMessage(m_hWndPageItems[CB_LANGUAGE], CB_GETLBTEXTLEN, ui32CurSel, 0);
 		
-		char * sTempBuf = (char *)HeapAlloc(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, ui32Len+1);
+		char * sTempBuf = (char *)malloc(ui32Len+1);
 		
 		if(sTempBuf == nullptr)
 		{
@@ -259,10 +259,7 @@ void SettingPageGeneral::Save()
 		
 		SettingManager::m_Ptr->SetText(SETTXT_LANGUAGE, sTempBuf, ui32Len);
 		
-		if(HeapFree(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, (void *)sTempBuf) == 0)
-		{
-			AppendDebugLog("%s - [MEM] Cannot deallocate sTempBuf in SettingPageGeneral::Save\n");
-		}
+		free(sTempBuf);
 	}
 	
 	LRESULT lResult = ::SendMessage(m_hWndPageItems[UD_MAX_USERS], UDM_GETPOS, 0, 0);
@@ -491,7 +488,7 @@ bool SettingPageGeneral::CreateSettingPage(HWND hOwner)
 			uint32_t ui32Len = (uint32_t)::SendMessage(m_hWndPageItems[CB_LANGUAGE], CB_GETLBTEXTLEN, ui32i, 0);
 			if(ui32Len == (int32_t)SettingManager::m_Ptr->m_ui16TextsLens[SETTXT_LANGUAGE])
 			{
-				char * buf = (char *)HeapAlloc(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, ui32Len+1);
+				char * buf = (char *)malloc(ui32Len+1);
 				
 				if(buf == nullptr)
 				{
@@ -504,18 +501,11 @@ bool SettingPageGeneral::CreateSettingPage(HWND hOwner)
 				{
 					::SendMessage(m_hWndPageItems[CB_LANGUAGE], CB_SETCURSEL, ui32i, 0);
 					
-					if(HeapFree(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, (void *)buf) == 0)
-					{
-						AppendDebugLog("%s - [MEM] Cannot deallocate buf in SettingPageGeneral::CreateSettingPage\n");
-					}
-					
+					free(buf);
 					break;
 				}
 				
-				if(HeapFree(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, (void *)buf) == 0)
-				{
-					AppendDebugLog("%s - [MEM] Cannot deallocate buf in SettingPageGeneral::CreateSettingPage\n");
-				}
+				free(buf);
 			}
 		}
 	}

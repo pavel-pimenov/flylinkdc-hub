@@ -266,11 +266,12 @@ LRESULT SettingDialog::SettingDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam
 				MainWindow::m_Ptr->UpdateSysTray();
 			}
 			
+#ifdef FLYLINKDC_REMOVE_REGISTER_THREAD
 			if(bUpdateAutoReg == true)
 			{
 				ServerManager::UpdateAutoRegState();
 			}
-			
+#endif
 			if(bUpdateScripting == true)
 			{
 				SettingManager::m_Ptr->UpdateScripting();
