@@ -214,9 +214,6 @@
     <ClCompile Include="lua\src\lzio.c">
       <Filter>lua</Filter>
     </ClCompile>
-    <ClCompile Include="lua\src\print.c">
-      <Filter>lua</Filter>
-    </ClCompile>
     <ClCompile Include="skein\Optimized_32bit\SHA3api_ref.c">
       <Filter>skein</Filter>
     </ClCompile>
@@ -294,6 +291,15 @@
     </ClCompile>
     <ClCompile Include="zlib\zutil.c">
       <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\src\lcorolib.c">
+      <Filter>lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\src\lctype.c">
+      <Filter>lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\src\lutf8lib.c">
+      <Filter>lua</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

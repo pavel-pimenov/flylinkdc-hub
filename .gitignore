@@ -80,3 +80,6 @@ strace_out
 *.h.orig
 *.cpp.orig
 
+*.recipe
+*.FileListAbsolute.txt
+*.iobj
