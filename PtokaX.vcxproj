@@ -633,6 +633,21 @@
     <ClCompile Include="core\User.cpp" />
     <ClCompile Include="core\utility.cpp" />
     <ClCompile Include="core\ZlibUtility.cpp" />
+    <ClCompile Include="lua\src\lcorolib.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lua\src\lctype.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="lua\src\lutf8lib.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
     <ClCompile Include="sqlite\sqlite3.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
@@ -844,13 +859,6 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Default</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Default</CompileAs>
     </ClCompile>
-    <ClCompile Include="lua\src\print.c">
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Default</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">Default</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|x64'">Default</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Default</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Default</CompileAs>
-    </ClCompile>
     <ClCompile Include="skein\Optimized_32bit\SHA3api_ref.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Default</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">Default</CompileAs>
@@ -861,21 +869,81 @@
     <ClCompile Include="tinyxml\tinyxml.cpp" />
     <ClCompile Include="tinyxml\tinyxmlerror.cpp" />
     <ClCompile Include="tinyxml\tinyxmlparser.cpp" />
-    <ClCompile Include="zlib\adler32.c" />
-    <ClCompile Include="zlib\compress.c" />
-    <ClCompile Include="zlib\crc32.c" />
-    <ClCompile Include="zlib\deflate.c" />
-    <ClCompile Include="zlib\gzclose.c" />
-    <ClCompile Include="zlib\gzlib.c" />
-    <ClCompile Include="zlib\gzread.c" />
-    <ClCompile Include="zlib\gzwrite.c" />
-    <ClCompile Include="zlib\infback.c" />
-    <ClCompile Include="zlib\inffast.c" />
-    <ClCompile Include="zlib\inflate.c" />
-    <ClCompile Include="zlib\inftrees.c" />
-    <ClCompile Include="zlib\trees.c" />
-    <ClCompile Include="zlib\uncompr.c" />
-    <ClCompile Include="zlib\zutil.c" />
+    <ClCompile Include="zlib\adler32.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="zlib\compress.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="zlib\crc32.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="zlib\deflate.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="zlib\gzclose.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="zlib\gzlib.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="zlib\gzread.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="zlib\gzwrite.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="zlib\infback.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="zlib\inffast.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="zlib\inflate.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="zlib\inftrees.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="zlib\trees.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="zlib\uncompr.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="zlib\zutil.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release Lua 5.1.5|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="core\PtokaX.Manifest" />
