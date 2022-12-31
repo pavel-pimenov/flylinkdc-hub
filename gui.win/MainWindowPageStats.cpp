@@ -263,7 +263,7 @@ char * MainWindowPageStats::GetPageName()
 
 void OnRedirectAllOk(char * sLine, const int iLen)
 {
-	char *sMSG = (char *)HeapAlloc(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, iLen+16);
+	char *sMSG = (char *)malloc(iLen+16);
 	if(sMSG == nullptr)
 	{
 		AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for sMSG in OnRedirectAllOk\n", iLen+16);
@@ -271,26 +271,25 @@ void OnRedirectAllOk(char * sLine, const int iLen)
 	}
 	
 	int iMsgLen = snprintf(sMSG, iLen+16, "$ForceMove %s|", sLine);
-	if(iMsgLen > 0)
+	if(iMsgLen <= 0)
 	{
-		User * pCur = nullptr,
-		       * pNext = Users::m_Ptr->m_pUserListS;
-		       
-		while(pNext != nullptr)
-		{
-			pCur = pNext;
-			pNext = pCur->m_pNext;
-			
-			pCur->SendChar(sMSG, iMsgLen);
-			// PPK ... close by hub needed !
-			pCur->Close(true);
-		}
+		return;
 	}
 	
-	if(HeapFree(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, (void *)sMSG) == 0)
+	User * pCur = nullptr,
+	       * pNext = Users::m_Ptr->m_pUserListS;
+	       
+	while(pNext != nullptr)
 	{
-		AppendDebugLog("%s - [MEM] Cannot deallocate sMSG in OnRedirectAllOk\n");
+		pCur = pNext;
+		pNext = pCur->m_pNext;
+		
+		pCur->SendChar(sMSG, iMsgLen);
+		// PPK ... close by hub needed !
+		pCur->Close(true);
 	}
+	
+	free(sMSG);
 }
 //---------------------------------------------------------------------------
 
@@ -311,7 +310,7 @@ void MainWindowPageStats::OnRedirectAll()
 
 void OnMassMessageOk(char * sLine, const int iLen)
 {
-	char *sMSG = (char *)HeapAlloc(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, iLen+256);
+	char *sMSG = (char *)malloc(iLen+256);
 	if(sMSG == nullptr)
 	{
 		AppendDebugLogFormat("[MEM] Cannot allocate %d bytes for sMSG in OnMassMessageOk\n", iLen+256);
@@ -320,15 +319,14 @@ void OnMassMessageOk(char * sLine, const int iLen)
 	
 	int iMsgLen = snprintf(sMSG, iLen+256, "%s $<%s> %s|", SettingManager::m_Ptr->m_bBools[SETBOOL_REG_BOT] == false ? SettingManager::m_Ptr->m_sTexts[SETTXT_ADMIN_NICK] : SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_NICK],
 	                       SettingManager::m_Ptr->m_bBools[SETBOOL_REG_BOT] == false ? SettingManager::m_Ptr->m_sTexts[SETTXT_ADMIN_NICK] : SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_NICK], sLine);
-	if(iMsgLen > 0)
+	if(iMsgLen <= 0)
 	{
-		GlobalDataQueue::m_Ptr->SingleItemStore(sMSG, iMsgLen, nullptr, 0, GlobalDataQueue::SI_PM2ALL);
+		return;
 	}
 	
-	if(HeapFree(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, (void *)sMSG) == 0)
-	{
-		AppendDebugLog("%s - [MEM] Cannot deallocate sMSG in OnMassMessageOk\n");
-	}
+	GlobalDataQueue::m_Ptr->SingleItemStore(sMSG, iMsgLen, nullptr, 0, GlobalDataQueue::SI_PM2ALL);
+	
+	free(sMSG);
 }
 
 //---------------------------------------------------------------------------

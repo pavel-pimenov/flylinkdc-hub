@@ -97,7 +97,7 @@ LRESULT RegisteredUserDialog::RegisteredUserDialogProc(UINT uMsg, WPARAM wParam,
 				
 				if(bChanged == true)
 				{
-					int iStart = 0, iEnd = 0;
+					int iStart, iEnd;
 					
 					::SendMessage((HWND)lParam, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
 					
@@ -130,7 +130,7 @@ LRESULT RegisteredUserDialog::RegisteredUserDialogProc(UINT uMsg, WPARAM wParam,
 				
 				if(bChanged == true)
 				{
-					int iStart = 0, iEnd = 0;
+					int iStart, iEnd;
 					
 					::SendMessage((HWND)lParam, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
 					
@@ -279,7 +279,7 @@ void RegisteredUserDialog::DoModal(HWND hWndParent, RegUser * pReg/* = nullptr*/
 	
 	if(m_pRegToChange != nullptr)
 	{
-		::SetWindowText(m_hWndWindowItems[EDT_NICK], m_pRegToChange->m_sNick);
+		::SetWindowText(m_hWndWindowItems[EDT_NICK], m_pRegToChange->m_sNick.c_str());
 		::EnableWindow(m_hWndWindowItems[EDT_NICK], FALSE);
 		
 		if(m_pRegToChange->m_bPassHash == false)

@@ -490,7 +490,7 @@ void MainWindowPageScripts::OnContextMenu(HWND hWindow, LPARAM lParam)
 }
 //------------------------------------------------------------------------------
 
-void MainWindowPageScripts::OpenScriptEditor(char * sScript/* = nullptr*/)
+void MainWindowPageScripts::OpenScriptEditor(const char * sScript/* = nullptr*/)
 {
 	ScriptEditorDialog * pScriptEditorDialog = new (std::nothrow) ScriptEditorDialog();
 	
@@ -563,11 +563,6 @@ void MainWindowPageScripts::ScriptToList(const uint8_t ui8ScriptId, const bool b
 	else
 	{
 		i = (int)::SendMessage(m_hWndPageItems[LV_SCRIPTS], LVM_SETITEM, 0, (LPARAM)&lvItem);
-		
-		if(ScriptManager::m_Ptr->m_ppScriptTable[ui8ScriptId]->m_bEnabled == false)
-		{
-			ClearMemUsage(ui8ScriptId);
-		}
 	}
 	
 	if(i != -1 || bInsert == false)
@@ -609,7 +604,7 @@ void MainWindowPageScripts::OnItemChanged(const LPNMLISTVIEW pListView)
 		ScriptManager::m_Ptr->StopScript(ScriptManager::m_Ptr->m_ppScriptTable[pListView->iItem], false);
 		ClearMemUsage((uint8_t)pListView->iItem);
 		
-		RichEditAppendText(m_hWndPageItems[REDT_SCRIPTS_ERRORS], (string(LanguageManager::m_Ptr->m_sTexts[LAN_SCRIPT_STOPPED], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_SCRIPT_STOPPED])+".").c_str());
+		RichEditAppendText(m_hWndPageItems[REDT_SCRIPTS_ERRORS], (std::string(LanguageManager::m_Ptr->m_sTexts[LAN_SCRIPT_STOPPED], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_SCRIPT_STOPPED])+".").c_str());
 	}
 	else
 	{
@@ -639,7 +634,7 @@ void MainWindowPageScripts::OnDoubleClick(const LPNMITEMACTIVATE pItemActivate)
 	
 	if(::SendMessage(m_hWndPageItems[LV_SCRIPTS], LVM_GETITEMRECT, pItemActivate->iItem, (LPARAM)&rc) == FALSE || pItemActivate->ptAction.x > rc.left)
 	{
-		string sScript = ServerManager::m_sScriptPath + ScriptManager::m_Ptr->m_ppScriptTable[pItemActivate->iItem]->m_sName;
+		const px_string sScript = px_string(ServerManager::m_sScriptPath.c_str()) + ScriptManager::m_Ptr->m_ppScriptTable[pItemActivate->iItem]->m_sName;
 		OpenScriptEditor(sScript.c_str());
 	}
 }
@@ -667,12 +662,12 @@ void MainWindowPageScripts::UpdateMemUsage()
 			continue;
 		}
 		
-		string tmp(lua_gc(ScriptManager::m_Ptr->m_ppScriptTable[ui8i]->m_pLua, LUA_GCCOUNT, 0));
+		px_string tmp(lua_gc(ScriptManager::m_Ptr->m_ppScriptTable[ui8i]->m_pLua, LUA_GCCOUNT, 0));
 		
 		lvItem.iItem = ui8i;
 		
-		string sMemUsage(lua_gc(ScriptManager::m_Ptr->m_ppScriptTable[ui8i]->m_pLua, LUA_GCCOUNT, 0));
-		lvItem.pszText = sMemUsage.c_str();
+		px_string sMemUsage(lua_gc(ScriptManager::m_Ptr->m_ppScriptTable[ui8i]->m_pLua, LUA_GCCOUNT, 0));
+		lvItem.pszText = (LPSTR)sMemUsage.c_str();
 		
 		::SendMessage(m_hWndPageItems[LV_SCRIPTS], LVM_SETITEM, 0, (LPARAM)&lvItem);
 	}
@@ -823,7 +818,7 @@ void MainWindowPageScripts::OpenInScriptEditor()
 		return;
 	}
 	
-	string sScript = ServerManager::m_sScriptPath + ScriptManager::m_Ptr->m_ppScriptTable[iSel]->m_sName;
+	const px_string sScript = px_string(ServerManager::m_sScriptPath.c_str()) + px_string(ScriptManager::m_Ptr->m_ppScriptTable[iSel]->m_sName);
 	OpenScriptEditor(sScript.c_str());
 }
 //------------------------------------------------------------------------------

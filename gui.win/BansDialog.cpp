@@ -413,14 +413,14 @@ void BansDialog::AddBan(const BanItem * pBan)
 	lvItem.mask = LVIF_PARAM | LVIF_TEXT;
 	lvItem.iItem = ListViewGetInsertPosition(m_hWndWindowItems[LV_BANS], pBan, m_bSortAscending, CompareBans);
 	
-	string sTxt(pBan->m_sNick == nullptr ? "" : pBan->m_sNick);
+	px_string sTxt(pBan->m_sNick == nullptr ? "" : pBan->m_sNick);
 	if((pBan->m_ui8Bits & BanManager::NICK) == BanManager::NICK)
 	{
 		sTxt += " (";
 		sTxt += LanguageManager::m_Ptr->m_sTexts[LAN_BANNED];
 		sTxt += ")";
 	}
-	lvItem.pszText = sTxt.c_str();
+	lvItem.pszText = (LPSTR)sTxt.c_str();
 	lvItem.lParam = (LPARAM)pBan;
 	
 	int i = (int)::SendMessage(m_hWndWindowItems[LV_BANS], LVM_INSERTITEM, 0, (LPARAM)&lvItem);
@@ -448,7 +448,7 @@ void BansDialog::AddBan(const BanItem * pBan)
 		}
 		sTxt += ")";
 	}
-	lvItem.pszText = sTxt.c_str();
+	lvItem.pszText = (LPSTR)sTxt.c_str();
 	
 	::SendMessage(m_hWndWindowItems[LV_BANS], LVM_SETITEM, 0, (LPARAM)&lvItem);
 	

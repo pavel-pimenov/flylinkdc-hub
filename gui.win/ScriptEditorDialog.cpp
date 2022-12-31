@@ -258,13 +258,13 @@ void ScriptEditorDialog::DoModal(HWND hWndParent)
 }
 //------------------------------------------------------------------------------
 
-void ScriptEditorDialog::LoadScript(char * sScript)
+void ScriptEditorDialog::LoadScript(const char * sScript)
 {
 	FILE * pFile = fopen(sScript, "rb");
 	
 	if(pFile == nullptr)
 	{
-		::MessageBox(m_hWndWindowItems[WINDOW_HANDLE], (string(LanguageManager::m_Ptr->m_sTexts[LAN_FAILED_TO_OPEN], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FAILED_TO_OPEN]) + ": "+ sScript).c_str(),
+		::MessageBox(m_hWndWindowItems[WINDOW_HANDLE], (px_string(LanguageManager::m_Ptr->m_sTexts[LAN_FAILED_TO_OPEN], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FAILED_TO_OPEN]) + ": "+ sScript).c_str(),
 		             LanguageManager::m_Ptr->m_sTexts[LAN_ERROR], MB_OK);
 		return;
 	}
@@ -279,7 +279,7 @@ void ScriptEditorDialog::LoadScript(char * sScript)
 	{
 		fclose(pFile);
 		
-		::MessageBox(m_hWndWindowItems[WINDOW_HANDLE], (string(LanguageManager::m_Ptr->m_sTexts[LAN_FAILED_TO_OPEN], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FAILED_TO_OPEN]) + ": "+ sScript).c_str(),
+		::MessageBox(m_hWndWindowItems[WINDOW_HANDLE], (px_string(LanguageManager::m_Ptr->m_sTexts[LAN_FAILED_TO_OPEN], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FAILED_TO_OPEN]) + ": "+ sScript).c_str(),
 		             LanguageManager::m_Ptr->m_sTexts[LAN_ERROR], MB_OK);
 		             
 		return;
@@ -355,7 +355,7 @@ void ScriptEditorDialog::OnUpdate()
 			break;
 		}
 		
-		string sLineNumber(iLine+1);
+		px_string sLineNumber(iLine+1);
 		::DrawText(hDC, sLineNumber.c_str(), (int)sLineNumber.size(), &rect, DT_RIGHT | DT_VCENTER | DT_SINGLELINE);
 		
 		rect.top = rect.top + iFontHeight;

@@ -401,14 +401,14 @@ void RangeBansDialog::AddRangeBan(const RangeBanItem * pRangeBan)
 	lvItem.mask = LVIF_PARAM | LVIF_TEXT;
 	lvItem.iItem = ListViewGetInsertPosition(m_hWndWindowItems[LV_RANGE_BANS], pRangeBan, m_bSortAscending, CompareRangeBans);
 	
-	string sTxt = string(pRangeBan->m_sIpFrom) + " - " + pRangeBan->m_sIpTo;
+	px_string sTxt = px_string(pRangeBan->m_sIpFrom) + " - " + pRangeBan->m_sIpTo;
 	if((pRangeBan->m_ui8Bits & BanManager::FULL) == BanManager::FULL)
 	{
 		sTxt += " (";
 		sTxt += LanguageManager::m_Ptr->m_sTexts[LAN_FULL_BANNED];
 		sTxt += ")";
 	}
-	lvItem.pszText = sTxt.c_str();
+	lvItem.pszText = (LPSTR)sTxt.c_str();
 	lvItem.lParam = (LPARAM)pRangeBan;
 	
 	int i = (int)::SendMessage(m_hWndWindowItems[LV_RANGE_BANS], LVM_INSERTITEM, 0, (LPARAM)&lvItem);
@@ -452,10 +452,10 @@ int RangeBansDialog::CompareRangeBans(const void * pItem, const void * pOtherIte
 	switch(RangeBansDialog::m_Ptr->m_iSortColumn)
 	{
 	case 0:
-		return (memcmp(pFirstRangeBan->m_ui128FromIpHash, pSecondRangeBan->m_ui128FromIpHash, 16) > 0) ? 1 :
-		       ((memcmp(pFirstRangeBan->m_ui128FromIpHash, pSecondRangeBan->m_ui128FromIpHash, 16) == 0) ?
-		        (memcmp(pFirstRangeBan->m_ui128ToIpHash, pSecondRangeBan->m_ui128ToIpHash, 16) > 0) ? 1 :
-		        ((memcmp(pFirstRangeBan->m_ui128ToIpHash, pSecondRangeBan->m_ui128ToIpHash, 16) == 0) ? 0 : -1) : -1);
+		return (memcmp(&pFirstRangeBan->m_ui128FromIpHash, &pSecondRangeBan->m_ui128FromIpHash, 16) > 0) ? 1 :
+		       ((memcmp(&pFirstRangeBan->m_ui128FromIpHash, &pSecondRangeBan->m_ui128FromIpHash, 16) == 0) ?
+		        (memcmp(&pFirstRangeBan->m_ui128ToIpHash, &pSecondRangeBan->m_ui128ToIpHash, 16) > 0) ? 1 :
+		        ((memcmp(&pFirstRangeBan->m_ui128ToIpHash, &pSecondRangeBan->m_ui128ToIpHash, 16) == 0) ? 0 : -1) : -1);
 	case 1:
 		return _stricmp(pFirstRangeBan->m_sReason == nullptr ? "" : pFirstRangeBan->m_sReason, pSecondRangeBan->m_sReason == nullptr ? "" : pSecondRangeBan->m_sReason);
 	case 2:

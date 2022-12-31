@@ -55,16 +55,16 @@ public:
 	MainWindowPageStats();
 	~MainWindowPageStats() { };
 	
-	bool CreateMainWindowPage(HWND hOwner) override;
-	void UpdateLanguage() override;
-	char * GetPageName() override;
-	void FocusFirstItem() override;
-	void FocusLastItem() override;
+	bool CreateMainWindowPage(HWND hOwner);
+	void UpdateLanguage();
+	char * GetPageName();
+	void FocusFirstItem();
+	void FocusLastItem();
 private:
 	MainWindowPageStats(const MainWindowPageStats&) = delete;
 	const MainWindowPageStats& operator=(const MainWindowPageStats&) = delete;
 	
-	LRESULT MainWindowPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
+	LRESULT MainWindowPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	
 	void OnRedirectAll();
 	void OnMassMessage();

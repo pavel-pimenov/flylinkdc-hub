@@ -132,7 +132,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR lpCmd
 						return 0;
 					}
 					
-					if(sParam[0] != '\\' && sParam[0] != '/')
+					if(szLen >= 1 && sParam[0] != '\\' && sParam[0] != '/')
 					{
 						if(szLen < 4 || (sParam[1] != ':' || (sParam[2] != '\\' && sParam[2] != '/')))
 						{
@@ -212,10 +212,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR lpCmd
 				if (msg.wParam == ServerManager::m_upSecTimer)
 				{
 					ServerManager::OnSecTimer();
+#ifdef FLYLINKDC_REMOVE_REGISTER_THREAD
 				}
 				else if(msg.wParam == ServerManager::m_upRegTimer)
 				{
 					ServerManager::OnRegTimer();
+#endif
 				}
 				else
 				{

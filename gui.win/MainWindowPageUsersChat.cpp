@@ -137,35 +137,35 @@ LRESULT MainWindowPageUsersChat::MainWindowPageProc(UINT uMsg, WPARAM wParam, LP
 				}
 			}
 			
-			string sInfoTip = string(LanguageManager::m_Ptr->m_sTexts[LAN_NICK], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_NICK]) + ": " + string(curUser->m_sNick, curUser->m_ui8NickLen) +
-			                  "\n" + string(LanguageManager::m_Ptr->m_sTexts[LAN_IP], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_IP]) + ": " + string(curUser->m_sIP);
-			                  
-			sInfoTip += "\n\n" + string(LanguageManager::m_Ptr->m_sTexts[LAN_CLIENT], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_CLIENT]) + ": " +
-			            string(curUser->m_sClient, (size_t)curUser->m_ui8ClientLen) +
-			            "\n" + string(LanguageManager::m_Ptr->m_sTexts[LAN_VERSION], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_VERSION]) + ": " + string(curUser->m_sTagVersion, (size_t)curUser->m_ui8TagVersionLen);
+			px_string sInfoTip = px_string(LanguageManager::m_Ptr->m_sTexts[LAN_NICK], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_NICK]) + ": " + px_string(curUser->m_sNick, curUser->m_ui8NickLen) +
+			                     "\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_IP], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_IP]) + ": " + px_string(curUser->m_sIP);
+			                     
+			sInfoTip += "\n\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_CLIENT], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_CLIENT]) + ": " +
+			            px_string(curUser->m_sClient, (size_t)curUser->m_ui8ClientLen) +
+			            "\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_VERSION], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_VERSION]) + ": " + px_string(curUser->m_sTagVersion, (size_t)curUser->m_ui8TagVersionLen);
 			            
-			sInfoTip += "\n\n" + string(LanguageManager::m_Ptr->m_sTexts[LAN_MODE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_MODE]) + ": " + string(curUser->m_sModes) +
-			            "\n" + string(LanguageManager::m_Ptr->m_sTexts[LAN_SLOTS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_SLOTS]) + ": " + string(curUser->m_ui32Slots) +
-			            "\n" + string(LanguageManager::m_Ptr->m_sTexts[LAN_HUBS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_HUBS]) + ": " + string(curUser->m_ui32Hubs);
+			sInfoTip += "\n\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_MODE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_MODE]) + ": " + px_string(curUser->m_sModes) +
+			            "\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_SLOTS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_SLOTS]) + ": " + px_string(curUser->m_ui32Slots) +
+			            "\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_HUBS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_HUBS]) + ": " + px_string(curUser->m_ui32Hubs);
 			            
 			if(curUser->m_ui32OLimit != 0)
 			{
-				sInfoTip += "\n" + string(LanguageManager::m_Ptr->m_sTexts[LAN_AUTO_OPEN_SLOT_WHEN_UP_UNDER], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_AUTO_OPEN_SLOT_WHEN_UP_UNDER]) + " " +
-				            string(curUser->m_ui32OLimit)+" kB/s";
+				sInfoTip += "\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_AUTO_OPEN_SLOT_WHEN_UP_UNDER], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_AUTO_OPEN_SLOT_WHEN_UP_UNDER]) + " " +
+				            px_string(curUser->m_ui32OLimit)+" kB/s";
 			}
 			
 			if(curUser->m_ui32DLimit != 0)
 			{
-				sInfoTip += "\n" + string(LanguageManager::m_Ptr->m_sTexts[LAN_LIMITER], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_LIMITER])+ " D:" + string(curUser->m_ui32DLimit) + " kB/s";
+				sInfoTip += "\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_LIMITER], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_LIMITER])+ " D:" + px_string(curUser->m_ui32DLimit) + " kB/s";
 			}
 			
 			if(curUser->m_ui32LLimit != 0)
 			{
-				sInfoTip += "\n" + string(LanguageManager::m_Ptr->m_sTexts[LAN_LIMITER], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_LIMITER])+ " L:" + string(curUser->m_ui32LLimit) + " kB/s";
+				sInfoTip += "\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_LIMITER], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_LIMITER])+ " L:" + px_string(curUser->m_ui32LLimit) + " kB/s";
 			}
 			
-			sInfoTip += "\n\nRecvBuf: " + string(curUser->m_ui32RecvBufLen) + " bytes";
-			sInfoTip += "\nSendBuf: " + string(curUser->m_ui32SendBufLen) + " bytes";
+			sInfoTip += "\n\nRecvBuf: " + px_string(curUser->m_ui32RecvBufLen) + " bytes";
+			sInfoTip += "\nSendBuf: " + px_string(curUser->m_ui32SendBufLen) + " bytes";
 			
 			pGetInfoTip->cchTextMax = (int)(sInfoTip.size() > INFOTIPSIZE ? INFOTIPSIZE : sInfoTip.size());
 			memcpy(pGetInfoTip->pszText, sInfoTip.c_str(), sInfoTip.size() > INFOTIPSIZE ? INFOTIPSIZE : sInfoTip.size());
@@ -199,7 +199,7 @@ LRESULT MainWindowPageUsersChat::MainWindowPageProc(UINT uMsg, WPARAM wParam, LP
 			{
 				int iLen = ::GetWindowTextLength((HWND)lParam);
 				
-				char * buf = (char *)HeapAlloc(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, iLen+1);
+				char * buf = (char *)malloc(iLen+1);
 				
 				if(buf == nullptr)
 				{
@@ -223,7 +223,7 @@ LRESULT MainWindowPageUsersChat::MainWindowPageProc(UINT uMsg, WPARAM wParam, LP
 				
 				if(bChanged == true)
 				{
-					int iStart = 0, iEnd = 0;
+					int iStart, iEnd;
 					
 					::SendMessage((HWND)lParam, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
 					
@@ -232,10 +232,7 @@ LRESULT MainWindowPageUsersChat::MainWindowPageProc(UINT uMsg, WPARAM wParam, LP
 					::SendMessage((HWND)lParam, EM_SETSEL, iStart, iEnd);
 				}
 				
-				if(HeapFree(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, (void *)buf) == 0)
-				{
-					AppendDebugLog("%s - [MEM] Cannot deallocate buf in MainWindowPageUsersChat::MainWindowPageProc\n");
-				}
+				free(buf);
 				
 				return 0;
 			}
@@ -343,7 +340,7 @@ static LRESULT CALLBACK MultiEditProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 			return 0;
 		}
 	}
-	else if(uMsg == WM_GETDLGCODE && wParam == VK_TAB)
+	if(uMsg == WM_GETDLGCODE && wParam == VK_TAB)
 	{
 		return 0;
 	}
@@ -494,7 +491,7 @@ bool MainWindowPageUsersChat::OnEditEnter()
 		return false;
 	}
 	
-	char * buf = (char *)HeapAlloc(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, iAllocLen+4+SettingManager::m_Ptr->m_ui16TextsLens[SETTXT_ADMIN_NICK]);
+	char * buf = (char *)malloc(iAllocLen+4+SettingManager::m_Ptr->m_ui16TextsLens[SETTXT_ADMIN_NICK]);
 	
 	if(buf == nullptr)
 	{
@@ -515,10 +512,7 @@ bool MainWindowPageUsersChat::OnEditEnter()
 	
 	RichEditAppendText(m_hWndPageItems[REDT_CHAT], buf);
 	
-	if(HeapFree(ServerManager::m_hPtokaXHeap, HEAP_NO_SERIALIZE, (void *)buf) == 0)
-	{
-		AppendDebugLog("%s - [MEM] Cannot deallocate buf in MainWindowPageUsersChat::OnEditEnter\n");
-	}
+	free(buf);
 	
 	::SetWindowText(m_hWndPageItems[EDT_CHAT], "");
 	
@@ -593,10 +587,10 @@ void MainWindowPageUsersChat::UpdateUserList()
 	
 	::SendMessage(m_hWndPageItems[LV_USERS], WM_SETREDRAW, (WPARAM)TRUE, 0);
 	
-	RichEditAppendText(m_hWndPageItems[REDT_CHAT], (string(LanguageManager::m_Ptr->m_sTexts[LAN_TOTAL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_TOTAL]) + ": " + string(ui32Total) + ", " +
-	                                                string(LanguageManager::m_Ptr->m_sTexts[LAN_LOGGED], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_LOGGED]) + ": " + string(ui32LoggedIn) + ", " +
-	                                                string(LanguageManager::m_Ptr->m_sTexts[LAN_CLOSING], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_CLOSING]) + ": " + string(ui32InClose) + ", " +
-	                                                string(LanguageManager::m_Ptr->m_sTexts[LAN_LOGGING], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_LOGGING]) + ": " + string(ui32InLogin)).c_str());
+	RichEditAppendText(m_hWndPageItems[REDT_CHAT], (px_string(LanguageManager::m_Ptr->m_sTexts[LAN_TOTAL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_TOTAL]) + ": " + px_string(ui32Total) + ", " +
+	                                                px_string(LanguageManager::m_Ptr->m_sTexts[LAN_LOGGED], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_LOGGED]) + ": " + px_string(ui32LoggedIn) + ", " +
+	                                                px_string(LanguageManager::m_Ptr->m_sTexts[LAN_CLOSING], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_CLOSING]) + ": " + px_string(ui32InClose) + ", " +
+	                                                px_string(LanguageManager::m_Ptr->m_sTexts[LAN_LOGGING], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_LOGGING]) + ": " + px_string(ui32InLogin)).c_str());
 }
 //------------------------------------------------------------------------------
 

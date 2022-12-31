@@ -124,11 +124,6 @@ LRESULT MainWindow::MainWindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch(uMsg)
 	{
-	case WM_PX_DO_LOOP:
-	{
-		ServiceLoop::m_Ptr->Looper();
-		return 0;
-	}
 	case WM_CREATE:
 	{
 		{
@@ -222,6 +217,7 @@ LRESULT MainWindow::MainWindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		
 		GuiSettingManager::m_wpOldTabsProc = (WNDPROC)::SetWindowLongPtr(m_hWndWindowItems[TC_TABS], GWLP_WNDPROC, (LONG_PTR)TabsProc);
 		
+#ifdef FLYLINKDC_USE_UPDATE_CHECKER_THREAD
 		if(SettingManager::m_Ptr->m_bBools[SETBOOL_CHECK_NEW_RELEASES] == true)
 		{
 			// Create update check thread
@@ -235,7 +231,7 @@ LRESULT MainWindow::MainWindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			// Start the update check thread
 			UpdateCheckThread::m_Ptr->Resume();
 		}
-		
+#endif
 		return 0;
 	}
 	case WM_CLOSE:
@@ -501,6 +497,7 @@ LRESULT MainWindow::MainWindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			return 0;
 		case IDC_UPDATE_CHECK:
 		{
+#ifdef FLYLINKDC_USE_UPDATE_CHECKER_THREAD
 			UpdateDialog::m_Ptr = new (std::nothrow) UpdateDialog();
 			
 			if(UpdateDialog::m_Ptr != nullptr)
@@ -528,7 +525,7 @@ LRESULT MainWindow::MainWindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 				// Start the update check thread
 				UpdateCheckThread::m_Ptr->Resume();
 			}
-			
+#endif
 			return 0;
 		}
 		case IDC_SAVE_SETTINGS:
@@ -571,6 +568,8 @@ LRESULT MainWindow::MainWindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		
 		return 0;
 	}
+#ifdef FLYLINKDC_USE_UPDATE_CHECKER_THREAD
+	
 	case WM_UPDATE_CHECK_DATA:
 	{
 		char * sMsg = (char *)lParam;
@@ -607,6 +606,7 @@ LRESULT MainWindow::MainWindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		UpdateCheckThread::m_Ptr = nullptr;
 		
 		return 0;
+#endif
 	case WM_SETFOCUS:
 		::SetFocus(m_hWndWindowItems[TC_TABS]);
 		return 0;
@@ -777,11 +777,11 @@ void MainWindow::UpdateSysTray() const
 
 void MainWindow::UpdateStats() const
 {
-	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_JOINS_VALUE], string(ServerManager::m_ui32Joins).c_str());
-	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_PARTS_VALUE], string(ServerManager::m_ui32Parts).c_str());
-	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_ACTIVE_VALUE], string(ServerManager::m_ui32Joins - ServerManager::m_ui32Parts).c_str());
-	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_ONLINE_VALUE], string(ServerManager::m_ui32Logged).c_str());
-	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_PEAK_VALUE], string(ServerManager::m_ui32Peak).c_str());
+	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_JOINS_VALUE], px_string(ServerManager::m_ui32Joins).c_str());
+	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_PARTS_VALUE], px_string(ServerManager::m_ui32Parts).c_str());
+	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_ACTIVE_VALUE], px_string(ServerManager::m_ui32Joins - ServerManager::m_ui32Parts).c_str());
+	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_ONLINE_VALUE], px_string(ServerManager::m_ui32Logged).c_str());
+	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_PEAK_VALUE], px_string(ServerManager::m_ui32Peak).c_str());
 	
 	char msg[256];
 	int iMsglen = snprintf(msg, 256, "%s (%s)", formatBytes(ServerManager::m_ui64BytesRead), formatBytesPerSecond(ServerManager::m_ui32ActualBytesRead));
