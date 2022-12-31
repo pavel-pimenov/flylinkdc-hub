@@ -85,3 +85,6 @@ strace_out
 *.recipe
 *.FileListAbsolute.txt
 *.iobj
+/compiled/cfg/*.pxb
+/compiled/cfg/*.pxt
+/compiled/cfg/Motd.txt
