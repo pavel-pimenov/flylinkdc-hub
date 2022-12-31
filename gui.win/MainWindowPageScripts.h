@@ -30,9 +30,9 @@ class MainWindowPageScripts : public MainWindowPage, private BasicSplitter
 {
 public:
 	static MainWindowPageScripts * m_Ptr;
-
+	
 	HWND m_hWndPageItems[8];
-
+	
 	enum enmPageItems
 	{
 		GB_SCRIPTS_ERRORS,
@@ -44,16 +44,16 @@ public:
 		BTN_MOVE_DOWN,
 		BTN_RESTART_SCRIPTS
 	};
-
+	
 	MainWindowPageScripts();
 	~MainWindowPageScripts();
-
-	bool CreateMainWindowPage(HWND hOwner);
-	void UpdateLanguage();
-	char * GetPageName();
-	void FocusFirstItem();
-	void FocusLastItem();
-
+	
+	bool CreateMainWindowPage(HWND hOwner) override;
+	void UpdateLanguage() override;
+	char * GetPageName() override;
+	void FocusFirstItem() override;
+	void FocusLastItem() override;
+	
 	void ClearMemUsageAll();
 	void UpdateMemUsage();
 	void MoveScript(uint8_t ui8ScriptId, const bool bUp);
@@ -63,14 +63,14 @@ public:
 	void OpenInScriptEditor();
 private:
 	bool m_bIgnoreItemChanged;
-
+	
 	MainWindowPageScripts(const MainWindowPageScripts&) = delete;
 	const MainWindowPageScripts& operator=(const MainWindowPageScripts&) = delete;
-
-	LRESULT MainWindowPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
-
+	
+	LRESULT MainWindowPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
+	
 	void OnContextMenu(HWND hWindow, LPARAM lParam);
-	static void OpenScriptEditor(const char * sScript = nullptr);
+	static void OpenScriptEditor(char * sScript = nullptr);
 	void RefreshScripts();
 	void OnItemChanged(const LPNMLISTVIEW pListView);
 	void OnDoubleClick(const LPNMITEMACTIVATE pItemActivate);
@@ -81,9 +81,9 @@ private:
 	void OpenInExternalEditor();
 	void DeleteScript();
 	void ClearMemUsage(const uint8_t ui8ScriptId);
-
-	HWND GetWindowHandle();
-	void UpdateSplitterParts();
+	
+	HWND GetWindowHandle() override;
+	void UpdateSplitterParts() override;
 };
 //---------------------------------------------------------------------------
 

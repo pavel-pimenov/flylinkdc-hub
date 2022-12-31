@@ -38,23 +38,23 @@
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR lpCmdLine, int iCmdShow)
 {
 	::SetDllDirectory("");
-
+	
 #ifndef _WIN64
 	HINSTANCE hKernel32 = ::LoadLibrary("Kernel32.dll");
-
+	
 	typedef BOOL (WINAPI * SPDEPP)(DWORD);
 	SPDEPP pSPDEPP = (SPDEPP)::GetProcAddress(hKernel32, "SetProcessDEPPolicy");
-
+	
 	if(pSPDEPP != nullptr)
 	{
 		pSPDEPP(PROCESS_DEP_ENABLE);
 	}
-
+	
 	::FreeLibrary(hKernel32);
 #endif
-
+	
 	ServerManager::m_hInstance = hInstance;
-
+	
 #ifdef _DEBUG
 //    AllocConsole();
 //    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -72,13 +72,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR lpCmd
 	{
 		ServerManager::m_sPath = sBuf;
 	}
-
+	
 	size_t szCmdLen = strlen(lpCmdLine);
 	if(szCmdLen != 0)
 	{
 		char *sParam = lpCmdLine;
 		size_t szParamLen = 0, szLen = 0;
-
+		
 		for(size_t szi = 0; szi < szCmdLen; szi++)
 		{
 			if(szi == szCmdLen-1)
@@ -92,9 +92,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR lpCmd
 			{
 				continue;
 			}
-
+			
 			szParamLen = (lpCmdLine+szi)-sParam;
-
+			
 			switch(szParamLen)
 			{
 			case 7:
@@ -131,8 +131,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR lpCmd
 						::MessageBox(nullptr, "Missing config directory!", "Error!", MB_OK);
 						return 0;
 					}
-
-					if(szLen >= 1 && sParam[0] != '\\' && sParam[0] != '/')
+					
+					if(sParam[0] != '\\' && sParam[0] != '/')
 					{
 						if(szLen < 4 || (sParam[1] != ':' || (sParam[2] != '\\' && sParam[2] != '/')))
 						{
@@ -140,7 +140,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR lpCmd
 							return 0;
 						}
 					}
-
+					
 					if(sParam[szLen - 1] == '/' || sParam[szLen - 1] == '\\')
 					{
 						ServerManager::m_sPath = string(sParam, szLen - 1);
@@ -149,7 +149,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR lpCmd
 					{
 						ServerManager::m_sPath = string(sParam, szLen);
 					}
-
+					
 					if(DirExist(ServerManager::m_sPath.c_str()) == false)
 					{
 						if(CreateDirectory(ServerManager::m_sPath.c_str(), nullptr) == 0)
@@ -161,23 +161,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR lpCmd
 				}
 				break;
 			}
-
+			
 			sParam = lpCmdLine+szi+1;
 		}
 	}
-
+	
 	HINSTANCE hRichEdit = ::LoadLibrary(/*"msftedit.dll"*/"riched20.dll");
-
+	
 	ExceptionHandlingInitialize(ServerManager::m_sPath, sBuf);
-
+	
 	ServerManager::Initialize();
-
+	
 	// systray icon on/off? added by Ptaczek 16.5.2003
 	if(SettingManager::m_Ptr->m_bBools[SETBOOL_ENABLE_TRAY_ICON] == true)
 	{
 		MainWindow::m_Ptr->UpdateSysTray();
 	}
-
+	
 	// If autostart is checked (or commandline /autostart given), then start the server
 	if((SettingManager::m_Ptr->m_bBools[SETBOOL_AUTO_START] == true || ServerManager::m_bCmdAutoStart == true) && ServerManager::m_bCmdNoAutoStart == false)
 	{
@@ -186,7 +186,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR lpCmd
 			MainWindow::m_Ptr->SetStatusValue((string(LanguageManager::m_Ptr->m_sTexts[LAN_READY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_READY])+".").c_str());
 		}
 	}
-
+	
 	if(SettingManager::m_Ptr->m_bBools[SETBOOL_START_MINIMIZED] == true && SettingManager::m_Ptr->m_bBools[SETBOOL_ENABLE_TRAY_ICON] == true)
 	{
 		::ShowWindow(MainWindow::m_Ptr->m_hWnd, SW_SHOWMINIMIZED);
@@ -195,10 +195,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR lpCmd
 	{
 		::ShowWindow(MainWindow::m_Ptr->m_hWnd, iCmdShow);
 	}
-
+	
 	MSG msg = { 0 };
 	BOOL bRet = -1;
-
+	
 	while((bRet = ::GetMessage(&msg, nullptr, 0, 0)) != 0)
 	{
 		if(bRet == -1)
@@ -212,12 +212,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR lpCmd
 				if (msg.wParam == ServerManager::m_upSecTimer)
 				{
 					ServerManager::OnSecTimer();
-#ifdef FLYLINKDC_REMOVE_REGISTER_THREAD
 				}
 				else if(msg.wParam == ServerManager::m_upRegTimer)
 				{
 					ServerManager::OnRegTimer();
-#endif
 				}
 				else
 				{
@@ -225,7 +223,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR lpCmd
 					ScriptOnTimer(msg.wParam);
 				}
 			}
-
+			
 			if(ServerManager::m_hWndActiveDialog == nullptr)
 			{
 				if(::IsDialogMessage(MainWindow::m_Ptr->m_hWnd, &msg) != 0)
@@ -237,18 +235,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR lpCmd
 			{
 				continue;
 			}
-
+			
 			::TranslateMessage(&msg);
 			::DispatchMessage(&msg);
 		}
 	}
-
+	
 	delete MainWindow::m_Ptr;
-
+	
 	ExceptionHandlingUnitialize();
-
+	
 	::FreeLibrary(hRichEdit);
-
+	
 	return (int)msg.wParam;
 }
 //---------------------------------------------------------------------------

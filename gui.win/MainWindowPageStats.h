@@ -27,7 +27,7 @@ class MainWindowPageStats : public MainWindowPage
 {
 public:
 	HWND m_hWndPageItems[20];
-
+	
 	enum enmPageItems
 	{
 		BTN_START_STOP,
@@ -51,21 +51,21 @@ public:
 		BTN_REDIRECT_ALL,
 		BTN_MASS_MSG
 	};
-
+	
 	MainWindowPageStats();
 	~MainWindowPageStats() { };
-
-	bool CreateMainWindowPage(HWND hOwner);
-	void UpdateLanguage();
-	char * GetPageName();
-	void FocusFirstItem();
-	void FocusLastItem();
+	
+	bool CreateMainWindowPage(HWND hOwner) override;
+	void UpdateLanguage() override;
+	char * GetPageName() override;
+	void FocusFirstItem() override;
+	void FocusLastItem() override;
 private:
 	MainWindowPageStats(const MainWindowPageStats&) = delete;
 	const MainWindowPageStats& operator=(const MainWindowPageStats&) = delete;
-
-	LRESULT MainWindowPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
-
+	
+	LRESULT MainWindowPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
+	
 	void OnRedirectAll();
 	void OnMassMessage();
 };

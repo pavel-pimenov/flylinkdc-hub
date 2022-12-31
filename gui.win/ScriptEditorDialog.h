@@ -25,7 +25,7 @@ class ScriptEditorDialog
 {
 public:
 	HWND m_hWndWindowItems[5];
-
+	
 	enum enmWindowItems
 	{
 		WINDOW_HANDLE,
@@ -34,22 +34,22 @@ public:
 		BTN_CHECK_SYNTAX,
 		BTN_SAVE_SCRIPT
 	};
-
+	
 	ScriptEditorDialog();
 	~ScriptEditorDialog();
-
+	
 	static LRESULT CALLBACK StaticScriptEditorDialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
+	
 	void DoModal(HWND hWndParent);
-	void LoadScript(const char * sScript);
+	void LoadScript(char * sScript);
 private:
 	string m_sScriptPath;
-
+	
 	ScriptEditorDialog(const ScriptEditorDialog&) = delete;
 	const ScriptEditorDialog& operator=(const ScriptEditorDialog&) = delete;
-
+	
 	LRESULT ScriptEditorDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
-
+	
 	void OnContextMenu(HWND hWindow, LPARAM lParam);
 	void OnUpdate();
 	void OnLoadScript();

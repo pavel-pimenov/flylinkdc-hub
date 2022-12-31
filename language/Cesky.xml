@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="windows-1252" standalone="yes" ?>
-<Language Name="Èeština" Author="Petr &apos;PPK&apos; Kozelka" Version="0.5.2.1 build 553">
+<Language Name="Èeština" Author="Petr &apos;PPK&apos; Kozelka" Version="0.5.3.0 build 567">
     <String Name="ThisHubIsRunning">Tento hub pohání</String>
     <String Name="HubName">Jméno hubu</String>
     <String Name="MOTD(motd)">MOTD (zpráva dne)</String>
@@ -357,7 +357,7 @@
     <String Name="ProfileNameLwr">název profilu</String>
     <String Name="MaxAlwdNickLen64Chars">Max povolená délka pøezdívky je 64 znakù</String>
     <String Name="MaxAlwdPassLen64Chars">Max povolená délka hesla je 64 znakù</String>
-    <String Name="ErrNoProfileGivenNameExist">Chyba, žádný profil se zadaným názvem neexistuje</String>
+    <String Name="ErrProfileGivenNameDontExist">Chyba, profil se zadaným jménem neexistuje</String>
     <String Name="YouNotAllowedToAddUserThisProfile">Nejste oprávnìn pøidat uživatele s tímto profilem</String>
     <String Name="IsAlreadyRegistered">již je registrován</String>
     <String Name="SuccessfullyAdded">úspìšnì pøidán</String>
@@ -779,4 +779,5 @@
     <String Name="YouCanUseSQLWildcards">Mùžete použít SQL Wildcards</String>
     <String Name="Unlimited">bez limitu</String>
     <String Name="YourClientSendIncorrectIpPortInCmd">Váš klient poslal nesprávnou IP nebo Port v pøíkazu</String>
+    <String Name="YouCantRedirectYourself">Nemùžete pøesmìrovat sebe</String>
 </Language>

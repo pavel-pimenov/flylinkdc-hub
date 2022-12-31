@@ -52,12 +52,12 @@ SettingPage::SettingPage() : m_hWnd(nullptr), m_bCreated(false)
 LRESULT CALLBACK SettingPage::StaticSettingPageProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	SettingPage * pSettingPage = (SettingPage *)::GetWindowLongPtr(hWnd, GWLP_USERDATA);
-
+	
 	if(pSettingPage == nullptr)
 	{
 		return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
-
+	
 	return pSettingPage->SettingPageProc(uMsg, wParam, lParam);
 }
 //---------------------------------------------------------------------------
@@ -75,20 +75,20 @@ void SettingPage::CreateHWND(HWND hOwner)
 		m_wc.hInstance = ServerManager::m_hInstance;
 		m_wc.hCursor = ::LoadCursor(m_wc.hInstance, IDC_ARROW);
 		m_wc.style = CS_HREDRAW | CS_VREDRAW;
-
+		
 		atomSettingPage = ::RegisterClassEx(&m_wc);
 	}
-
+	
 	RECT rcParent = { 0 };
 	::GetClientRect(hOwner, &rcParent);
-
+	
 	m_hWnd = ::CreateWindowEx(WS_EX_CONTROLPARENT, MAKEINTATOM(atomSettingPage), nullptr, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 	                          ScaleGui(154) + 10, 0, rcParent.right-(ScaleGui(154) + 10), rcParent.bottom, hOwner, nullptr, ServerManager::m_hInstance, nullptr);
-
+	                          
 	if(m_hWnd != nullptr)
 	{
 		m_bCreated = true;
-
+		
 		::SetWindowLongPtr(m_hWnd, GWLP_USERDATA, (LONG_PTR)this);
 		::SetWindowLongPtr(m_hWnd, GWLP_WNDPROC, (LONG_PTR)StaticSettingPageProc);
 	}
@@ -99,9 +99,9 @@ void SettingPage::RemoveDollarsPipes(HWND hWnd)
 {
 	char buf[257];
 	::GetWindowText(hWnd, buf, 257);
-
+	
 	bool bChanged = false;
-
+	
 	for(uint16_t ui16i = 0; buf[ui16i] != '\0'; ui16i++)
 	{
 		if(buf[ui16i] == '$' || buf[ui16i] == '|')
@@ -111,15 +111,15 @@ void SettingPage::RemoveDollarsPipes(HWND hWnd)
 			ui16i--;
 		}
 	}
-
+	
 	if(bChanged == true)
 	{
-		int iStart, iEnd;
-
+		int iStart = 0, iEnd = 0;
+		
 		::SendMessage(hWnd, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
-
+		
 		::SetWindowText(hWnd, buf);
-
+		
 		::SendMessage(hWnd, EM_SETSEL, iStart, iEnd);
 	}
 }
@@ -129,9 +129,9 @@ void SettingPage::RemovePipes(HWND hWnd)
 {
 	char buf[257];
 	::GetWindowText(hWnd, buf, 257);
-
+	
 	bool bChanged = false;
-
+	
 	for(uint16_t ui16i = 0; buf[ui16i] != '\0'; ui16i++)
 	{
 		if(buf[ui16i] == '|')
@@ -141,15 +141,15 @@ void SettingPage::RemovePipes(HWND hWnd)
 			ui16i--;
 		}
 	}
-
+	
 	if(bChanged == true)
 	{
-		int iStart, iEnd;
-
+		int iStart = 0, iEnd = 0;
+		
 		::SendMessage(hWnd, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
-
+		
 		::SetWindowText(hWnd, buf);
-
+		
 		::SendMessage(hWnd, EM_SETSEL, iStart, iEnd);
 	}
 }
@@ -159,13 +159,13 @@ void SettingPage::MinMaxCheck(HWND hWnd, const int iMin, const int iMax)
 {
 	char buf[6];
 	::GetWindowText(hWnd, buf, 6);
-
+	
 	int iValue = atoi(buf);
-
-	int iStart, iEnd;
-
+	
+	int iStart = 0, iEnd = 0;
+	
 	::SendMessage(hWnd, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
-
+	
 	if(iValue > iMax)
 	{
 		_itoa(iMax, buf, 10);
@@ -176,7 +176,7 @@ void SettingPage::MinMaxCheck(HWND hWnd, const int iMin, const int iMax)
 		_itoa(iMin, buf, 10);
 		::SetWindowText(hWnd, buf);
 	}
-
+	
 	::SendMessage(hWnd, EM_SETSEL, iStart, iEnd);
 }
 //---------------------------------------------------------------------------
@@ -194,7 +194,7 @@ void SettingPage::AddToolTip(HWND &hWnd, char * sTipText) const
 {
 	HWND hWndTooltip = CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, nullptr, TTS_NOPREFIX | TTS_ALWAYSTIP | TTS_BALLOON, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 	                                  hWnd, nullptr, ServerManager::m_hInstance, nullptr);
-
+	                                  
 	TOOLINFO ti = { 0 };
 	ti.cbSize = sizeof(TOOLINFO);
 	ti.uFlags = TTF_SUBCLASS | TTF_IDISHWND;
@@ -202,7 +202,7 @@ void SettingPage::AddToolTip(HWND &hWnd, char * sTipText) const
 	ti.uId = (UINT_PTR)hWnd;
 	ti.hinst = ServerManager::m_hInstance;
 	ti.lpszText = sTipText;
-
+	
 	::SendMessage(hWndTooltip, TTM_ADDTOOL, 0, (LPARAM)&ti);
 	::SendMessage(hWndTooltip, TTM_SETDELAYTIME, TTDT_AUTOPOP, MAKELPARAM(30000, 0));
 }
@@ -227,7 +227,7 @@ LRESULT SettingWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, WN
 			return 0;
 		}
 	}
-
+	
 	return ::CallWindowProc(wpOldProc, hWnd, uMsg, wParam, lParam);
 }
 //---------------------------------------------------------------------------
