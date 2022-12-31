@@ -271,11 +271,8 @@ void OnRedirectAllOk(char * sLine, const int iLen)
 	}
 	
 	int iMsgLen = snprintf(sMSG, iLen+16, "$ForceMove %s|", sLine);
-	if(iMsgLen <= 0)
+	if(iMsgLen > 0)
 	{
-		return;
-	}
-	
 	User * pCur = nullptr,
 	       * pNext = Users::m_Ptr->m_pUserListS;
 	       
@@ -288,7 +285,7 @@ void OnRedirectAllOk(char * sLine, const int iLen)
 		// PPK ... close by hub needed !
 		pCur->Close(true);
 	}
-	
+	}
 	free(sMSG);
 }
 //---------------------------------------------------------------------------
@@ -319,13 +316,10 @@ void OnMassMessageOk(char * sLine, const int iLen)
 	
 	int iMsgLen = snprintf(sMSG, iLen+256, "%s $<%s> %s|", SettingManager::m_Ptr->m_bBools[SETBOOL_REG_BOT] == false ? SettingManager::m_Ptr->m_sTexts[SETTXT_ADMIN_NICK] : SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_NICK],
 	                       SettingManager::m_Ptr->m_bBools[SETBOOL_REG_BOT] == false ? SettingManager::m_Ptr->m_sTexts[SETTXT_ADMIN_NICK] : SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_NICK], sLine);
-	if(iMsgLen <= 0)
+	if(iMsgLen > 0)
 	{
-		return;
-	}
-	
 	GlobalDataQueue::m_Ptr->SingleItemStore(sMSG, iMsgLen, nullptr, 0, GlobalDataQueue::SI_PM2ALL);
-	
+	}
 	free(sMSG);
 }
 

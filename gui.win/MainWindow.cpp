@@ -124,6 +124,11 @@ LRESULT MainWindow::MainWindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch(uMsg)
 	{
+	case WM_PX_DO_LOOP:
+	{
+		ServiceLoop::m_Ptr->Looper();
+		return 0;
+	}
 	case WM_CREATE:
 	{
 		{

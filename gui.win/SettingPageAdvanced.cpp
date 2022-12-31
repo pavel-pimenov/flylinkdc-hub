@@ -147,7 +147,7 @@ LRESULT SettingPageAdvanced::SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lP
 				
 				if(bChanged == true)
 				{
-					int iStart, iEnd;
+					int iStart = 0, iEnd = 0;
 					
 					::SendMessage((HWND)lParam, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
 					

@@ -33,18 +33,18 @@ public:
 	SettingPageBots();
 	~SettingPageBots() { };
 	
-	bool CreateSettingPage(HWND hOwner);
+	bool CreateSettingPage(HWND hOwner) override;
 	
-	void Save();
+	void Save() override;
 	void GetUpdates(bool &bUpdatedHubNameWelcome, bool & /*bUpdatedHubName*/, bool & /*bUpdatedTCPPorts*/, bool & /*bUpdatedUDPPort*/, bool & /*bUpdatedAutoReg*/,
 	                bool &bUpdatedMOTD, bool &bUpdatedHubSec, bool &bUpdatedRegOnlyMessage, bool &bUpdatedShareLimitMessage,
 	                bool &bUpdatedSlotsLimitMessage, bool &bUpdatedHubSlotRatioMessage, bool &bUpdatedMaxHubsLimitMessage, bool &bUpdatedNoTagMessage,
 	                bool &bUpdatedNickLimitMessage, bool &bUpdatedBotsSameNick, bool &bUpdatedBotNick, bool &bUpdatedBot, bool &bUpdatedOpChatNick,
 	                bool &bUpdatedOpChat, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
-	                bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/);
+	                bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/) override;
 	                
-	char * GetPageName();
-	void FocusLastItem();
+	char * GetPageName() override;
+	void FocusLastItem() override;
 private:
 	HWND m_hWndPageItems[17];
 	
@@ -72,7 +72,7 @@ private:
 	SettingPageBots(const SettingPageBots&) = delete;
 	const SettingPageBots& operator=(const SettingPageBots&) = delete;
 	
-	LRESULT SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 };
 //------------------------------------------------------------------------------
 

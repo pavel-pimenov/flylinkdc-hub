@@ -223,7 +223,7 @@ LRESULT MainWindowPageUsersChat::MainWindowPageProc(UINT uMsg, WPARAM wParam, LP
 				
 				if(bChanged == true)
 				{
-					int iStart, iEnd;
+					int iStart = 0, iEnd = 0;
 					
 					::SendMessage((HWND)lParam, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
 					

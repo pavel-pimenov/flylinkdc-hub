@@ -95,7 +95,7 @@ LRESULT BanDialog::BanDialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 				
 				if(bChanged == true)
 				{
-					int iStart, iEnd;
+					int iStart = 0, iEnd = 0;
 					
 					::SendMessage((HWND)lParam, EM_GETSEL, (WPARAM)&iStart, (LPARAM)&iEnd);
 					

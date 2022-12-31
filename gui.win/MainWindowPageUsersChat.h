@@ -56,11 +56,11 @@ public:
 	MainWindowPageUsersChat();
 	~MainWindowPageUsersChat();
 	
-	bool CreateMainWindowPage(HWND hOwner);
-	void UpdateLanguage();
-	char * GetPageName();
-	void FocusFirstItem();
-	void FocusLastItem();
+	bool CreateMainWindowPage(HWND hOwner) override;
+	void UpdateLanguage() override;
+	char * GetPageName() override;
+	void FocusFirstItem() override;
+	void FocusLastItem() override;
 	
 	bool OnEditEnter();
 	void AddUser(const User * pUser);
@@ -70,7 +70,7 @@ private:
 	MainWindowPageUsersChat(const MainWindowPageUsersChat&) = delete;
 	const MainWindowPageUsersChat& operator=(const MainWindowPageUsersChat&) = delete;
 	
-	LRESULT MainWindowPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	LRESULT MainWindowPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 	
 	void UpdateUserList();
 	void OnContextMenu(HWND hWindow, LPARAM lParam);
@@ -79,8 +79,8 @@ private:
 	void BanUser();
 	void RedirectUser();
 	
-	HWND GetWindowHandle();
-	void UpdateSplitterParts();
+	HWND GetWindowHandle() override;
+	void UpdateSplitterParts() override;
 };
 //------------------------------------------------------------------------------
 
