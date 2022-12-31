@@ -29,25 +29,25 @@ public:
 	bool m_bUpdateHubSec, m_bUpdateMOTD, m_bUpdateHubNameWelcome, m_bUpdateRegOnlyMessage, m_bUpdateShareLimitMessage, m_bUpdateSlotsLimitMessage,
 	     m_bUpdateHubSlotRatioMessage, m_bUpdateMaxHubsLimitMessage, m_bUpdateNoTagMessage, m_bUpdateNickLimitMessage, m_bUpdateBotsSameNick, m_bBotNickChanged,
 	     m_bUpdateBot, m_bOpChatNickChanged, m_bUpdateOpChat;
-
+	     
 	SettingPageBots();
 	~SettingPageBots() { };
-
-	bool CreateSettingPage(HWND hOwner);
-
-	void Save();
+	
+	bool CreateSettingPage(HWND hOwner) override;
+	
+	void Save() override;
 	void GetUpdates(bool &bUpdatedHubNameWelcome, bool & /*bUpdatedHubName*/, bool & /*bUpdatedTCPPorts*/, bool & /*bUpdatedUDPPort*/, bool & /*bUpdatedAutoReg*/,
 	                bool &bUpdatedMOTD, bool &bUpdatedHubSec, bool &bUpdatedRegOnlyMessage, bool &bUpdatedShareLimitMessage,
 	                bool &bUpdatedSlotsLimitMessage, bool &bUpdatedHubSlotRatioMessage, bool &bUpdatedMaxHubsLimitMessage, bool &bUpdatedNoTagMessage,
 	                bool &bUpdatedNickLimitMessage, bool &bUpdatedBotsSameNick, bool &bUpdatedBotNick, bool &bUpdatedBot, bool &bUpdatedOpChatNick,
 	                bool &bUpdatedOpChat, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
-	                bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/);
-
-	char * GetPageName();
-	void FocusLastItem();
+	                bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/) override;
+	                
+	char * GetPageName() override;
+	void FocusLastItem() override;
 private:
 	HWND m_hWndPageItems[17];
-
+	
 	enum enmPageItems
 	{
 		GB_HUB_BOT,
@@ -68,11 +68,11 @@ private:
 		GB_OP_CHAT_BOT_EMAIL,
 		EDT_OP_CHAT_BOT_EMAIL
 	};
-
+	
 	SettingPageBots(const SettingPageBots&) = delete;
 	const SettingPageBots& operator=(const SettingPageBots&) = delete;
-
-	LRESULT SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	
+	LRESULT SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 };
 //------------------------------------------------------------------------------
 

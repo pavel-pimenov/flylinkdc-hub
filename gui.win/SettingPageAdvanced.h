@@ -27,29 +27,29 @@ class SettingPageAdvanced : public SettingPage
 {
 public:
 	bool m_bUpdateSysTray, m_bUpdateScripting;
-
+	
 	SettingPageAdvanced();
 	~SettingPageAdvanced() { };
-
-	bool CreateSettingPage(HWND hOwner);
-
-	void Save();
+	
+	bool CreateSettingPage(HWND hOwner) override;
+	
+	void Save() override;
 	void GetUpdates(bool & /*bUpdatedHubNameWelcome*/, bool & /*bUpdatedHubName*/, bool & /*bUpdatedTCPPorts*/, bool & /*bUpdatedUDPPort*/, bool & /*bUpdatedAutoReg*/,
 	                bool & /*bUpdatedMOTD*/, bool & /*bUpdatedHubSec*/, bool & /*bUpdatedRegOnlyMessage*/, bool & /*bUpdatedShareLimitMessage*/,
 	                bool & /*bUpdatedSlotsLimitMessage*/, bool & /*bUpdatedHubSlotRatioMessage*/, bool & /*bUpdatedMaxHubsLimitMessage*/, bool & /*bUpdatedNoTagMessage*/,
 	                bool & /*bUpdatedNickLimitMessage*/, bool & /*bUpdatedBotsSameNick*/, bool & /*bUpdatedBotNick*/, bool & /*bUpdatedBot*/, bool & /*bUpdatedOpChatNick*/,
 	                bool & /*bUpdatedOpChat*/, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
-	                bool & /*bUpdatedPermBanRedirAddress*/, bool &bUpdatedSysTray, bool &bUpdatedScripting, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/);
-
-	char * GetPageName();
-	void FocusLastItem();
+	                bool & /*bUpdatedPermBanRedirAddress*/, bool &bUpdatedSysTray, bool &bUpdatedScripting, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/) override;
+	                
+	char * GetPageName() override;
+	void FocusLastItem() override;
 private:
 #if defined(_WITH_SQLITE) || defined(_WITH_POSTGRES) || defined(_WITH_MYSQL)
 	HWND m_hWndPageItems[26];
 #else
 	HWND m_hWndPageItems[21];
 #endif
-
+	
 	enum enmPageItems
 	{
 		GB_HUB_STARTUP_AND_TRAY,
@@ -81,11 +81,11 @@ private:
 		UD_REMOVE_OLD_RECORDS,
 #endif
 	};
-
+	
 	SettingPageAdvanced(const SettingPageAdvanced&) = delete;
 	const SettingPageAdvanced& operator=(const SettingPageAdvanced&) = delete;
-
-	LRESULT SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	
+	LRESULT SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 };
 //------------------------------------------------------------------------------
 

@@ -28,22 +28,22 @@ class SettingPageDeflood : public SettingPage
 public:
 	SettingPageDeflood();
 	~SettingPageDeflood() { };
-
-	bool CreateSettingPage(HWND hOwner);
-
-	void Save();
+	
+	bool CreateSettingPage(HWND hOwner) override;
+	
+	void Save() override;
 	void GetUpdates(bool & /*bUpdatedHubNameWelcome*/, bool & /*bUpdatedHubName*/, bool & /*bUpdatedTCPPorts*/, bool & /*bUpdatedUDPPort*/,
 	                bool & /*bUpdatedAutoReg*/, bool & /*bUpdatedMOTD*/, bool & /*bUpdatedHubSec*/, bool & /*bUpdatedRegOnlyMessage*/, bool & /*bUpdatedShareLimitMessage*/,
 	                bool & /*bUpdatedSlotsLimitMessage*/, bool & /*bUpdatedHubSlotRatioMessage*/, bool & /*bUpdatedMaxHubsLimitMessage*/, bool & /*bUpdatedNoTagMessage*/,
 	                bool & /*bUpdatedNickLimitMessage*/, bool & /*bUpdatedBotsSameNick*/, bool & /*bUpdatedBotNick*/, bool & /*bUpdatedBot*/, bool & /*bUpdatedOpChatNick*/,
 	                bool & /*bUpdatedOpChat*/, bool & /*bUpdatedLanguage*/, bool & /*bUpdatedTextFiles*/, bool & /*bUpdatedRedirectAddress*/, bool & /*bUpdatedTempBanRedirAddress*/,
-	                bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/);
-
-	char * GetPageName();
-	void FocusLastItem();
+	                bool & /*bUpdatedPermBanRedirAddress*/, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/) override;
+	                
+	char * GetPageName() override;
+	void FocusLastItem() override;
 private:
 	HWND m_hWndPageItems[88];
-
+	
 	enum enmPageItems
 	{
 		GB_GLOBAL_MAIN_CHAT,
@@ -135,11 +135,11 @@ private:
 		UD_MAX_USERS_LOGINS,
 		LBL_MAX_USERS_LOGINS
 	};
-
+	
 	SettingPageDeflood(const SettingPageDeflood&) = delete;
 	const SettingPageDeflood& operator=(const SettingPageDeflood&) = delete;
-
-	LRESULT SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	
+	LRESULT SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 };
 //------------------------------------------------------------------------------
 

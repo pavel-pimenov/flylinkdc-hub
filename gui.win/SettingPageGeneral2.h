@@ -28,25 +28,25 @@ class SettingPageGeneral2 : public SettingPage
 public:
 	bool m_bUpdateTextFiles, m_bUpdateRedirectAddress, m_bUpdateRegOnlyMessage, m_bUpdateShareLimitMessage, m_bUpdateSlotsLimitMessage, m_bUpdateHubSlotRatioMessage,
 	     m_bUpdateMaxHubsLimitMessage, m_bUpdateNoTagMessage, m_bUpdateTempBanRedirAddress, m_bUpdatePermBanRedirAddress, m_bUpdateNickLimitMessage;
-
+	     
 	SettingPageGeneral2();
 	~SettingPageGeneral2() { };
-
-	bool CreateSettingPage(HWND hOwner);
-
-	void Save();
+	
+	bool CreateSettingPage(HWND hOwner) override;
+	
+	void Save() override;
 	void GetUpdates(bool & /*bUpdatedHubNameWelcome*/, bool & /*bUpdatedHubName*/, bool & /*bUpdatedTCPPorts*/, bool & /*bUpdatedUDPPort*/, bool & /*bUpdatedAutoReg*/,
 	                bool &/*bUpdatedMOTD*/, bool &/*bUpdatedHubSec*/, bool &bUpdatedRegOnlyMessage, bool &bUpdatedShareLimitMessage,
 	                bool &bUpdatedSlotsLimitMessage, bool &bUpdatedHubSlotRatioMessage, bool &bUpdatedMaxHubsLimitMessage, bool &bUpdatedNoTagMessage,
 	                bool &bUpdatedNickLimitMessage, bool &/*bUpdatedBotsSameNick*/, bool &/*bUpdatedBotNick*/, bool & /*bUpdatedBot*/, bool &/*bUpdatedOpChatNick*/,
 	                bool &/*bUpdatedOpChat*/, bool & /*bUpdatedLanguage*/, bool &bUpdatedTextFiles, bool &bUpdatedRedirectAddress, bool &bUpdatedTempBanRedirAddress,
-	                bool &bUpdatedPermBanRedirAddress, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/);
-
-	char * GetPageName();
-	void FocusLastItem();
+	                bool &bUpdatedPermBanRedirAddress, bool & /*bUpdatedSysTray*/, bool & /*bUpdatedScripting*/, bool & /*bUpdatedMinShare*/, bool & /*bUpdatedMaxShare*/) override;
+	                
+	char * GetPageName() override;
+	void FocusLastItem() override;
 private:
 	HWND m_hWndPageItems[23];
-
+	
 	enum enmPageItems
 	{
 		GB_TEXT_FILES,
@@ -73,11 +73,11 @@ private:
 		BTN_HASH_PASSWORDS,
 		BTN_KILL_THAT_DUCK,
 	};
-
+	
 	SettingPageGeneral2(const SettingPageGeneral2&) = delete;
 	const SettingPageGeneral2& operator=(const SettingPageGeneral2&) = delete;
-
-	LRESULT SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	
+	LRESULT SettingPageProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 };
 //------------------------------------------------------------------------------
 
