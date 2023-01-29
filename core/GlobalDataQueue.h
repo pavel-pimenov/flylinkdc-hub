@@ -23,6 +23,12 @@
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #include <string>
 
+#include <prometheus/counter.h>
+#include <prometheus/exposer.h>
+#include <prometheus/family.h>
+#include <prometheus/gauge.h>
+#include <prometheus/registry.h>
+
 struct User;
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class CFlyBuffer
@@ -192,6 +198,65 @@ public:
 	void * InsertBlankQueueItem(void * pAfterItem, const uint8_t ui8CmdType);
 	static void FillBlankQueueItem(const char * sCommand, const size_t szLen, void * pQueueItem);
 	void StatusMessageFormat(const char * sFrom, const char * sFormatMsg, ...);
+	private:
+	        // The data that we're exposing to Prometheus:
+#ifndef NDEBUG
+            std::shared_ptr<prometheus::Exposer> m_exposer = std::make_shared<prometheus::Exposer>("0.0.0.0:9999");
+#else
+            std::shared_ptr<prometheus::Exposer> m_exposer = std::make_shared<prometheus::Exposer>("0.0.0.0:8888");
+#endif
+            std::shared_ptr<prometheus::Registry> m_registry = std::make_shared<prometheus::Registry>();
+
+	public:
+            prometheus::Family<prometheus::Counter>& m_flylinkdc_hub_dc_commands_counter = prometheus::BuildCounter()
+                    .Name("flylinkdc_hub_dc_commands_counter")
+                    .Help("The number of dc++ commands")
+                   // .Labels({{"node", "node_name"}})
+                    .Register(*m_registry);
+            prometheus::Family<prometheus::Counter>& m_flylinkdc_hub_lua_commands_counter = prometheus::BuildCounter()
+                    .Name("flylinkdc_hub_lua_commands_counter")
+                    .Help("The number of lua commands")
+                    .Register(*m_registry);
+			void PrometheusLuaInc(const char* p_command)
+			{
+				m_flylinkdc_hub_lua_commands_counter.Add({{"func", p_command}}).Increment();
+			}		
+            prometheus::Family<prometheus::Counter>& m_flylinkdc_hub_recv_bytes = prometheus::BuildCounter()
+                    .Name("flylinkdc_hub_recv_bytes")
+                    .Register(*m_registry);
+            prometheus::Family<prometheus::Counter>& m_flylinkdc_hub_recv_counter = prometheus::BuildCounter()
+                    .Name("flylinkdc_hub_recv_bytes")
+                    .Register(*m_registry);
+            prometheus::Family<prometheus::Counter>& m_flylinkdc_hub_send_bytes = prometheus::BuildCounter()
+                    .Name("flylinkdc_hub_send_bytes")
+                    .Register(*m_registry);
+            prometheus::Family<prometheus::Counter>& m_flylinkdc_hub_send_counter = prometheus::BuildCounter()
+                    .Name("flylinkdc_hub_send_bytes")
+                    .Register(*m_registry);
+            prometheus::Family<prometheus::Gauge>& m_flylinkdc_hub_users = prometheus::BuildGauge()
+                    .Name("flylinkdc_hub_users")
+                    .Register(*m_registry);
+            prometheus::Family<prometheus::Counter>& m_flylinkdc_hub_compress_bytes = prometheus::BuildCounter()
+                    .Name("flylinkdc_hub_compress_bytes")
+                    .Register(*m_registry);
+
+			void PrometheusZlibBytes(const char* p_type, int p_len)
+			{
+				m_flylinkdc_hub_compress_bytes.Add({{"bytes", p_type}}).Increment(p_len);
+			}		
+			void PrometheusRecvBytes(const char* p_type, int p_len)
+			{
+				m_flylinkdc_hub_recv_bytes.Add({{p_type, "size"}}).Increment(p_len);
+				m_flylinkdc_hub_recv_counter.Add({{p_type, "count"}}).Increment();
+			}		
+            prometheus::Family<prometheus::Counter>& m_flylinkdc_hub_send_user_counter = prometheus::BuildCounter()
+                    .Name("flylinkdc_hub_send_user_bytes")
+                    .Register(*m_registry);
+			void PrometheusSendBytes(const char* p_type, int p_len)
+			{
+				m_flylinkdc_hub_send_bytes.Add({{p_type, "size"}}).Increment(p_len);
+				m_flylinkdc_hub_send_counter.Add({{p_type, "count"}}).Increment();
+			}		
 };
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

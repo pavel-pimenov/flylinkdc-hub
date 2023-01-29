@@ -33,10 +33,12 @@
 //---------------------------------------------------------------------------
 #include "IP2Country.h"
 #include "LuaScript.h"
+#include "GlobalDataQueue.h"
 //---------------------------------------------------------------------------
 
 static int GetCountryCode(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'GetCountryCode' (1 expected, got %d)", lua_gettop(pLua));
@@ -77,6 +79,7 @@ static int GetCountryCode(lua_State * pLua)
 
 static int GetCountryName(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'GetCountryName' (1 expected, got %d)", lua_gettop(pLua));
@@ -141,6 +144,7 @@ static int GetCountryName(lua_State * pLua)
 
 static int Reload(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'IP2Country.Reload' (0 expected, got %d)", lua_gettop(pLua));

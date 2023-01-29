@@ -728,11 +728,13 @@ User::User() : m_ui64SharedSize(0), m_ui64ChangedSharedSizeShort(0), m_ui64Chang
 	m_is_proxy_user = false;
 	m_is_max_int8 = false;
 	m_is_max_ip_len = false;
+	GlobalDataQueue::m_Ptr->m_flylinkdc_hub_users.Add({}).Increment();
 }
 //---------------------------------------------------------------------------
 
 User::~User()
 {
+	GlobalDataQueue::m_Ptr->m_flylinkdc_hub_users.Add({}).Decrement();
 	free(m_pRecvBuf);
 	free(m_pSendBuf);
 	free(m_sLastChat);
@@ -839,7 +841,7 @@ bool User::MakeLock()
 #endif
 	static const size_t szLockLen = sizeof(sLock) - 1;
 
-	size_t szAllignLen = Allign1024(m_ui32SendBufDataLen + szLockLen);
+	size_t szAllignLen = Allign(m_ui32SendBufDataLen + szLockLen);
 
 	char * pOldBuf = m_pSendBuf;
 	m_pSendBuf = (char *)realloc(pOldBuf, szAllignLen);
@@ -986,11 +988,11 @@ bool User::DoRecv()
 
 	if (m_ui32RecvBufLen < m_ui32RecvBufDataLen + iAvailBytes)
 	{
-		szAllignLen = Allign512(m_ui32RecvBufDataLen + iAvailBytes);
+		szAllignLen = Allign(m_ui32RecvBufDataLen + iAvailBytes);
 	}
 	else if (m_ui32RecvCalled > 60)
 	{
-		szAllignLen = Allign512(m_ui32RecvBufDataLen + iAvailBytes);
+		szAllignLen = Allign(m_ui32RecvBufDataLen + iAvailBytes);
 		if (m_ui32RecvBufLen <= szAllignLen)
 		{
 			szAllignLen = 0;
@@ -1019,7 +1021,8 @@ bool User::DoRecv()
 	}
 
 	// receive new data to pRecvBuf
-	int recvlen = recv(m_Socket, m_pRecvBuf + m_ui32RecvBufDataLen, m_ui32RecvBufLen - m_ui32RecvBufDataLen, 0);
+	const int recvlen = recv(m_Socket, m_pRecvBuf + m_ui32RecvBufDataLen, m_ui32RecvBufLen - m_ui32RecvBufDataLen, 0);
+	GlobalDataQueue::m_Ptr->PrometheusRecvBytes("user",recvlen);
 	m_ui32RecvCalled++;
 
 #ifdef _WIN32
@@ -1226,7 +1229,7 @@ void User::logInvalidUser(int p_id, const char * p_buffer, int p_len, bool p_is_
 		l_file_out.write(p_buffer, p_len);
 		//l_file_out << std::endl;
 	}
-#endif 
+#endif
 }
 //---------------------------------------------------------------------------
 
@@ -1400,7 +1403,7 @@ bool User::PutInSendBuf(const char * sText, const size_t szTxtLen)
 	{
 		if (m_pSendBuf == NULL)
 		{
-			szAllignLen = Allign1024(m_ui32SendBufDataLen + szTxtLen);
+			szAllignLen = Allign(m_ui32SendBufDataLen + szTxtLen);
 		}
 		else
 		{
@@ -1413,7 +1416,7 @@ bool User::PutInSendBuf(const char * sText, const size_t szTxtLen)
 			}
 			else
 			{
-				szAllignLen = Allign1024(m_ui32SendBufDataLen + szTxtLen);
+				szAllignLen = Allign(m_ui32SendBufDataLen + szTxtLen);
 				size_t szMaxBufLen = (size_t)(((m_ui32BoolBits & BIT_BIG_SEND_BUFFER) == BIT_BIG_SEND_BUFFER) == true ?
 				                              ((Users::m_Ptr->m_ui32MyInfosTagLen > Users::m_Ptr->m_ui32MyInfosLen ? Users::m_Ptr->m_ui32MyInfosTagLen : Users::m_Ptr->m_ui32MyInfosLen) * 2) :
 					                              (Users::m_Ptr->m_ui32MyInfosTagLen > Users::m_Ptr->m_ui32MyInfosLen ? Users::m_Ptr->m_ui32MyInfosTagLen : Users::m_Ptr->m_ui32MyInfosLen));
@@ -1480,7 +1483,7 @@ bool User::PutInSendBuf(const char * sText, const size_t szTxtLen)
 						m_ui32SendBufDataLen = 1;
 					}
 
-					size_t szAllignTxtLen = Allign1024(szTxtLen + m_ui32SendBufDataLen);
+					size_t szAllignTxtLen = Allign(szTxtLen + m_ui32SendBufDataLen);
 
 					char * pOldBuf = m_pSendBuf;
 					m_pSendBuf = (char *)realloc(pOldBuf, szAllignTxtLen);
@@ -1501,14 +1504,14 @@ bool User::PutInSendBuf(const char * sText, const size_t szTxtLen)
 				}
 				else
 				{
-					szAllignLen = Allign1024(m_ui32SendBufDataLen + szTxtLen);
+					szAllignLen = Allign(m_ui32SendBufDataLen + szTxtLen);
 				}
 			}
 		}
 	}
 	else if (m_ui32SendCalled > 100)
 	{
-		szAllignLen = Allign1024(m_ui32SendBufDataLen + szTxtLen);
+		szAllignLen = Allign(m_ui32SendBufDataLen + szTxtLen);
 		if (m_ui32SendBufLen <= szAllignLen)
 		{
 			szAllignLen = 0;
@@ -1606,6 +1609,8 @@ bool User::Try2Send()
 	}
 
 	ServerManager::m_ui64BytesSent += n;
+    GlobalDataQueue::m_Ptr->PrometheusSendBytes(__func__,n);
+	
 	static int g_id = 0;
 	extern bool g_isUseLog;
 	if (g_isUseLog)
@@ -2004,10 +2009,10 @@ void User::Close(const bool bNoQuit/* = false*/)
 		return;
 	}
 
-    // Store old state for use in next lines.
-    // State must be updated here and now to avoid multiple closes.
-    uint8_t ui8OldState = m_ui8State;
-    m_ui8State = STATE_CLOSING;
+	// Store old state for use in next lines.
+	// State must be updated here and now to avoid multiple closes.
+	uint8_t ui8OldState = m_ui8State;
+	m_ui8State = STATE_CLOSING;
 
 	// nick in hash table ?
 	if ((m_ui32BoolBits & BIT_HASHED) == BIT_HASHED)

@@ -450,6 +450,7 @@ void ServiceLoop::AcceptUser(AcceptedSocket *pAccptSocket)
 			{
 				send(pAccptSocket->m_Socket, ServerManager::m_pGlobalBuffer, iMsgLen, 0);
 				ServerManager::m_ui64BytesSent += iMsgLen;
+				GlobalDataQueue::m_Ptr->PrometheusSendBytes(__func__,iMsgLen);
 			}
 		}
 		shutdown_and_close(pAccptSocket->m_Socket, SHUT_RDWR);

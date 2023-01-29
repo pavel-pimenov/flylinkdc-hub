@@ -24,6 +24,7 @@
 #include "LuaProfManLib.h"
 //---------------------------------------------------------------------------
 #include "ProfileManager.h"
+#include "GlobalDataQueue.h"
 //---------------------------------------------------------------------------
 #ifdef _WIN32
 #pragma hdrstop
@@ -292,6 +293,7 @@ static void PushProfile(lua_State * pLua, const uint16_t iProfile)
 
 static int AddProfile(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'AddProfile' (1 expected, got %d)", lua_gettop(pLua));
@@ -340,6 +342,7 @@ static int AddProfile(lua_State * pLua)
 
 static int RemoveProfile(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'RemoveProfile' (1 expected, got %d)", lua_gettop(pLua));
@@ -408,6 +411,7 @@ static int RemoveProfile(lua_State * pLua)
 
 static int MoveDown(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'MoveDown' (1 expected, got %d)", lua_gettop(pLua));
@@ -449,6 +453,7 @@ static int MoveDown(lua_State * pLua)
 
 static int MoveUp(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'MoveUp' (1 expected, got %d)", lua_gettop(pLua));
@@ -490,6 +495,7 @@ static int MoveUp(lua_State * pLua)
 
 static int GetProfile(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'GetProfile' (1 expected, got %d)", lua_gettop(pLua));
@@ -553,6 +559,7 @@ static int GetProfile(lua_State * pLua)
 
 static int GetProfiles(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetProfiles' (0 expected, got %d)", lua_gettop(pLua));
@@ -582,6 +589,7 @@ static int GetProfiles(lua_State * pLua)
 
 static int GetProfilePermission(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'GetProfilePermission' (2 expected, got %d)", lua_gettop(pLua));
@@ -630,6 +638,7 @@ static int GetProfilePermission(lua_State * pLua)
 
 static int GetProfilePermissions(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'GetProfilePermissions' (1 expected, got %d)", lua_gettop(pLua));
@@ -670,6 +679,7 @@ static int GetProfilePermissions(lua_State * pLua)
 
 static int SetProfileName(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'SetProfileName' (2 expected, got %d)", lua_gettop(pLua));
@@ -719,6 +729,7 @@ static int SetProfileName(lua_State * pLua)
 
 static int SetProfilePermission(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 3)
 	{
 		luaL_error(pLua, "bad argument count to 'SetProfilePermission' (3 expected, got %d)", lua_gettop(pLua));
@@ -771,6 +782,7 @@ static int SetProfilePermission(lua_State * pLua)
 
 static int Save(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'Save' (0 expected, got %d)", lua_gettop(pLua));

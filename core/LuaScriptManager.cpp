@@ -28,6 +28,7 @@
 #include "User.h"
 #include "utility.h"
 #include "tinyxml.h"
+#include "GlobalDataQueue.h"
 //------------------------------------------------------------------------------
 #ifdef _WIN32
 #pragma hdrstop

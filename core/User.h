@@ -248,17 +248,6 @@ struct User
 		return m_is_json_user; // (m_ui32SupportBits & SUPPORTBIT_EXTJSON2) == SUPPORTBIT_EXTJSON2;
 	}
 #endif
-
-
-
-
-
-
-
-
-
-
-
 	User * m_pPrev, * m_pNext, * m_pHashTablePrev, * m_pHashTableNext, * m_pHashIpTablePrev, * m_pHashIpTableNext;
 
 	char * m_sNick;

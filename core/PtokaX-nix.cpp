@@ -28,7 +28,6 @@
 #include "SettingManager.h"
 #include "utility.h"
 
-//#include <mcheck.h>
 #include <execinfo.h>
 #include <signal.h>
 #include <sstream>
@@ -36,6 +35,10 @@
 
 using std::endl;
 using std::ostringstream;
+
+#include <prometheus/counter.h>
+#include <prometheus/exposer.h>
+#include <prometheus/registry.h>
 
 //---------------------------------------------------------------------------
 static bool bTerminatedBySignal = false;
@@ -373,6 +376,8 @@ int main(int argc, char* argv[])
 	struct timespec sleeptime;
 	sleeptime.tv_sec = 0;
 	sleeptime.tv_nsec = 100000000;
+	using namespace prometheus;
+   
 
 	while (true)
 	{

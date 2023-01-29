@@ -30,6 +30,7 @@
 #include "UdpDebug.h"
 #include "User.h"
 #include "utility.h"
+#include "GlobalDataQueue.h"
 //---------------------------------------------------------------------------
 #ifdef _WIN32
 #pragma hdrstop
@@ -40,6 +41,7 @@
 
 static void PushBan(lua_State * pLua, BanItem * pBan)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	lua_checkstack(pLua, 3); // we need 3 (1 table, 2 id, 3 value) empty slots in stack, check it to be sure
 
 	lua_newtable(pLua);
@@ -113,6 +115,7 @@ static void PushBan(lua_State * pLua, BanItem * pBan)
 
 static void PushRangeBan(lua_State * pLua, RangeBanItem * pRangeBan)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	lua_checkstack(pLua, 3); // we need 3 (1 table, 2 id, 3 value) empty slots in stack, check it to be sure
 
 	lua_newtable(pLua);
@@ -164,6 +167,7 @@ static void PushRangeBan(lua_State * pLua, RangeBanItem * pRangeBan)
 
 static int Save(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'Save' (0 expected, got %d)", lua_gettop(pLua));
@@ -179,6 +183,7 @@ static int Save(lua_State * pLua)
 
 static int GetBans(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetBans' (0 expected, got %d)", lua_gettop(pLua));
@@ -240,6 +245,7 @@ static int GetBans(lua_State * pLua)
 
 static int GetTempBans(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetTempBans' (0 expected, got %d)", lua_gettop(pLua));
@@ -285,6 +291,7 @@ static int GetTempBans(lua_State * pLua)
 
 static int GetPermBans(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetPermBans' (0 expected, got %d)", lua_gettop(pLua));
@@ -319,6 +326,7 @@ static int GetPermBans(lua_State * pLua)
 
 static int GetBan(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'GetBan' (1 expected, got %d)", lua_gettop(pLua));
@@ -419,6 +427,7 @@ static int GetBan(lua_State * pLua)
 
 static int GetPermBan(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'GetPermBan' (1 expected, got %d)", lua_gettop(pLua));
@@ -513,6 +522,7 @@ static int GetPermBan(lua_State * pLua)
 
 static int GetTempBan(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'GetTempBan' (1 expected, got %d)", lua_gettop(pLua));
@@ -616,6 +626,7 @@ static int GetTempBan(lua_State * pLua)
 
 static int GetRangeBans(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetRangeBans' (0 expected, got %d)", lua_gettop(pLua));
@@ -661,6 +672,7 @@ static int GetRangeBans(lua_State * pLua)
 
 static int GetTempRangeBans(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetTempRangeBans' (0 expected, got %d)", lua_gettop(pLua));
@@ -711,6 +723,7 @@ static int GetTempRangeBans(lua_State * pLua)
 
 static int GetPermRangeBans(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetPermRangeBans' (0 expected, got %d)", lua_gettop(pLua));
@@ -750,6 +763,7 @@ static int GetPermRangeBans(lua_State * pLua)
 
 static int GetRangeBan(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'GetRangeBan' (2 expected, got %d)", lua_gettop(pLua));
@@ -818,6 +832,7 @@ static int GetRangeBan(lua_State * pLua)
 
 static int GetRangePermBan(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'GetRangePermBan' (2 expected, got %d)", lua_gettop(pLua));
@@ -875,6 +890,7 @@ static int GetRangePermBan(lua_State * pLua)
 
 static int GetRangeTempBan(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'GetRangeTempBan' (2 expected, got %d)", lua_gettop(pLua));
@@ -944,6 +960,7 @@ static int GetRangeTempBan(lua_State * pLua)
 
 static int Unban(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'Unban' (1 expected, got %d)", lua_gettop(pLua));
@@ -987,6 +1004,7 @@ static int Unban(lua_State * pLua)
 
 static int UnbanPerm(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'UnbanPerm' (1 expected, got %d)", lua_gettop(pLua));
@@ -1030,6 +1048,7 @@ static int UnbanPerm(lua_State * pLua)
 
 static int UnbanTemp(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'UnbanTemp' (1 expected, got %d)", lua_gettop(pLua));
@@ -1073,6 +1092,7 @@ static int UnbanTemp(lua_State * pLua)
 
 static int UnbanAll(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'UnbanAll' (1 expected, got %d)", lua_gettop(pLua));
@@ -1108,6 +1128,7 @@ static int UnbanAll(lua_State * pLua)
 
 static int UnbanPermAll(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'UnbanPermAll' (1 expected, got %d)", lua_gettop(pLua));
@@ -1143,6 +1164,7 @@ static int UnbanPermAll(lua_State * pLua)
 
 static int UnbanTempAll(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'UnbanTempAll' (1 expected, got %d)", lua_gettop(pLua));
@@ -1178,6 +1200,7 @@ static int UnbanTempAll(lua_State * pLua)
 
 static int RangeUnban(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'RangeUnban' (2 expected, got %d)", lua_gettop(pLua));
@@ -1217,6 +1240,7 @@ static int RangeUnban(lua_State * pLua)
 
 static int RangeUnbanPerm(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'RangeUnbanPerm' (2 expected, got %d)", lua_gettop(pLua));
@@ -1256,6 +1280,7 @@ static int RangeUnbanPerm(lua_State * pLua)
 
 static int RangeUnbanTemp(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'RangeUnbanTemp' (2 expected, got %d)", lua_gettop(pLua));
@@ -1295,6 +1320,7 @@ static int RangeUnbanTemp(lua_State * pLua)
 
 static int ClearBans(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'ClearBans' (0 expected, got %d)", lua_gettop(pLua));
@@ -1312,6 +1338,7 @@ static int ClearBans(lua_State * pLua)
 
 static int ClearPermBans(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'ClearPermBans' (0 expected, got %d)", lua_gettop(pLua));
@@ -1328,6 +1355,7 @@ static int ClearPermBans(lua_State * pLua)
 
 static int ClearTempBans(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'ClearTempBans' (0 expected, got %d)", lua_gettop(pLua));
@@ -1344,6 +1372,7 @@ static int ClearTempBans(lua_State * pLua)
 
 static int ClearRangeBans(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'ClearRangeBans' (0 expected, got %d)", lua_gettop(pLua));
@@ -1360,6 +1389,7 @@ static int ClearRangeBans(lua_State * pLua)
 
 static int ClearRangePermBans(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'ClearRangePermBans' (0 expected, got %d)", lua_gettop(pLua));
@@ -1376,6 +1406,7 @@ static int ClearRangePermBans(lua_State * pLua)
 
 static int ClearRangeTempBans(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'ClearRangeTempBans' (0 expected, got %d)", lua_gettop(pLua));
@@ -1392,6 +1423,7 @@ static int ClearRangeTempBans(lua_State * pLua)
 
 static int Ban(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 4)
 	{
 		luaL_error(pLua, "bad argument count to 'Ban' (4 expected, got %d)", lua_gettop(pLua));
@@ -1450,6 +1482,7 @@ static int Ban(lua_State * pLua)
 
 static int BanIP(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 4)
 	{
 		luaL_error(pLua, "bad argument count to 'Ban' (4 expected, got %d)", lua_gettop(pLua));
@@ -1511,6 +1544,7 @@ static int BanIP(lua_State * pLua)
 
 static int BanNick(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 3)
 	{
 		luaL_error(pLua, "bad argument count to 'BanNick' (3 expected, got %d)", lua_gettop(pLua));
@@ -1592,6 +1626,7 @@ static int BanNick(lua_State * pLua)
 
 static int TempBan(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 5)
 	{
 		luaL_error(pLua, "bad argument count to 'TempBan' (5 expected, got %d)", lua_gettop(pLua));
@@ -1658,6 +1693,7 @@ static int TempBan(lua_State * pLua)
 
 static int TempBanIP(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 5)
 	{
 		luaL_error(pLua, "bad argument count to 'TempBanIP' (5 expected, got %d)", lua_gettop(pLua));
@@ -1727,6 +1763,7 @@ static int TempBanIP(lua_State * pLua)
 
 static int TempBanNick(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 4)
 	{
 		luaL_error(pLua, "bad argument count to 'TempBanNick' (4 expected, got %d)", lua_gettop(pLua));
@@ -1815,6 +1852,7 @@ static int TempBanNick(lua_State * pLua)
 
 static int RangeBan(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 5)
 	{
 		luaL_error(pLua, "bad argument count to 'RangeBan' (5 expected, got %d)", lua_gettop(pLua));
@@ -1876,6 +1914,7 @@ static int RangeBan(lua_State * pLua)
 
 static int RangeTempBan(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 6)
 	{
 		luaL_error(pLua, "bad argument count to 'RangeTempBan' (6 expected, got %d)", lua_gettop(pLua));

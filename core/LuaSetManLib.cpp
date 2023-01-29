@@ -29,6 +29,7 @@
 #include "hashUsrManager.h"
 #include "LuaScriptManager.h"
 #include "SettingManager.h"
+#include "GlobalDataQueue.h"
 //---------------------------------------------------------------------------
 #ifdef _WIN32
 #pragma hdrstop
@@ -37,6 +38,7 @@
 
 static int Save(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'Save' (0 expected, got %d)", lua_gettop(pLua));
@@ -54,6 +56,7 @@ static int Save(lua_State * pLua)
 
 static int GetMOTD(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetMOTD' (0 expected, got %d)", lua_gettop(pLua));
@@ -77,6 +80,7 @@ static int GetMOTD(lua_State * pLua)
 
 static int SetMOTD(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'SetMOTD' (1 expected, got %d)", lua_gettop(pLua));
@@ -105,6 +109,7 @@ static int SetMOTD(lua_State * pLua)
 
 static int GetBool(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'GetBool' (1 expected, got %d)", lua_gettop(pLua));
@@ -144,6 +149,7 @@ static int GetBool(lua_State * pLua)
 
 static int SetBool(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'SetBool' (2 expected, got %d)", lua_gettop(pLua));
@@ -194,6 +200,7 @@ static int SetBool(lua_State * pLua)
 
 static int GetNumber(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'GetNumber' (1 expected, got %d)", lua_gettop(pLua));
@@ -233,6 +240,7 @@ static int GetNumber(lua_State * pLua)
 
 static int SetNumber(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'SetNumber' (2 expected, got %d)", lua_gettop(pLua));
@@ -272,6 +280,7 @@ static int SetNumber(lua_State * pLua)
 
 static int GetString(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'GetString' (1 expected, got %d)", lua_gettop(pLua));
@@ -318,6 +327,7 @@ static int GetString(lua_State * pLua)
 
 static int SetString(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'SetString' (2 expected, got %d)", lua_gettop(pLua));
@@ -356,6 +366,7 @@ static int SetString(lua_State * pLua)
 
 static int GetMinShare(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetMinShare' (0 expected, got %d)", lua_gettop(pLua));
@@ -376,7 +387,8 @@ static int GetMinShare(lua_State * pLua)
 
 static int SetMinShare(lua_State * pLua)
 {
-	int n = lua_gettop(pLua);
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+	const int n = lua_gettop(pLua);
 
 	if (n == 2)
 	{
@@ -440,6 +452,7 @@ static int SetMinShare(lua_State * pLua)
 
 static int GetMaxShare(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetMaxShare' (0 expected, got %d)", lua_gettop(pLua));
@@ -460,7 +473,8 @@ static int GetMaxShare(lua_State * pLua)
 
 static int SetMaxShare(lua_State * pLua)
 {
-	int n = lua_gettop(pLua);
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+	const int n = lua_gettop(pLua);
 
 	if (n == 2)
 	{
@@ -524,6 +538,7 @@ static int SetMaxShare(lua_State * pLua)
 
 static int SetHubSlotRatio(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'SetHubSlotRatio' (2 expected, got %d)", lua_gettop(pLua));
@@ -560,6 +575,7 @@ static int SetHubSlotRatio(lua_State * pLua)
 
 static int GetOpChat(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetOpChat' (0 expected, got %d)", lua_gettop(pLua));
@@ -617,6 +633,7 @@ static int GetOpChat(lua_State * pLua)
 
 static int SetOpChat(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 4)
 	{
 		luaL_error(pLua, "bad argument count to 'SetOpChat' (4 expected, got %d)", lua_gettop(pLua));
@@ -712,6 +729,7 @@ static int SetOpChat(lua_State * pLua)
 
 static int GetHubBot(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetHubBot' (0 expected, got %d)", lua_gettop(pLua));
@@ -773,6 +791,7 @@ static int GetHubBot(lua_State * pLua)
 
 static int SetHubBot(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 5)
 	{
 		luaL_error(pLua, "bad argument count to 'SetHubBot' (5 expected, got %d)", lua_gettop(pLua));

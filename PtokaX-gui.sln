@@ -7,11 +7,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PtokaX-gui", "PtokaX-gui.vc
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Release Lua 5.4.4|Win32 = Release Lua 5.4.4|Win32
 		Release|Win32 = Release|Win32
 		Testing|Win32 = Testing|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{34750F97-E9AE-4D1D-9240-24C4A85ED070}.Release|Win32.ActiveCfg = Release|Win32
+		{34750F97-E9AE-4D1D-9240-24C4A85ED070}.Release Lua 5.4.4|Win32.ActiveCfg = Release|Win32
+		{34750F97-E9AE-4D1D-9240-24C4A85ED070}.Release Lua 5.4.4|Win32.Build.0 = Release|Win32
+		{34750F97-E9AE-4D1D-9240-24C4A85ED070}.Release|Win32.ActiveCfg = Release Lua 5.4.4|Win32
+		{34750F97-E9AE-4D1D-9240-24C4A85ED070}.Release|Win32.Build.0 = Release Lua 5.4.4|Win32
 		{34750F97-E9AE-4D1D-9240-24C4A85ED070}.Testing|Win32.ActiveCfg = Testing|Win32
 		{34750F97-E9AE-4D1D-9240-24C4A85ED070}.Testing|Win32.Build.0 = Testing|Win32
 	EndGlobalSection

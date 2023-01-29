@@ -26,16 +26,19 @@
 #include "LuaScriptManager.h"
 #include "ServerManager.h"
 #include "utility.h"
+#include "GlobalDataQueue.h"
 //---------------------------------------------------------------------------
 #ifdef _WIN32
 #pragma hdrstop
 #endif
 //---------------------------------------------------------------------------
 #include "LuaScript.h"
+#include "GlobalDataQueue.h"
 //---------------------------------------------------------------------------
 
 static int AddTimer(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	Script * cur = ScriptManager::m_Ptr->FindScript(pLua);
 	if (cur == NULL)
 	{
@@ -190,6 +193,7 @@ static int AddTimer(lua_State * pLua)
 
 static int RemoveTimer(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'RemoveTimer' (1 expected, got %d)", lua_gettop(pLua));

@@ -26,6 +26,7 @@
 #include "LuaScriptManager.h"
 #include "UdpDebug.h"
 #include "utility.h"
+#include "GlobalDataQueue.h"
 //---------------------------------------------------------------------------
 #ifdef _WIN32
 #pragma hdrstop
