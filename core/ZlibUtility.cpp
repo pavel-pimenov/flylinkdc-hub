@@ -23,6 +23,8 @@
 //---------------------------------------------------------------------------
 #include "ServerManager.h"
 #include "utility.h"
+#include "GlobalDataQueue.h"
+
 //---------------------------------------------------------------------------
 #ifdef _WIN32
 #pragma hdrstop
@@ -74,7 +76,7 @@ char * ZlibUtility::CreateZPipe(const char *sInData, const size_t szInDataSize, 
 	{
 		size_t szOldZbufferSize = m_szZbufferSize;
 
-		m_szZbufferSize = Allign128K(szInDataSize + 128);
+		m_szZbufferSize = Allign(szInDataSize + 128);
 
 		char * pOldBuf = m_pZbuffer;
 		m_pZbuffer = (char *)realloc(pOldBuf, m_szZbufferSize);
@@ -124,14 +126,14 @@ char * ZlibUtility::CreateZPipe(const char *sInData, const size_t szInDataSize, 
 	if (ui32OutDataLen >= szInDataSize)
 	{
 		ui32OutDataLen = 0;
-		return m_pZbuffer;
 	}
-
+    GlobalDataQueue::m_Ptr->PrometheusZlibBytes("ZPipeIn",szInDataSize);
+    GlobalDataQueue::m_Ptr->PrometheusZlibBytes("ZPipeOut",ui32OutDataLen);
 	return m_pZbuffer;
 }
 //---------------------------------------------------------------------------
 
-char * ZlibUtility::CreateZPipe(const char *sInData, const size_t szInDataSize, char *sOutData, uint32_t &szOutDataLen, uint32_t &szOutDataSize)
+char * ZlibUtility::CreateZPipe(const char *sInData, const size_t szInDataSize, char *sOutData, uint32_t &ui32OutDataLen, uint32_t &ui32OutDataSize)
 {
 	if (szInDataSize < ZMINLEN)
 		return sOutData;
@@ -150,7 +152,7 @@ char * ZlibUtility::CreateZPipe(const char *sInData, const size_t szInDataSize, 
 	{
 		size_t szOldZbufferSize = m_szZbufferSize;
 
-		m_szZbufferSize = Allign128K(szInDataSize + 128);
+		m_szZbufferSize = Allign(szInDataSize + 128);
 
 		char * pOldBuf = m_pZbuffer;
 		m_pZbuffer = (char *)realloc(pOldBuf, m_szZbufferSize);
@@ -158,7 +160,7 @@ char * ZlibUtility::CreateZPipe(const char *sInData, const size_t szInDataSize, 
 		{
 			m_pZbuffer = pOldBuf;
 			m_szZbufferSize = szOldZbufferSize;
-			szOutDataLen = 0;
+			ui32OutDataLen = 0;
 
 			AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes for m_pZbuffer in ZlibUtility::CreateZPipe\n", m_szZbufferSize);
 
@@ -191,38 +193,40 @@ char * ZlibUtility::CreateZPipe(const char *sInData, const size_t szInDataSize, 
 		return sOutData;
 	}
 
-	szOutDataLen = stream.total_out + 5;
+	ui32OutDataLen = stream.total_out + 5;
 
 	// cleanup zlib
 	deflateEnd(&stream);
 
-	if (szOutDataLen >= szInDataSize)
+	if (ui32OutDataLen >= szInDataSize)
 	{
-		szOutDataLen = 0;
+		ui32OutDataLen = 0;
 		return sOutData;
 	}
 
 	// prepare out buffer
-	if (szOutDataSize < szOutDataLen)
+	if (ui32OutDataSize < ui32OutDataLen)
 	{
-		size_t szOldOutDataSize = szOutDataSize;
+		size_t uiOldOutDataSize = ui32OutDataSize;
 
-		szOutDataSize = Allign1024(szOutDataLen) - 1;
+		ui32OutDataSize = Allign(ui32OutDataLen) - 1;
 		char * pOldBuf = sOutData;
-		sOutData = (char *)realloc(pOldBuf, szOutDataSize + 1);
+		sOutData = (char *)realloc(pOldBuf, ui32OutDataSize + 1);
 		if (sOutData == NULL)
 		{
 			sOutData = pOldBuf;
-			szOutDataSize = szOldOutDataSize;
-			szOutDataLen = 0;
+			ui32OutDataSize = uiOldOutDataSize;
+			ui32OutDataLen = 0;
 
-			AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes for sOutData in ZlibUtility::CreateZPipe\n", szOutDataSize+1);
+			AppendDebugLogFormat("[MEM] Cannot reallocate %u bytes for sOutData in ZlibUtility::CreateZPipe\n", ui32OutDataSize+1);
 
 			return sOutData;
 		}
 	}
 
-	memcpy(sOutData, m_pZbuffer, szOutDataLen);
+	memcpy(sOutData, m_pZbuffer, ui32OutDataLen);
+    GlobalDataQueue::m_Ptr->PrometheusZlibBytes("ZPipe2In",szInDataSize);
+    GlobalDataQueue::m_Ptr->PrometheusZlibBytes("ZPipe2Out",ui32OutDataLen);
 
 	return sOutData;
 }
@@ -247,7 +251,7 @@ char * ZlibUtility::CreateZPipeAlign(const char *sInData, const size_t szInDataS
 	{
 		size_t szOldZbufferSize = m_szZbufferSize;
 
-		m_szZbufferSize = Allign128K(szInDataSize + 128);
+		m_szZbufferSize = Allign(szInDataSize + 128);
 
 		char * pOldBuf = m_pZbuffer;
 		m_pZbuffer = (char *)realloc(pOldBuf, m_szZbufferSize);
@@ -304,7 +308,7 @@ char * ZlibUtility::CreateZPipeAlign(const char *sInData, const size_t szInDataS
 	{
 		unsigned int uiOldOutDataSize = ui32OutDataSize;
 
-		ui32OutDataSize = Allign256(ui32OutDataLen + 1);
+		ui32OutDataSize = Allign(ui32OutDataLen + 1);
 
 		char * pOldBuf = sOutData;
 		sOutData = (char *)realloc(pOldBuf, ui32OutDataSize);
@@ -321,6 +325,9 @@ char * ZlibUtility::CreateZPipeAlign(const char *sInData, const size_t szInDataS
 	}
 
 	memcpy(sOutData, m_pZbuffer, ui32OutDataLen);
+
+    GlobalDataQueue::m_Ptr->PrometheusZlibBytes("ZPipeAlignIn",szInDataSize);
+    GlobalDataQueue::m_Ptr->PrometheusZlibBytes("ZPipeAlignOut",ui32OutDataLen);
 
 	return sOutData;
 }

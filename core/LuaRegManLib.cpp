@@ -74,6 +74,7 @@ static void PushReg(lua_State * pLua, RegUser * pReg)
 
 static int Save(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'Save' (0 expected, got %d)", lua_gettop(pLua));
@@ -89,6 +90,7 @@ static int Save(lua_State * pLua)
 
 static int GetRegsByProfile(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'GetRegsByProfile' (1 expected, got %d)", lua_gettop(pLua));
@@ -142,6 +144,7 @@ static int GetRegsByProfile(lua_State * pLua)
 
 static int GetRegsByOpStatus(lua_State * pLua, const bool bOperator)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		if (bOperator == true)
@@ -198,6 +201,7 @@ static int GetOps(lua_State * pLua)
 
 static int GetReg(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'GetReg' (1 expected, got %d)", lua_gettop(pLua));
@@ -242,6 +246,7 @@ static int GetReg(lua_State * pLua)
 
 static int GetRegs(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetRegs' (0 expected, got %d)", lua_gettop(pLua));
@@ -278,6 +283,7 @@ static int GetRegs(lua_State * pLua)
 
 static int AddReg(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) == 3)
 	{
 		if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING || lua_type(pLua, 3) != LUA_TNUMBER)
@@ -386,6 +392,7 @@ static int AddReg(lua_State * pLua)
 
 static int DelReg(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'DelReg' (1 expected, got %d)", lua_gettop(pLua));
@@ -431,7 +438,8 @@ static int DelReg(lua_State * pLua)
 
 static int ChangeReg(lua_State * pLua)
 {
-	if (lua_gettop(pLua) != 3)
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    if (lua_gettop(pLua) != 3)
 	{
 		luaL_error(pLua, "bad argument count to 'ChangeReg' (3 expected, got %d)", lua_gettop(pLua));
 		lua_settop(pLua, 0);
@@ -503,6 +511,7 @@ static int ChangeReg(lua_State * pLua)
 
 static int ClrRegBadPass(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'ClrRegBadPass' (1 expected, got %d)", lua_gettop(pLua));

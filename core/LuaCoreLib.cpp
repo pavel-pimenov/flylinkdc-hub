@@ -50,6 +50,7 @@
 
 static int Restart(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'Restart' (0 expected, got %d)", lua_gettop(pLua));
@@ -65,6 +66,7 @@ static int Restart(lua_State * pLua)
 
 static int Shutdown(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'Shutdown' (0 expected, got %d)", lua_gettop(pLua));
@@ -80,6 +82,7 @@ static int Shutdown(lua_State * pLua)
 
 static int ResumeAccepts(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'ResumeAccepts' (0 expected, got %d)", lua_gettop(pLua));
@@ -95,6 +98,7 @@ static int ResumeAccepts(lua_State * pLua)
 
 static int SuspendAccepts(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	int n = lua_gettop(pLua);
 
 	if (n == 0)
@@ -134,6 +138,7 @@ static int SuspendAccepts(lua_State * pLua)
 
 static int RegBot(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (ScriptManager::m_Ptr->m_ui8BotsCount > 63)
 	{
 		lua_settop(pLua, 0);
@@ -316,6 +321,7 @@ static int RegBot(lua_State * pLua)
 
 static int UnregBot(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'UnregBot' (1 expected, got %d)", lua_gettop(pLua));
@@ -417,6 +423,7 @@ static int UnregBot(lua_State * pLua)
 
 static int GetBots(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetBots' (0 expected, got %d)", lua_gettop(pLua));
@@ -482,6 +489,7 @@ static int GetBots(lua_State * pLua)
 
 static int GetActualUsersPeak(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetActualUsersPeak' (0 expected, got %d)", lua_gettop(pLua));
@@ -503,6 +511,7 @@ static int GetActualUsersPeak(lua_State * pLua)
 
 static int GetMaxUsersPeak(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetMaxUsersPeak' (0 expected, got %d)", lua_gettop(pLua));
@@ -524,6 +533,7 @@ static int GetMaxUsersPeak(lua_State * pLua)
 
 static int GetCurrentSharedSize(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetCurrentSharedSize' (0 expected, got %d)", lua_gettop(pLua));
@@ -545,6 +555,7 @@ static int GetCurrentSharedSize(lua_State * pLua)
 
 static int GetHubIP(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetHubIP' (0 expected, got %d)", lua_gettop(pLua));
@@ -569,6 +580,7 @@ static int GetHubIP(lua_State * pLua)
 
 static int GetHubIPs(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetHubIPs' (0 expected, got %d)", lua_gettop(pLua));
@@ -621,6 +633,7 @@ static int GetHubIPs(lua_State * pLua)
 
 static int GetHubSecAlias(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetHubSecAlias' (0 expected, got %d)", lua_gettop(pLua));
@@ -638,6 +651,7 @@ static int GetHubSecAlias(lua_State * pLua)
 
 static int GetPtokaXPath(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetPtokaXPath' (0 expected, got %d)", lua_gettop(pLua));
@@ -660,6 +674,7 @@ static int GetPtokaXPath(lua_State * pLua)
 
 static int GetUsersCount(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetUsersCount' (0 expected, got %d)", lua_gettop(pLua));
@@ -681,6 +696,7 @@ static int GetUsersCount(lua_State * pLua)
 
 static int GetUpTime(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetUpTime' (0 expected, got %d)", lua_gettop(pLua));
@@ -705,6 +721,7 @@ static int GetUpTime(lua_State * pLua)
 
 static int GetOnlineByOpStatus(lua_State * pLua, const bool bOperator)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	bool bFullTable = false;
 
 	int n = lua_gettop(pLua);
@@ -774,18 +791,21 @@ static int GetOnlineByOpStatus(lua_State * pLua, const bool bOperator)
 
 static int GetOnlineNonOps(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	return GetOnlineByOpStatus(pLua, false);
 }
 //------------------------------------------------------------------------------
 
 static int GetOnlineOps(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	return GetOnlineByOpStatus(pLua, true);
 }
 //------------------------------------------------------------------------------
 
 static int GetOnlineRegs(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	bool bFullTable = false;
 
 	int n = lua_gettop(pLua);
@@ -848,6 +868,7 @@ static int GetOnlineRegs(lua_State * pLua)
 
 static int GetOnlineUsers(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	bool bFullTable = false;
 
 	int32_t iProfile = -2;
@@ -956,6 +977,7 @@ static int GetOnlineUsers(lua_State * pLua)
 
 static int GetUser(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	bool bFullTable = false;
 
 	size_t szLen = 0;
@@ -1031,6 +1053,7 @@ static int GetUser(lua_State * pLua)
 
 static int GetUsers(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	bool bFullTable = false;
 
 	size_t szLen = 0;
@@ -1126,6 +1149,7 @@ static int GetUsers(lua_State * pLua)
 
 static int GetUserAllData(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'GetUserAllData' (1 expected, got %d)", lua_gettop(pLua));
@@ -1162,6 +1186,7 @@ static int GetUserAllData(lua_State * pLua)
 
 static int GetUserData(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'GetUserData' (2 expected, got %d)", lua_gettop(pLua));
@@ -1686,6 +1711,7 @@ static int GetUserData(lua_State * pLua)
 
 static int GetUserValue(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'GetUserValue' (2 expected, got %d)", lua_gettop(pLua));
@@ -2112,6 +2138,7 @@ static int GetUserValue(lua_State * pLua)
 
 static int Disconnect(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'Disconnect' (1 expected, got %d)", lua_gettop(pLua));
@@ -2175,6 +2202,7 @@ static int Disconnect(lua_State * pLua)
 
 static int Kick(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 3)
 	{
 		luaL_error(pLua, "bad argument count to 'Kick' (3 expected, got %d)", lua_gettop(pLua));
@@ -2239,6 +2267,7 @@ static int Kick(lua_State * pLua)
 
 static int Redirect(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 3)
 	{
 		luaL_error(pLua, "bad argument count to 'Redirect' (3 expected, got %d)", lua_gettop(pLua));
@@ -2296,6 +2325,7 @@ static int Redirect(lua_State * pLua)
 
 static int DefloodWarn(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'DefloodWarn' (1 expected, got %d)", lua_gettop(pLua));
@@ -2366,6 +2396,7 @@ static int DefloodWarn(lua_State * pLua)
 
 static int SendToAll(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'SendToAll' (1 expected, got %d)", lua_gettop(pLua));
@@ -2405,6 +2436,7 @@ static int SendToAll(lua_State * pLua)
 
 static int SendToNick(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'SendToNick' (2 expected, got %d)", lua_gettop(pLua));
@@ -2453,6 +2485,7 @@ static int SendToNick(lua_State * pLua)
 
 static int SendToOpChat(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'SendToOpChat' (1 expected, got %d)", lua_gettop(pLua));
@@ -2492,6 +2525,7 @@ static int SendToOpChat(lua_State * pLua)
 
 static int SendToOps(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'SendToOps' (1 expected, got %d)", lua_gettop(pLua));
@@ -2534,6 +2568,7 @@ static int SendToOps(lua_State * pLua)
 
 static int SendToProfile(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'SendToProfile' (2 expected, got %d)", lua_gettop(pLua));
@@ -2579,6 +2614,7 @@ static int SendToProfile(lua_State * pLua)
 
 static int SendToUser(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'SendToUser' (2 expected, got %d)", lua_gettop(pLua));
@@ -2630,6 +2666,7 @@ static int SendToUser(lua_State * pLua)
 
 static int SendPmToAll(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'SendPmToAll' (2 expected, got %d)", lua_gettop(pLua));
@@ -2668,6 +2705,7 @@ static int SendPmToAll(lua_State * pLua)
 
 static int SendPmToNick(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 3)
 	{
 		luaL_error(pLua, "bad argument count to 'SendPmToNick' (3 expected, got %d)", lua_gettop(pLua));
@@ -2708,6 +2746,7 @@ static int SendPmToNick(lua_State * pLua)
 
 static int SendPmToOps(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'SendPmToOps' (2 expected, got %d)", lua_gettop(pLua));
@@ -2746,6 +2785,7 @@ static int SendPmToOps(lua_State * pLua)
 
 static int SendPmToProfile(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 3)
 	{
 		luaL_error(pLua, "bad argument count to 'SendPmToProfile' (3 expected, got %d)", lua_gettop(pLua));
@@ -2787,6 +2827,7 @@ static int SendPmToProfile(lua_State * pLua)
 
 static int SendPmToUser(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 3)
 	{
 		luaL_error(pLua, "bad argument count to 'SendPmToUser' (3 expected, got %d)", lua_gettop(pLua));
@@ -2830,6 +2871,7 @@ static int SendPmToUser(lua_State * pLua)
 #ifdef USE_FLYLINKDC_EXT_JSON
 static int SetUserJson(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 2)
 	{
 		luaL_error(pLua, "bad argument count to 'SetUserJson' (2 expected, got %d)", lua_gettop(pLua));
@@ -2869,6 +2911,7 @@ static int SetUserJson(lua_State * pLua)
 //------------------------------------------------------------------------------
 static int SetUserInfo(lua_State * pLua)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 4)
 	{
 		luaL_error(pLua, "bad argument count to 'SetUserInfo' (4 expected, got %d)", lua_gettop(pLua));
@@ -3125,6 +3168,7 @@ static int SetUserInfo(lua_State * pLua)
 // alex82 ... HideUser / ������� �����
 static int HideUser(lua_State * L)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(L) != 2)
 	{
 		luaL_error(L, "bad argument count to 'HideUser' (2 expected, got %d)", lua_gettop(L));
@@ -3253,6 +3297,7 @@ static int HideUser(lua_State * L)
 // alex82 ... NoQuit / ��������� $Quit ��� �����
 static int UserNoQuit(lua_State * L)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(L) != 2)
 	{
 		luaL_error(L, "bad argument count to 'UserNoQuit' (2 expected, got %d)", lua_gettop(L));
@@ -3303,6 +3348,7 @@ static int UserNoQuit(lua_State * L)
 // alex82 ... HideUserKey / ������ ���� �����
 static int HideUserKey(lua_State * L)
 {
+	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(L) != 2)
 	{
 		luaL_error(L, "bad argument count to 'HideUserKey' (2 expected, got %d)", lua_gettop(L));

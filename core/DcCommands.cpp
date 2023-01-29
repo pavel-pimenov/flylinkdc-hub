@@ -130,6 +130,17 @@ void DcCommands::PreProcessData(DcCommand * pDcCommand)
 		return;
 	}
 
+	if (pDcCommand->m_sCommand[0] == '$')
+		{
+			if(const auto l_end_command = strchr(pDcCommand->m_sCommand,' '))
+			{
+			   const auto c = *l_end_command;
+			   *l_end_command = 0x00;
+			   GlobalDataQueue::m_Ptr->m_flylinkdc_hub_dc_commands_counter.Add({{"command", pDcCommand->m_sCommand}}).Increment();
+			   *l_end_command = c;
+			}
+	}
+
 	static const uint32_t ui32ulti = *((uint32_t *)"ulti");
 	static const uint32_t ui32ick = *((uint32_t *)"ick ");
 
@@ -404,6 +415,14 @@ void DcCommands::PreProcessData(DcCommand * pDcCommand)
 	{
 		if (pDcCommand->m_sCommand[0] == '$')
 		{
+			if(const auto l_end_command = strchr(pDcCommand->m_sCommand,' '))
+			{
+			   const auto c = *l_end_command;
+			   *l_end_command = 0x00;
+			   GlobalDataQueue::m_Ptr->m_flylinkdc_hub_dc_commands_counter.Add({{"command", pDcCommand->m_sCommand}}).Increment();
+			   *l_end_command = c;
+			}
+
 			switch (pDcCommand->m_sCommand[1])
 			{
 			case 'G':
@@ -3859,6 +3878,7 @@ bool DcCommands::ValidateUserNick(DcCommand * pDcCommand,User * pUser, char * sN
 		{
 			// check for socket error, or if user closed connection
 			int iRet = recv(OtherUser->m_Socket, ServerManager::m_pGlobalBuffer, 16, MSG_PEEK);
+	 	    //GlobalDataQueue::m_Ptr->PrometheusRecvBytes("dccommand",recvlen);
 
 			// if socket error or user closed connection then allow new user to log in
 #ifdef _WIN32

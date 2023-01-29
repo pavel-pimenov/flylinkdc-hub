@@ -62,6 +62,7 @@ char ScriptTimer::m_sDefaultTimerFunc[] = "OnTimer";
 
 static int ScriptPanic(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	size_t szLen = 0;
 	const char * stmp = (char*)lua_tolstring(pLua, -1, &szLen);
 
@@ -317,6 +318,7 @@ Script * Script::CreateScript(const char * sName, const bool enabled)
 
 static int OsExit(lua_State * /* pLua*/)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	EventQueue::m_Ptr->AddNormal(EventQueue::EVENT_SHUTDOWN, NULL);
 
 	return 0;

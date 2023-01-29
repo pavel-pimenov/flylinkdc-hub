@@ -101,27 +101,10 @@ bool GenerateTempBanTime(const uint8_t ui8Multiplyer, const uint32_t ui32Time, t
 
 bool HaveOnlyNumbers(char *sData, const uint16_t ui16Len);
 
-inline size_t Allign256(size_t n)
+inline size_t Allign(size_t n)
 {
 	return (n + 1);
 }
-inline size_t Allign512(size_t n)
-{
-	return (n + 1);
-}
-inline size_t Allign1024(size_t n)
-{
-	return (n + 1);
-}
-inline size_t Allign16K(size_t n)
-{
-	return (n + 1);
-}
-inline size_t Allign128K(size_t n)
-{
-	return (n + 1);
-}
-
 // + alex82 ... from MOD
 bool CheckSprintf(const int &iRetVal, const size_t &szMax, const char * sMsg); // CheckSprintf(imsgLen, 64, "UdpDebug::New");
 bool CheckSprintf1(const int &iRetVal, const size_t &szLenVal, const size_t &szMax, const char * sMsg); // CheckSprintf1(iret, imsgLen, 64, "UdpDebug::New");
@@ -131,10 +114,7 @@ inline void AppendLog(const string & sData, const bool bScript = false)
 {
 	AppendLog(sData.c_str(), bScript);
 }
-//inline void AppendLog(const px_string & sData, const bool bScript = false)
-//{
-//    AppendLog(sData.c_str(), bScript);
-//}
+
 void AppendDebugLog(const char * sData);
 void AppendDebugLogFormat(const char * sFormatMsg, ...);
 

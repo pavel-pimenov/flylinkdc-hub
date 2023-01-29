@@ -27,6 +27,7 @@
 #include "SettingManager.h"
 #include "UdpDebug.h"
 #include "utility.h"
+
 //---------------------------------------------------------------------------
 #ifdef _WIN32
 #pragma hdrstop

@@ -1082,9 +1082,10 @@ void AppendLog(const char* sData, const bool bScript/* == false*/)
 		acc_tm = localtime(&acc_time);
 
 		char sBuf[64];
-		strftime(sBuf, 64, "%c", acc_tm);
+		strftime(sBuf, sizeof(sBuf), "%c", acc_tm);
 
 		fprintf(fw, "%s - %s\n", sBuf, sData);
+		printf("[log] %s - %s\n", sBuf, sData);
 
 		fclose(fw);
 	}
@@ -1122,6 +1123,7 @@ void AppendDebugLog(const char * sData)
 	strftime(sBuf, 64, "%c", acc_tm);
 
 	fprintf(fw, sData, sBuf); // "%s - xxx\n"
+	printf("[debug-log] %s - %s\n", sBuf, sData);
 
 	fclose(fw);
 }
@@ -1633,7 +1635,7 @@ bool CheckAndResizeGlobalBuffer(const size_t szWantedSize)
 	size_t szOldSize = ServerManager::m_szGlobalBufferSize;
 	char * sOldBuf = ServerManager::m_pGlobalBuffer;
 
-	ServerManager::m_szGlobalBufferSize = Allign128K(szWantedSize);
+	ServerManager::m_szGlobalBufferSize = Allign(szWantedSize);
 
 	ServerManager::m_pGlobalBuffer = (char *)realloc(sOldBuf, ServerManager::m_szGlobalBufferSize);
 	if (ServerManager::m_pGlobalBuffer == NULL)

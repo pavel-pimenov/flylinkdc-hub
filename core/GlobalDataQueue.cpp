@@ -87,6 +87,7 @@ GlobalDataQueue::GlobalDataQueue() : m_pCreatedGlobalQueues(NULL), m_pQueueItems
 		m_GlobalQueues[ui8i].m_bCreated = false;
 		m_GlobalQueues[ui8i].m_bZlined = false;
 	}
+	m_exposer->RegisterCollectable(m_registry);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -214,7 +215,7 @@ void GlobalDataQueue::OpListStore(const char * sNick)
 		size_t szNickLen = strlen(sNick) + 3;
 		if (m_OpListQueue.m_szSize < m_OpListQueue.m_szLen + szNickLen)
 		{
-			size_t szAllignLen = Allign256(m_OpListQueue.m_szLen + szNickLen);
+			size_t szAllignLen = Allign(m_OpListQueue.m_szLen + szNickLen);
 			char * pOldBuf = m_OpListQueue.m_pBuffer;
 			m_OpListQueue.m_pBuffer = (char *)realloc(pOldBuf, szAllignLen);
 			if (m_OpListQueue.m_pBuffer == NULL)
@@ -262,7 +263,7 @@ void GlobalDataQueue::UserIPStore(User * pUser)
 		size_t szLen = pUser->m_ui8NickLen + pUser->m_ui8IpLen + 4;
 		if (m_UserIPQueue.m_szSize < m_UserIPQueue.m_szLen + szLen)
 		{
-			size_t szAllignLen = Allign256(m_UserIPQueue.m_szLen + szLen);
+			size_t szAllignLen = Allign(m_UserIPQueue.m_szLen + szLen);
 			char * pOldBuf = m_UserIPQueue.m_pBuffer;
 			m_UserIPQueue.m_pBuffer = (char *)realloc(pOldBuf, szAllignLen);
 			if (m_UserIPQueue.m_pBuffer == NULL)
@@ -815,7 +816,7 @@ void GlobalDataQueue::ProcessSingleItems(User * pUser) const
 				{
 					if (CheckAndResizeGlobalBuffer(szWanted) == false)
 					{
-						AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in GlobalDataQueue::ProcessSingleItems\n", Allign128K(szWanted));
+						AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in GlobalDataQueue::ProcessSingleItems\n", Allign(szWanted));
 						break;
 					}
 				}
@@ -840,7 +841,7 @@ void GlobalDataQueue::ProcessSingleItems(User * pUser) const
 					{
 						if (CheckAndResizeGlobalBuffer(szWanted) == false)
 						{
-							AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in GlobalDataQueue::ProcessSingleItems1\n", Allign128K(szWanted));
+							AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in GlobalDataQueue::ProcessSingleItems1\n", Allign(szWanted));
 							break;
 						}
 					}
@@ -865,7 +866,7 @@ void GlobalDataQueue::ProcessSingleItems(User * pUser) const
 					{
 						if (CheckAndResizeGlobalBuffer(szWanted) == false)
 						{
-							AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in GlobalDataQueue::ProcessSingleItems2\n", Allign128K(szWanted));
+							AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in GlobalDataQueue::ProcessSingleItems2\n", Allign(szWanted));
 							break;
 						}
 					}
@@ -890,7 +891,7 @@ void GlobalDataQueue::ProcessSingleItems(User * pUser) const
 					{
 						if (CheckAndResizeGlobalBuffer(szWanted) == false)
 						{
-							AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in GlobalDataQueue::ProcessSingleItems3\n", Allign128K(szWanted));
+							AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in GlobalDataQueue::ProcessSingleItems3\n", Allign(szWanted));
 							break;
 						}
 					}
@@ -909,7 +910,7 @@ void GlobalDataQueue::ProcessSingleItems(User * pUser) const
 					{
 						if (CheckAndResizeGlobalBuffer(szWanted) == false)
 						{
-							AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in GlobalDataQueue::ProcessSingleItems4\n", Allign128K(szWanted));
+							AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in GlobalDataQueue::ProcessSingleItems4\n", Allign(szWanted));
 							break;
 						}
 					}
@@ -1081,7 +1082,7 @@ void GlobalDataQueue::AddDataToQueue(GlobalQueue &rQueue, const char * sData, co
 {
 	if (rQueue.m_szSize < (rQueue.m_szLen + szLen))
 	{
-		size_t szAllignLen = Allign256(rQueue.m_szLen + szLen);
+		size_t szAllignLen = Allign(rQueue.m_szLen + szLen);
 		char * pOldBuf = rQueue.m_pBuffer;
 
 		rQueue.m_pBuffer = (char *)realloc(pOldBuf, szAllignLen);

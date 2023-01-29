@@ -27,6 +27,7 @@
 #include "serviceLoop.h"
 #include "SettingManager.h"
 #include "utility.h"
+#include "GlobalDataQueue.h"
 //---------------------------------------------------------------------------
 #pragma hdrstop
 //---------------------------------------------------------------------------

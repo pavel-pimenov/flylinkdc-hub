@@ -27,6 +27,7 @@
 #include "LuaScriptManager.h"
 #include "ServerManager.h"
 #include "utility.h"
+#include "GlobalDataQueue.h"
 //---------------------------------------------------------------------------
 #ifdef _WIN32
 #pragma hdrstop
@@ -41,6 +42,7 @@
 
 static int GetScript(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetScript' (0 expected, got %d)", lua_gettop(pLua));
@@ -84,6 +86,7 @@ static int GetScript(lua_State * pLua)
 
 static int GetScripts(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'GetScripts' (0 expected, got %d)", lua_gettop(pLua));
@@ -134,6 +137,7 @@ static int GetScripts(lua_State * pLua)
 
 static int Move(lua_State * pLua, const bool bUp)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to '%s' (1 expected, got %d)", bUp == true ? "MoveUp" : "MoveDown", lua_gettop(pLua));
@@ -197,6 +201,7 @@ static int MoveDown(lua_State * pLua)
 
 static int StartScript(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'StartScript' (1 expected, got %d)", lua_gettop(pLua));
@@ -266,6 +271,7 @@ static int StartScript(lua_State * pLua)
 
 static int RestartScript(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'RestartScript' (1 expected, got %d)", lua_gettop(pLua));
@@ -325,6 +331,7 @@ static int RestartScript(lua_State * pLua)
 
 static int StopScript(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 1)
 	{
 		luaL_error(pLua, "bad argument count to 'StopScript' (1 expected, got %d)", lua_gettop(pLua));
@@ -378,6 +385,7 @@ static int StopScript(lua_State * pLua)
 
 static int Restart(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'Restart' (0 expected, got %d)", lua_gettop(pLua));
@@ -393,6 +401,7 @@ static int Restart(lua_State * pLua)
 
 static int Refresh(lua_State * pLua)
 {
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
 	if (lua_gettop(pLua) != 0)
 	{
 		luaL_error(pLua, "bad argument count to 'Refresh' (0 expected, got %d)", lua_gettop(pLua));
