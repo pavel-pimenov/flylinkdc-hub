@@ -437,12 +437,12 @@ bool HubCommands::Stats(ChatCommand * pChatCommand)   // !stat !stats !statistic
 	}
 	iMsgLen += iRet;
 
-	px_string Statinfo(ServerManager::m_pGlobalBuffer, iMsgLen);
+	std::string Statinfo(ServerManager::m_pGlobalBuffer, iMsgLen);
 
 	Statinfo += "\n------------------------------------------------------------\n";
 	Statinfo += "Current stats:\n";
 	Statinfo += "------------------------------------------------------------\n";
-	Statinfo += "Uptime: " + px_string(ServerManager::m_ui64Days) + " days, " + px_string(ServerManager::m_ui64Hours) + " hours, " + px_string(ServerManager::m_ui64Mins) + " minutes\n";
+	Statinfo += "Uptime: " + std::to_string(ServerManager::m_ui64Days) + " days, " + std::to_string(ServerManager::m_ui64Hours) + " hours, " + std::to_string(ServerManager::m_ui64Mins) + " minutes\n";
 
 	Statinfo += "Version: PtokaX DC Hub " PtokaXVersionString
 
@@ -474,7 +474,7 @@ bool HubCommands::Stats(ChatCommand * pChatCommand)   // !stat !stats !statistic
 #endif
 
 #ifdef _WIN32
-	Statinfo += px_string("OS: ") + px_string(ServerManager::m_sOS.c_str()) + "\r\n";
+	Statinfo += std::to_string("OS: ") + std::to_string(ServerManager::m_sOS.c_str()) + "\r\n";
 #else
 
 	struct utsname osname;
@@ -490,27 +490,27 @@ bool HubCommands::Stats(ChatCommand * pChatCommand)   // !stat !stats !statistic
 	}
 #endif
 
-	Statinfo += "Users (Max/Actual Peak (Max Peak)/Logged): " + px_string(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_USERS]) + " / " +
-	            px_string(ServerManager::m_ui32Peak) + " (" + px_string(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_USERS_PEAK]) + ") / " + px_string(ServerManager::m_ui32Logged) + "\n";
-	Statinfo += "Joins / Parts: " + px_string(ServerManager::m_ui32Joins) + " / " + px_string(ServerManager::m_ui32Parts) + "\n";
-	Statinfo += "Users shared size: " + px_string(ServerManager::m_ui64TotalShare) + " Bytes / " + px_string(formatBytes(ServerManager::m_ui64TotalShare)) + "\n";
-	Statinfo += "Chat messages: " + px_string(DcCommands::m_Ptr->m_ui32StatChat) + " x\n";
-	Statinfo += "Unknown commands: " + px_string(DcCommands::m_Ptr->m_ui32StatCmdUnknown) + " x\n";
-	Statinfo += "PM commands: " + px_string(DcCommands::m_Ptr->m_ui32StatCmdTo) + " x\n";
-	Statinfo += "Key commands: " + px_string(DcCommands::m_Ptr->m_ui32StatCmdKey) + " x\n";
-	Statinfo += "Supports commands: " + px_string(DcCommands::m_Ptr->m_ui32StatCmdSupports) + " x\n";
-	Statinfo += "MyINFO commands: " + px_string(DcCommands::m_Ptr->m_ui32StatCmdMyInfo) + " x\n";
-	Statinfo += "ValidateNick commands: " + px_string(DcCommands::m_Ptr->m_ui32StatCmdValidate) + " x\n";
-	Statinfo += "GetINFO commands: " + px_string(DcCommands::m_Ptr->m_ui32StatCmdGetInfo) + " x\n";
-	Statinfo += "Password commands: " + px_string(DcCommands::m_Ptr->m_ui32StatCmdMyPass) + " x\n";
-	Statinfo += "Version commands: " + px_string(DcCommands::m_Ptr->m_ui32StatCmdVersion) + " x\n";
-	Statinfo += "GetNickList commands: " + px_string(DcCommands::m_Ptr->m_ui32StatCmdGetNickList) + " x\n";
-	Statinfo += "Search commands: " + px_string(DcCommands::m_Ptr->m_ui32StatCmdSearch) + " x (" + px_string(DcCommands::m_Ptr->m_ui32StatCmdMultiSearch) + " x)\n";
-	Statinfo += "SR commands: " + px_string(DcCommands::m_Ptr->m_ui32StatCmdSR) + " x\n";
-	Statinfo += "CTM commands: " + px_string(DcCommands::m_Ptr->m_ui32StatCmdConnectToMe) + " x (" + px_string(DcCommands::m_Ptr->m_ui32StatCmdMultiConnectToMe) + " x)\n";
-	Statinfo += "RevCTM commands: " + px_string(DcCommands::m_Ptr->m_ui32StatCmdRevCTM) + " x\n";
-	Statinfo += "BotINFO commands: " + px_string(DcCommands::m_Ptr->m_ui32StatBotINFO) + " x\n";
-	Statinfo += "Close commands: " + px_string(DcCommands::m_Ptr->m_ui32StatCmdClose) + " x\n";
+	Statinfo += "Users (Max/Actual Peak (Max Peak)/Logged): " + std::to_string(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_USERS]) + " / " +
+	            std::to_string(ServerManager::m_ui32Peak) + " (" + std::to_string(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_MAX_USERS_PEAK]) + ") / " + std::to_string(ServerManager::m_ui32Logged) + "\n";
+	Statinfo += "Joins / Parts: " + std::to_string(ServerManager::m_ui32Joins) + " / " + std::to_string(ServerManager::m_ui32Parts) + "\n";
+	Statinfo += "Users shared size: " + std::to_string(ServerManager::m_ui64TotalShare) + " Bytes / " + std::to_string(formatBytes(ServerManager::m_ui64TotalShare)) + "\n";
+	Statinfo += "Chat messages: " + std::to_string(DcCommands::m_Ptr->m_ui32StatChat) + " x\n";
+	Statinfo += "Unknown commands: " + std::to_string(DcCommands::m_Ptr->m_ui32StatCmdUnknown) + " x\n";
+	Statinfo += "PM commands: " + std::to_string(DcCommands::m_Ptr->m_ui32StatCmdTo) + " x\n";
+	Statinfo += "Key commands: " + std::to_string(DcCommands::m_Ptr->m_ui32StatCmdKey) + " x\n";
+	Statinfo += "Supports commands: " + std::to_string(DcCommands::m_Ptr->m_ui32StatCmdSupports) + " x\n";
+	Statinfo += "MyINFO commands: " + std::to_string(DcCommands::m_Ptr->m_ui32StatCmdMyInfo) + " x\n";
+	Statinfo += "ValidateNick commands: " + std::to_string(DcCommands::m_Ptr->m_ui32StatCmdValidate) + " x\n";
+	Statinfo += "GetINFO commands: " + std::to_string(DcCommands::m_Ptr->m_ui32StatCmdGetInfo) + " x\n";
+	Statinfo += "Password commands: " + std::to_string(DcCommands::m_Ptr->m_ui32StatCmdMyPass) + " x\n";
+	Statinfo += "Version commands: " + std::to_string(DcCommands::m_Ptr->m_ui32StatCmdVersion) + " x\n";
+	Statinfo += "GetNickList commands: " + std::to_string(DcCommands::m_Ptr->m_ui32StatCmdGetNickList) + " x\n";
+	Statinfo += "Search commands: " + std::to_string(DcCommands::m_Ptr->m_ui32StatCmdSearch) + " x (" + std::to_string(DcCommands::m_Ptr->m_ui32StatCmdMultiSearch) + " x)\n";
+	Statinfo += "SR commands: " + std::to_string(DcCommands::m_Ptr->m_ui32StatCmdSR) + " x\n";
+	Statinfo += "CTM commands: " + std::to_string(DcCommands::m_Ptr->m_ui32StatCmdConnectToMe) + " x (" + std::to_string(DcCommands::m_Ptr->m_ui32StatCmdMultiConnectToMe) + " x)\n";
+	Statinfo += "RevCTM commands: " + std::to_string(DcCommands::m_Ptr->m_ui32StatCmdRevCTM) + " x\n";
+	Statinfo += "BotINFO commands: " + std::to_string(DcCommands::m_Ptr->m_ui32StatBotINFO) + " x\n";
+	Statinfo += "Close commands: " + std::to_string(DcCommands::m_Ptr->m_ui32StatCmdClose) + " x\n";
 	//Statinfo+="------------------------------------------------------------\n";
 	//Statinfo+="ClientSocket Errors: "+string(iStatUserSocketErrors)+" x\n";
 	Statinfo += "------------------------------------------------------------\n";
@@ -668,13 +668,13 @@ bool HubCommands::Stats(ChatCommand * pChatCommand)   // !stat !stats !statistic
 #endif
 
 	Statinfo += "------------------------------------------------------------\n";
-	Statinfo += "SendRests (Peak): " + px_string(ServiceLoop::m_Ptr->m_ui32LastSendRest) + " (" + px_string(ServiceLoop::m_Ptr->m_ui32SendRestsPeak) + ")\n";
-	Statinfo += "RecvRests (Peak): " + px_string(ServiceLoop::m_Ptr->m_ui32LastRecvRest) + " (" + px_string(ServiceLoop::m_Ptr->m_ui32RecvRestsPeak) + ")\n";
-	Statinfo += "Compression saved: " + px_string(formatBytes(ServerManager::m_ui64BytesSentSaved)) + " (" + px_string(DcCommands::m_Ptr->m_ui32StatZPipe) + ")\n";
-	Statinfo += "Data sent: " + px_string(formatBytes(ServerManager::m_ui64BytesSent)) + "\n";
-	Statinfo += "Data received: " + px_string(formatBytes(ServerManager::m_ui64BytesRead)) + "\n";
-	Statinfo += "Tx (60 sec avg): " + px_string(formatBytesPerSecond(ServerManager::m_ui32ActualBytesSent)) + " (" + px_string(formatBytesPerSecond(ServerManager::m_ui32AverageBytesSent / 60)) + ")\n";
-	Statinfo += "Rx (60 sec avg): " + px_string(formatBytesPerSecond(ServerManager::m_ui32ActualBytesRead)) + " (" + px_string(formatBytesPerSecond(ServerManager::m_ui32AverageBytesRead / 60)) + ")|";
+	Statinfo += "SendRests (Peak): " + std::to_string(ServiceLoop::m_Ptr->m_ui32LastSendRest) + " (" + std::to_string(ServiceLoop::m_Ptr->m_ui32SendRestsPeak) + ")\n";
+	Statinfo += "RecvRests (Peak): " + std::to_string(ServiceLoop::m_Ptr->m_ui32LastRecvRest) + " (" + std::to_string(ServiceLoop::m_Ptr->m_ui32RecvRestsPeak) + ")\n";
+	Statinfo += "Compression saved: " + std::to_string(formatBytes(ServerManager::m_ui64BytesSentSaved)) + " (" + std::to_string(DcCommands::m_Ptr->m_ui32StatZPipe) + ")\n";
+	Statinfo += "Data sent: " + std::to_string(formatBytes(ServerManager::m_ui64BytesSent)) + "\n";
+	Statinfo += "Data received: " + std::to_string(formatBytes(ServerManager::m_ui64BytesRead)) + "\n";
+	Statinfo += "Tx (60 sec avg): " + std::to_string(formatBytesPerSecond(ServerManager::m_ui32ActualBytesSent)) + " (" + std::to_string(formatBytesPerSecond(ServerManager::m_ui32AverageBytesSent / 60)) + ")\n";
+	Statinfo += "Rx (60 sec avg): " + std::to_string(formatBytesPerSecond(ServerManager::m_ui32ActualBytesRead)) + " (" + std::to_string(formatBytesPerSecond(ServerManager::m_ui32AverageBytesRead / 60)) + ")|";
 
 	pChatCommand->m_pUser->SendCharDelayed(Statinfo.c_str(), Statinfo.size());
 

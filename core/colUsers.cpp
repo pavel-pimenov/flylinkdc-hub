@@ -594,6 +594,7 @@ void Users::SendChat2All(User * pUser, const char * sData, const size_t szChatLe
 		}
 
 		m_ui16ChatMsgs++;
+		GlobalDataQueue::m_Ptr->m_flylinkdc_hub_messages.Add({}).Increment();
 
 		if (m_ui16ChatMsgs > (uint16_t)SettingManager::m_Ptr->m_i16Shorts[SETSHORT_GLOBAL_MAIN_CHAT_MESSAGES])
 		{
@@ -780,7 +781,7 @@ void Users::DelFromMyInfosTag(User * pUser)
 
 void Users::AddBot2MyInfos(const char * sMyInfo)
 {
-	size_t szLen = strlen(sMyInfo);
+	const size_t szLen = strlen(sMyInfo);
 	if (m_pMyInfosTag != NULL)
 	{
 		if (strstr(m_pMyInfosTag, sMyInfo) == NULL)
@@ -835,7 +836,7 @@ void Users::AddBot2MyInfos(const char * sMyInfo)
 
 void Users::DelBotFromMyInfos(const char * sMyInfo)
 {
-	size_t szLen = strlen(sMyInfo);
+	const size_t szLen = strlen(sMyInfo);
 	if (m_pMyInfosTag)
 	{
 		char * sMatch = strstr(m_pMyInfosTag,  sMyInfo);

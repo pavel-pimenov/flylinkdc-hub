@@ -762,7 +762,7 @@ User::~User()
 #ifdef _BUILD_GUI
 	if (::SendMessage(MainWindowPageUsersChat::m_Ptr->m_hWndPageItems[MainWindowPageUsersChat::BTN_SHOW_COMMANDS], BM_GETCHECK, 0, 0) == BST_CHECKED)
 	{
-		RichEditAppendText(MainWindowPageUsersChat::m_Ptr->m_hWndPageItems[MainWindowPageUsersChat::REDT_CHAT], ("x User removed: " + px_string(m_sNick, m_ui8NickLen) + " (Socket " + px_string(m_Socket) + ")").c_str());
+		RichEditAppendText(MainWindowPageUsersChat::m_Ptr->m_hWndPageItems[MainWindowPageUsersChat::REDT_CHAT], ("x User removed: " + std::to_string(m_sNick) + " (Socket " + std::to_string(m_Socket) + ")").c_str());
 	}
 #endif
 
@@ -1876,7 +1876,7 @@ void User::SetVersion(const char * /* sVersion*/)
 {
 #ifdef FLYLINKDC_USE_VERSION
 	free(m_sVersion);
-	size_t szLen = strlen(sNewVer);
+	const size_t szLen = strlen(sNewVer);
 	m_sVersion = (char *)malloc(szLen + 1);
 	if (m_sVersion == NULL)
 	{

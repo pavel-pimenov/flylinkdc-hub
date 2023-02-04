@@ -20,12 +20,13 @@
 #ifndef ExceptionHandlingH
 #define ExceptionHandlingH
 //---------------------------------------------------------------------------
+#include <string>
 
 #ifdef PTOKAX_DEAD_CODE
-void ExceptionHandlingInitialize(const string &sPath, const char * sAppPath);
+void ExceptionHandlingInitialize(const std::string &sPath, const char * sAppPath);
 void ExceptionHandlingUnitialize();
 #else
-static inline void ExceptionHandlingInitialize(const string &, const char *)
+static inline void ExceptionHandlingInitialize(const std::string &, const char *)
 {
 }
 static inline void ExceptionHandlingUnitialize()

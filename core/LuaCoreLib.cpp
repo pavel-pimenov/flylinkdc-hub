@@ -1218,7 +1218,7 @@ static int GetUserData(lua_State * pLua)
 #else
 	uint8_t ui8DataId = (uint8_t)lua_tointeger(pLua, 2);
 #endif
-
+    GlobalDataQueue::m_Ptr->PrometheusLuaUserDataInc(ui8DataId);
 	switch (ui8DataId)
 	{
 	case 0:
@@ -1745,7 +1745,7 @@ static int GetUserValue(lua_State * pLua)
 #endif
 
 	lua_settop(pLua, 0);
-
+    GlobalDataQueue::m_Ptr->PrometheusLuaUserValueInc(ui8DataId);
 	switch (ui8DataId)
 	{
 	case 0:

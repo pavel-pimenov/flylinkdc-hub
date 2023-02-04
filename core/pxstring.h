@@ -20,6 +20,7 @@
 #ifndef PXSTRING_H
 #define PXSTRING_H
 //------------------------------------------------------------------------------
+/*
 class string
 {
 private:
@@ -66,12 +67,13 @@ public:
 	bool operator==(const char * sTxt);
 	bool operator==(const string & sStr);
 };
+*/
 
 /*
 #include <string>
 using std::string;
 
-class px_string
+class std::string
 {
     private:
         char * m_sData;
@@ -79,20 +81,20 @@ class px_string
         size_t m_szDataLen;
 
         void stralloc(const char * sTxt, const size_t szLen);
-        px_string(const px_string & sStr1, const px_string & sStr2);
-        px_string(const char * sTxt, const px_string & sStr);
-        px_string(const px_string & sStr, const char * sTxt);
+        std::to_string(const std::string & sStr1, const std::string & sStr2);
+        std::to_string(const char * sTxt, const std::string & sStr);
+        std::to_string(const std::string & sStr, const char * sTxt);
     public:
-        px_string();
-        explicit px_string(const char * sTxt);
-        px_string(const char * sTxt, const size_t szLen);
-        px_string(const px_string & sStr);
-        explicit px_string(const uint32_t ui32Number);
-        explicit px_string(const int32_t i32Number);
-        explicit px_string(const uint64_t ui64Number);
-        explicit px_string(const int64_t i64Number);
+        std::to_string();
+        explicit std::to_string(const char * sTxt);
+        std::to_string(const char * sTxt, const size_t szLen);
+        std::to_string(const std::string & sStr);
+        explicit std::to_string(const uint32_t ui32Number);
+        explicit std::to_string(const int32_t i32Number);
+        explicit std::to_string(const uint64_t ui64Number);
+        explicit std::to_string(const int64_t i64Number);
 
-        ~px_string();
+        ~std::to_string();
 
         size_t size() const
          {
@@ -104,28 +106,28 @@ class px_string
          }
         void clear();
 
-        px_string operator+(const char * sTxt) const;
-        px_string operator+(const px_string & sStr) const;
-        friend px_string operator+(const char * sTxt, const px_string & sStr);
-        friend px_string operator+(const char * sTxt, const std::string & sStr)
+        std::string operator+(const char * sTxt) const;
+        std::string operator+(const std::string & sStr) const;
+        friend std::string operator+(const char * sTxt, const std::string & sStr);
+        friend std::string operator+(const char * sTxt, const std::string & sStr)
         {
-            px_string result(sTxt);
+            std::string result(sTxt);
             result  += sStr;
             return result;
         }
 
-        px_string & operator+=(const char * sTxt);
-        px_string & operator+=(const px_string & sStr);
-        px_string & operator+=(const std::string & sStr)
+        std::string & operator+=(const char * sTxt);
+        std::string & operator+=(const std::string & sStr);
+        std::string & operator+=(const std::string & sStr)
         {
             return operator+=(sStr.c_str());
         }
 
-        px_string & operator=(const char * sTxt);
-        px_string & operator=(const px_string & sStr);
+        std::string & operator=(const char * sTxt);
+        std::string & operator=(const std::string & sStr);
 
         bool operator==(const char * sTxt);
-        bool operator==(const px_string & sStr);
+        bool operator==(const std::string & sStr);
 };
 //------------------------------------------------------------------------------
 */

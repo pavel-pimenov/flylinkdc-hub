@@ -221,6 +221,24 @@ public:
 			{
 				m_flylinkdc_hub_lua_commands_counter.Add({{"func", p_command}}).Increment();
 			}		
+            prometheus::Family<prometheus::Counter>& m_flylinkdc_hub_lua_user_value_counter = prometheus::BuildCounter()
+                    .Name("flylinkdc_hub_lua_user_value_counter")
+                    .Help("The number of lua user_value")
+                    .Register(*m_registry);
+			void PrometheusLuaUserValueInc(const uint8_t p_id)
+			{
+				m_flylinkdc_hub_lua_commands_counter.Add({{"value", std::to_string(p_id).c_str()}}).Increment();
+			}		
+
+            prometheus::Family<prometheus::Counter>& m_flylinkdc_hub_lua_user_data_counter = prometheus::BuildCounter()
+                    .Name("flylinkdc_hub_lua_user_data_counter")
+                    .Help("The number of lua user_data")
+                    .Register(*m_registry);
+			void PrometheusLuaUserDataInc(const uint8_t p_id)
+			{
+				m_flylinkdc_hub_lua_commands_counter.Add({{"value", std::to_string(p_id).c_str()}}).Increment();
+			}		
+
             prometheus::Family<prometheus::Counter>& m_flylinkdc_hub_recv_bytes = prometheus::BuildCounter()
                     .Name("flylinkdc_hub_recv_bytes")
                     .Register(*m_registry);
@@ -236,10 +254,28 @@ public:
             prometheus::Family<prometheus::Gauge>& m_flylinkdc_hub_users = prometheus::BuildGauge()
                     .Name("flylinkdc_hub_users")
                     .Register(*m_registry);
+            prometheus::Family<prometheus::Gauge>& m_flylinkdc_hub_messages = prometheus::BuildGauge()
+                    .Name("flylinkdc_hub_messages")
+                    .Register(*m_registry);
+            prometheus::Family<prometheus::Gauge>& m_flylinkdc_hub_rusage = prometheus::BuildGauge()
+                    .Name("flylinkdc_hub_rusage")
+                    .Register(*m_registry);
+				
             prometheus::Family<prometheus::Counter>& m_flylinkdc_hub_compress_bytes = prometheus::BuildCounter()
                     .Name("flylinkdc_hub_compress_bytes")
                     .Register(*m_registry);
+            prometheus::Family<prometheus::Counter>& m_flylinkdc_hub_log_bytes = prometheus::BuildCounter()
+                    .Name("flylinkdc_hub_log_bytes")
+                    .Register(*m_registry);
 
+			void PrometheusRusageValue(const char* p_type, long p_val)
+			{
+				m_flylinkdc_hub_rusage.Add({{"rusage", p_type}}).Set(p_val);
+			}		
+			void PrometheusLogBytes(const char* p_type, int p_len)
+			{
+				m_flylinkdc_hub_log_bytes.Add({{"bytes", p_type}}).Increment(p_len);
+			}		
 			void PrometheusZlibBytes(const char* p_type, int p_len)
 			{
 				m_flylinkdc_hub_compress_bytes.Add({{"bytes", p_type}}).Increment(p_len);

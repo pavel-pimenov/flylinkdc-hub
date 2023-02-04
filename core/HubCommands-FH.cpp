@@ -201,7 +201,7 @@ bool HubCommands::GetBans(ChatCommand * pChatCommand)   // !getbans
 	}
 	iMsgLen += iRet;
 
-	px_string BanList(ServerManager::m_pGlobalBuffer, iMsgLen);
+	std::string BanList(ServerManager::m_pGlobalBuffer, iMsgLen);
 	bool bIsEmpty = true;
 
 	if (BanManager::m_Ptr->m_pTempBanListS != NULL)
@@ -233,7 +233,7 @@ bool HubCommands::GetBans(ChatCommand * pChatCommand)   // !getbans
 			}
 
 			ui32BanNum++;
-			BanList += "[ " + px_string(ui32BanNum) + " ]";
+			BanList += "[ " + std::to_string(ui32BanNum) + " ]";
 
 			if (curBan->m_sIp[0] != '\0')
 			{
@@ -296,7 +296,7 @@ bool HubCommands::GetBans(ChatCommand * pChatCommand)   // !getbans
 			nextBan = curBan->m_pNext;
 
 			iBanNum++;
-			BanList += "[ " + px_string(iBanNum) + " ]";
+			BanList += "[ " + std::to_string(iBanNum) + " ]";
 
 			if (curBan->m_sIp[0] != '\0')
 			{
@@ -679,7 +679,7 @@ bool HubCommands::GetTempBans(ChatCommand * pChatCommand)   // !gettempbans
 	}
 	iMsgLen += iRet;
 
-	px_string BanList = px_string(ServerManager::m_pGlobalBuffer, iMsgLen);
+	std::string BanList = std::to_string(ServerManager::m_pGlobalBuffer, iMsgLen);
 
 	if (BanManager::m_Ptr->m_pTempBanListS != NULL)
 	{
@@ -710,7 +710,7 @@ bool HubCommands::GetTempBans(ChatCommand * pChatCommand)   // !gettempbans
 			}
 
 			ui32BanNum++;
-			BanList += "[ " + px_string(ui32BanNum) + " ]";
+			BanList += "[ " + std::to_string(ui32BanNum) + " ]";
 
 			if (curBan->m_sIp[0] != '\0')
 			{
@@ -789,7 +789,7 @@ bool HubCommands::GetScripts(ChatCommand * pChatCommand)   // !getscripts
 	}
 	iMsgLen += iRet;
 
-	px_string ScriptList(ServerManager::m_pGlobalBuffer, iMsgLen);
+	std::string ScriptList(ServerManager::m_pGlobalBuffer, iMsgLen);
 
 	ScriptList += string(LanguageManager::m_Ptr->m_sTexts[LAN_SCRIPTS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_SCRIPTS]) + ":\n\n";
 
@@ -800,7 +800,7 @@ bool HubCommands::GetScripts(ChatCommand * pChatCommand)   // !getscripts
 
 		if (ScriptManager::m_Ptr->m_ppScriptTable[ui8i]->m_bEnabled == true)
 		{
-			ScriptList += " (" + px_string(ScriptGetGC(ScriptManager::m_Ptr->m_ppScriptTable[ui8i])) + " kB)\n";
+			ScriptList += " (" + std::to_string(ScriptGetGC(ScriptManager::m_Ptr->m_ppScriptTable[ui8i])) + " kB)\n";
 		}
 		else
 		{
@@ -834,7 +834,7 @@ bool HubCommands::GetPermBans(ChatCommand * pChatCommand)   // !getpermbans
 	}
 	iMsgLen += iRet;
 
-	px_string BanList(ServerManager::m_pGlobalBuffer, iMsgLen);
+	std::string BanList(ServerManager::m_pGlobalBuffer, iMsgLen);
 
 	if (BanManager::m_Ptr->m_pPermBanListS != NULL)
 	{
@@ -851,13 +851,13 @@ bool HubCommands::GetPermBans(ChatCommand * pChatCommand)   // !getpermbans
 			nextBan = curBan->m_pNext;
 
 			ui32BanNum++;
-			BanList += "[ " + px_string(ui32BanNum) + " ]";
+			BanList += "[ " + std::to_string(ui32BanNum) + " ]";
 
 			if (curBan->m_sIp[0] != '\0')
 			{
 				if (((curBan->m_ui8Bits & BanManager::IP) == BanManager::IP) == true)
 				{
-					BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_BANNED], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_BANNED]);
+					BanList += " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_BANNED], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_BANNED]);
 				}
 				BanList += " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_IP], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_IP]) + ": " + string(curBan->m_sIp);
 				if (((curBan->m_ui8Bits & BanManager::FULL) == BanManager::FULL) == true)
@@ -920,7 +920,7 @@ bool HubCommands::GetRangeBans(ChatCommand * pChatCommand)   // !getrangebans
 	}
 	iMsgLen += iRet;
 
-	px_string BanList(ServerManager::m_pGlobalBuffer, iMsgLen);
+	std::string BanList(ServerManager::m_pGlobalBuffer, iMsgLen);
 	bool bIsEmpty = true;
 
 	if (BanManager::m_Ptr->m_pRangeBanListS != NULL)
@@ -956,30 +956,30 @@ bool HubCommands::GetRangeBans(ChatCommand * pChatCommand)   // !getrangebans
 
 			ui32BanNum++;
 
-			BanList += "[ " + px_string(ui32BanNum) + " ]";
-			BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_RANGE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RANGE]) + ": "
-			           + px_string(curBan->m_sIpFrom) + "-" + px_string(curBan->m_sIpTo);
+			BanList += "[ " + std::to_string(ui32BanNum) + " ]";
+			BanList += " " + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_RANGE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RANGE]) + ": "
+			           + std::to_string(curBan->m_sIpFrom) + "-" + std::to_string(curBan->m_sIpTo);
 
 			if (((curBan->m_ui8Bits & BanManager::FULL) == BanManager::FULL) == true)
 			{
-				BanList += " (" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_FULL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FULL]) + ")";
+				BanList += " (" + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_FULL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FULL]) + ")";
 			}
 
 			if (curBan->m_sBy != NULL)
 			{
-				BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_BY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_BY]) + ": " + px_string(curBan->m_sBy);
+				BanList += " " + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_BY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_BY]) + ": " + std::to_string(curBan->m_sBy);
 			}
 
 			if (curBan->m_sReason != NULL)
 			{
-				BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_REASON], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_REASON]) +
-				           ": " + px_string(curBan->m_sReason);
+				BanList += " " + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_REASON], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_REASON]) +
+				           ": " + std::to_string(curBan->m_sReason);
 			}
 
 			struct tm *tm = localtime(&curBan->m_tTempBanExpire);
 			strftime(ServerManager::m_pGlobalBuffer, 256, "%c\n", tm);
 
-			BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_EXPIRE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_EXPIRE]) + ": " + px_string(ServerManager::m_pGlobalBuffer);
+			BanList += " " + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_EXPIRE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_EXPIRE]) + ": " + std::to_string(ServerManager::m_pGlobalBuffer);
 		}
 
 		if (ui32BanNum > 0)
@@ -1002,28 +1002,28 @@ bool HubCommands::GetRangeBans(ChatCommand * pChatCommand)   // !getrangebans
 			if (ui32BanNum == 0)
 			{
 				bIsEmpty = false;
-				BanList += px_string(LanguageManager::m_Ptr->m_sTexts[LAN_PERM_RANGE_BANS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_PERM_RANGE_BANS]) + ":\n\n";
+				BanList += std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_PERM_RANGE_BANS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_PERM_RANGE_BANS]) + ":\n\n";
 			}
 
 			ui32BanNum++;
 
-			BanList += "[ " + px_string(ui32BanNum) + " ]";
-			BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_RANGE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RANGE]) + ": " + px_string(curBan->m_sIpFrom) + "-" + px_string(curBan->m_sIpTo);
+			BanList += "[ " + std::to_string(ui32BanNum) + " ]";
+			BanList += " " + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_RANGE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RANGE]) + ": " + std::to_string(curBan->m_sIpFrom) + "-" + std::to_string(curBan->m_sIpTo);
 
 			if (((curBan->m_ui8Bits & BanManager::FULL) == BanManager::FULL) == true)
 			{
-				BanList += " (" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_FULL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FULL]) + ")";
+				BanList += " (" + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_FULL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FULL]) + ")";
 			}
 
 			if (curBan->m_sBy != NULL)
 			{
-				BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_BY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_BY]) + ": " + px_string(curBan->m_sBy);
+				BanList += " " + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_BY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_BY]) + ": " + std::to_string(curBan->m_sBy);
 			}
 
 			if (curBan->m_sReason != NULL)
 			{
-				BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_REASON], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_REASON]) +
-				           ": " + px_string(curBan->m_sReason);
+				BanList += " " + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_REASON], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_REASON]) +
+				           ": " + std::to_string(curBan->m_sReason);
 			}
 
 			BanList += "\n";
@@ -1032,7 +1032,7 @@ bool HubCommands::GetRangeBans(ChatCommand * pChatCommand)   // !getrangebans
 
 	if (bIsEmpty == true)
 	{
-		BanList += px_string(LanguageManager::m_Ptr->m_sTexts[LAN_NO_RANGE_BANS_FOUND], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_NO_RANGE_BANS_FOUND]) + "...|";
+		BanList += std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_NO_RANGE_BANS_FOUND], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_NO_RANGE_BANS_FOUND]) + "...|";
 	}
 	else
 	{
@@ -1064,7 +1064,7 @@ bool HubCommands::GetRangePermBans(ChatCommand * pChatCommand)   // !getrangeper
 	}
 	iMsgLen += iRet;
 
-	px_string BanList(ServerManager::m_pGlobalBuffer, iMsgLen);
+	std::string BanList(ServerManager::m_pGlobalBuffer, iMsgLen);
 	bool bIsEmpty = true;
 
 	if (BanManager::m_Ptr->m_pRangeBanListS != NULL)
@@ -1086,29 +1086,29 @@ bool HubCommands::GetRangePermBans(ChatCommand * pChatCommand)   // !getrangeper
 			{
 				bIsEmpty = false;
 
-				BanList += px_string(LanguageManager::m_Ptr->m_sTexts[LAN_PERM_RANGE_BANS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_PERM_RANGE_BANS]) + ":\n\n";
+				BanList += std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_PERM_RANGE_BANS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_PERM_RANGE_BANS]) + ":\n\n";
 			}
 
 			ui32BanNum++;
 
-			BanList += "[ " + px_string(ui32BanNum) + " ]";
-			BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_RANGE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RANGE]) +
-			           ": " + px_string(curBan->m_sIpFrom) + "-" + px_string(curBan->m_sIpTo);
+			BanList += "[ " + std::to_string(ui32BanNum) + " ]";
+			BanList += " " + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_RANGE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RANGE]) +
+			           ": " + std::to_string(curBan->m_sIpFrom) + "-" + std::to_string(curBan->m_sIpTo);
 
 			if (((curBan->m_ui8Bits & BanManager::FULL) == BanManager::FULL) == true)
 			{
-				BanList += " (" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_FULL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FULL]) + ")";
+				BanList += " (" + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_FULL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FULL]) + ")";
 			}
 
 			if (curBan->m_sBy != NULL)
 			{
-				BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_BY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_BY]) + ": " + px_string(curBan->m_sBy);
+				BanList += " " + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_BY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_BY]) + ": " + std::to_string(curBan->m_sBy);
 			}
 
 			if (curBan->m_sReason != NULL)
 			{
-				BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_REASON], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_REASON]) +
-				           ": " + px_string(curBan->m_sReason);
+				BanList += " " + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_REASON], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_REASON]) +
+				           ": " + std::to_string(curBan->m_sReason);
 			}
 
 			BanList += "\n";
@@ -1149,7 +1149,7 @@ bool HubCommands::GetRangeTempBans(ChatCommand * pChatCommand)   // !getrangetem
 	}
 	iMsgLen += iRet;
 
-	px_string BanList(ServerManager::m_pGlobalBuffer, iMsgLen);
+	std::string BanList(ServerManager::m_pGlobalBuffer, iMsgLen);
 	bool bIsEmpty = true;
 
 	if (BanManager::m_Ptr->m_pRangeBanListS != NULL)
@@ -1180,35 +1180,35 @@ bool HubCommands::GetRangeTempBans(ChatCommand * pChatCommand)   // !getrangetem
 
 			if (ui32BanNum == 0)
 			{
-				BanList += px_string(LanguageManager::m_Ptr->m_sTexts[LAN_TEMP_RANGE_BANS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_TEMP_RANGE_BANS]) + ":\n\n";
+				BanList += std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_TEMP_RANGE_BANS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_TEMP_RANGE_BANS]) + ":\n\n";
 			}
 
 			ui32BanNum++;
 
-			BanList += "[ " + px_string(ui32BanNum) + " ]";
-			BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_RANGE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RANGE]) +
-			           ": " + px_string(curBan->m_sIpFrom) + "-" + px_string(curBan->m_sIpTo);
+			BanList += "[ " + std::to_string(ui32BanNum) + " ]";
+			BanList += " " + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_RANGE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RANGE]) +
+			           ": " + std::to_string(curBan->m_sIpFrom) + "-" + std::to_string(curBan->m_sIpTo);
 
 			if (((curBan->m_ui8Bits & BanManager::FULL) == BanManager::FULL) == true)
 			{
-				BanList += " (" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_FULL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FULL]) + ")";
+				BanList += " (" + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_FULL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FULL]) + ")";
 			}
 
 			if (curBan->m_sBy != NULL)
 			{
-				BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_BY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_BY]) + ": " + px_string(curBan->m_sBy);
+				BanList += " " + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_BY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_BY]) + ": " + std::to_string(curBan->m_sBy);
 			}
 
 			if (curBan->m_sReason != NULL)
 			{
-				BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_REASON], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_REASON]) +
-				           ": " + px_string(curBan->m_sReason);
+				BanList += " " + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_REASON], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_REASON]) +
+				           ": " + std::to_string(curBan->m_sReason);
 			}
 
 			struct tm *tm = localtime(&curBan->m_tTempBanExpire);
 			strftime(ServerManager::m_pGlobalBuffer, 256, "%c\n", tm);
 
-			BanList += " " + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_EXPIRE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_EXPIRE]) + ": " + px_string(ServerManager::m_pGlobalBuffer);
+			BanList += " " + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_EXPIRE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_EXPIRE]) + ": " + std::to_string(ServerManager::m_pGlobalBuffer);
 		}
 
 		if (ui32BanNum != 0)
@@ -1219,7 +1219,7 @@ bool HubCommands::GetRangeTempBans(ChatCommand * pChatCommand)   // !getrangetem
 
 	if (bIsEmpty == true)
 	{
-		BanList += px_string(LanguageManager::m_Ptr->m_sTexts[LAN_NO_RANGE_TEMP_BANS_FOUND], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_NO_RANGE_TEMP_BANS_FOUND]) + "...|";
+		BanList += std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_NO_RANGE_TEMP_BANS_FOUND], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_NO_RANGE_TEMP_BANS_FOUND]) + "...|";
 	}
 	else
 	{

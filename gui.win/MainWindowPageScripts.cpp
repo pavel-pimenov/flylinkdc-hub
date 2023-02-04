@@ -639,7 +639,7 @@ void MainWindowPageScripts::OnDoubleClick(const LPNMITEMACTIVATE pItemActivate)
 	
 	if(::SendMessage(m_hWndPageItems[LV_SCRIPTS], LVM_GETITEMRECT, pItemActivate->iItem, (LPARAM)&rc) == FALSE || pItemActivate->ptAction.x > rc.left)
 	{
-		const px_string sScript = px_string(ServerManager::m_sScriptPath.c_str()) + ScriptManager::m_Ptr->m_ppScriptTable[pItemActivate->iItem]->m_sName;
+		const std::string sScript = std::to_string(ServerManager::m_sScriptPath.c_str()) + ScriptManager::m_Ptr->m_ppScriptTable[pItemActivate->iItem]->m_sName;
 		OpenScriptEditor(sScript.c_str());
 	}
 }
@@ -667,11 +667,11 @@ void MainWindowPageScripts::UpdateMemUsage()
 			continue;
 		}
 		
-		px_string tmp(lua_gc(ScriptManager::m_Ptr->m_ppScriptTable[ui8i]->m_pLua, LUA_GCCOUNT, 0));
+		std::string tmp(lua_gc(ScriptManager::m_Ptr->m_ppScriptTable[ui8i]->m_pLua, LUA_GCCOUNT, 0));
 		
 		lvItem.iItem = ui8i;
 		
-		px_string sMemUsage(lua_gc(ScriptManager::m_Ptr->m_ppScriptTable[ui8i]->m_pLua, LUA_GCCOUNT, 0));
+		std::string sMemUsage(lua_gc(ScriptManager::m_Ptr->m_ppScriptTable[ui8i]->m_pLua, LUA_GCCOUNT, 0));
 		lvItem.pszText = (LPSTR)sMemUsage.c_str();
 		
 		::SendMessage(m_hWndPageItems[LV_SCRIPTS], LVM_SETITEM, 0, (LPARAM)&lvItem);
@@ -823,7 +823,7 @@ void MainWindowPageScripts::OpenInScriptEditor()
 		return;
 	}
 	
-	const px_string sScript = px_string(ServerManager::m_sScriptPath.c_str()) + px_string(ScriptManager::m_Ptr->m_ppScriptTable[iSel]->m_sName);
+	const std::string sScript = std::to_string(ServerManager::m_sScriptPath.c_str()) + std::to_string(ScriptManager::m_Ptr->m_ppScriptTable[iSel]->m_sName);
 	OpenScriptEditor(sScript.c_str());
 }
 //------------------------------------------------------------------------------

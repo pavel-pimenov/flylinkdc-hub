@@ -21,15 +21,30 @@
 #ifndef utilityH
 #define utilityH
 
+#include <cctype>
 #include <cstring>
+#include <string>
+
+using std::string;
 
 //---------------------------------------------------------------------------
 struct BanItem;
 struct RangeBanItem;
 //---------------------------------------------------------------------------
-#define px_string string
 #define PTOKAX_GLOBAL_BUFF_SIZE (131072*2)
 
+namespace std
+{
+inline const std::string& to_string(const std::string& s) 
+ {
+	return s;
+ }
+ inline const std::string to_string(const char* s, const int p) 
+ {
+	return std::string(s,p);
+ }
+
+}
 
 void Cout(const string & sMsg);
 //---------------------------------------------------------------------------
@@ -99,15 +114,23 @@ int GenerateRangeBanMessage(RangeBanItem * pRangeBan, const time_t &tAccTime);
 
 bool GenerateTempBanTime(const uint8_t ui8Multiplyer, const uint32_t ui32Time, time_t &tAccTime, time_t &tBanTime);
 
-bool HaveOnlyNumbers(char *sData, const uint16_t ui16Len);
+inline bool HaveOnlyNumbers(char *sData, const uint16_t ui16Len)
+{
+	for (uint16_t ui16i = 0; ui16i < ui16Len; ui16i++)
+	{
+		if (isdigit(sData[ui16i]) == 0)
+			return false;
+	}
+	return true;
+}
 
 inline size_t Allign(size_t n)
 {
 	return (n + 1);
 }
 // + alex82 ... from MOD
-bool CheckSprintf(const int &iRetVal, const size_t &szMax, const char * sMsg); // CheckSprintf(imsgLen, 64, "UdpDebug::New");
-bool CheckSprintf1(const int &iRetVal, const size_t &szLenVal, const size_t &szMax, const char * sMsg); // CheckSprintf1(iret, imsgLen, 64, "UdpDebug::New");
+bool CheckSprintf(const int iRetVal, const size_t szMax, const char * sMsg); // CheckSprintf(imsgLen, 64, "UdpDebug::New");
+bool CheckSprintf1(const int iRetVal, const size_t szLenVal, const size_t szMax, const char * sMsg); // CheckSprintf1(iret, imsgLen, 64, "UdpDebug::New");
 
 void AppendLog(const char * sData, const bool bScript = false);
 inline void AppendLog(const string & sData, const bool bScript = false)

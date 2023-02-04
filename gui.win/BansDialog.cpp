@@ -413,7 +413,7 @@ void BansDialog::AddBan(const BanItem * pBan)
 	lvItem.mask = LVIF_PARAM | LVIF_TEXT;
 	lvItem.iItem = ListViewGetInsertPosition(m_hWndWindowItems[LV_BANS], pBan, m_bSortAscending, CompareBans);
 	
-	px_string sTxt(pBan->m_sNick == nullptr ? "" : pBan->m_sNick);
+	std::string sTxt(pBan->m_sNick == nullptr ? "" : pBan->m_sNick);
 	if((pBan->m_ui8Bits & BanManager::NICK) == BanManager::NICK)
 	{
 		sTxt += " (";

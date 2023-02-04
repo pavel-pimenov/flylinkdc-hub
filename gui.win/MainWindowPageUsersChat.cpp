@@ -137,35 +137,35 @@ LRESULT MainWindowPageUsersChat::MainWindowPageProc(UINT uMsg, WPARAM wParam, LP
 				}
 			}
 			
-			px_string sInfoTip = px_string(LanguageManager::m_Ptr->m_sTexts[LAN_NICK], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_NICK]) + ": " + px_string(curUser->m_sNick, curUser->m_ui8NickLen) +
-			                     "\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_IP], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_IP]) + ": " + px_string(curUser->m_sIP);
+			std::string sInfoTip = std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_NICK], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_NICK]) + ": " + std::to_string(curUser->m_sNick, curUser->m_ui8NickLen) +
+			                     "\n" + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_IP], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_IP]) + ": " + std::to_string(curUser->m_sIP);
 			                     
-			sInfoTip += "\n\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_CLIENT], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_CLIENT]) + ": " +
-			            px_string(curUser->m_sClient, (size_t)curUser->m_ui8ClientLen) +
-			            "\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_VERSION], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_VERSION]) + ": " + px_string(curUser->m_sTagVersion, (size_t)curUser->m_ui8TagVersionLen);
+			sInfoTip += "\n\n" + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_CLIENT], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_CLIENT]) + ": " +
+			            std::to_string(curUser->m_sClient, (size_t)curUser->m_ui8ClientLen) +
+			            "\n" + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_VERSION], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_VERSION]) + ": " + std::to_string(curUser->m_sTagVersion, (size_t)curUser->m_ui8TagVersionLen);
 			            
-			sInfoTip += "\n\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_MODE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_MODE]) + ": " + px_string(curUser->m_sModes) +
-			            "\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_SLOTS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_SLOTS]) + ": " + px_string(curUser->m_ui32Slots) +
-			            "\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_HUBS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_HUBS]) + ": " + px_string(curUser->m_ui32Hubs);
+			sInfoTip += "\n\n" + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_MODE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_MODE]) + ": " + std::to_string(curUser->m_sModes) +
+			            "\n" + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_SLOTS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_SLOTS]) + ": " + std::to_string(curUser->m_ui32Slots) +
+			            "\n" + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_HUBS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_HUBS]) + ": " + std::to_string(curUser->m_ui32Hubs);
 			            
 			if(curUser->m_ui32OLimit != 0)
 			{
-				sInfoTip += "\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_AUTO_OPEN_SLOT_WHEN_UP_UNDER], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_AUTO_OPEN_SLOT_WHEN_UP_UNDER]) + " " +
-				            px_string(curUser->m_ui32OLimit)+" kB/s";
+				sInfoTip += "\n" + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_AUTO_OPEN_SLOT_WHEN_UP_UNDER], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_AUTO_OPEN_SLOT_WHEN_UP_UNDER]) + " " +
+				            std::to_string(curUser->m_ui32OLimit)+" kB/s";
 			}
 			
 			if(curUser->m_ui32DLimit != 0)
 			{
-				sInfoTip += "\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_LIMITER], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_LIMITER])+ " D:" + px_string(curUser->m_ui32DLimit) + " kB/s";
+				sInfoTip += "\n" + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_LIMITER], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_LIMITER])+ " D:" + std::to_string(curUser->m_ui32DLimit) + " kB/s";
 			}
 			
 			if(curUser->m_ui32LLimit != 0)
 			{
-				sInfoTip += "\n" + px_string(LanguageManager::m_Ptr->m_sTexts[LAN_LIMITER], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_LIMITER])+ " L:" + px_string(curUser->m_ui32LLimit) + " kB/s";
+				sInfoTip += "\n" + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_LIMITER], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_LIMITER])+ " L:" + std::to_string(curUser->m_ui32LLimit) + " kB/s";
 			}
 			
-			sInfoTip += "\n\nRecvBuf: " + px_string(curUser->m_ui32RecvBufLen) + " bytes";
-			sInfoTip += "\nSendBuf: " + px_string(curUser->m_ui32SendBufLen) + " bytes";
+			sInfoTip += "\n\nRecvBuf: " + std::to_string(curUser->m_ui32RecvBufLen) + " bytes";
+			sInfoTip += "\nSendBuf: " + std::to_string(curUser->m_ui32SendBufLen) + " bytes";
 			
 			pGetInfoTip->cchTextMax = (int)(sInfoTip.size() > INFOTIPSIZE ? INFOTIPSIZE : sInfoTip.size());
 			memcpy(pGetInfoTip->pszText, sInfoTip.c_str(), sInfoTip.size() > INFOTIPSIZE ? INFOTIPSIZE : sInfoTip.size());
@@ -587,10 +587,10 @@ void MainWindowPageUsersChat::UpdateUserList()
 	
 	::SendMessage(m_hWndPageItems[LV_USERS], WM_SETREDRAW, (WPARAM)TRUE, 0);
 	
-	RichEditAppendText(m_hWndPageItems[REDT_CHAT], (px_string(LanguageManager::m_Ptr->m_sTexts[LAN_TOTAL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_TOTAL]) + ": " + px_string(ui32Total) + ", " +
-	                                                px_string(LanguageManager::m_Ptr->m_sTexts[LAN_LOGGED], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_LOGGED]) + ": " + px_string(ui32LoggedIn) + ", " +
-	                                                px_string(LanguageManager::m_Ptr->m_sTexts[LAN_CLOSING], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_CLOSING]) + ": " + px_string(ui32InClose) + ", " +
-	                                                px_string(LanguageManager::m_Ptr->m_sTexts[LAN_LOGGING], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_LOGGING]) + ": " + px_string(ui32InLogin)).c_str());
+	RichEditAppendText(m_hWndPageItems[REDT_CHAT], (std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_TOTAL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_TOTAL]) + ": " + std::to_string(ui32Total) + ", " +
+	                                                std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_LOGGED], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_LOGGED]) + ": " + std::to_string(ui32LoggedIn) + ", " +
+	                                                std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_CLOSING], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_CLOSING]) + ": " + std::to_string(ui32InClose) + ", " +
+	                                                std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_LOGGING], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_LOGGING]) + ": " + std::to_string(ui32InLogin)).c_str());
 }
 //------------------------------------------------------------------------------
 

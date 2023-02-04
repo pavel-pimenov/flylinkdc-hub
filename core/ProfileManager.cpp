@@ -635,7 +635,7 @@ ProfileItem * ProfileManager::CreateProfile(const char * sName)
 		exit(EXIT_FAILURE);
 	}
 
-	size_t szLen = strlen(sName);
+	const size_t szLen = strlen(sName);
 	pNewProfile->m_sName = (char *)malloc(szLen + 1);
 	if (pNewProfile->m_sName == NULL)
 	{
