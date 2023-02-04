@@ -401,7 +401,7 @@ void RangeBansDialog::AddRangeBan(const RangeBanItem * pRangeBan)
 	lvItem.mask = LVIF_PARAM | LVIF_TEXT;
 	lvItem.iItem = ListViewGetInsertPosition(m_hWndWindowItems[LV_RANGE_BANS], pRangeBan, m_bSortAscending, CompareRangeBans);
 	
-	px_string sTxt = px_string(pRangeBan->m_sIpFrom) + " - " + pRangeBan->m_sIpTo;
+	std::string sTxt = std::to_string(pRangeBan->m_sIpFrom) + " - " + pRangeBan->m_sIpTo;
 	if((pRangeBan->m_ui8Bits & BanManager::FULL) == BanManager::FULL)
 	{
 		sTxt += " (";

@@ -27,6 +27,7 @@
 #include "ServerManager.h"
 #include "SettingManager.h"
 #include "UdpDebug.h"
+#include "GlobalDataQueue.h"
 //---------------------------------------------------------------------------
 #ifdef _WIN32
 #pragma hdrstop
@@ -998,32 +999,21 @@ bool GenerateTempBanTime(const uint8_t ui8Multiplyer, const uint32_t ui32Time, t
 	return true;
 }
 //---------------------------------------------------------------------------
-
-bool HaveOnlyNumbers(char *sData, const uint16_t ui16Len)
-{
-	for (uint16_t ui16i = 0; ui16i < ui16Len; ui16i++)
-	{
-		if (isdigit(sData[ui16i]) == 0)
-			return false;
-	}
-	return true;
-}
-//---------------------------------------------------------------------------
 // + alex82 ... from MOD
-bool CheckSprintf(const int &iRetVal, const size_t &szMax, const char * sMsg)
+bool CheckSprintf(const int iRetVal, const size_t szMax, const char * sMsg)
 {
 	if (iRetVal > 0)
 	{
 		if (szMax != 0 && iRetVal >= (int)szMax)
 		{
-			px_string sDbgstr = "%s - [ERR] sprintf high value " + px_string(iRetVal) + "/" + px_string((uint64_t)szMax) + " in " + px_string(sMsg) + "\n";
+			const std::string sDbgstr = "%s - [ERR] sprintf high value " + std::to_string(iRetVal) + "/" + std::to_string((uint64_t)szMax) + " in " + std::to_string(sMsg) + "\n";
 			AppendDebugLog(sDbgstr.c_str()/*, 0*/);
 			return false;
 		}
 	}
 	else
 	{
-		px_string sDbgstr = "%s - [ERR] sprintf low value " + px_string(iRetVal) + " in " + px_string(sMsg) + "\n";
+		const std::string sDbgstr = "%s - [ERR] sprintf low value " + std::to_string(iRetVal) + " in " + std::to_string(sMsg) + "\n";
 		AppendDebugLog(sDbgstr.c_str()/*, 0*/);
 		return false;
 	}
@@ -1031,20 +1021,20 @@ bool CheckSprintf(const int &iRetVal, const size_t &szMax, const char * sMsg)
 }
 //---------------------------------------------------------------------------
 
-bool CheckSprintf1(const int &iRetVal, const size_t &szLenVal, const size_t &szMax, const char * sMsg)
+bool CheckSprintf1(const int iRetVal, const size_t szLenVal, const size_t szMax, const char * sMsg)
 {
 	if (iRetVal > 0)
 	{
 		if (szMax != 0 && szLenVal >= szMax)
 		{
-			px_string sDbgstr = "%s - [ERR] sprintf high value " + px_string((uint64_t)szLenVal) + "/" + px_string((uint64_t)szMax) + " in " + px_string(sMsg) + "\n";
+			const std::string sDbgstr = "%s - [ERR] sprintf high value " + std::to_string((uint64_t)szLenVal) + "/" + std::to_string((uint64_t)szMax) + " in " + std::to_string(sMsg) + "\n";
 			AppendDebugLog(sDbgstr.c_str()/*, 0*/);
 			return false;
 		}
 	}
 	else
 	{
-		px_string sDbgstr = "%s - [ERR] sprintf low value " + px_string(iRetVal) + " in " + px_string(sMsg) + "\n";
+		const std::string sDbgstr = "%s - [ERR] sprintf low value " + std::to_string(iRetVal) + " in " + std::to_string(sMsg) + "\n";
 		AppendDebugLog(sDbgstr.c_str()/*, 0*/);
 		return false;
 	}
@@ -1089,6 +1079,8 @@ void AppendLog(const char* sData, const bool bScript/* == false*/)
 
 		fclose(fw);
 	}
+	if(GlobalDataQueue::m_Ptr)
+	   GlobalDataQueue::m_Ptr->PrometheusLogBytes("logs",strlen(sData));
 
 	if (UdpDebug::m_Ptr != NULL && bScript == false)
 	{
@@ -1126,6 +1118,8 @@ void AppendDebugLog(const char * sData)
 	printf("[debug-log] %s - %s\n", sBuf, sData);
 
 	fclose(fw);
+	if(GlobalDataQueue::m_Ptr)
+	   GlobalDataQueue::m_Ptr->PrometheusLogBytes("logsd",strlen(sData));
 }
 //---------------------------------------------------------------------------
 
@@ -1173,6 +1167,8 @@ void AppendDebugLogFormat(const char * sFormatMsg, ...)
 	va_end(vlArgs);
 
 	fclose(fw);
+    if(GlobalDataQueue::m_Ptr)
+    	GlobalDataQueue::m_Ptr->PrometheusLogBytes("logf",szLen);
 }
 //---------------------------------------------------------------------------
 #ifdef _WIN32

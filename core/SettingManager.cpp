@@ -2963,7 +2963,7 @@ value:
 				sMatch[0] = '\0';
 			}
 
-			size_t szLen = strlen(sValue);
+			const size_t szLen = strlen(sValue);
 			SetText(ui8Strings[ui8i], sValue, szLen);
 
 			if ((szLen == 0 && m_sTexts[ui8Strings[ui8i]] != NULL) || strcmp(sValue, m_sTexts[ui8Strings[ui8i]]) != 0)
@@ -3111,7 +3111,7 @@ stringstart:
 				sMatch[0] = '\0';
 			}
 
-			size_t szLen = strlen(sValue);
+			const size_t szLen = strlen(sValue);
 			SetText(szi, sValue, szLen);
 
 			if ((szLen == 0 && m_sTexts[szi] != NULL) || strcmp(sValue, m_sTexts[szi]) != 0)

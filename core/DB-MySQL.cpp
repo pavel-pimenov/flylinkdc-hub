@@ -671,7 +671,7 @@ bool DBMySQL::SearchIP(char * sIP, User * pUser, const bool &bFromPM)
 		return false;
 	}
 
-	size_t szLen = strlen(sIP);
+	const size_t szLen = strlen(sIP);
 
 	char sEscapedIP[79];
 	if (mysql_real_escape_string(pDBHandle, sEscapedIP, sIP, szLen < 40 ? szLen : 39) == 0)

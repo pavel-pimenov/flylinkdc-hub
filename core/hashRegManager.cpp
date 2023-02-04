@@ -1051,7 +1051,7 @@ nick:
 			goto nick;
 		}
 
-		size_t szLen = strlen(sNick);
+		const size_t szLen = strlen(sNick);
 
 		if (szLen == 0)
 		{
@@ -1109,7 +1109,7 @@ password:
 			goto password;
 		}
 
-		size_t szLen = strlen(sPassword);
+		const size_t szLen = strlen(sPassword);
 
 		if (szLen == 0)
 		{

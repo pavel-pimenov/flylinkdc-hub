@@ -782,11 +782,11 @@ void MainWindow::UpdateSysTray() const
 
 void MainWindow::UpdateStats() const
 {
-	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_JOINS_VALUE], px_string(ServerManager::m_ui32Joins).c_str());
-	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_PARTS_VALUE], px_string(ServerManager::m_ui32Parts).c_str());
-	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_ACTIVE_VALUE], px_string(ServerManager::m_ui32Joins - ServerManager::m_ui32Parts).c_str());
-	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_ONLINE_VALUE], px_string(ServerManager::m_ui32Logged).c_str());
-	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_PEAK_VALUE], px_string(ServerManager::m_ui32Peak).c_str());
+	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_JOINS_VALUE], std::to_string(ServerManager::m_ui32Joins).c_str());
+	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_PARTS_VALUE], std::to_string(ServerManager::m_ui32Parts).c_str());
+	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_ACTIVE_VALUE], std::to_string(ServerManager::m_ui32Joins - ServerManager::m_ui32Parts).c_str());
+	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_ONLINE_VALUE], std::to_string(ServerManager::m_ui32Logged).c_str());
+	::SetWindowText((reinterpret_cast<MainWindowPageStats *>(m_MainWindowPages[0]))->m_hWndPageItems[MainWindowPageStats::LBL_PEAK_VALUE], std::to_string(ServerManager::m_ui32Peak).c_str());
 	
 	char msg[256];
 	int iMsglen = snprintf(msg, 256, "%s (%s)", formatBytes(ServerManager::m_ui64BytesRead), formatBytesPerSecond(ServerManager::m_ui32ActualBytesRead));

@@ -407,7 +407,7 @@ struct User
 	{
 		return (m_ui32SupportBits & SUPPORTBIT_ZPIPE) == SUPPORTBIT_ZPIPE;
 	}
-	void SendTextDelayed(const string & sText);
+	void SendTextDelayed(const std::string & sText);
 
 	void logInvalidUser(int p_id, const char * p_buffer, int p_len, bool p_is_send);
 

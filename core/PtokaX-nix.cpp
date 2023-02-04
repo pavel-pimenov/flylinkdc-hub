@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
 				return EXIT_FAILURE;
 			}
 
-			size_t szLen = strlen(argv[i]);
+			const size_t szLen = strlen(argv[i]);
 			if (argv[i][szLen - 1] == '/')
 			{
 				ServerManager::m_sPath = string(argv[i], szLen - 1);
@@ -395,7 +395,7 @@ int main(int argc, char* argv[])
 				break;
 			}
 
-			px_string str("Received signal ");
+			std::string str("Received signal ");
 
 			if (iSignal == SIGINT)
 			{
@@ -415,7 +415,7 @@ int main(int argc, char* argv[])
 			}
 			else
 			{
-				str += px_string(iSignal);
+				str += std::to_string(iSignal);
 			}
 
 			str += " ending...";
@@ -435,8 +435,30 @@ int main(int argc, char* argv[])
 
 			break;
 		}
-
 		nanosleep(&sleeptime, NULL);
+		static int g_count_rusage = 0;
+		if((++g_count_rusage % 10) == 0)
+		{
+			struct rusage ru;
+  			if(!getrusage(RUSAGE_SELF, &ru))
+			{
+			  GlobalDataQueue::m_Ptr->PrometheusRusageValue("ru_maxrss",ru.ru_maxrss);
+			  GlobalDataQueue::m_Ptr->PrometheusRusageValue("ru_ixrss",ru.ru_ixrss);
+			  GlobalDataQueue::m_Ptr->PrometheusRusageValue("ru_idrss",ru.ru_idrss);
+			  GlobalDataQueue::m_Ptr->PrometheusRusageValue("ru_isrss",ru.ru_isrss);
+			  GlobalDataQueue::m_Ptr->PrometheusRusageValue("ru_nswap",ru.ru_nswap);
+			  GlobalDataQueue::m_Ptr->PrometheusRusageValue("ru_inblock",ru.ru_inblock);
+			  GlobalDataQueue::m_Ptr->PrometheusRusageValue("ru_oublock",ru.ru_oublock);
+			  GlobalDataQueue::m_Ptr->PrometheusRusageValue("ru_majflt",ru.ru_majflt);
+			  GlobalDataQueue::m_Ptr->PrometheusRusageValue("ru_minflt",ru.ru_minflt);
+			  GlobalDataQueue::m_Ptr->PrometheusRusageValue("ru_nvcsw",ru.ru_nvcsw);
+			  GlobalDataQueue::m_Ptr->PrometheusRusageValue("ru_nivcsw",ru.ru_nivcsw);
+			  GlobalDataQueue::m_Ptr->PrometheusRusageValue("ru_nsignals",ru.ru_nsignals);	
+			  GlobalDataQueue::m_Ptr->PrometheusRusageValue("ru_utime",ru.ru_utime.tv_sec);	
+			  GlobalDataQueue::m_Ptr->PrometheusRusageValue("ru_stime",ru.ru_stime.tv_sec);	
+			  
+			}
+		}
 	}
 
 	if (ServerManager::m_bDaemon == false)

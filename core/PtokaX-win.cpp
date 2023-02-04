@@ -233,7 +233,7 @@ static void WINAPI CtrlHandler(DWORD dwCtrl)
 
 	if (SetServiceStatus(ssh, &ss) == false)
 	{
-		AppendLog("CtrlHandler::SetServiceStatus failed (" + px_string((uint32_t)GetLastError()) + ")!");
+		AppendLog("CtrlHandler::SetServiceStatus failed (" + std::to_string((uint32_t)GetLastError()) + ")!");
 	}
 }
 //---------------------------------------------------------------------------
@@ -303,7 +303,7 @@ static void WINAPI StartService(DWORD /*argc*/, char* argv[])
 
 	if (ssh == NULL)
 	{
-		AppendLog("RegisterServiceCtrlHandler failed (" + px_string((uint32_t)GetLastError()) + ")!");
+		AppendLog("RegisterServiceCtrlHandler failed (" + std::to_string((uint32_t)GetLastError()) + ")!");
 		return;
 	}
 
@@ -316,7 +316,7 @@ static void WINAPI StartService(DWORD /*argc*/, char* argv[])
 
 	if (SetServiceStatus(ssh, &ss) == false)
 	{
-		AppendLog("StartService::SetServiceStatus failed (" + px_string((uint32_t)GetLastError()) + ")!");
+		AppendLog("StartService::SetServiceStatus failed (" + std::to_string((uint32_t)GetLastError()) + ")!");
 		return;
 	}
 
@@ -334,7 +334,7 @@ static void WINAPI StartService(DWORD /*argc*/, char* argv[])
 
 	if (SetServiceStatus(ssh, &ss) == false)
 	{
-		AppendLog("StartService::SetServiceStatus1 failed (" + px_string((uint32_t)GetLastError()) + ")!");
+		AppendLog("StartService::SetServiceStatus1 failed (" + std::to_string((uint32_t)GetLastError()) + ")!");
 		return;
 	}
 
@@ -426,7 +426,7 @@ int __cdecl main(int argc, char* argv[])
 				return EXIT_FAILURE;
 			}
 
-			size_t szLen = strlen(argv[i]);
+			const size_t szLen = strlen(argv[i]);
 			if (szLen >= 1 && argv[i][0] != '\\' && argv[i][0] != '/')
 			{
 				if (szLen < 4 || (argv[i][1] != ':' || (argv[i][2] != '\\' && argv[i][2] != '/')))
@@ -575,7 +575,7 @@ int __cdecl main(int argc, char* argv[])
 
 		if (StartServiceCtrlDispatcher(DispatchTable) == false)
 		{
-			AppendLog("StartServiceCtrlDispatcher failed (" + px_string((uint32_t)GetLastError()) + ")!");
+			AppendLog("StartServiceCtrlDispatcher failed (" + std::to_string((uint32_t)GetLastError()) + ")!");
 #ifndef _WIN_IOT
 			ExceptionHandlingUnitialize();
 #endif

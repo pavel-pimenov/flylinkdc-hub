@@ -20,6 +20,7 @@
 #ifndef SetManH
 #define SetManH
 //---------------------------------------------------------------------------
+#include <string>
 #include "SettingIds.h"
 #include "CriticalSection.h"
 //---------------------------------------------------------------------------
@@ -105,7 +106,7 @@ public:
 	void SetText(const size_t szTxtId, char * sTxt);
 	void SetText(const size_t szTxtId, const char * sTxt);
 	void SetText(const size_t szTxtId, const char * sTxt, const size_t szLen);
-	void SetText(const size_t szTxtId, const string & sTxt);
+	void SetText(const size_t szTxtId, const std::string & sTxt);
 
 	void UpdateBot(const bool bNickChanged = true);
 	void DisableBot(const bool bNickChanged = true, const bool bRemoveMyINFO = true);

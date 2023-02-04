@@ -837,7 +837,7 @@ bool RegisterThread::Receive(RegSocket * pSock)
 
 void RegisterThread::Add2SendBuf(RegSocket * pSock, const char * sData)
 {
-	size_t szLen = strlen(sData);
+	const size_t szLen = strlen(sData);
 
 	pSock->m_pSendBuf = (char *)malloc(szLen + 1);
 	if (pSock->m_pSendBuf == NULL)
