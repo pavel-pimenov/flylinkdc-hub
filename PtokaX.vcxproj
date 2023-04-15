@@ -274,8 +274,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>Full</Optimization>
-      <AdditionalIncludeDirectories>lua\src;tinyxml;zlib;skein\Optimized_32bit;sqlite;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>FLYLINKDC_USE_DB;NDEBUG;_CRT_SECURE_NO_WARNINGS;_WITH_SQLITE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>lua\src;tinyxml;zlib;skein\Optimized_32bit;sqlite;prometheus-cpp\core\include;prometheus-cpp\pull\include;prometheus-cpp\3rdparty\civetweb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>FLYLINKDC_USE_DB;NDEBUG;_CRT_SECURE_NO_WARNINGS;_WITH_SQLITE;NO_ATOMICS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -482,6 +482,27 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
     </ClCompile>
+    <ClCompile Include="prometheus-cpp\3rdparty\civetweb\src\CivetServer.cpp" />
+    <ClCompile Include="prometheus-cpp\3rdparty\civetweb\src\civetweb.c" />
+    <ClCompile Include="prometheus-cpp\core\src\check_names.cc" />
+    <ClCompile Include="prometheus-cpp\core\src\counter.cc" />
+    <ClCompile Include="prometheus-cpp\core\src\detail\builder.cc" />
+    <ClCompile Include="prometheus-cpp\core\src\detail\ckms_quantiles.cc" />
+    <ClCompile Include="prometheus-cpp\core\src\detail\time_window_quantiles.cc" />
+    <ClCompile Include="prometheus-cpp\core\src\detail\utils.cc" />
+    <ClCompile Include="prometheus-cpp\core\src\family.cc" />
+    <ClCompile Include="prometheus-cpp\core\src\gauge.cc" />
+    <ClCompile Include="prometheus-cpp\core\src\histogram.cc" />
+    <ClCompile Include="prometheus-cpp\core\src\info.cc" />
+    <ClCompile Include="prometheus-cpp\core\src\registry.cc" />
+    <ClCompile Include="prometheus-cpp\core\src\serializer.cc" />
+    <ClCompile Include="prometheus-cpp\core\src\summary.cc" />
+    <ClCompile Include="prometheus-cpp\core\src\text_serializer.cc" />
+    <ClCompile Include="prometheus-cpp\pull\src\basic_auth.cc" />
+    <ClCompile Include="prometheus-cpp\pull\src\endpoint.cc" />
+    <ClCompile Include="prometheus-cpp\pull\src\exposer.cc" />
+    <ClCompile Include="prometheus-cpp\pull\src\handler.cc" />
+    <ClCompile Include="prometheus-cpp\pull\src\metrics_collector.cc" />
     <ClCompile Include="sqlite\sqlite3.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
