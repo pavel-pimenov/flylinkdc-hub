@@ -496,10 +496,6 @@ int __cdecl main(int argc, char* argv[])
 			LanguageManager::GenerateXmlExample();
 			return EXIT_SUCCESS;
 		}
-		// else if(strcmp(argv[i], "/crash-test-doctor-dump") == NULL)
-		// {
-		//  crash_test_doctor_dump();
-		// }
 		else if (strcasecmp(argv[i], "-m") == 0)
 		{
 			bSetup = true;

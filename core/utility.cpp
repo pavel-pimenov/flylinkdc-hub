@@ -1282,11 +1282,11 @@ void SetupOsVersion()
 		{
 			if(ver.dwBuildNumber >= 22000)
 			{
-				ServerManager::m_sOS = "Windows 11 (Build " + string((uint32_t)ver.dwBuildNumber) + ")";
+				ServerManager::m_sOS = "Windows 11 (Build " + std::to_string((uint32_t)ver.dwBuildNumber) + ")";
 			}
 			else
 			{
-				ServerManager::m_sOS = "Windows 10 (Build " + string((uint32_t)ver.dwBuildNumber) + ")";
+				ServerManager::m_sOS = "Windows 10 (Build " + std::to_string((uint32_t)ver.dwBuildNumber) + ")";
 			}
 			return;
 		}
