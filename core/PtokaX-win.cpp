@@ -49,12 +49,6 @@ template<typename T> static T getFilePath(const T& path)
 	const auto i = path.rfind('\\');
 	return (i != string_t::npos) ? path.substr(0, i + 1) : path;
 }
-static void crash_test_doctor_dump()
-{
-#ifndef _DEBUG
-	*((int*)0) = 0;
-#endif
-}
 
 crash_rpt::ApplicationInfo* GetApplicationInfo()
 {
@@ -122,7 +116,6 @@ crash_rpt::CrashRpt g_crashRpt(
 
 
 //---------------------------------------------------------------------------
-
 static int InstallService(const char * sServiceName, const char * sPath)
 {
 	SC_HANDLE schSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);

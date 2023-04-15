@@ -1,28 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.5.33103.201
+VisualStudioVersion = 17.6.33606.364
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PtokaX", "PtokaX.vcxproj", "{34750F97-E9AE-4D1D-9240-24C4A85ED070}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|Win32 = Release|Win32
-		Release|x64 = Release|x64
 		Testing|Win32 = Testing|Win32
-		Testing|x64 = Testing|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{34750F97-E9AE-4D1D-9240-24C4A85ED070}.Release|Win32.ActiveCfg = Testing|Win32
-		{34750F97-E9AE-4D1D-9240-24C4A85ED070}.Release|Win32.Build.0 = Testing|Win32
-		{34750F97-E9AE-4D1D-9240-24C4A85ED070}.Release|x64.ActiveCfg = Release|x64
-		{34750F97-E9AE-4D1D-9240-24C4A85ED070}.Release|x64.Build.0 = Release|x64
+		{34750F97-E9AE-4D1D-9240-24C4A85ED070}.Release|Win32.ActiveCfg = Release|Win32
+		{34750F97-E9AE-4D1D-9240-24C4A85ED070}.Release|Win32.Build.0 = Release|Win32
 		{34750F97-E9AE-4D1D-9240-24C4A85ED070}.Testing|Win32.ActiveCfg = Testing|Win32
 		{34750F97-E9AE-4D1D-9240-24C4A85ED070}.Testing|Win32.Build.0 = Testing|Win32
-		{34750F97-E9AE-4D1D-9240-24C4A85ED070}.Testing|x64.ActiveCfg = Testing|x64
-		{34750F97-E9AE-4D1D-9240-24C4A85ED070}.Testing|x64.Build.0 = Testing|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DB7C7F78-BCFB-4FD9-BC46-D8E44CBFA8FF}
 	EndGlobalSection
 EndGlobal
