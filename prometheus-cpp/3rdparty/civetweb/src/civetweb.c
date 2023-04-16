@@ -1157,9 +1157,9 @@ mg_atomic_dec(volatile ptrdiff_t *addr)
 #ifdef __cplusplus
 	static_assert(sizeof(ptrdiff_t) == sizeof(LONG), "Size mismatch");
 	static_assert(sizeof(ptrdiff_t) == sizeof(int32_t), "Size mismatch");
-	ret = InterlockedIncrement((LONG*)addr);
+	ret = InterlockedDecrement((LONG*)addr);
 #else
-	ret = InterlockedIncrement(addr);
+	ret = InterlockedDecrement(addr);
 #endif
 #elif defined(__GNUC__)                                                        \
     && ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ > 0)))           \
