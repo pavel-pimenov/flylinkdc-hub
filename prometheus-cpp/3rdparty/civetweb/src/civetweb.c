@@ -1125,7 +1125,13 @@ mg_atomic_inc(volatile ptrdiff_t *addr)
 #if defined(_WIN64) && !defined(NO_ATOMICS)
 	ret = InterlockedIncrement64(addr);
 #elif defined(_WIN32) && !defined(NO_ATOMICS)
+#ifdef __cplusplus
+	static_assert(sizeof(ptrdiff_t) == sizeof(LONG), "Size mismatch");
+	static_assert(sizeof(ptrdiff_t) == sizeof(int32_t), "Size mismatch");
+	ret = InterlockedIncrement((LONG*)addr);
+#else
 	ret = InterlockedIncrement(addr);
+#endif
 #elif defined(__GNUC__)                                                        \
     && ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ > 0)))           \
     && !defined(NO_ATOMICS)
@@ -1148,7 +1154,13 @@ mg_atomic_dec(volatile ptrdiff_t *addr)
 #if defined(_WIN64) && !defined(NO_ATOMICS)
 	ret = InterlockedDecrement64(addr);
 #elif defined(_WIN32) && !defined(NO_ATOMICS)
-	ret = InterlockedDecrement(addr);
+#ifdef __cplusplus
+	static_assert(sizeof(ptrdiff_t) == sizeof(LONG), "Size mismatch");
+	static_assert(sizeof(ptrdiff_t) == sizeof(int32_t), "Size mismatch");
+	ret = InterlockedIncrement((LONG*)addr);
+#else
+	ret = InterlockedIncrement(addr);
+#endif
 #elif defined(__GNUC__)                                                        \
     && ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ > 0)))           \
     && !defined(NO_ATOMICS)
