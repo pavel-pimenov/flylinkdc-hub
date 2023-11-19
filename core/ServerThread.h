@@ -52,8 +52,6 @@ private:
 #else
 	pthread_t m_ThreadId;
 
-	pthread_mutex_t m_mtxServerThread;
-
 	int m_Server;
 #endif
 	uint32_t m_ui32SuspendTime;
