@@ -526,17 +526,6 @@ static void UserParseMyInfo(User * pUser)
 						pUser->m_ui32OLimit = atoi(sTagPart + 2);
 						break;
 					case 'B':
-						if (sTagPart[2] == '\0')
-						{
-							UserSetBadTag(pUser, pUser->m_sMyInfoOriginal + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), (uint8_t)iMyINFOPartsLen[0]);
-							return;
-						}
-						if (strlen(sTagPart) > 12)
-						{
-							pUser->m_is_bad_len_number_myinfo = true;
-						}
-						pUser->m_ui32LLimit = atoi(sTagPart + 2);
-						break;
 					case 'L':
 						if (sTagPart[2] == '\0')
 						{
