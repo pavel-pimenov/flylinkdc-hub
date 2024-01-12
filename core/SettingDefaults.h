@@ -26,7 +26,7 @@ bool SetBoolDef[] =
 	true, //ANTI_MOGLO
 	false, //AUTO_START
 	false, //REDIRECT_ALL
-	true, //REDIRECT_WHEN_HUB_FULL
+	false, //REDIRECT_WHEN_HUB_FULL
 	true, //AUTO_REG
 	false, //REG_ONLY
 	false, //REG_ONLY_REDIR
@@ -217,7 +217,7 @@ const char* SetTxtDef[] =
 	"<Enter hub name here>", //HUB_NAME
 	"Admin", //ADMIN_NICK
 	"<Enter hub address here>", //HUB_ADDRESS
-	"1209;411", //TCP_PORTS
+	"4411;411", //TCP_PORTS
 	"0", //UDP_PORT
 	"", //HUB_DESCRIPTION
 	"dc.fly-server.ru", //REDIRECT_ADDRESS

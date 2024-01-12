@@ -81,7 +81,7 @@ public:
 
 	uint16_t m_ui16PortNumbers[25]; //SettingManager->ui16PortNumbers[0]
 
-	bool m_bBools[SETBOOL_IDS_END]; //SettingManager->bBools[]
+	bool m_bBools[SETBOOL_IDS_END] = {}; //SettingManager->bBools[]
 
 	// PPK ... same nick for bot and opchat bool
 	bool m_bBotsSameNick; //SettingManager->m_bBotsSameNick

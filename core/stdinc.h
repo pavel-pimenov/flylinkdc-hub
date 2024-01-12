@@ -107,12 +107,20 @@
 #endif
 #include "pxstring.h"
 //---------------------------------------------------------------------------
-#define PtokaXVersionString "0.5.3.4"
-#define BUILD_NUMBER "668"
-#define ModString " / Alex82 Mod's support v.04 (part.)"
+#define PtokaXVersionString "0.5.354"
+#define BUILD_NUMBER "669"
+#define ModString "/ Alex82 Mod's support v.04 (part.)"
 
 #ifndef USE_FLYLINKDC_EXT_JSON
 #define USE_FLYLINKDC_EXT_JSON
+#endif
+
+#ifndef FLYLINKDC_USE_REDIR
+#define FLYLINKDC_USE_REDIR
+#endif
+
+#ifndef FLYLINKDC_USE_HUB_SLOT_RATIO
+//#define FLYLINKDC_USE_HUB_SLOT_RATIO
 #endif
 
 #ifdef USE_FLYLINKDC_EXT_JSON

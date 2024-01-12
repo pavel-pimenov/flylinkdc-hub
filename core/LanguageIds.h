@@ -802,7 +802,7 @@ enum LangIds
 	LAN_YOU_CAN_USE_SQL_WILDCARDS,
 	LAN_UNLIMITED,
 	LAN_YOUR_CLIENT_SEND_INCORRECT_IPPORT_IN_COMMAND,
-    LAN_YOU_CANT_REDIRECT_YOURSELF, 
+	LAN_YOU_CANT_REDIRECT_YOURSELF,
 	LANG_IDS_END
 };
 //---------------------------------------------------------------------------

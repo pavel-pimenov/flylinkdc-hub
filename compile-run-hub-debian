@@ -3,6 +3,8 @@
 rm PtokaX
 rm core.*
 
+#gcc -std=c++11 -g -Wall -Wextra -o PtokaX \
+
 gcc -std=c++11 -O2 -Wall -Wextra -o PtokaX \
  ./skein/Optimized_32bit/skein_block.c \
  ./skein/Optimized_32bit/skein.c \

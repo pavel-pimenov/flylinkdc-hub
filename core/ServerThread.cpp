@@ -416,7 +416,8 @@ bool ServerThread::Listen(const bool bSilent/* = false*/)
 		safe_closesocket(m_Server);
 		return false;
 	}
-
+	AppendLog( "Listen port: " + std::to_string(m_ui16Port));
+    
 	return true;
 }
 //---------------------------------------------------------------------------

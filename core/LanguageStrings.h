@@ -380,7 +380,7 @@ const char* LangStr[] =
 	"profilename",
 	"Max allowed nick length is 64 characters",
 	"Max allowed password length is 64 characters",
-    "Error, profile with given name don't exist", 
+	"Error, profile with given name don't exist",
 	"You are not allowed add new user with this profile",
 	"is already registered",
 	"successfully added",
@@ -802,7 +802,7 @@ const char* LangStr[] =
 	"You can use SQL Wildcards",
 	"unlimited",
 	"Your client send incorrect IP or Port in command",
-    "You can't redirect yourself", 
+	"You can't redirect yourself",
 };
 //---------------------------------------------------------------------------
 

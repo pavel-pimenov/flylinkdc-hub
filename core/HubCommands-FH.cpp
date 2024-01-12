@@ -706,7 +706,7 @@ bool HubCommands::GetTempBans(ChatCommand * pChatCommand)   // !gettempbans
 
 			if (ui32BanNum == 0)
 			{
-				BanList += string(LanguageManager::m_Ptr->m_sTexts[LAN_TEMP_BANS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_TEMP_BANS]) + ":\n\n";
+				BanList += std::string(LanguageManager::m_Ptr->m_sTexts[LAN_TEMP_BANS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_TEMP_BANS]) + ":\n\n";
 			}
 
 			ui32BanNum++;
@@ -718,7 +718,7 @@ bool HubCommands::GetTempBans(ChatCommand * pChatCommand)   // !gettempbans
 				{
 					BanList += " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_BANNED], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_BANNED]);
 				}
-				BanList += " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_IP], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_IP]) + ": " + string(curBan->m_sIp);
+				BanList += " " + std::string(LanguageManager::m_Ptr->m_sTexts[LAN_IP], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_IP]) + ": " + string(curBan->m_sIp);
 				if (((curBan->m_ui8Bits & BanManager::FULL) == BanManager::FULL) == true)
 				{
 					BanList += " (" + string(LanguageManager::m_Ptr->m_sTexts[LAN_FULL], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_FULL]) + ")";

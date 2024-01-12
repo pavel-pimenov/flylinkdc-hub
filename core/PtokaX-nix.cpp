@@ -32,6 +32,11 @@
 #include <signal.h>
 #include <sstream>
 #include <cxxabi.h>
+#include <civetweb.h>
+#include <iostream>
+#include <iomanip>
+#include <ctime>
+#include <fstream>
 
 using std::endl;
 using std::ostringstream;
@@ -44,26 +49,6 @@ using std::ostringstream;
 static bool bTerminatedBySignal = false;
 static int iSignal = 0;
 //---------------------------------------------------------------------------
-/*
-#ifndef _WIN32
-#define UNW_LOCAL_ONLY
-#include <libunwind.h>
-
-void show_backtrace (void) {
-  unw_cursor_t cursor; unw_context_t uc;
-  unw_word_t ip, sp;
-
-  unw_getcontext(&uc);
-  unw_init_local(&cursor, &uc);
-  while (unw_step(&cursor) > 0) {
-    unw_get_reg(&cursor, UNW_REG_IP, &ip);
-    unw_get_reg(&cursor, UNW_REG_SP, &sp);
-    printf ("ip = %lx, sp = %lx\n", (long) ip, (long) sp);
-  }
-}
-#endif // _WIN32
-*/
-
 static void SigHandler(int iSig)
 {
 	bTerminatedBySignal = true;
@@ -95,16 +80,140 @@ static void showUsage()
 	      );
 }
 //---------------------------------------------------------------------------
-
-int main(int argc, char* argv[])
+extern void* run_fly_server_test_port(void*);
+//---------------------------------------------------------------------------
+static void DoStackTrace()
 {
-//  mtrace();
+	void* addrlist[64];
+	int addrlen = backtrace(addrlist, sizeof(addrlist) / sizeof(void*));
+
+	if (!addrlen) {
+		std::cerr << "Stack backtrace is empty, possibly corrupt" << endl;
+		return;
+	}
+
+	char** symbollist = backtrace_symbols(addrlist, addrlen);
+	size_t funcnamesize = 256;
+	char* funcname = (char*)malloc(funcnamesize);
+	ostringstream bt;
+
+	for (int i = 1; i < addrlen; i++) {
+		char *begin_name = 0, *begin_offset = 0, *end_offset = 0;
+
+		for (char *p = symbollist[i]; *p; ++p) {
+			if (*p == '(') {
+				begin_name = p;
+			} else if (*p == '+') {
+				begin_offset = p;
+			} else if ((*p == ')') && begin_offset) {
+				end_offset = p;
+				break;
+			}
+		}
+
+		if (begin_name && begin_offset && end_offset && (begin_name < begin_offset)) {
+			*begin_name++ = '\0';
+			*begin_offset++ = '\0';
+			*end_offset = '\0';
+			int status;
+			char* ret = abi::__cxa_demangle(begin_name, funcname, &funcnamesize, &status);
+
+			if (!status) {
+				funcname = ret;
+				bt << symbollist[i] << ": " << funcname << " +" << begin_offset << endl;
+			} else {
+				bt << symbollist[i] << ": " << begin_name << "() +" << begin_offset << endl;
+			}
+		} else {
+			bt << symbollist[i] << endl;
+		}
+	}
+
+	free(funcname);
+	free(symbollist);
+	{
+		auto t = std::time(nullptr);
+		auto tm = *std::localtime(&t);
+		std::ostringstream oss;
+		oss << std::put_time(&tm, "%d-%m-%Y-%H-%M-%S");
+		const auto path = oss.str() + ".log";
+
+		std::cerr << "Stack backtrace:" << endl
+				  << endl
+				  << bt.str() << endl;
+		std::ofstream out_file(path, std::ios_base::out | std::ios::binary);
+		if (out_file.is_open())
+		{
+			out_file.write(bt.str().data(), bt.str().length());
+		}
+	}
+
+#ifdef USE_HTTP_POST_CRASH_REPORT
+
+	cHTTPConn *http = new cHTTPConn(CRASH_SERV_ADDR, CRASH_SERV_PORT); // try to send via http
+
+	if (!http->mGood) {
+		std::cerr << "Failed connecting to crash server, please send above stack backtrace here: https://github.com/verlihub/verlihub/issues" << endl;
+		http->Close();
+		delete http;
+		http = NULL;
+		return;
+	}
+
+	ostringstream head;
+	head << "Hub-Info-Host: " << EraseNewLines(mC.hub_host) << "\r\n"; // remove new lines, they will break our request
+	head << "Hub-Info-Address: " << mAddr << ':' << mPort << "\r\n";
+	head << "Hub-Info-Uptime: " << (mTime.Sec() - mStartTime.Sec()) << "\r\n"; // uptime in seconds
+	head << "Hub-Info-Users: " << mUserCountTot << "\r\n";
+
+	ostringstream data;
+	data << "backtrace=" << StrToHex(bt.str());
+
+	if (http->Request("POST", "/vhcs.php", head.str(), data.str()) && http->mGood) {
+		std::cerr << "Successfully sent stack backtrace to crash server" << endl;
+	} else {
+		std::cerr << "Failed sending to crash server, please post above stack backtrace here: https://github.com/verlihub/verlihub/issues" << endl;
+	}
+
+	http->Close();
+	delete http;
+	http = NULL;
+#endif // USE_HTTP_POST_CRASH_REPORT
+
+}
+
+static void mySigServHandler(int i)
+{
+	std::cerr << "Received a " << i << " signal, doing stacktrace and quiting" << endl;
+    DoStackTrace();
+	exit(128 + i); // proper exit code for this signal
+}
+//---------------------------------------------------------------------------
+void test_crash()
+{
+   *(int*)1 = 0;
+}
+//---------------------------------------------------------------------------
+int main(int argc, char* argv[])
+{	
+	signal(SIGSEGV, mySigServHandler);
+
+	mg_start_thread(run_fly_server_test_port,nullptr);
+
 	bool bSetup = false;
+	bool bCrash = false;
+
 
 	char * sPidFile = NULL;
 
 	for (int i = 1; i < argc; i++)
 	{
+		if (strcasecmp(argv[i], "-crash") == 0)
+		{
+		   printf("Crash before exit!\n");
+           bCrash = true; // *(int*)1 = 0;
+		}
+		else
 		if (strcasecmp(argv[i], "-d") == 0)
 		{
 			ServerManager::m_bDaemon = true;
@@ -390,6 +499,13 @@ int main(int argc, char* argv[])
 
 		if (bTerminatedBySignal == true)
 		{
+            if(bCrash)
+		    {
+              test_crash();
+		    }
+
+			extern int g_test_port_exit_flag;
+			g_test_port_exit_flag = 1;
 			if (ServerManager::m_bIsClose == true)
 			{
 				break;
