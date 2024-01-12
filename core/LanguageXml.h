@@ -802,7 +802,7 @@ const char* LangXmlStr[] =
 	"YouCanUseSQLWildcards",
 	"Unlimited",
 	"YourClientSendIncorrectIpPortInCmd",
-         "YouCantRedirectYourself", 
+	"YouCantRedirectYourself",
 };
 //---------------------------------------------------------------------------
 

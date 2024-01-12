@@ -1327,6 +1327,7 @@ void SettingManager::SetText(const size_t szTxtId, const char * sTxt, const size
 		UpdateLanguage();
 		UpdateHubNameWelcome();
 		break;
+#ifdef FLYLINKDC_USE_REDIR
 	case SETTXT_REDIRECT_ADDRESS:
 		UpdateRedirectAddress();
 		if (m_bBools[SETBOOL_REG_ONLY_REDIR] == true)
@@ -1366,6 +1367,9 @@ void SettingManager::SetText(const size_t szTxtId, const char * sTxt, const size
 			UpdateNickLimitMessage();
 		}
 		break;
+#endif // FLYLINKDC_USE_REDIR
+
+
 	case SETTXT_REG_ONLY_MSG:
 	case SETTXT_REG_ONLY_REDIR_ADDRESS:
 		UpdateRegOnlyMessage();
@@ -1936,6 +1940,10 @@ void SettingManager::UpdateSlotsLimitMessage()
 
 void SettingManager::UpdateHubSlotRatioMessage()
 {
+#ifdef FLYLINKDC_USE_HUB_SLOT_RATIO
+	return;
+#endif 
+
 	if (m_bUpdateLocked == true)
 	{
 		return;

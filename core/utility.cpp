@@ -838,6 +838,7 @@ int GenerateBanMessage(BanItem * pBan, const time_t &tAccTime)
 		ServerManager::m_pGlobalBuffer[iMsgLen] = '\0';
 	}
 
+#ifdef FLYLINKDC_USE_REDIR
 	if (((pBan->m_ui8Bits & BanManager::PERM) == BanManager::PERM) == true)
 	{
 		if (SettingManager::m_Ptr->m_bBools[SETBOOL_PERM_BAN_REDIR] == true && SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_PERM_BAN_REDIR_ADDRESS] != NULL)
@@ -854,6 +855,7 @@ int GenerateBanMessage(BanItem * pBan, const time_t &tAccTime)
 			iMsgLen += (int)SettingManager::m_Ptr->m_ui16PreTextsLens[SettingManager::SETPRETXT_TEMP_BAN_REDIR_ADDRESS];
 		}
 	}
+#endif
 
 	return iMsgLen;
 }
@@ -937,6 +939,8 @@ int GenerateRangeBanMessage(RangeBanItem * pRangeBan, const time_t &tAccTime)
 		ServerManager::m_pGlobalBuffer[iMsgLen] = '\0';
 	}
 
+#ifdef FLYLINKDC_USE_REDIR
+
 	if (((pRangeBan->m_ui8Bits & BanManager::PERM) == BanManager::PERM) == true)
 	{
 		if (SettingManager::m_Ptr->m_bBools[SETBOOL_PERM_BAN_REDIR] == true && SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_PERM_BAN_REDIR_ADDRESS] != NULL)
@@ -953,6 +957,7 @@ int GenerateRangeBanMessage(RangeBanItem * pRangeBan, const time_t &tAccTime)
 			iMsgLen += (int)SettingManager::m_Ptr->m_ui16PreTextsLens[SettingManager::SETPRETXT_TEMP_BAN_REDIR_ADDRESS];
 		}
 	}
+#endif 
 
 	return iMsgLen;
 }

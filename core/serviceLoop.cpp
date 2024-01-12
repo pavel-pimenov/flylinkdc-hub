@@ -440,6 +440,7 @@ void ServiceLoop::AcceptUser(AcceptedSocket *pAccptSocket)
 		return;
 	}
 
+#ifdef FLYLINKDC_USE_REDIR
 	if (SettingManager::m_Ptr->m_bBools[SETBOOL_REDIRECT_ALL] == true)
 	{
 		if (SettingManager::m_Ptr->m_sTexts[SETTXT_REDIRECT_ADDRESS] != NULL)
@@ -456,6 +457,7 @@ void ServiceLoop::AcceptUser(AcceptedSocket *pAccptSocket)
 		shutdown_and_close(pAccptSocket->m_Socket, SHUT_RDWR);
 		return;
 	}
+#endif 
 
 	time_t acc_time;
 	time(&acc_time);
