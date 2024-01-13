@@ -1137,7 +1137,7 @@ void AppendDebugLogFormat(const char * sFormatMsg, ...)
 		l_str.resize(65535);
 		va_list vlArgs;
 		va_start(vlArgs, sFormatMsg);
-		vsprintf(&l_str[0], sFormatMsg, vlArgs);
+		vsnprintf(&l_str[0], l_str.size(), sFormatMsg, vlArgs);
 		va_end(vlArgs);
 		syslog(LOG_NOTICE, "[AppendDebugLogFormat] %s", l_str.c_str());
 	}

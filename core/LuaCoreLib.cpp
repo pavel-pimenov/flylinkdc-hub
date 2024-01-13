@@ -229,7 +229,7 @@ static int RegBot(lua_State * pLua)
 		}
 
 		char test_myinfo[(64 + 15)];
-		sprintf(test_myinfo, "$MyINFO $ALL %s ", nick);
+		snprintf(test_myinfo, sizeof(test_myinfo), "$MyINFO $ALL %s ", nick);
 		if (memcmp(test_myinfo, myinfo, szNickLen + 14) != 0)
 		{
 			luaL_error(pLua, "invalid MyINFO string");
@@ -3209,7 +3209,7 @@ static int HideUser(lua_State * L)
 
 				Users::m_Ptr->DelFromUserIP(u);
 
-				int imsgLen = sprintf(msg, "$Quit %s|", u->m_sNick);
+				int imsgLen = snprintf(msg, sizeof(msg), "$Quit %s|", u->m_sNick);
 				if (CheckSprintf(imsgLen, 1024, "HideUser") == true)
 				{
 					GlobalDataQueue::m_Ptr->AddQueueItem(msg, imsgLen, NULL, 0, GlobalDataQueue::CMD_QUIT);
@@ -3387,7 +3387,7 @@ static int HideUserKey(lua_State * L)
 			{
 				Users::m_Ptr->DelFromOpList(u->m_sNick);
 
-				int imsgLen = sprintf(msg, "$Quit %s|", u->m_sNick);
+				int imsgLen = snprintf(msg, sizeof(msg), "$Quit %s|", u->m_sNick);
 				if (CheckSprintf(imsgLen, 80, "HideUserKey") == true)
 				{
 					GlobalDataQueue::m_Ptr->AddQueueItem(msg, imsgLen, NULL, 0, GlobalDataQueue::CMD_QUIT);
