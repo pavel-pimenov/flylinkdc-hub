@@ -307,7 +307,7 @@ class CFlyServerContext
 			char l_result_buf[256];
 			l_result_buf[0] = 0;
 			snprintf(l_result_buf, sizeof(l_result_buf), "%s/%s-%s-%d-pid-%d-%lu.json",
-			         p_name_dir, p_ip, l_time_buf, ++l_count_uid, getpid(), pthread_self());
+			         p_name_dir, p_ip, l_time_buf, ++l_count_uid, getpid(), (unsigned long)pthread_self());
 			return l_result_buf;
 		}
 		
