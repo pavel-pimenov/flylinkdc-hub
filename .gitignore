@@ -88,3 +88,4 @@ strace_out
 /compiled/cfg/*.pxb
 /compiled/cfg/*.pxt
 /compiled/cfg/Motd.txt
+/build/release

@@ -11,7 +11,7 @@ set (CMAKE_ENABLE_EXPORTS true)
 ADD_LINK_OPTIONS(-rdynamic)
 
 add_definitions(-D_WITH_SQLITE)
-add_definitions(-DFLYLINKDC_USE_DB)
+#add_definitions(-DFLYLINKDC_USE_DB) // TODO error build MacOS
 add_definitions(-DUSE_FLYLINKDC_EXT_JSON)
 add_definitions(-DTIXML_USE_STL)
 
@@ -87,8 +87,8 @@ target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${LUA_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${SQLite3_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} prometheus-cpp::pull)
-target_link_libraries(${PROJECT_NAME} civetweb)
-target_link_libraries(${PROJECT_NAME} civetweb-cpp)
+#target_link_libraries(${PROJECT_NAME} civetweb)
+#target_link_libraries(${PROJECT_NAME} civetweb-cpp)
 
 include_directories(skein/Optimized_32bit)
 include_directories(tinyxml)

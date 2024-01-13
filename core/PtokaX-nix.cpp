@@ -32,7 +32,8 @@
 #include <signal.h>
 #include <sstream>
 #include <cxxabi.h>
-#include <civetweb.h>
+
+#include <prometheus/civetweb.h>
 #include <iostream>
 #include <iomanip>
 #include <ctime>

@@ -928,7 +928,7 @@ void ServerManager::FinalClose()
 #endif
 
 #ifdef __MACH__
-	mach_port_deallocate(mach_task_self(), csMachClock);
+	mach_port_deallocate(mach_task_self(), m_csMachClock);
 #endif
 
 	DeleteGlobalBuffer();
@@ -1120,7 +1120,7 @@ void ServerManager::UpdateAutoRegState()
 #else
 #ifdef __MACH__
 		mach_timespec_t mts;
-		clock_get_time(csMachClock, &mts);
+		clock_get_time(m_csMachClock, &mts);
 		ServiceLoop::m_Ptr->m_ui64LastRegToHublist = mts.tv_sec;
 #elif _WIN32
 		ServiceLoop::m_Ptr->m_ui64LastRegToHublist = ::GetTickCount64() / 1000;

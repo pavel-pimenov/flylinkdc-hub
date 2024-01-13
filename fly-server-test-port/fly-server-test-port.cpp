@@ -22,7 +22,6 @@
 #include <sys/stat.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <wait.h>
 #include <cerrno>
 
 #else
@@ -39,7 +38,7 @@
 #endif
 #endif
 
-#include "CivetServer.h"
+#include "prometheus/CivetServer.h"
 
 #ifndef _WIN32
 
