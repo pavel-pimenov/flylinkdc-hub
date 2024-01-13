@@ -87,8 +87,10 @@ target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${LUA_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${SQLite3_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} prometheus-cpp::pull)
-#target_link_libraries(${PROJECT_NAME} civetweb)
-#target_link_libraries(${PROJECT_NAME} civetweb-cpp)
+
+# TODO fix build MacOS
+target_link_libraries(${PROJECT_NAME} civetweb)
+target_link_libraries(${PROJECT_NAME} civetweb-cpp)
 
 include_directories(skein/Optimized_32bit)
 include_directories(tinyxml)

@@ -27,7 +27,12 @@
 
 #include "../jsoncpp/json.h"
 
-#include <prometheus/civetweb.h>
+#ifdef __MACH__
+#include <prometheus/CivetServer.h>
+//#include <prometheus/civetweb.h>
+#else
+#include <CivetServer.h>
+#endif
 
 //#define FLY_SERVER_USE_ONLY_TEST_PORT
 #ifndef FLY_SERVER_USE_ONLY_TEST_PORT

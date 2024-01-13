@@ -12,8 +12,6 @@
 
 //============================================================================================
 
-#include "CDBManager.h"
-
 #include <ctime>
 
 #ifndef _WIN32 // Only in linux
@@ -23,9 +21,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <cerrno>
-
 #else
-
 #include <direct.h>
 #define snprintf _snprintf
 #endif // _WIN32
@@ -38,10 +34,10 @@
 #endif
 #endif
 
-#include "prometheus/CivetServer.h"
+
+#include "CDBManager.h"
 
 #ifndef _WIN32
-
 #ifdef USE_LIBUNWIND
 
 #define UNW_LOCAL_ONLY
