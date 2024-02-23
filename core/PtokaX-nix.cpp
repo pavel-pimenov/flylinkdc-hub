@@ -37,12 +37,7 @@
 #include <iomanip>
 #include <ctime>
 #include <fstream>
-
-#ifdef __MACH__
-#include <prometheus/civetweb.h>
-#else
 #include <civetweb.h>
-#endif
 
 using std::endl;
 using std::ostringstream;
