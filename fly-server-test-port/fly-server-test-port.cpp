@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-//(c) 2007-2023 pavel.pimenov@gmail.com
+//(c) 2007-2024 pavel.pimenov@gmail.com
 //-----------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -295,7 +295,7 @@ public:
 //======================================================================================
 void* run_fly_server_test_port(void*)
 {
-	std::cout << std::endl << "* FlylinkDC++ server for test port (c) 2012-2023 pavel.pimenov@gmail.com " << std::endl
+	std::cout << std::endl << "* FlylinkDC++ server for test port (c) 2012-2024 pavel.pimenov@gmail.com " << std::endl
 		<< "  - civetweb " << CIVETWEB_VERSION << " (c) https://github.com/civetweb/civetweb" << std::endl;
 //		<< std::endl << "Usage: fly-server-test-port [-disable-syslog] [-disable-log-test-port]"
 //		<< std::endl << std::endl;
@@ -327,25 +327,18 @@ void* run_fly_server_test_port(void*)
 #endif
 	g_DB.init();
 
-	const char *options[] = {
-			  "document_root", ".",
-#ifndef NDEBUG
-			  "listening_ports", "37015",
-#else
-			  "listening_ports", "37015",
-#endif			  
-			  "num_threads", "2",
-			  "enable_directory_listing", "no", NULL
-	};
+        const char *options[] = {
+//	  "document_root", ".",
+	  "listening_ports", "37015",
+	  "num_threads", "10",
+	  "enable_directory_listing", "no",
+	  0 };
 
 	std::vector<std::string> cpp_options;
 	for (int i = 0; i < (sizeof(options) / sizeof(options[0]) - 1); i++) {
 		cpp_options.push_back(options[i]);
 		std::cout << options[i];
-		if((i & 0x1) == 0)
-			std::cout << " = ";
-		else	
-			std::cout << std::endl;
+		std::cout << std::endl;
 	}
 	try
 	{

@@ -6,28 +6,28 @@
 // //////////////////////////////////////////////////////////////////////
 
 /*
-The JsonCpp library's source code, including accompanying documentation, 
+The JsonCpp library's source code, including accompanying documentation,
 tests and demonstration applications, are licensed under the following
 conditions...
 
-Baptiste Lepilleur and The JsonCpp Authors explicitly disclaim copyright in all 
-jurisdictions which recognize such a disclaimer. In such jurisdictions, 
+Baptiste Lepilleur and The JsonCpp Authors explicitly disclaim copyright in all
+jurisdictions which recognize such a disclaimer. In such jurisdictions,
 this software is released into the Public Domain.
 
 In jurisdictions which do not recognize Public Domain property (e.g. Germany as of
 2010), this software is Copyright (c) 2007-2010 by Baptiste Lepilleur and
 The JsonCpp Authors, and is released under the terms of the MIT License (see below).
 
-In jurisdictions which recognize Public Domain property, the user of this 
-software may choose to accept it either as 1) Public Domain, 2) under the 
-conditions of the MIT License (see below), or 3) under the terms of dual 
+In jurisdictions which recognize Public Domain property, the user of this
+software may choose to accept it either as 1) Public Domain, 2) under the
+conditions of the MIT License (see below), or 3) under the terms of dual
 Public Domain/MIT License conditions described here, as they choose.
 
 The MIT License is about as close to Public Domain as a license can get, and is
 described in clear, concise terms at:
 
    http://en.wikipedia.org/wiki/MIT_License
-   
+
 The full text of the MIT License follows:
 
 ========================================================================
@@ -1111,6 +1111,22 @@ public:
   iterator begin();
   iterator end();
 
+  /// \brief Returns a reference to the first element in the `Value`.
+  /// Requires that this value holds an array or json object, with at least one element.
+  const Value& front() const;
+
+  /// \brief Returns a reference to the first element in the `Value`.
+  /// Requires that this value holds an array or json object, with at least one element.
+  Value& front();
+
+  /// \brief Returns a reference to the last element in the `Value`.
+  /// Requires that value holds an array or json object, with at least one element.
+  const Value& back() const;
+
+  /// \brief Returns a reference to the last element in the `Value`.
+  /// Requires that this value holds an array or json object, with at least one element.
+  Value& back();
+
   // Accessors for the [start, limit) range of bytes within the JSON text from
   // which this value was parsed, if any.
   void setOffsetStart(ptrdiff_t start);
@@ -1450,6 +1466,14 @@ public:
 };
 
 inline void swap(Value& a, Value& b) { a.swap(b); }
+
+inline const Value& Value::front() const { return *begin(); }
+
+inline Value& Value::front() { return *begin(); }
+
+inline const Value& Value::back() const { return *(--end()); }
+
+inline Value& Value::back() { return *(--end()); }
 
 } // namespace Json
 

@@ -23,15 +23,24 @@
 #ifndef CIVETWEB_HEADER_INCLUDED
 #define CIVETWEB_HEADER_INCLUDED
 
-#define NO_SSL  //[+] pimenov_pa
-#define NO_CGI  //[+] pimenov_pa
-#define NO_FILES //[+] pimenov_pa
-//#define NO_FILESYSTEMS //[+] pimenov_pa
-
-#define CIVETWEB_VERSION "1.16"
+#define CIVETWEB_VERSION "1.17"
 #define CIVETWEB_VERSION_MAJOR (1)
-#define CIVETWEB_VERSION_MINOR (16)
+#define CIVETWEB_VERSION_MINOR (17)
 #define CIVETWEB_VERSION_PATCH (0)
+
+
+//[+] FlylinkDC++
+#define NO_FILES
+#define NO_SSL
+#define NO_CGI
+#define NO_CACHING
+#define NO_POPEN
+#define NO_NONCE_CHECK
+//#define NO_FILESYSTEMS TODO
+#define NO_FILES
+
+//[~] FlylinkDC++
+
 
 #ifndef CIVETWEB_API
 #if defined(_WIN32)

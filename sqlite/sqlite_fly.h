@@ -12,13 +12,14 @@
 */
 // #define SQLITE_OMIT_AUTHORIZATION
 // #define SQLITE_OMIT_EXPLAIN
-// #define SQLITE_OMIT_FLOATING_POINT
+// #define SQLITE_OMIT_FLOATING_POINT // необходимо для логов в sqlite ( datetime('now') )
 
-//#define SQLITE_MAX_ATTACHED 10
+#define SQLITE_OMIT_SHARED_CACHE
+#define SQLITE_OMIT_JSON // https://www.sqlite.org/releaselog/3_38_0.html
 
-//#define SQLITE_THREADSAFE 2 // SQLITE_CONFIG_SERIALIZED
+#define SQLITE_THREADSAFE 2
 
 //#define SQLITE_DEFAULT_CACHE_SIZE 8000
 //#define SQLITE_DEFAULT_TEMP_CACHE_SIZE 2000
 
-#define SQLITE_OMIT_JSON // https://www.sqlite.org/releaselog/3_38_0.html
+
