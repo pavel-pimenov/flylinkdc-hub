@@ -298,7 +298,7 @@ void CFlyServerContext::run_db_query(const char* p_content, size_t p_len, CDBMan
 		std::ofstream l_fs;
 		static int g_id_file;
 		l_fs.open(std::string("flylinkdc-extjson-zlib-file-" + toString(++g_id_file) + ".json.zlib").c_str(), std::ifstream::out);
-#ifdef __Linux__
+#ifdef __linux__
 //		l_fs.open("flylinkdc-extjson-zlib-file-" + toString(++g_id_file) + ".json.zlib", std::ifstream::out);
 #else
 //      l_fs.open("flylinkdc-extjson-zlib-file-" + toString(++g_id_file) + ".json.zlib", std::ifstream::out | std::ifstream::binary);

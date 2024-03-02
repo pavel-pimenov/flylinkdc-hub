@@ -363,7 +363,7 @@ SameSearchMessages	=	0
 # Hub address. Minimal length 1. Maximal length 256. $ and | is not allowed
 #HubAddress	=	<Enter hub address here>
 # TCP ports. Minimal length 1. Maximal length 64
-#TCPPorts	=	1209;411
+#TCPPorts	=	4411;411
 # UDP port. Minimal length 1. Maximal length 5
 #UDPPort	=	0
 # Hub description. Maximal length 256. $ and | is not allowed

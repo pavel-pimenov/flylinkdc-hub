@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <stdexcept>
@@ -25,9 +26,59 @@ PERFORMANCE OF THIS SOFTWARE.
 https://github.com/mvorbrodt/blog/blob/master/src/base64.hpp
 */
 
-inline std::string base64_decode(const std::string& input) {
-  const char kPadCharacter = '=';
+static constexpr char kEncodeLookup[] =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+static constexpr char kPadCharacter = '=';
 
+inline std::string base64_encode(const std::string& input) {
+  std::string encoded;
+  encoded.reserve(((input.size() / 3) + (input.size() % 3 > 0)) * 4);
+
+  std::uint32_t temp{};
+  auto it = input.begin();
+
+  for (std::size_t i = 0; i < input.size() / 3; ++i) {
+    temp = static_cast<std::uint8_t>(*it++) << 16;
+    temp += static_cast<std::uint8_t>(*it++) << 8;
+    temp += static_cast<std::uint8_t>(*it++);
+    encoded.append(1, kEncodeLookup[(temp & 0x00FC0000) >> 18]);
+    encoded.append(1, kEncodeLookup[(temp & 0x0003F000) >> 12]);
+    encoded.append(1, kEncodeLookup[(temp & 0x00000FC0) >> 6]);
+    encoded.append(1, kEncodeLookup[(temp & 0x0000003F)]);
+  }
+
+  switch (input.size() % 3) {
+    case 1:
+      temp = static_cast<std::uint8_t>(*it++) << 16;
+      encoded.append(1, kEncodeLookup[(temp & 0x00FC0000) >> 18]);
+      encoded.append(1, kEncodeLookup[(temp & 0x0003F000) >> 12]);
+      encoded.append(2, kPadCharacter);
+      break;
+    case 2:
+      temp = static_cast<std::uint8_t>(*it++) << 16;
+      temp += static_cast<std::uint8_t>(*it++) << 8;
+      encoded.append(1, kEncodeLookup[(temp & 0x00FC0000) >> 18]);
+      encoded.append(1, kEncodeLookup[(temp & 0x0003F000) >> 12]);
+      encoded.append(1, kEncodeLookup[(temp & 0x00000FC0) >> 6]);
+      encoded.append(1, kPadCharacter);
+      break;
+  }
+
+  return encoded;
+}
+
+// https://tools.ietf.org/html/rfc4648#section-5
+inline std::string base64url_encode(const std::string& input) {
+  std::string s = base64_encode(input);
+  std::transform(begin(s), end(s), begin(s), [](char c) {
+    if (c == '+') return '-';
+    if (c == '/') return '_';
+    return c;
+  });
+  return s;
+}
+
+inline std::string base64_decode(const std::string& input) {
   if (input.length() % 4) {
     throw std::runtime_error("Invalid base64 length!");
   }
@@ -79,7 +130,7 @@ inline std::string base64_decode(const std::string& input) {
 
     decoded.push_back((temp >> 16) & 0x000000FF);
     decoded.push_back((temp >> 8) & 0x000000FF);
-    decoded.push_back((temp)&0x000000FF);
+    decoded.push_back((temp) & 0x000000FF);
   }
 
   return decoded;
