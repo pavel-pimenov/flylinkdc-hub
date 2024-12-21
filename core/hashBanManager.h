@@ -169,7 +169,7 @@ public:
 	void ClearTempRange(void);
 	void ClearPermRange(void);
 
-	bool AddBanInternal(const char * sBy, BanItemBase * pBan, const char* sFunction);
+	bool AddBanInternal(const char * sBy, BanItemBase * pBan);
 	void Ban(User * pUser, const char * sReason, const char * sBy, const bool bFull);
 	char BanIp(User * pUser, const char * sIp, const char * sReason, const char * sBy, const bool bFull);
 	bool NickBan(User * pUser, const char * sNick, const char * sReason, const char * sBy);

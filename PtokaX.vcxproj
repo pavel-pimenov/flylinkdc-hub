@@ -53,7 +53,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>lua\src;tinyxml;zlib;skein\Optimized_32bit;sqlite;prometheus-cpp\core\include;prometheus-cpp\pull\include;prometheus-cpp\3rdparty\civetweb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>lua\src;tinyxml;zlib;skein\Optimized_32bit;sqlite;prometheus-cpp\core\include;prometheus-cpp\pull\include;civetweb;prometheus-cpp\util\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>FLYLINKDC_USE_DB;_PtokaX_TESTING_;_CRT_SECURE_NO_WARNINGS;_WITH_SQLITE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
@@ -113,7 +113,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>Full</Optimization>
-      <AdditionalIncludeDirectories>lua\src;tinyxml;zlib;skein\Optimized_32bit;sqlite;prometheus-cpp\core\include;prometheus-cpp\pull\include;prometheus-cpp\3rdparty\civetweb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>lua\src;tinyxml;zlib;skein\Optimized_32bit;sqlite;prometheus-cpp\core\include;prometheus-cpp\pull\include;civetweb;prometheus-cpp\util\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>FLYLINKDC_USE_DB;NDEBUG;_CRT_SECURE_NO_WARNINGS;_WITH_SQLITE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
@@ -264,6 +264,8 @@
     <None Include="ico\Spider256-16x16.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="civetweb\CivetServer.cpp" />
+    <ClCompile Include="civetweb\civetweb.c" />
     <ClCompile Include="core\colUsers.cpp" />
     <ClCompile Include="core\DB-SQLite.cpp" />
     <ClCompile Include="core\DcCommands.cpp" />
@@ -321,8 +323,6 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Testing|Win32'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="prometheus-cpp\3rdparty\civetweb\src\CivetServer.cpp" />
-    <ClCompile Include="prometheus-cpp\3rdparty\civetweb\src\civetweb.c" />
     <ClCompile Include="prometheus-cpp\core\src\check_names.cc" />
     <ClCompile Include="prometheus-cpp\core\src\counter.cc" />
     <ClCompile Include="prometheus-cpp\core\src\detail\builder.cc" />

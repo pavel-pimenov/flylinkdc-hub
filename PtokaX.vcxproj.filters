@@ -358,11 +358,11 @@
     <ClCompile Include="prometheus-cpp\pull\src\metrics_collector.cc">
       <Filter>prometheus\pull</Filter>
     </ClCompile>
-    <ClCompile Include="prometheus-cpp\3rdparty\civetweb\src\CivetServer.cpp">
-      <Filter>prometheus\civetweb</Filter>
+    <ClCompile Include="civetweb\civetweb.c">
+      <Filter>civetweb</Filter>
     </ClCompile>
-    <ClCompile Include="prometheus-cpp\3rdparty\civetweb\src\civetweb.c">
-      <Filter>prometheus\civetweb</Filter>
+    <ClCompile Include="civetweb\CivetServer.cpp">
+      <Filter>civetweb</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -646,8 +646,8 @@
     <Filter Include="prometheus\pull">
       <UniqueIdentifier>{2d67b8b2-bf0f-40a3-98e2-9d1722336473}</UniqueIdentifier>
     </Filter>
-    <Filter Include="prometheus\civetweb">
-      <UniqueIdentifier>{f741456d-dc5c-4617-8dce-22e7603a86ba}</UniqueIdentifier>
+    <Filter Include="civetweb">
+      <UniqueIdentifier>{105d8807-f76b-4bf3-893c-61853ad0f131}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

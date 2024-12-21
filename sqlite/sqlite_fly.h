@@ -14,12 +14,13 @@
 // #define SQLITE_OMIT_EXPLAIN
 // #define SQLITE_OMIT_FLOATING_POINT // необходимо для логов в sqlite ( datetime('now') )
 
+#define SQLITE_DEFAULT_MEMSTATUS 0
+#define SQLITE_LIKE_DOESNT_MATCH_BLOBS
+#define SQLITE_OMIT_DEPRECATED
+#define SQLITE_USE_ALLOCA
 #define SQLITE_OMIT_SHARED_CACHE
 #define SQLITE_OMIT_JSON // https://www.sqlite.org/releaselog/3_38_0.html
 
-#define SQLITE_THREADSAFE 2
-
-//#define SQLITE_DEFAULT_CACHE_SIZE 8000
-//#define SQLITE_DEFAULT_TEMP_CACHE_SIZE 2000
+#define SQLITE_DEFAULT_CACHE_SIZE 8000
 
 
