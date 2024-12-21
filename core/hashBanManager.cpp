@@ -2613,7 +2613,7 @@ void BanManager::Ban(User * pUser, const char * sReason, const char * sBy, const
 		pBan->m_sReason[szReasonLen] = '\0';
 	}
 
-	if (AddBanInternal(sBy, pBan, __FUNCTION__) == false)
+	if (AddBanInternal(sBy, pBan) == false)
 	{
 		return;
 	}
@@ -2626,7 +2626,7 @@ void BanManager::Ban(User * pUser, const char * sReason, const char * sBy, const
 	Save();
 }
 //---------------------------------------------------------------------------
-bool BanManager::AddBanInternal(const char * sBy, BanItemBase * pBan, const char* sFunction)
+bool BanManager::AddBanInternal(const char * sBy, BanItemBase * pBan)
 {
 	if (sBy != NULL)
 	{
@@ -2651,7 +2651,7 @@ bool BanManager::AddBanInternal(const char * sBy, BanItemBase * pBan, const char
 }
 
 //---------------------------------------------------------------------------
-static bool CreateReason(BanItemBase * pBan, const char * sReason, const char* pFunctionName)
+static bool CreateReason(BanItemBase * pBan, const char * sReason)
 {
 	if (sReason != NULL)
 	{
@@ -2661,7 +2661,7 @@ static bool CreateReason(BanItemBase * pBan, const char * sReason, const char* p
 		{
 			delete pBan;
 
-			AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for m_sReason in %s\n", szReasonLen > 511 ? 512 : szReasonLen + 1, pFunctionName);
+			AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes CreateReason\n", szReasonLen > 511 ? 512 : szReasonLen + 1);
 
 			return true;
 		}
@@ -2761,10 +2761,10 @@ char BanManager::BanIp(User * pUser, const char * sIp, const char * sReason, con
 		return 2;
 	}
 
-	if (CreateReason(pBan, sReason, __FUNCTION__))
+	if (CreateReason(pBan, sReason))
 		return 1;
 
-	if (AddBanInternal(sBy, pBan, __FUNCTION__) == false)
+	if (AddBanInternal(sBy, pBan) == false)
 	{
 		return 1;
 	}
@@ -2883,11 +2883,11 @@ bool BanManager::NickBan(User * pUser, const char * sNick, const char * sReason,
 			}
 		}
 	}
-	if (CreateReason(pBan, sReason, __FUNCTION__))
+	if (CreateReason(pBan, sReason))
 	{
 		return false;
 	}
-	if (AddBanInternal(sBy, pBan, __FUNCTION__) == false)
+	if (AddBanInternal(sBy, pBan) == false)
 	{
 		return false;
 	}
@@ -3123,12 +3123,12 @@ void BanManager::TempBan(User * pUser, const char * sReason, const char * sBy, c
 		Rem(curBan);
 		delete curBan;
 	}
-	if (CreateReason(pBan, sReason, __FUNCTION__))
+	if (CreateReason(pBan, sReason))
 	{
 		return;
 	}
 
-	if (AddBanInternal(sBy, pBan, __FUNCTION__) == false)
+	if (AddBanInternal(sBy, pBan) == false)
 	{
 		return;
 	}
@@ -3228,12 +3228,12 @@ char BanManager::TempBanIp(User * pUser, const char * sIp, const char * sReason,
 
 		return 2;
 	}
-	if (CreateReason(pBan, sReason, __FUNCTION__))
+	if (CreateReason(pBan, sReason))
 	{
 		return 1;
 	}
 
-	if (AddBanInternal(sBy, pBan, __FUNCTION__) == false)
+	if (AddBanInternal(sBy, pBan) == false)
 	{
 		return 1;
 	}
@@ -3375,12 +3375,12 @@ bool BanManager::NickTempBan(User * pUser, const char * sNick, const char * sRea
 			}
 		}
 	}
-	if (CreateReason(pBan, sReason, __FUNCTION__))
+	if (CreateReason(pBan, sReason))
 	{
 		return false;
 	}
 
-	if (AddBanInternal(sBy, pBan, __FUNCTION__) == false)
+	if (AddBanInternal(sBy, pBan) == false)
 	{
 		return false;
 	}
@@ -3681,12 +3681,12 @@ bool BanManager::RangeBan(const char * m_sIpFrom, const uint8_t * ui128FromIpHas
 
 		return false;
 	}
-	if (CreateReason(pRangeBan, sReason, __FUNCTION__))
+	if (CreateReason(pRangeBan, sReason))
 	{
 		return false;
 	}
 
-	if (AddBanInternal(sBy, pRangeBan, __FUNCTION__) == false)
+	if (AddBanInternal(sBy, pRangeBan) == false)
 	{
 		return false;
 	}
@@ -3776,12 +3776,12 @@ bool BanManager::RangeTempBan(const char * m_sIpFrom, const uint8_t * ui128FromI
 
 		return false;
 	}
-	if (CreateReason(pRangeBan, sReason, __FUNCTION__))
+	if (CreateReason(pRangeBan, sReason))
 	{
 		return false;
 	}
 
-	if (AddBanInternal(sBy, pRangeBan, __FUNCTION__) == false)
+	if (AddBanInternal(sBy, pRangeBan) == false)
 	{
 		return false;
 	}

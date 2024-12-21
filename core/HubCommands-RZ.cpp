@@ -474,7 +474,7 @@ bool HubCommands::Stats(ChatCommand * pChatCommand)   // !stat !stats !statistic
 #endif
 
 #ifdef _WIN32
-	Statinfo += std::to_string("OS: ") + std::to_string(ServerManager::m_sOS.c_str()) + "\r\n";
+	Statinfo += std::to_string("OS: ") + std::to_string(ServerManager::m_sOS) + "\r\n";
 #else
 
 	struct utsname osname;

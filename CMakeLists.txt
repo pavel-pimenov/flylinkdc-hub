@@ -11,7 +11,7 @@ set (CMAKE_ENABLE_EXPORTS true)
 ADD_LINK_OPTIONS(-rdynamic)
 
 add_definitions(-D_WITH_SQLITE)
-add_definitions(-DFLYLINKDC_USE_DB)
+#add_definitions(-DFLYLINKDC_USE_DB) // TODO error build MacOS
 add_definitions(-DUSE_FLYLINKDC_EXT_JSON)
 add_definitions(-DTIXML_USE_STL)
 
