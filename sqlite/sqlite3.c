@@ -1,6 +1,6 @@
 /******************************************************************************
 ** This file is an amalgamation of many separate C source files from SQLite
-** version 3.47.2.  By combining all the individual C code files into this
+** version 3.47.0.  By combining all the individual C code files into this
 ** single large file, the entire code can be compiled as a single translation
 ** unit.  This allows many compilers to do optimizations that would not be
 ** possible if the files were compiled separately.  Performance improvements
@@ -18,7 +18,7 @@
 ** separate file. This file contains only code for the core SQLite library.
 **
 ** The content in this amalgamation comes from Fossil check-in
-** 2aabe05e2e8cae4847a802ee2daddc1d7413.
+** 03a9703e27c44437c39363d0baf82db4ebc9.
 */
 
 
@@ -470,9 +470,9 @@ extern "C" {
 ** [sqlite3_libversion_number()], [sqlite3_sourceid()],
 ** [sqlite_version()] and [sqlite_source_id()].
 */
-#define SQLITE_VERSION        "3.47.2"
-#define SQLITE_VERSION_NUMBER 3047002
-#define SQLITE_SOURCE_ID      "2024-12-07 20:39:59 2aabe05e2e8cae4847a802ee2daddc1d7413d8fc560254d93ee3e72c14685b6c"
+#define SQLITE_VERSION        "3.47.0"
+#define SQLITE_VERSION_NUMBER 3047000
+#define SQLITE_SOURCE_ID      "2024-10-21 16:30:22 03a9703e27c44437c39363d0baf82db4ebc94538a0f28411c85dda156f82636e"
 
 /*
 ** CAPI3REF: Run-Time Library Version Numbers
@@ -976,13 +976,6 @@ SQLITE_API int sqlite3_exec(
 ** filesystem supports doing multiple write operations atomically when those
 ** write operations are bracketed by [SQLITE_FCNTL_BEGIN_ATOMIC_WRITE] and
 ** [SQLITE_FCNTL_COMMIT_ATOMIC_WRITE].
-**
-** The SQLITE_IOCAP_SUBPAGE_READ property means that it is ok to read
-** from the database file in amounts that are not a multiple of the
-** page size and that do not begin at a page boundary.  Without this
-** property, SQLite is careful to only do full-page reads and write
-** on aligned pages, with the one exception that it will do a sub-page
-** read of the first page to access the database header.
 */
 #define SQLITE_IOCAP_ATOMIC                 0x00000001
 #define SQLITE_IOCAP_ATOMIC512              0x00000002
@@ -999,7 +992,6 @@ SQLITE_API int sqlite3_exec(
 #define SQLITE_IOCAP_POWERSAFE_OVERWRITE    0x00001000
 #define SQLITE_IOCAP_IMMUTABLE              0x00002000
 #define SQLITE_IOCAP_BATCH_ATOMIC           0x00004000
-#define SQLITE_IOCAP_SUBPAGE_READ           0x00008000
 
 /*
 ** CAPI3REF: File Locking Levels
@@ -1146,7 +1138,6 @@ struct sqlite3_file {
 ** <li> [SQLITE_IOCAP_POWERSAFE_OVERWRITE]
 ** <li> [SQLITE_IOCAP_IMMUTABLE]
 ** <li> [SQLITE_IOCAP_BATCH_ATOMIC]
-** <li> [SQLITE_IOCAP_SUBPAGE_READ]
 ** </ul>
 **
 ** The SQLITE_IOCAP_ATOMIC property means that all writes of
@@ -32315,7 +32306,6 @@ SQLITE_PRIVATE void sqlite3RecordErrorOffsetOfExpr(sqlite3 *db, const Expr *pExp
     pExpr = pExpr->pLeft;
   }
   if( pExpr==0 ) return;
-  if( ExprHasProperty(pExpr, EP_FromDDL) ) return;
   db->errByteOffset = pExpr->w.iOfst;
 }
 
@@ -35705,8 +35695,8 @@ SQLITE_PRIVATE int sqlite3AtoF(const char *z, double *pResult, int length, u8 en
   int eValid = 1;  /* True exponent is either not used or is well-formed */
   int nDigit = 0;  /* Number of digits processed */
   int eType = 1;   /* 1: pure integer,  2+: fractional  -1 or less: bad UTF16 */
-  u64 s2;          /* round-tripped significand */
   double rr[2];
+  u64 s2;
 
   assert( enc==SQLITE_UTF8 || enc==SQLITE_UTF16LE || enc==SQLITE_UTF16BE );
   *pResult = 0.0;   /* Default return value, in case of an error */
@@ -35809,7 +35799,7 @@ do_atof_calc:
   e = (e*esign) + d;
 
   /* Try to adjust the exponent to make it smaller */
-  while( e>0 && s<((LARGEST_UINT64-0x7ff)/10) ){
+  while( e>0 && s<(LARGEST_UINT64/10) ){
     s *= 10;
     e--;
   }
@@ -35819,16 +35809,11 @@ do_atof_calc:
   }
 
   rr[0] = (double)s;
-  assert( sizeof(s2)==sizeof(rr[0]) );
-  memcpy(&s2, &rr[0], sizeof(s2));
-  if( s2<=0x43efffffffffffffLL ){
-    s2 = (u64)rr[0];
-    rr[1] = s>=s2 ? (double)(s - s2) : -(double)(s2 - s);
-  }else{
-    rr[1] = 0.0;
-  }
-  assert( rr[1]<=1.0e-10*rr[0] );  /* Equal only when rr[0]==0.0 */
-
+  s2 = (u64)rr[0];
+#if defined(_MSC_VER) && _MSC_VER<1700
+  if( s2==0x8000000000000000LL ){ s2 = 2*(u64)(0.5*rr[0]); }
+#endif
+  rr[1] = s>=s2 ? (double)(s - s2) : -(double)(s2 - s);
   if( e>0 ){
     while( e>=100  ){
       e -= 100;
@@ -42614,7 +42599,6 @@ static void setDeviceCharacteristics(unixFile *pFd){
     if( pFd->ctrlFlags & UNIXFILE_PSOW ){
       pFd->deviceCharacteristics |= SQLITE_IOCAP_POWERSAFE_OVERWRITE;
     }
-    pFd->deviceCharacteristics |= SQLITE_IOCAP_SUBPAGE_READ;
 
     pFd->sectorSize = SQLITE_DEFAULT_SECTOR_SIZE;
   }
@@ -50415,7 +50399,7 @@ static int winSectorSize(sqlite3_file *id){
 */
 static int winDeviceCharacteristics(sqlite3_file *id){
   winFile *p = (winFile*)id;
-  return SQLITE_IOCAP_UNDELETABLE_WHEN_OPEN | SQLITE_IOCAP_SUBPAGE_READ |
+  return SQLITE_IOCAP_UNDELETABLE_WHEN_OPEN |
          ((p->ctrlFlags & WINFILE_PSOW)?SQLITE_IOCAP_POWERSAFE_OVERWRITE:0);
 }
 
@@ -51803,7 +51787,7 @@ static int winOpen(
 
   int rc = SQLITE_OK;            /* Function Return Code */
 #if !defined(NDEBUG) || SQLITE_OS_WINCE
-  int eType = flags&0x0FFF00;  /* Type of file to open */
+  int eType = flags&0xFFFFFF00;  /* Type of file to open */
 #endif
 
   int isExclusive  = (flags & SQLITE_OPEN_EXCLUSIVE);
@@ -58023,26 +58007,18 @@ static const unsigned char aJournalMagic[] = {
 ** Return true if page pgno can be read directly from the database file
 ** by the b-tree layer. This is the case if:
 **
-**   (1)  the database file is open
-**   (2)  the VFS for the database is able to do unaligned sub-page reads
-**   (3)  there are no dirty pages in the cache, and
-**   (4)  the desired page is not currently in the wal file.
+**   * the database file is open,
+**   * there are no dirty pages in the cache, and
+**   * the desired page is not currently in the wal file.
 */
 SQLITE_PRIVATE int sqlite3PagerDirectReadOk(Pager *pPager, Pgno pgno){
-  assert( pPager!=0 );
-  assert( pPager->fd!=0 );
-  if( pPager->fd->pMethods==0 ) return 0;  /* Case (1) */
-  assert( pPager->fd->pMethods->xDeviceCharacteristics!=0 );
-  if( (pPager->fd->pMethods->xDeviceCharacteristics(pPager->fd)
-        & SQLITE_IOCAP_SUBPAGE_READ)==0 ){
-    return 0; /* Case (2) */
-  }
-  if( sqlite3PCacheIsDirty(pPager->pPCache) ) return 0; /* Failed (3) */
+  if( pPager->fd->pMethods==0 ) return 0;
+  if( sqlite3PCacheIsDirty(pPager->pPCache) ) return 0;
 #ifndef SQLITE_OMIT_WAL
   if( pPager->pWal ){
     u32 iRead = 0;
     (void)sqlite3WalFindFrame(pPager->pWal, pgno, &iRead);
-    return iRead==0; /* Condition (4) */
+    return iRead==0;
   }
 #endif
   return 1;
@@ -147618,32 +147594,32 @@ static Expr *substExpr(
         if( pSubst->isOuterJoin ){
           ExprSetProperty(pNew, EP_CanBeNull);
         }
-        if( pNew->op==TK_TRUEFALSE ){
-          pNew->u.iValue = sqlite3ExprTruthValue(pNew);
-          pNew->op = TK_INTEGER;
-          ExprSetProperty(pNew, EP_IntValue);
-        }
-
-        /* Ensure that the expression now has an implicit collation sequence,
-        ** just as it did when it was a column of a view or sub-query. */
-        {
-          CollSeq *pNat = sqlite3ExprCollSeq(pSubst->pParse, pNew);
-          CollSeq *pColl = sqlite3ExprCollSeq(pSubst->pParse,
-                pSubst->pCList->a[iColumn].pExpr
-          );
-          if( pNat!=pColl || (pNew->op!=TK_COLUMN && pNew->op!=TK_COLLATE) ){
-            pNew = sqlite3ExprAddCollateString(pSubst->pParse, pNew,
-                (pColl ? pColl->zName : "BINARY")
-            );
-          }
-        }
-        ExprClearProperty(pNew, EP_Collate);
         if( ExprHasProperty(pExpr,EP_OuterON|EP_InnerON) ){
           sqlite3SetJoinExpr(pNew, pExpr->w.iJoin,
                              pExpr->flags & (EP_OuterON|EP_InnerON));
         }
         sqlite3ExprDelete(db, pExpr);
         pExpr = pNew;
+        if( pExpr->op==TK_TRUEFALSE ){
+          pExpr->u.iValue = sqlite3ExprTruthValue(pExpr);
+          pExpr->op = TK_INTEGER;
+          ExprSetProperty(pExpr, EP_IntValue);
+        }
+
+        /* Ensure that the expression now has an implicit collation sequence,
+        ** just as it did when it was a column of a view or sub-query. */
+        {
+          CollSeq *pNat = sqlite3ExprCollSeq(pSubst->pParse, pExpr);
+          CollSeq *pColl = sqlite3ExprCollSeq(pSubst->pParse,
+                pSubst->pCList->a[iColumn].pExpr
+          );
+          if( pNat!=pColl || (pExpr->op!=TK_COLUMN && pExpr->op!=TK_COLLATE) ){
+            pExpr = sqlite3ExprAddCollateString(pSubst->pParse, pExpr,
+                (pColl ? pColl->zName : "BINARY")
+            );
+          }
+        }
+        ExprClearProperty(pExpr, EP_Collate);
       }
     }
   }else{
@@ -158971,7 +158947,6 @@ static Expr *removeUnindexableInClauseTerms(
         pNew->pLeft->x.pList = pLhs;
       }
       pSelect->pEList = pRhs;
-      pSelect->selId = ++pParse->nSelect; /* Req'd for SubrtnSig validity */
       if( pLhs && pLhs->nExpr==1 ){
         /* Take care here not to generate a TK_VECTOR containing only a
         ** single value. Since the parser never creates such a vector, some
@@ -189831,15 +189806,10 @@ static int fts3PoslistPhraseMerge(
   if( *p1==POS_COLUMN ){
     p1++;
     p1 += fts3GetVarint32(p1, &iCol1);
-    /* iCol1==0 indicates corruption. Column 0 does not have a POS_COLUMN
-    ** entry, so this is actually end-of-doclist. */
-    if( iCol1==0 ) return 0;
   }
   if( *p2==POS_COLUMN ){
     p2++;
     p2 += fts3GetVarint32(p2, &iCol2);
-    /* As above, iCol2==0 indicates corruption. */
-    if( iCol2==0 ) return 0;
   }
 
   while( 1 ){
@@ -193010,7 +192980,7 @@ static int fts3EvalNearTest(Fts3Expr *pExpr, int *pRc){
       nTmp += p->pRight->pPhrase->doclist.nList;
     }
     nTmp += p->pPhrase->doclist.nList;
-    aTmp = sqlite3_malloc64(nTmp*2 + FTS3_VARINT_MAX);
+    aTmp = sqlite3_malloc64(nTmp*2);
     if( !aTmp ){
       *pRc = SQLITE_NOMEM;
       res = 0;
@@ -194563,11 +194533,10 @@ static int getNextString(
         Fts3PhraseToken *pToken;
 
         p = fts3ReallocOrFree(p, nSpace + ii*sizeof(Fts3PhraseToken));
+        if( !p ) goto no_mem;
+
         zTemp = fts3ReallocOrFree(zTemp, nTemp + nByte);
-        if( !zTemp || !p ){
-          rc = SQLITE_NOMEM;
-          goto getnextstring_out;
-        }
+        if( !zTemp ) goto no_mem;
 
         assert( nToken==ii );
         pToken = &((Fts3Phrase *)(&p[1]))->aToken[ii];
@@ -194582,6 +194551,9 @@ static int getNextString(
         nToken = ii+1;
       }
     }
+
+    pModule->xClose(pCursor);
+    pCursor = 0;
   }
 
   if( rc==SQLITE_DONE ){
@@ -194589,10 +194561,7 @@ static int getNextString(
     char *zBuf = 0;
 
     p = fts3ReallocOrFree(p, nSpace + nToken*sizeof(Fts3PhraseToken) + nTemp);
-    if( !p ){
-      rc = SQLITE_NOMEM;
-      goto getnextstring_out;
-    }
+    if( !p ) goto no_mem;
     memset(p, 0, (char *)&(((Fts3Phrase *)&p[1])->aToken[0])-(char *)p);
     p->eType = FTSQUERY_PHRASE;
     p->pPhrase = (Fts3Phrase *)&p[1];
@@ -194600,9 +194569,11 @@ static int getNextString(
     p->pPhrase->nToken = nToken;
 
     zBuf = (char *)&p->pPhrase->aToken[nToken];
-    assert( nTemp==0 || zTemp );
     if( zTemp ){
       memcpy(zBuf, zTemp, nTemp);
+      sqlite3_free(zTemp);
+    }else{
+      assert( nTemp==0 );
     }
 
     for(jj=0; jj<p->pPhrase->nToken; jj++){
@@ -194612,17 +194583,17 @@ static int getNextString(
     rc = SQLITE_OK;
   }
 
- getnextstring_out:
+  *ppExpr = p;
+  return rc;
+no_mem:
+
   if( pCursor ){
     pModule->xClose(pCursor);
   }
   sqlite3_free(zTemp);
-  if( rc!=SQLITE_OK ){
-    sqlite3_free(p);
-    p = 0;
-  }
-  *ppExpr = p;
-  return rc;
+  sqlite3_free(p);
+  *ppExpr = 0;
+  return SQLITE_NOMEM;
 }
 
 /*
@@ -232843,27 +232814,7 @@ SQLITE_API int sqlite3session_config(int op, void *pArg){
 /************** End of sqlite3session.c **************************************/
 /************** Begin file fts5.c ********************************************/
 
-/*
-** This, the "fts5.c" source file, is a composite file that is itself
-** assembled from the following files:
-**
-**    fts5.h
-**    fts5Int.h
-**    fts5parse.h          <--- Generated from fts5parse.y by Lemon
-**    fts5parse.c          <--- Generated from fts5parse.y by Lemon
-**    fts5_aux.c
-**    fts5_buffer.c
-**    fts5_config.c
-**    fts5_expr.c
-**    fts5_hash.c
-**    fts5_index.c
-**    fts5_main.c
-**    fts5_storage.c
-**    fts5_tokenize.c
-**    fts5_unicode2.c
-**    fts5_varint.c
-**    fts5_vocab.c
-*/
+
 #if !defined(SQLITE_CORE) || defined(SQLITE_ENABLE_FTS5)
 
 #if !defined(NDEBUG) && !defined(SQLITE_DEBUG)
@@ -232873,12 +232824,6 @@ SQLITE_API int sqlite3session_config(int op, void *pArg){
 # undef NDEBUG
 #endif
 
-#ifdef HAVE_STDINT_H
-/* #include <stdint.h> */
-#endif
-#ifdef HAVE_INTTYPES_H
-/* #include <inttypes.h> */
-#endif
 /*
 ** 2014 May 31
 **
@@ -254951,7 +254896,7 @@ static void fts5SourceIdFunc(
 ){
   assert( nArg==0 );
   UNUSED_PARAM2(nArg, apUnused);
-  sqlite3_result_text(pCtx, "fts5: 2024-12-07 20:39:59 2aabe05e2e8cae4847a802ee2daddc1d7413d8fc560254d93ee3e72c14685b6c", -1, SQLITE_TRANSIENT);
+  sqlite3_result_text(pCtx, "fts5: 2024-10-21 16:30:22 03a9703e27c44437c39363d0baf82db4ebc94538a0f28411c85dda156f82636e", -1, SQLITE_TRANSIENT);
 }
 
 /*
@@ -260142,7 +260087,7 @@ static int sqlite3Fts5VocabInit(Fts5Global *pGlobal, sqlite3 *db){
 }
 
 
-/* Here ends the fts5.c composite file. */
+
 #endif /* !defined(SQLITE_CORE) || defined(SQLITE_ENABLE_FTS5) */
 
 /************** End of fts5.c ************************************************/
