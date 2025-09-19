@@ -474,7 +474,7 @@ int __cdecl main(int argc, char* argv[])
 		else
 		{
 			printf("%s running...\n", g_sPtokaXTitle);
-			printf("Fork: https://github.com/pavel-pimenov/PtokaX\n");
+			printf("Fork: https://github.com/pavel-pimenov/flylinkdc-hub\n");
 		}
 
 		MainLoop();

@@ -91,3 +91,7 @@ strace_out
 /build/release
 /build
 
+/compiled/cfg/*.sqlite
+/compiled/PtokaX.exp
+/compiled/cfg/*.sqlite-shm
+/compiled/cfg/*.sqlite-wal
