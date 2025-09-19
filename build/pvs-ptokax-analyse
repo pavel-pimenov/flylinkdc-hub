@@ -1,4 +1,4 @@
-mkdir pvs
+cd release
 pvs-studio-analyzer trace -- make
 pvs-studio-analyzer analyze -l ~/.config/PVS-Studio/PVS-Studio.lic -o pvs-ptokaxhub.log
 plog-converter -a GA:1,2 -t fullhtml -o pvs-ptokaxhub.html pvs-ptokaxhub.log

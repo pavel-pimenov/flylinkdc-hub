@@ -256,7 +256,7 @@ void ServerManager::Initialize()
 
 	ServerManager::m_sScriptPath = ServerManager::m_sPath + "\\scripts\\";
 
-	ServerManager::m_sLuaPath = ServerManager::m_sPath + "/";
+	ServerManager::m_sLuaPath = ServerManager::m_sPath + '/';
 
 	char * sTempLuaPath = (char *)ServerManager::m_sLuaPath.c_str();
 	for (size_t szi = 0; szi < ServerManager::m_sPath.size(); szi++)
