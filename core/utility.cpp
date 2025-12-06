@@ -77,86 +77,6 @@ void Cout(const string &/*sMsg*/)
 }
 #endif
 //---------------------------------------------------------------------------
-/*
-#ifdef _WIN32
-    // Boyer-Moore string matching algo.
-    // returns :
-    // offset in bytes or -1 if no match
-    int BMFind(char *text, int N, char *pat, int M) {
-       int i, j, DD[MAX_PAT_SIZE], D[MAX_ALPHABET_SIZE];
-
-       // Predzpracovani
-       preDD(pat, M, DD);
-       preD(pat, M, D);
-
-       // Vyhledavani
-       // Searching
-       i = 0;
-       while (i <= N-M) {
-          for(j = M-1; j >= 0  &&  pat[j] == text[j+i]; --j);
-          if (j < 0) {
-             return i;
-             //i += DD[0];
-          }
-          else
-             i += DD[j] > (D[text[j + i]] - M + 1 + j) ? DD[j] : (D[text[j + i]] - M + 1 + j);
-       }
-       return -1;
-    }
-//---------------------------------------------------------------------------
-
-    void preD(char *pat, int M, int D[]) {
-       int i;
-       for(i = 0; i < MAX_ALPHABET_SIZE; ++i)
-          D[i] = M;
-       for(i = 0; i < M - 1; ++i)
-          D[pat[i]] = M - i - 1;
-    }
-//---------------------------------------------------------------------------
-
-    // Funkce ulozi do suff[i] delku nejdelsiho podretezce,
-    // ktery konci na pozici pat[i]
-    // a soucasne je priponou pat
-    //
-    void suffixes(char *pat, int M, int *suff) {
-       int f = 0, g, i;
-
-       suff[M - 1] = M;
-       g = M - 1;
-       for(i = M - 2; i >= 0; --i) {
-          if (i > g && suff[i + M - 1 - f] < i - g)
-             suff[i] = suff[i + M - 1 - f];
-          else {
-             if (i < g)
-                g = i;
-             f = i;
-             while (g >= 0 && pat[g] == pat[g + M - 1 - f])
-                --g;
-             suff[i] = f - g;
-          }
-       }
-    }
-//---------------------------------------------------------------------------
-
-    void preDD(char *pat, int M, int DD[]) {
-       int i, j, suff[MAX_PAT_SIZE];
-
-       suffixes(pat, M, suff);
-
-       for(i = 0; i < M; ++i)
-          DD[i] = M;
-       j = 0;
-       for(i = M - 1; i >= -1; --i)
-          if (suff[i] == i+1  ||  i == -1) // TODO FlylinkDC++ cppcheck! suff[-1] ??
-             for( ; j < M-1-i; ++j)
-                if (DD[j] == M)
-                   DD[j] = M-1-i;
-       for(i = 0; i <= M-2; ++i)
-          DD[M - 1 - suff[i]] = M-1-i;
-    }
-#endif
-*/
-//---------------------------------------------------------------------------
 
 char * Lock2Key(char * sLock)
 {
@@ -343,12 +263,12 @@ const char * formatBytes(const uint64_t ui64Bytes)
 	}
 	else
 	{
-		long double ldBytes = (long double)ui64Bytes;
+		double dBytes = (double)ui64Bytes;
 		uint8_t iter = 0;
-		for (; ldBytes > 1024; iter++)
-			ldBytes /= 1024;
+		for (; dBytes >= 1024.0; iter++)
+			dBytes /= 1024.0;
 
-		int iLen = snprintf(sBytes, 128, "%0.2Lf %s", ldBytes, unit[iter]);
+		int iLen = snprintf(sBytes, 128, "%0.2f %s", dBytes, unit[iter]);
 		if (iLen <= 0)
 		{
 			sBytes[0] = '\0';
@@ -374,12 +294,12 @@ const char * formatBytesPerSecond(const uint64_t ui64Bytes)
 	}
 	else
 	{
-		long double ldBytes = (long double)ui64Bytes;
+		double dBytes = (double)ui64Bytes;
 		uint8_t iter = 0;
-		for (; ldBytes > 1024; iter++)
-			ldBytes /= 1024;
+		for (; dBytes >= 1024.0; iter++)
+			dBytes /= 1024.0;
 
-		int iLen = snprintf(sBytes, 128, "%0.2Lf %s", ldBytes, secondunit[iter]);
+		int iLen = snprintf(sBytes, 128, "%0.2f %s", dBytes, secondunit[iter]);
 		if (iLen <= 0)
 		{
 			sBytes[0] = '\0';
