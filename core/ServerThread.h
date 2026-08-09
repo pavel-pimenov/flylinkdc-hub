@@ -22,72 +22,109 @@
 #define ServerThreadH
 //---------------------------------------------------------------------------
 
+#include <array>
+#include <atomic>
+#include <cstdint>
+#include <memory>
+#include <unordered_map>
+
 class ServerThread
 {
 private:
-	struct AntiConFlood
-	{
-		uint64_t m_ui64Time;
+    struct AntiConFlood
+    {
+        uint64_t m_ui64Time = 0;
 
-		AntiConFlood * m_pPrev, * m_pNext;
+        int16_t m_ui16Hits = 0;
 
-		int16_t m_ui16Hits;
+        std::array<uint8_t, 16> m_ui128IpHash{};
 
-		uint8_t m_ui128IpHash[16];
+        explicit AntiConFlood(const uint8_t* pIpHash);
 
-		explicit AntiConFlood(const uint8_t * pIpHash);
+        AntiConFlood(AntiConFlood&& o) noexcept : m_ui64Time(o.m_ui64Time), m_ui16Hits(o.m_ui16Hits), m_ui128IpHash(o.m_ui128IpHash) {}
 
-		DISALLOW_COPY_AND_ASSIGN(AntiConFlood);
-	};
+        auto operator=(AntiConFlood&&) -> AntiConFlood& = delete;
+        AntiConFlood(const AntiConFlood&) = delete;
+        auto operator=(const AntiConFlood&) -> AntiConFlood& = delete;
+    };
 
-	AntiConFlood * m_pAntiFloodList;
+    struct AntiConFloodKey
+    {
+        std::array<uint8_t, 16> m_ui128IpHash{};
+        explicit AntiConFloodKey(const uint8_t* pIpHash)
+        {
+            memcpy(m_ui128IpHash.data(), pIpHash, 16);
+        }
+    };
 
-	CriticalSection m_csServerThread;
+    struct AntiConFloodKeyHash
+    {
+        auto operator()(const AntiConFloodKey& k) const noexcept -> size_t
+        {
+            // FNV-1a
+            size_t h = 14695981039346656037ULL;
+            for (const auto b : k.m_ui128IpHash)
+            {
+                h ^= b;
+                h *= 1099511628211ULL;
+            }
+            return h;
+        }
+    };
 
-#ifdef _WIN32
-	HANDLE m_hThreadHandle;
+    struct AntiConFloodKeyEqual
+    {
+        auto operator()(const AntiConFloodKey& a, const AntiConFloodKey& b) const noexcept -> bool
+        {
+            return a.m_ui128IpHash == b.m_ui128IpHash;
+        }
+    };
 
+    std::unordered_map<AntiConFloodKey, AntiConFlood, AntiConFloodKeyHash, AntiConFloodKeyEqual> m_AntiFloodMap;
 
-	SOCKET m_Server;
-#else
-	pthread_t m_ThreadId;
+    // Tracks m_AntiFloodMap.size() atomically. The map itself is mutated only by its own
+    // accept thread, but size is read cross-thread by GetTotalAntiFloodCount() (main thread
+    // Prometheus tick + other server threads) — a plain .size() read concurrent with
+    // mutation is a data race on unordered_map internals.
+    std::atomic<uint32_t> m_ui32AntiFloodCount{0};
 
-	// pthread_mutex_t m_mtxServerThread;
+    CriticalSection m_csServerThread;
 
-	int m_Server;
-#endif
-	uint32_t m_ui32SuspendTime;
+    pthread_t m_ThreadId = 0;
 
-	int m_iAdressFamily;
+    // pthread_mutex_t m_mtxServerThread;
 
-	bool m_bTerminated;
+    int m_Server = -1;
+    uint32_t m_ui32SuspendTime = 0;
 
-	DISALLOW_COPY_AND_ASSIGN(ServerThread);
+    int m_iAdressFamily;
+
+    std::atomic<bool> m_bTerminated{false};
+
 public:
-	ServerThread * m_pPrev, * m_pNext;
+    ServerThread(const ServerThread&) = delete;
+    auto operator=(const ServerThread&) -> ServerThread& = delete;
 
-	uint16_t m_ui16Port;
+    uint16_t m_ui16Port;
 
-	bool m_bActive, m_bSuspended;
+    std::atomic<bool> m_bActive{false}, m_bSuspended{false};
 
-	ServerThread(const int iAddrFamily, const uint16_t ui16PortNumber);
-	~ServerThread();
+    ServerThread(int iAddrFamily, uint16_t ui16PortNumber);
+    ~ServerThread();
 
-	void Resume();
-	void Run();
-	void Close();
-	void WaitFor();
-	bool Listen(const bool bSilent = false);
-#ifdef _WIN32
-	bool isFlooder(SOCKET& s, const sockaddr_storage &addr);
-#else
-	bool isFlooder(int& s, const sockaddr_storage &addr);
-#endif
-	void RemoveConFlood(AntiConFlood * pACF);
-	void ResumeSck();
-	void SuspendSck(const uint32_t ui32Time);
+    void Resume();
+    void Run();
+    void Close();
+    void WaitFor();
+    [[nodiscard]] auto Listen(bool bSilent = false) -> bool;
+    [[nodiscard]] auto isFlooder(int& s, const sockaddr_storage& addr) -> bool;
+    void ResumeSck();
+    void SuspendSck(uint32_t ui32Time);
+
+    static std::atomic<uint32_t> m_ui32ConnectionFloodCount;
+
+    [[nodiscard]] static auto GetTotalAntiFloodCount() -> uint32_t;
 };
 //---------------------------------------------------------------------------
 
 #endif
-

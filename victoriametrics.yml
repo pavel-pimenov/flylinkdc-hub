@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: "ptokax-hub"
+    static_configs:
+      - targets: ["ptokax:8888"]
+    scrape_interval: 5s

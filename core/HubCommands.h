@@ -22,101 +22,146 @@
 #define HubCommandsH
 //---------------------------------------------------------------------------
 struct User;
+struct BanItem;
+struct RangeBanItem;
 //---------------------------------------------------------------------------
 
 struct ChatCommand
 {
-	User * m_pUser;
+    User* m_pUser = nullptr;
 
-	char * m_sCommand;
+    char* m_sCommand = nullptr;
 
-	uint32_t m_ui32CommandLen;
+    uint32_t m_ui32CommandLen = 0;
 
-	bool m_bFromPM;
+    bool m_bFromPM = false;
 };
 
 class HubCommands
 {
 private:
-	static ChatCommand m_ChatCommand;
+    static ChatCommand m_ChatCommand;
 
-	static bool AddRegUser(ChatCommand * pChatCommand);
-	static bool Ban(ChatCommand * pChatCommand);
-	static bool BanIp(ChatCommand * pChatCommand);
-	static bool ClrTempBans(ChatCommand * pChatCommand);
-	static bool ClrPermBans(ChatCommand * pChatCommand);
-	static bool ClrRangeTempBans(ChatCommand * pChatCommand);
-	static bool ClrRangePermBans(ChatCommand * pChatCommand);
-	static bool CheckNickBan(ChatCommand * pChatCommand);
-	static bool CheckIpBan(ChatCommand * pChatCommand);
-	static bool CheckRangeBan(ChatCommand * pChatCommand);
-	static bool Drop(ChatCommand * pChatCommand);
-	static bool DelRegUser(ChatCommand * pChatCommand);
-	static bool Debug(ChatCommand * pChatCommand);
+    enum class BanClearType : uint8_t
+    {
+        Temp,
+        Perm,
+        TempRange,
+        PermRange
+    };
 
-	static bool FullBan(ChatCommand * pChatCommand);
-	static bool FullBanIp(ChatCommand * pChatCommand);
-	static bool FullTempBan(ChatCommand * pChatCommand);
-	static bool FullTempBanIp(ChatCommand * pChatCommand);
-	static bool FullRangeBan(ChatCommand * pChatCommand);
-	static bool FullRangeTempBan(ChatCommand * pChatCommand);
-	static bool GetBans(ChatCommand * pChatCommand);
-	static bool Gag(ChatCommand * pChatCommand);
-	static bool GetInfo(ChatCommand * pChatCommand);
-	static bool GetIpInfo(ChatCommand * pChatCommand);
-	static bool GetTempBans(ChatCommand * pChatCommand);
-	static bool GetScripts(ChatCommand * pChatCommand);
-	static bool GetPermBans(ChatCommand * pChatCommand);
-	static bool GetRangeBans(ChatCommand * pChatCommand);
-	static bool GetRangePermBans(ChatCommand * pChatCommand);
-	static bool GetRangeTempBans(ChatCommand * pChatCommand);
-	static bool Help(ChatCommand * pChatCommand);
+    [[nodiscard]] static auto ClrBans(ChatCommand* pChatCommand, uint8_t ui8Profile, BanClearType eClearType, int iStatusLang, int iReplyLang) -> bool;
+    [[nodiscard]] static auto AddRegUser(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto Ban(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto BanIp(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto ClrTempBans(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto ClrPermBans(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto ClrRangeTempBans(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto ClrRangePermBans(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto CheckNickBan(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto CheckIpBan(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto CheckRangeBan(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto Drop(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto DelRegUser(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto Debug(ChatCommand* pChatCommand) -> bool;
 
-	static bool MyIp(ChatCommand * pChatCommand);
-	static bool MassMsg(ChatCommand * pChatCommand);
-	static bool NickBan(ChatCommand * pChatCommand);
-	static bool NickTempBan(ChatCommand * pChatCommand);
-	static bool Op(ChatCommand * pChatCommand);
-	static bool OpMassMsg(ChatCommand * pChatCommand);
-	static bool Passwd(ChatCommand * pChatCommand);
-	static bool PermUnban(ChatCommand * pChatCommand);
+    [[nodiscard]] static auto FullBan(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto FullBanIp(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto FullTempBan(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto FullTempBanIp(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto FullRangeBan(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto FullRangeTempBan(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto GetBans(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto Gag(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto GetInfo(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto GetIpInfo(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto GetTempBans(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto GetScripts(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto GetPermBans(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto GetRangeBans(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto GetRangePermBans(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto GetRangeTempBans(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto Help(ChatCommand* pChatCommand) -> bool;
 
-	static bool RestartScripts(ChatCommand * pChatCommand);
-	static bool Restart(ChatCommand * pChatCommand);
-	static bool ReloadTxt(ChatCommand * pChatCommand);
-	static bool RestartScript(ChatCommand * pChatCommand);
-	static bool RangeBan(ChatCommand * pChatCommand);
-	static bool RangeTempBan(ChatCommand * pChatCommand);
-	static bool RangeUnBan(ChatCommand * pChatCommand);
-	static bool RangeTempUnBan(ChatCommand * pChatCommand);
-	static bool RangePermUnBan(ChatCommand * pChatCommand);
-	static bool RegNewUser(ChatCommand * pChatCommand);
-	static bool Stats(ChatCommand * pChatCommand);
-	static bool StopScript(ChatCommand * pChatCommand);
-	static bool StartScript(ChatCommand * pChatCommand);
-	static bool TempBan(ChatCommand * pChatCommand);
-	static bool TempBanIp(ChatCommand * pChatCommand);
-	static bool TempUnban(ChatCommand * pChatCommand);
-	static bool Topic(ChatCommand * pChatCommand);
-	static bool Unban(ChatCommand * pChatCommand);
-	static bool Ungag(ChatCommand * pChatCommand);
+    [[nodiscard]] static auto MyIp(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto MassMsg(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto NickBan(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto NickTempBan(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto Op(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto OpMassMsg(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto Passwd(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto PermUnban(ChatCommand* pChatCommand) -> bool;
 
-	static bool Ban(ChatCommand * pChatCommand, const bool bFull);
-	static bool BanIp(ChatCommand * pChatCommand, const bool bFull);
-	static bool NickBan(ChatCommand * pChatCommand, char * sReason);
-	static bool TempBan(ChatCommand * pChatCommand, const bool bFull);
-	static bool TempBanIp(ChatCommand * pChatCommand, const bool bFull);
-	static bool TempNickBan(ChatCommand * pChatCommand, char * sNick, char * sTime, const uint16_t ui16TimeLen, char * sReason, const bool bNotNickBan = false);
-	static bool RangeBan(ChatCommand * pChatCommand, const bool bFull);
-	static bool RangeTempBan(ChatCommand * pChatCommand, const bool bFull);
-	static bool RangeUnban(ChatCommand * pChatCommand);
-	static bool RangeUnban(ChatCommand * pChatCommand, const uint8_t ui8Type);
+    [[nodiscard]] static auto RestartScripts(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto Restart(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto ReloadTxt(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto RestartScript(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto RangeBan(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto RangeTempBan(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto RangeUnBan(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto RangeTempUnBan(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto RangePermUnBan(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto RegNewUser(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto Stats(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto StopScript(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto StartScript(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto TempBan(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto TempBanIp(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto TempUnban(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto Topic(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto Unban(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto Ungag(ChatCommand* pChatCommand) -> bool;
 
-	static void SendNoPermission(ChatCommand * pChatCommand);
-	static int CheckFromPm(ChatCommand * pChatCommand);
-	static void UncountDeflood(ChatCommand * pChatCommand);
+    [[nodiscard]] static auto Ban(ChatCommand* pChatCommand, bool bFull) -> bool;
+    [[nodiscard]] static auto BanIp(ChatCommand* pChatCommand, bool bFull) -> bool;
+    [[nodiscard]] static auto NickBan(ChatCommand* pChatCommand, const char* sReason) -> bool;
+    [[nodiscard]] static auto TempBan(ChatCommand* pChatCommand, bool bFull) -> bool;
+    [[nodiscard]] static auto TempBanIp(ChatCommand* pChatCommand, bool bFull) -> bool;
+    [[nodiscard]] static auto TempNickBan(ChatCommand* pChatCommand, const char* sNick, char* sTime, uint16_t ui16TimeLen, const char* sReason, bool bNotNickBan = false)
+        -> bool;
+    [[nodiscard]] static auto RangeBan(ChatCommand* pChatCommand, bool bFull) -> bool;
+    [[nodiscard]] static auto RangeTempBan(ChatCommand* pChatCommand, bool bFull) -> bool;
+    [[nodiscard]] static auto RangeUnban(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto RangeUnban(ChatCommand* pChatCommand, uint8_t ui8Type) -> bool;
+
+    static void SendNoPermission(ChatCommand* pChatCommand);
+    [[nodiscard]] static auto CheckFromPm(ChatCommand* pChatCommand) -> int;
+    [[nodiscard]] static auto PrepareReply(ChatCommand* pChatCommand) -> int;
+    [[nodiscard]] static auto BeginBanList(ChatCommand* pChatCommand, uint8_t ui8Profile) -> int;
+    static void UncountDeflood(ChatCommand* pChatCommand);
+
+    // Deduplication helpers
+    [[nodiscard]] static auto CheckPermission(ChatCommand* pChatCommand, uint8_t ui8Profile) -> bool;
+    [[nodiscard]] static auto CheckMinLength(ChatCommand* pChatCommand, uint32_t ui32MinLen, const char* sFuncName, const char* sSyntax) -> bool;
+    static void StripPrefix(ChatCommand* pChatCommand, uint32_t ui32Len);
+    [[nodiscard]] static auto FullBanDelegate(ChatCommand* pChatCommand,
+                                uint8_t ui8Profile,
+                                uint32_t ui32MinLen,
+                                uint32_t ui32PrefixLen,
+                                const char* sFuncName,
+                                const char* sSyntax,
+                                bool (*pDelegate)(ChatCommand*, const bool)) -> bool;
+    [[nodiscard]] static auto ShouldReplyPM(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] static auto CheckSelfPermission(ChatCommand* pChatCommand, int iLangId) -> bool;
+    [[nodiscard]] static auto CheckHigherProfile(ChatCommand* pChatCommand, const User* pOtherUser, int iLangId1, int iLangId2 = -1) -> bool;
+    [[nodiscard]] static auto GetHubSecPM(const ChatCommand* p) -> const char*;
+    static void FormatBanEntry(std::string& out, uint32_t& num, const BanItem* pBan, bool bShowExpire);
+    static void FormatRangeBanEntry(std::string& out, uint32_t& num, const RangeBanItem* pBan, bool bShowExpire);
+
+    // Ban listing helpers — reduce duplication in GetBans/GetTempBans/GetPermBans/GetRangeBans/etc.
+    // Returns number of bans listed. Removes expired temp bans from the list.
+    [[nodiscard]] static uint32_t ListTempBans(std::string& out);
+    [[nodiscard]] static uint32_t ListPermBans(std::string& out);
+    [[nodiscard]] static uint32_t ListTempRangeBans(std::string& out);
+    [[nodiscard]] static uint32_t ListPermRangeBans(std::string& out);
+    [[nodiscard]] static auto FindUserOrReply(ChatCommand* pChatCommand, uint32_t ui32NickLen, const char* sFunc, int iLangId) -> User*;
+    static void TruncateReason(char* s, uint32_t ui32MaxLen = 511);
+    [[nodiscard]] static uint8_t ParseCmdParts(ChatCommand* pChatCommand, uint32_t ui32StartOffset, char* sParts[], uint16_t ui16PartLens[], uint8_t ui8MaxParts = 3); // NOLINT(modernize-avoid-c-arrays) variable-size call-site arrays
+    static void CloseIpBannedUsers(ChatCommand* pChatCommand, const char* sReason);
+    static void AppendMatchingRangeBans(std::string& Bans, uint32_t& iBanNum, const uint8_t* ui128IpHash, time_t acc_time);
+
 public:
-	static bool DoCommand(User * pUser, char * sCommand, const uint32_t ui32CmdLen, bool bFromPM = false);
+    [[nodiscard]] static auto DoCommand(User* pUser, char* sCommand, uint32_t ui32CmdLen, bool bFromPM = false) -> bool;
 };
 //---------------------------------------------------------------------------
 

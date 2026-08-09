@@ -20,24 +20,26 @@
 #ifndef zlibutilityH
 #define zlibutilityH
 //---------------------------------------------------------------------------
+#include <string_view>
+#include <vector>
 
 class ZlibUtility
 {
 private:
-	char * m_pZbuffer;
+    std::vector<char> m_vZbuffer;
 
-	size_t m_szZbufferSize;
-
-	DISALLOW_COPY_AND_ASSIGN(ZlibUtility);
 public:
-	static ZlibUtility * m_Ptr;
+    ZlibUtility(const ZlibUtility&) = delete;
+    auto operator=(const ZlibUtility&) -> ZlibUtility& = delete;
 
-	ZlibUtility();
-	~ZlibUtility();
+    static std::unique_ptr<ZlibUtility> m_Ptr;
 
-	char * CreateZPipe(const char *sInData, const size_t szInDataSize, uint32_t &ui32OutDataLen);
-	char * CreateZPipe(const char *sInData, const size_t szInDataSize, char *sOutData, uint32_t &szOutDataLen, uint32_t &szOutDataSize);
-	char * CreateZPipeAlign(const char *sInData, const size_t szInDataSize, char * sOutData, uint32_t &ui32OutDataLen, uint32_t &ui32OutDataSize);
+    ZlibUtility();
+    ~ZlibUtility() = default;
+
+    [[nodiscard]] auto CreateZPipe(std::string_view sInData, uint32_t& ui32OutDataLen) -> char*;
+
+    void CreateZPipe(std::string_view sInData, std::vector<char>& vOutData, uint32_t& ui32OutDataLen, const char* sMetricPrefix = "ZPipe");
 };
 //---------------------------------------------------------------------------
 

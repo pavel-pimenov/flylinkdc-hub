@@ -20,35 +20,41 @@
 #ifndef TextFileManagerH
 #define TextFileManagerH
 //---------------------------------------------------------------------------
+#include <list>
+#include <memory>
+#include <string>
+//---------------------------------------------------------------------------
 struct User;
 //---------------------------------------------------------------------------
 
 class TextFilesManager
 {
 private:
-	struct TextFile
-	{
-		TextFile * m_pPrev, * m_pNext;
+    struct TextFile
+    {
+        std::string m_sCommand, m_sText;
 
-		char * m_sCommand, *m_sText;
+        TextFile() = default;
+        ~TextFile() = default;
 
-		TextFile();
-		~TextFile();
+        TextFile(const TextFile&) = delete;
 
-		DISALLOW_COPY_AND_ASSIGN(TextFile);
-	};
+        auto operator=(const TextFile&) -> TextFile& = delete;
+    };
 
-	TextFile * m_pTextFiles;
+    std::list<std::unique_ptr<TextFile>> m_TextFiles;
 
-	DISALLOW_COPY_AND_ASSIGN(TextFilesManager);
 public:
-	static TextFilesManager * m_Ptr;
+    static std::unique_ptr<TextFilesManager> m_Ptr;
 
-	TextFilesManager();
-	~TextFilesManager();
+    TextFilesManager(const TextFilesManager&) = delete;
+    auto operator=(const TextFilesManager&) -> TextFilesManager& = delete;
 
-	bool ProcessTextFilesCmd(User * pUser, char * sCommand, const bool bFromPM = false) const;
-	void RefreshTextFiles();
+    TextFilesManager() = default;
+    ~TextFilesManager();
+
+    [[nodiscard]] auto ProcessTextFilesCmd(User* pUser, const char* sCommand, bool bFromPM = false) const -> bool;
+    void RefreshTextFiles();
 };
 //---------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-//(c) 2007-2024 pavel.pimenov@gmail.com
+//(c) 2007-2026 pavel.pimenov@gmail.com
 //-----------------------------------------------------------------------------
 #ifndef CDBManager_H
 #define CDBManager_H
@@ -9,30 +9,26 @@
 #include <unordered_map>
 #include <memory>
 #include <set>
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <ctime>
 #include <cstring>
-#include <stdint.h>
+#include <cstdint>
+#include <atomic>
+#include <mutex>
+#include <condition_variable>
+#include <chrono>
 
-#ifdef _WIN32
-#include <process.h>
-#include "zlib/zlib.h"
-#else
 #include <sys/time.h>
 #include <zlib.h>
 #include <errno.h>
-#endif
 
-#include "../jsoncpp/json.h"
+#include <nlohmann/json.hpp>
 
 #include <CivetServer.h>
 
-//#define FLY_SERVER_USE_ONLY_TEST_PORT
-#ifndef FLY_SERVER_USE_ONLY_TEST_PORT
 #define FLY_SERVER_USE_SQLITE
-#endif
 
 typedef long long int sqlite_int64;
 
@@ -48,7 +44,6 @@ typedef long long int sqlite_int64;
 
 //============================================================================================
 extern bool g_setup_log_disable_test_port;
-extern bool g_setup_syslog_disable;
 //============================================================================================
 bool zlib_uncompress(const uint8_t* p_zlib_source, size_t p_zlib_len, std::vector<unsigned char>& p_decompress);
 bool zlib_compress(const char* p_source, size_t p_len, std::vector<unsigned char>& p_compress, int& p_zlib_result, int p_level = 9);
@@ -62,11 +57,7 @@ enum eTypeQuery
 	FLY_POST_QUERY_TEST_PORT = 6,
 };
 
-#ifdef _WIN32
-//#define snprintf _snprintf
-#else
 #define _atoi64 atoll
-#endif
 
 using std::unique_ptr;
 //==========================================================================
@@ -78,14 +69,6 @@ inline std::string toString(long long p_val)
 	return l_buf;
 }
 //================================================================================
-#ifdef FLY_SERVER_USE_FLY_DIC
-enum eTypeDIC
-{
-	e_DIC_MEDIA_ATTR_TYPE = 1,
-	e_DIC_MEDIA_ATTR_VALUE = 2,
-	e_DIC_LAST
-};
-#endif
 #ifdef FLY_SERVER_USE_SQLITE
 //==========================================================================
 enum eTypeRegistrySegment
@@ -93,12 +76,10 @@ enum eTypeRegistrySegment
 	e_Statistic = 1
 };
 
-#ifndef _WIN32
 #include <unistd.h>
 #include <sys/resource.h>
-#include <syslog.h>
+#include <spdlog/spdlog.h>
 typedef int LONG;
-#endif
 
 //==========================================================================
 class CFlySafeGuard
@@ -217,9 +198,10 @@ class CFlyServerContext
 			m_content_len(0)
 		{
 		}
-		void send_syslog() const;
+		void sendDebugLog() const;
 		void run_thread_log();
 		static void flush_log_array(bool p_is_force);
+		static void WaitWorkerThreads();
 		void run_db_query(const char* p_content, size_t p_len, CDBManager& p_DB);
 		
 		bool is_valid_query() const
@@ -287,13 +269,11 @@ class CFlyServerContext
 				m_is_zlib = zlib_compress(m_res_stat.c_str(), m_res_stat.size(), m_dest_data, l_zlib_result, 6);
 				if (!m_is_zlib)
 				{
-					std::cout << "compression failed l_zlib_result=" <<   l_zlib_result <<
-					          " l_dest_data.size() = " <<  m_dest_data.size() <<
-					          " l_flyserver_cntx.m_res_stat.length() = " << m_res_stat.length() << std::endl;
-#ifndef _WIN32
-					syslog(LOG_ERR, "compression failed l_zlib_result = %d l_dest_length = %u m_res_stat.length() = %u",
-					       l_zlib_result, unsigned(m_dest_data.size()), unsigned(m_res_stat.length()));
-#endif
+				std::cout << "compression failed l_zlib_result=" <<   l_zlib_result <<
+				          " l_dest_data.size() = " <<  m_dest_data.size() <<
+				          " l_flyserver_cntx.m_res_stat.length() = " << m_res_stat.length() << std::endl;
+					spdlog::error("compression failed l_zlib_result = {} l_dest_length = {} m_res_stat.length() = {}",
+				       l_zlib_result, m_dest_data.size(), m_res_stat.length());
 				}
 			}
 		}
@@ -321,10 +301,8 @@ class CFlyServerContext
 				std::fstream l_log_json(l_file_name.c_str(), std::ios_base::out | std::ios_base::trunc);
 				if (!l_log_json.is_open())
 				{
-					std::cout << "Error open file: " << l_file_name;
-#ifndef _WIN32
-					syslog(LOG_ERR, "Error open file: = %s", l_file_name.c_str());
-#endif
+				std::cout << "Error open file: " << l_file_name;
+				spdlog::error("Error open file: = {}", l_file_name);
 				}
 				else
 				{

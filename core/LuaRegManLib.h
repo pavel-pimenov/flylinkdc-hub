@@ -21,11 +21,7 @@
 #define LuaRegManLibH
 //------------------------------------------------------------------------------
 
-#if LUA_VERSION_NUM > 501
-int RegRegMan(lua_State * pLua);
-#else
-void RegRegMan(lua_State * pLua);
-#endif
+[[nodiscard]] auto RegRegMan(lua_State* pLua) -> int;
 //------------------------------------------------------------------------------
 
 #endif

@@ -24,241 +24,185 @@
 #include "SettingManager.h"
 #include "utility.h"
 //---------------------------------------------------------------------------
-#ifdef _WIN32
-#pragma hdrstop
-#endif
 //---------------------------------------------------------------------------
 #include "UDPThread.h"
 #ifdef FLYLINKDC_USE_UDP_THREAD
 //---------------------------------------------------------------------------
-UDPThread * UDPThread::m_PtrIPv4 = nullptr;
+UDPThread* UDPThread::m_PtrIPv4 = nullptr;
 #ifdef FLYLINKDC_USE_UDP_THREAD_IP6
-UDPThread * UDPThread::m_PtrIPv6 = nullptr;
+UDPThread* UDPThread::m_PtrIPv6 = nullptr;
 #endif
 //---------------------------------------------------------------------------
 
-UDPThread::UDPThread() :
-#ifdef _WIN32
-	hThreadHandle(INVALID_HANDLE_VALUE), m_Sock(INVALID_SOCKET), m_ThreadId(0),
-#else
-	m_ThreadId(0), m_Sock(-1),
-#endif
-	m_bTerminated(false)
+UDPThread::UDPThread() : m_ThreadId(0), m_Sock(-1), m_bTerminated(false)
 {
-	rcvbuf[0] = '\0';
+    rcvbuf[0] = '\0';
 }
 
-bool UDPThread::Listen(const int iAddressFamily)
+bool UDPThread::Listen(int iAddressFamily)
 {
-	m_Sock = socket(iAddressFamily, SOCK_DGRAM, IPPROTO_UDP);
+    m_Sock = socket(iAddressFamily, SOCK_DGRAM, IPPROTO_UDP);
 
-#ifdef _WIN32
-	if (m_Sock == INVALID_SOCKET)
-	{
-#else
-	if (m_Sock == -1)
-	{
-#endif
-		AppendLog("[ERR] UDP Socket creation error.");
-		return false;
-	}
+    if (m_Sock == -1)
+    {
+        LogError("UDP Socket creation error.");
+        return false;
+    }
 
-#ifndef _WIN32
-	int on = 1;
-	setsockopt(m_Sock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
-#endif
+    const int on = 1;
+    setsockopt(m_Sock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
 
-	sockaddr_storage sas;
-	memset(&sas, 0, sizeof(sockaddr_storage));
-	socklen_t sas_len;
+    sockaddr_storage sas = {};
+    socklen_t sas_len;
 
-	if (iAddressFamily == AF_INET6)
-	{
-		((struct sockaddr_in6 *)&sas)->sin6_family = AF_INET6;
-		((struct sockaddr_in6 *)&sas)->sin6_port = htons((unsigned short)atoi(SettingManager::m_Ptr->m_sTexts[SETTXT_UDP_PORT]));
-		sas_len = sizeof(struct sockaddr_in6);
+    if (iAddressFamily == AF_INET6)
+    {
+        reinterpret_cast<sockaddr_in6*>(&sas)->sin6_family = AF_INET6;
+        int iUdpPort = 0;
+        if (safe_stoi(SettingManager::m_Ptr->GetText(std::to_underlying(SetTxtIds::SETTXT_UDP_PORT)).c_str(), iUdpPort))
+        {
+            reinterpret_cast<sockaddr_in6*>(&sas)->sin6_port = htons(static_cast<unsigned short>(iUdpPort));
+        }
+        sas_len = sizeof(struct sockaddr_in6);
 
-		if (SettingManager::m_Ptr->m_bBools[SETBOOL_BIND_ONLY_SINGLE_IP] == true && ServerManager::m_sHubIP6[0] != '\0')
-		{
-#if defined(_WIN32) && !defined(_WIN64) && !defined(_WIN_IOT)
-			win_inet_pton(ServerManager::m_sHubIP6, &((struct sockaddr_in6 *)&sas)->sin6_addr);
-#else
-			inet_pton(AF_INET6, ServerManager::m_sHubIP6, &((struct sockaddr_in6 *)&sas)->sin6_addr);
-#endif
-		}
-		else
-		{
-			((struct sockaddr_in6 *)&sas)->sin6_addr = in6addr_any;
+        if (SettingManager::m_Ptr->GetBool(std::to_underlying(SetBoolIds::SETBOOL_BIND_ONLY_SINGLE_IP)) && ServerManager::m_sHubIP6[0] != '\0')
+        {
+            inet_pton(AF_INET6, ServerManager::m_sHubIP6.data(), &reinterpret_cast<sockaddr_in6*>(&sas)->sin6_addr);
+        }
+        else
+        {
+            reinterpret_cast<sockaddr_in6*>(&sas)->sin6_addr = in6addr_any;
 
-			if (iAddressFamily == AF_INET6 && ServerManager::m_bIPv6DualStack == true)
-			{
-#ifdef _WIN32
-				DWORD dwIPv6 = 0;
-				setsockopt(m_Sock, IPPROTO_IPV6, IPV6_V6ONLY, (char *)&dwIPv6, sizeof(dwIPv6));
-#else
-				int iIPv6 = 0;
-				setsockopt(m_Sock, IPPROTO_IPV6, IPV6_V6ONLY, &iIPv6, sizeof(iIPv6));
-#endif
-			}
-		}
-	}
-	else
-	{
-		((struct sockaddr_in *)&sas)->sin_family = AF_INET;
-		((struct sockaddr_in *)&sas)->sin_port = htons((unsigned short)atoi(SettingManager::m_Ptr->m_sTexts[SETTXT_UDP_PORT]));
-		sas_len = sizeof(struct sockaddr_in);
+            if (iAddressFamily == AF_INET6 && ServerManager::m_bIPv6DualStack)
+            {
+                const int iIPv6 = 0;
+                setsockopt(m_Sock, IPPROTO_IPV6, IPV6_V6ONLY, &iIPv6, sizeof(iIPv6));
+            }
+        }
+    }
+    else
+    {
+        reinterpret_cast<sockaddr_in*>(&sas)->sin_family = AF_INET;
+        int iUdpPort = 0;
+        if (safe_stoi(SettingManager::m_Ptr->GetText(std::to_underlying(SetTxtIds::SETTXT_UDP_PORT)).c_str(), iUdpPort))
+        {
+            reinterpret_cast<sockaddr_in*>(&sas)->sin_port = htons(static_cast<unsigned short>(iUdpPort));
+        }
+        sas_len = sizeof(struct sockaddr_in);
 
-		if (SettingManager::m_Ptr->m_bBools[SETBOOL_BIND_ONLY_SINGLE_IP] == true && ServerManager::m_sHubIP[0] != '\0')
-		{
-			((struct sockaddr_in *)&sas)->sin_addr.s_addr = inet_addr(ServerManager::m_sHubIP);
-		}
-		else
-		{
-			((struct sockaddr_in *)&sas)->sin_addr.s_addr = INADDR_ANY;
-		}
-	}
+        if (SettingManager::m_Ptr->GetBool(std::to_underlying(SetBoolIds::SETBOOL_BIND_ONLY_SINGLE_IP)) && ServerManager::m_sHubIP[0] != '\0')
+        {
+            reinterpret_cast<sockaddr_in*>(&sas)->sin_addr.s_addr = inet_addr(ServerManager::m_sHubIP.data());
+        }
+        else
+        {
+            reinterpret_cast<sockaddr_in*>(&sas)->sin_addr.s_addr = INADDR_ANY;
+        }
+    }
 
-#ifdef _WIN32
-	if (bind(m_Sock, (struct sockaddr *)&sas, sas_len) == SOCKET_ERROR)
-	{
-		AppendLog("[ERR] UDP Socket bind error: " + string(WSAGetLastError()));
-#else
-	if (bind(m_Sock, (struct sockaddr *)&sas, sas_len) == -1)
-	{
-		AppendLog("[ERR] UDP Socket bind error: " + string(ErrnoStr(errno)) + " (" + std::to_string(errno) + ")");
-#endif
-		return false;
-	}
+    if (bind(m_Sock, reinterpret_cast<struct sockaddr*>(&sas), sas_len) == -1)
+    {
+        LogError("UDP Socket bind error: {} ({})", ErrnoStr(errno), errno);
+        return false;
+    }
 
-	return true;
+    return true;
 }
 //---------------------------------------------------------------------------
 
 UDPThread::~UDPThread()
 {
-#ifdef _WIN32
-	safe_closesocket(m_Sock);
-
-	if (hThreadHandle != INVALID_HANDLE_VALUE)
-	{
-		CloseHandle(hThreadHandle);
-#else
-	if (m_ThreadId != 0)
-	{
-		Close();
-		WaitFor();
-#endif
-	}
+    if (m_ThreadId != 0)
+    {
+        Close();
+        WaitFor();
+    }
 }
 //---------------------------------------------------------------------------
 
-#ifdef _WIN32
-unsigned __stdcall ExecuteUDP(void * pThread)
+namespace {
+void* ExecuteUDP(void* pThread)
 {
-#else
-static void* ExecuteUDP(void * pThread)
-{
-#endif
-	(reinterpret_cast<UDPThread *>(pThread))->Run();
+    (reinterpret_cast<UDPThread*>(pThread))->Run();
 
-	return 0;
+    return 0;
 }
+} // namespace
 //---------------------------------------------------------------------------
 
 void UDPThread::Resume()
 {
-#ifdef _WIN32
-	hThreadHandle = (HANDLE)_beginthreadex(NULL, 0, ExecuteUDP, this, 0, &m_ThreadId);
-	if (hThreadHandle == 0)
-	{
-#else
-	int iRet = pthread_create(&m_ThreadId, NULL, ExecuteUDP, this);
-	if (iRet != 0)
-	{
-#endif
-		AppendDebugLog("%s - [ERR] Failed to create new UDPThread\n");
-	}
+    const int iRet = pthread_create(&m_ThreadId, nullptr, ExecuteUDP, this);
+    if (iRet != 0)
+    {
+        LogDbg("[ERR] Failed to create new UDPThread");
+    }
 }
 //---------------------------------------------------------------------------
 
 void UDPThread::Run()
 {
-	sockaddr_storage sas;
-	socklen_t sas_len = sizeof(sockaddr_storage);
+    sockaddr_storage sas;
+    socklen_t sas_len = sizeof(sockaddr_storage);
 
-	while (m_bTerminated == false)
-	{
-		int len = recvfrom(m_Sock, rcvbuf, sizeof(rcvbuf) - 1, 0, (struct sockaddr *)&sas, &sas_len);
+    while (!m_bTerminated)
+    {
+        const int len = recvfrom(m_Sock, rcvbuf.data(), rcvbuf.size() - 1, 0, reinterpret_cast<struct sockaddr*>(&sas), &sas_len);
 
-		if (len < 5 || strncmp(rcvbuf, "$SR ", 4) != 0)
-		{
-			continue;
-		}
+        if (len < 5 || !MatchBytes(rcvbuf.data(), "$SR "))
+        {
+            continue;
+        }
 
-		rcvbuf[len] = '\0';
+        rcvbuf[len] = '\0';
 
-		// added ip check, we don't want fake $SR causing kick of innocent user...
-		EventQueue::m_Ptr->AddThread(EventQueue::EVENT_UDP_SR, rcvbuf, &sas);
-	}
+        // added ip check, we don't want fake $SR causing kick of innocent user...
+        EventQueue::m_Ptr->AddThread(EventQueue::EventType::UDP_SR, rcvbuf.data(), &sas);
+    }
 }
 //---------------------------------------------------------------------------
 
 void UDPThread::Close()
 {
-	m_bTerminated = true;
-#ifdef _WIN32
-#else
-	shutdown(m_Sock, SHUT_RDWR);
-#endif
-	safe_closesocket(m_Sock);
+    m_bTerminated = true;
+    shutdown(m_Sock, SHUT_RDWR);
+    safe_closesocket(m_Sock);
 }
 //---------------------------------------------------------------------------
 
 void UDPThread::WaitFor()
 {
-#ifdef _WIN32
-	WaitForSingleObject(hThreadHandle, INFINITE);
-#else
-	if (m_ThreadId != 0)
-	{
-		pthread_join(m_ThreadId, NULL);
-		m_ThreadId = 0;
-	}
-#endif
+    if (m_ThreadId != 0)
+    {
+        pthread_join(m_ThreadId, nullptr);
+        m_ThreadId = 0;
+    }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-UDPThread * UDPThread::Create(const int iAddressFamily)
+UDPThread* UDPThread::Create(const int iAddressFamily)
 {
-	UDPThread * pUDPThread = new (std::nothrow) UDPThread();
-	if (pUDPThread == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate pUDPThread in UDPThread::Create\n");
-		return NULL;
-	}
+    auto pUDPThread = std::make_unique<UDPThread>();
 
-	if (pUDPThread->Listen(iAddressFamily) == true)
-	{
-		pUDPThread->Resume();
-		return pUDPThread;
-	}
-	else
-	{
-		delete pUDPThread;
-		return NULL;
-	}
+    if (pUDPThread->Listen(iAddressFamily))
+    {
+        pUDPThread->Resume();
+        return pUDPThread.release();
+    }
+
+    return nullptr;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void UDPThread::Destroy(UDPThread *& pUDPThread)
+void UDPThread::Destroy(UDPThread*& pUDPThread)
 {
-	if (pUDPThread != NULL)
-	{
-		pUDPThread->Close();
-		pUDPThread->WaitFor();
-		delete pUDPThread;
-		pUDPThread = nullptr;
-	}
+    if (pUDPThread)
+    {
+        pUDPThread->Close();
+        pUDPThread->WaitFor();
+        delete pUDPThread;
+        pUDPThread = nullptr;
+    }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #endif // FLYLINKDC_USE_UDP_THREAD

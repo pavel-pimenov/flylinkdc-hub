@@ -35,761 +35,746 @@
 #include "User.h"
 #include "utility.h"
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-DBSQLite * DBSQLite::m_Ptr = NULL;
+std::unique_ptr<DBSQLite> DBSQLite::m_Ptr;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-DBSQLite::DBSQLite() : m_bConnected(false)
+DBSQLite::DBSQLite()
 {
-	m_pSqliteDB = nullptr;
-	if (SettingManager::m_Ptr->m_bBools[SETBOOL_ENABLE_DATABASE] == false)
-	{
-		return;
-	}
+    m_pSqliteDB = nullptr;
+    if (!SettingManager::m_Ptr->m_bBools[std::to_underlying(SetBoolIds::SETBOOL_ENABLE_DATABASE)])
+    {
+        return;
+    }
 
-#ifdef _WIN32
-	int iRet = sqlite3_open((ServerManager::m_sPath + "\\cfg\\users.sqlite").c_str(), &m_pSqliteDB);
-#else
-	int iRet = sqlite3_open((ServerManager::m_sPath + "/cfg/users.sqlite").c_str(), &m_pSqliteDB);
-#endif
-	if (iRet != SQLITE_OK)
-	{
-		m_bConnected = false;
-		AppendLog(string("DBSQLite connection failed: ") + sqlite3_errmsg(m_pSqliteDB));
-		sqlite3_close(m_pSqliteDB);
+    int iRet = sqlite3_open((ServerManager::m_sPath + "/cfg/users.sqlite").c_str(), &m_pSqliteDB);
+    if (iRet != SQLITE_OK)
+    {
+        m_bConnected = false;
+        LogInfo("DBSQLite connection failed: {}", sqlite3_errmsg(m_pSqliteDB));
+        sqlite3_close(m_pSqliteDB);
 
-		return;
-	}
+        return;
+    }
 
-	char * sErrMsg = nullptr;
+    char* sErrMsg = nullptr;
 
-	iRet = sqlite3_exec(m_pSqliteDB, "PRAGMA synchronous = NORMAL;\r\n"
-	                    "PRAGMA journal_mode = WAL;",
-	                    NULL, NULL, &sErrMsg);
+    iRet = sqlite3_exec(m_pSqliteDB,
+                        "PRAGMA synchronous = NORMAL;\r\n"
+                        "PRAGMA journal_mode = WAL;",
+                        nullptr,
+                        nullptr,
+                        &sErrMsg);
 
-	if (iRet != SQLITE_OK)
-	{
-		m_bConnected = false;
-		AppendLog(string("DBSQLite PRAGMA set failed: ") + sErrMsg);
-		sqlite3_free(sErrMsg);
-		sqlite3_close(m_pSqliteDB);
+    if (iRet != SQLITE_OK)
+    {
+        m_bConnected = false;
+        LogInfo("DBSQLite PRAGMA set failed: {}", sErrMsg);
+        sqlite3_free(sErrMsg);
+        sqlite3_close(m_pSqliteDB);
 
-		return;
-	}
+        return;
+    }
 
-	iRet = sqlite3_exec(m_pSqliteDB,
-	                    "CREATE TABLE IF NOT EXISTS userinfo ("
-	                    "nick VARCHAR(64) NOT NULL,"
-	                    "nick_lower VARCHAR(64) NOT NULL,"
-	                    "last_updated DATETIME NOT NULL,"
-	                    "ip_address VARCHAR(39) NOT NULL,"
-	                    "share VARCHAR(24) NOT NULL,"
-	                    "description VARCHAR(192),"
-	                    "tag VARCHAR(192),"
-	                    "connection VARCHAR(32),"
-	                    "email VARCHAR(96),"
-	                    "message_count INTEGER default 0"
-	                    ");", NULL, NULL, &sErrMsg);
+    iRet = sqlite3_exec(m_pSqliteDB,
+                        "CREATE TABLE IF NOT EXISTS userinfo ("
+                        "nick VARCHAR(64) NOT NULL,"
+                        "nick_lower VARCHAR(64) NOT NULL,"
+                        "last_updated DATETIME NOT NULL,"
+                        "ip_address VARCHAR(39) NOT NULL,"
+                        "share VARCHAR(24) NOT NULL,"
+                        "description VARCHAR(192),"
+                        "tag VARCHAR(192),"
+                        "connection VARCHAR(32),"
+                        "email VARCHAR(96),"
+                        "message_count INTEGER default 0"
+                        ");",
+                        nullptr,
+                        nullptr,
+                        &sErrMsg);
 
-	if (iRet != SQLITE_OK)
-	{
-		m_bConnected = false;
-		AppendLog(string("DBSQLite check/create table failed: ") + sErrMsg);
-		sqlite3_free(sErrMsg);
-		sqlite3_close(m_pSqliteDB);
-		return;
-	}
-	//
-	iRet = sqlite3_exec(m_pSqliteDB, "ALTER TABLE userinfo ADD COLUMN message_count INTEGER default 0;", NULL, NULL, &sErrMsg);
-	if (iRet == SQLITE_OK)
-	{
-		/*
-		        if (iRet != SQLITE_OK)
-		        {
-		            m_bConnected = false;
-		            AppendLog(string("DBSQLite update userinfo set message_count = 0 where message_count is null failed: ") + sErrMsg);
-		            sqlite3_free(sErrMsg);
-		            sqlite3_close(m_pSqliteDB);
-		            return;
-		        }
-		        */
-	}
-	iRet = sqlite3_exec(m_pSqliteDB, "CREATE INDEX IF NOT EXISTS i_userinfo_message_count ON userinfo(message_count);", NULL, NULL, &sErrMsg);
-	if (iRet != SQLITE_OK)
-	{
-		m_bConnected = false;
-		AppendLog(string("DBSQLite CREATE UNIQUE INDEX IF NOT EXISTS i_userinfo_message_count ON userinfo(message_count) failed: ") + sErrMsg);
-		sqlite3_free(sErrMsg);
-		sqlite3_close(m_pSqliteDB);
-		return;
-	}
+    if (iRet != SQLITE_OK)
+    {
+        m_bConnected = false;
+        LogInfo("DBSQLite check/create table failed: {}", sErrMsg);
+        sqlite3_free(sErrMsg);
+        sqlite3_close(m_pSqliteDB);
+        return;
+    }
+    //
+    iRet = sqlite3_exec(m_pSqliteDB, "ALTER TABLE userinfo ADD COLUMN message_count INTEGER default 0;", nullptr, nullptr, &sErrMsg);
+    sqlite3_free(sErrMsg);
+    sErrMsg = nullptr;
+    iRet = sqlite3_exec(m_pSqliteDB, "CREATE INDEX IF NOT EXISTS i_userinfo_message_count ON userinfo(message_count);", nullptr, nullptr, &sErrMsg);
+    if (iRet != SQLITE_OK)
+    {
+        m_bConnected = false;
+        LogInfo("DBSQLite CREATE UNIQUE INDEX message_count failed: {}", sErrMsg);
+        sqlite3_free(sErrMsg);
+        sqlite3_close(m_pSqliteDB);
+        return;
+    }
+    sqlite3_free(sErrMsg);
+    sErrMsg = nullptr;
 
-	//
-	iRet = sqlite3_exec(m_pSqliteDB, "ALTER TABLE userinfo ADD COLUMN nick_lower VARCHAR(64);", NULL, NULL, &sErrMsg);
-	if (iRet == SQLITE_OK)
-	{
-		iRet = sqlite3_exec(m_pSqliteDB, "update userinfo set nick_lower = LOWER(nick);", NULL, NULL, &sErrMsg);
-		if (iRet != SQLITE_OK)
-		{
-			m_bConnected = false;
-			AppendLog(string("DBSQLite update userinfo set nick_lower = LOWER(nick); failed: ") + sErrMsg);
-			sqlite3_free(sErrMsg);
-			sqlite3_close(m_pSqliteDB);
-			return;
-		}
-	}
-	iRet = sqlite3_exec(m_pSqliteDB, "CREATE UNIQUE INDEX IF NOT EXISTS iu_userinfo_nick ON userinfo(nick_lower);", NULL, NULL, &sErrMsg);
-	if (iRet != SQLITE_OK)
-	{
-		m_bConnected = false;
-		AppendLog(string("DBSQLite CREATE UNIQUE INDEX IF NOT EXISTS iu_userinfo_nick ON userinfo(nick_lower) failed: ") + sErrMsg);
-		sqlite3_free(sErrMsg);
-		sqlite3_close(m_pSqliteDB);
-		return;
-	}
+    //
+    iRet = sqlite3_exec(m_pSqliteDB, "ALTER TABLE userinfo ADD COLUMN nick_lower VARCHAR(64);", nullptr, nullptr, &sErrMsg);
+    if (iRet == SQLITE_OK)
+    {
+        sqlite3_free(sErrMsg);
+        sErrMsg = nullptr;
+        iRet = sqlite3_exec(m_pSqliteDB, "update userinfo set nick_lower = LOWER(nick);", nullptr, nullptr, &sErrMsg);
+        if (iRet != SQLITE_OK)
+        {
+            m_bConnected = false;
+            LogInfo("DBSQLite update userinfo nick_lower failed: {}", sErrMsg);
+            sqlite3_free(sErrMsg);
+            sqlite3_close(m_pSqliteDB);
+            return;
+        }
+        sqlite3_free(sErrMsg);
+        sErrMsg = nullptr;
+    }
+    else
+    {
+        sqlite3_free(sErrMsg);
+        sErrMsg = nullptr;
+    }
+    iRet = sqlite3_exec(m_pSqliteDB, "CREATE UNIQUE INDEX IF NOT EXISTS iu_userinfo_nick ON userinfo(nick_lower);", nullptr, nullptr, &sErrMsg);
+    if (iRet != SQLITE_OK)
+    {
+        m_bConnected = false;
+        LogInfo("DBSQLite CREATE UNIQUE INDEX nick_lower failed: {}", sErrMsg);
+        sqlite3_free(sErrMsg);
+        sqlite3_close(m_pSqliteDB);
+        return;
+    }
+    sqlite3_free(sErrMsg);
+    sErrMsg = nullptr;
 
-	m_bConnected = true;
+    m_bConnected = true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 DBSQLite::~DBSQLite()
 {
 #ifdef FLYLINKDC_USE_SQLITE_REMOVE_OLD_RECORD
-	// When user don't want to save data in database forever then he can set to remove records older than X days.
-	if (SettingManager::m_Ptr->m_i16Shorts[SETSHORT_DB_REMOVE_OLD_RECORDS] != 0)
-	{
-		RemoveOldRecords(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_DB_REMOVE_OLD_RECORDS]);
-	}
-#endif // FLYLINKDC_USE_SQLITE_REMOVE_OLD_RECORD    
-	if (m_bConnected == true)
-	{
-		sqlite3_close(m_pSqliteDB);
-	}
+    // When user don't want to save data in database forever then he can set to remove records older than X days.
+    if (SettingManager::m_Ptr->m_i16Shorts[std::to_underlying(SetShortIds::SETSHORT_DB_REMOVE_OLD_RECORDS)] != 0)
+    {
+        RemoveOldRecords(SettingManager::m_Ptr->m_i16Shorts[std::to_underlying(SetShortIds::SETSHORT_DB_REMOVE_OLD_RECORDS)]);
+    }
+#endif // FLYLINKDC_USE_SQLITE_REMOVE_OLD_RECORD
+    if (m_bConnected)
+    {
+        sqlite3_close(m_pSqliteDB);
+    }
 
-	sqlite3_shutdown();
+    sqlite3_shutdown();
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void DBSQLite::IncMessageCount(User * pUser)
+
+bool DBSQLite::SqlExec(const char* sql, const char* label, int (*callback)(void*, int, char**, char**)) const
 {
-	if (m_bConnected == false)
-	{
-		return;
-	}
+    char* sErrMsg = nullptr;
+    const int iRet = sqlite3_exec(m_pSqliteDB, sql, callback, nullptr, &sErrMsg);
+    if (iRet != SQLITE_OK)
+    {
+        UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite %s failed: %s", label, sErrMsg);
+        sqlite3_free(sErrMsg);
+        return false;
+    }
+    return true;
+}
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void DBSQLite::IncMessageCount(User* pUser)
+{
+    if (!m_bConnected)
+    {
+        UdpDebug::m_Ptr->BroadcastFormat("[WARN] DBSQLite::IncMessageCount skipped — database not connected.");
+        return;
+    }
 
-	char sNick[65];
-	if (TextConverter::m_Ptr->CheckUtf8AndConvert(pUser->m_sNick, pUser->m_ui8NickLen, sNick, 65) == 0)
-	{
-		return;
-	}
-	char sSQLCommand[1024];
-	sqlite3_snprintf(sizeof(sSQLCommand), sSQLCommand,
-	                 "UPDATE userinfo SET message_count = message_count+1 WHERE nick_lower = LOWER(%Q);", sNick);
+    std::string sNick(65, '\0');
+    const size_t szNickLen = TextConverter::m_Ptr->CheckUtf8AndConvert(pUser->m_sNick.c_str(), pUser->m_sNick.size(), sNick.data(), 65);
+    if (szNickLen == 0)
+    {
+        UdpDebug::m_Ptr->BroadcastFormat("[WARN] DBSQLite::IncMessageCount skipped — nick conversion failed for %s.", pUser->m_sNick.c_str());
+        return;
+    }
+    sNick.resize(szNickLen);
+    std::string sSQLCommand;
+    sSQLCommand.resize(1024);
+    sqlite3_snprintf(static_cast<int>(sSQLCommand.size()),
+                     sSQLCommand.data(),
+                     "UPDATE userinfo SET message_count = message_count+1 WHERE nick_lower = LOWER(%Q);",
+                     sNick.c_str());
+    sSQLCommand.resize(strlen(sSQLCommand.data()));
 
-	char * sErrMsg = nullptr;
-
-	int iRet = sqlite3_exec(m_pSqliteDB, sSQLCommand, NULL, NULL, &sErrMsg);
-
-	if (iRet != SQLITE_OK)
-	{
-		UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite update record [IncMessageCount] failed: %s", sErrMsg);
-		sqlite3_free(sErrMsg);
-	}
+    if (!SqlExec(sSQLCommand.c_str(), "update record [IncMessageCount]"))
+    {
+        LogDbgErr("[DB] Failed to increment message count for {}", sNick);
+    }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Now that important part. Function to update or insert user to database.
-void DBSQLite::UpdateRecord(User * pUser)
+void DBSQLite::UpdateRecord(User* pUser)
 {
-	if (m_bConnected == false)
-	{
-		return;
-	}
+    if (!m_bConnected)
+    {
+        UdpDebug::m_Ptr->BroadcastFormat("[WARN] DBSQLite::UpdateRecord skipped — database not connected.");
+        return;
+    }
 
-	char sNick[65];
-	if (TextConverter::m_Ptr->CheckUtf8AndConvert(pUser->m_sNick, pUser->m_ui8NickLen, sNick, 65) == 0)
-	{
-		return;
-	}
+    std::string sNick(65, '\0');
+    const size_t szNickLen = TextConverter::m_Ptr->CheckUtf8AndConvert(pUser->m_sNick.c_str(), pUser->m_sNick.size(), sNick.data(), 65);
+    if (szNickLen == 0)
+    {
+        UdpDebug::m_Ptr->BroadcastFormat("[WARN] DBSQLite::UpdateRecord skipped — nick conversion failed for %s.", pUser->m_sNick.c_str());
+        return;
+    }
+    sNick.resize(szNickLen);
 
-	char sShare[24];
-	if (snprintf(sShare, 24, "%0.02f GB", (double)pUser->m_ui64SharedSize / 1073741824) <= 0)
-	{
-		return;
-	}
+    std::array<char, 24> sShare = {};
+    if (snprintf(sShare.data(), sShare.size(), "%0.02f GB", static_cast<double>(pUser->m_ui64SharedSize) / 1073741824) <= 0)
+    {
+        LogDbgWarn("[WARN] DBSQLite::UpdateRecord skipped — snprintf share failed for user {}.", pUser->m_sNick.c_str());
+        return;
+    }
 
-	char sDescription[193];
-	sDescription[0] = '\0';
+    std::string sDescription(193, '\0');
 
-	if (pUser->m_sDescription != NULL)
-	{
-		TextConverter::m_Ptr->CheckUtf8AndConvert(pUser->m_sDescription, pUser->m_ui8DescriptionLen, sDescription, 193);
-	}
+    if (!pUser->m_sDescription.empty())
+    {
+        const size_t szDescLen = TextConverter::m_Ptr->CheckUtf8AndConvert(
+            pUser->m_sDescription.data(), static_cast<uint8_t>(pUser->m_sDescription.size()), sDescription.data(), 193);
+        sDescription.resize(szDescLen);
+    }
+    else
+    {
+        sDescription.clear();
+    }
 
-	char sTag[193];
-	sTag[0] = '\0';
+    std::string sTag(193, '\0');
 
-	if (pUser->m_sTag != NULL)
-	{
-		TextConverter::m_Ptr->CheckUtf8AndConvert(pUser->m_sTag, pUser->m_ui8TagLen, sTag, 193);
-	}
+    if (!pUser->m_sTag.empty())
+    {
+        const size_t szTagLen = TextConverter::m_Ptr->CheckUtf8AndConvert(pUser->m_sTag.data(), static_cast<uint8_t>(pUser->m_sTag.size()), sTag.data(), 193);
+        sTag.resize(szTagLen);
+    }
+    else
+    {
+        sTag.clear();
+    }
 
-	char sConnection[33];
-	sConnection[0] = '\0';
+    std::array<char, 33> sConnection = {};
 
-	if (pUser->m_sConnection != NULL)
-	{
-		TextConverter::m_Ptr->CheckUtf8AndConvert(pUser->m_sConnection, pUser->m_ui8ConnectionLen, sConnection, 33);
-	}
+    if (!pUser->m_sConnection.empty())
+    {
+        static_cast<void>(TextConverter::m_Ptr->CheckUtf8AndConvert(
+            pUser->m_sConnection.data(), static_cast<uint8_t>(pUser->m_sConnection.size()), sConnection.data(), sConnection.size()));
+    }
 
-	char sEmail[97];
-	sEmail[0] = '\0';
+    std::string sEmail(97, '\0');
 
-	if (pUser->m_sEmail != NULL)
-	{
-		TextConverter::m_Ptr->CheckUtf8AndConvert(pUser->m_sEmail, pUser->m_ui8EmailLen, sEmail, 97);
-	}
+    if (!pUser->m_sEmail.empty())
+    {
+        const size_t szEmailLen =
+            TextConverter::m_Ptr->CheckUtf8AndConvert(pUser->m_sEmail.data(), static_cast<uint8_t>(pUser->m_sEmail.size()), sEmail.data(), 97);
+        sEmail.resize(szEmailLen);
+    }
+    else
+    {
+        sEmail.clear();
+    }
 
+    std::string sSQLCommand;
+    sSQLCommand.resize(1024);
+    sqlite3_snprintf(static_cast<int>(sSQLCommand.size()),
+                     sSQLCommand.data(),
+                     "UPDATE userinfo SET "
+                     "nick = %Q,"
+                     "last_updated = DATETIME('now')," // last_updated
+                     "ip_address = %Q,"                // ip
+                     "share = %Q,"                     // share
+                     "description = %Q,"               // description
+                     "tag = %Q,"                       // tag
+                     "connection = %Q,"                // connection
+                     "email = %Q"                      // email
+                     "WHERE nick_lower = LOWER(%Q);",  // nick
+                     sNick.c_str(),
+                     pUser->m_sIP.data(),
+                     sShare.data(),
+                     sDescription.c_str(),
+                     sTag.c_str(),
+                     sConnection.data(),
+                     sEmail.c_str(),
+                     sNick.c_str());
+    sSQLCommand.resize(strlen(sSQLCommand.data()));
 
-	char sSQLCommand[1024];
-	sqlite3_snprintf(sizeof(sSQLCommand), sSQLCommand,
-	                 "UPDATE userinfo SET "
-	                 "nick = %Q,"
-	                 "last_updated = DATETIME('now')," // last_updated
-	                 "ip_address = %Q," // ip
-	                 "share = %Q," // share
-	                 "description = %Q," // description
-	                 "tag = %Q," // tag
-	                 "connection = %Q," // connection
-	                 "email = %Q" // email
-	                 "WHERE nick_lower = LOWER(%Q);", // nick
-	                 sNick, pUser->m_sIP, sShare, sDescription, sTag, sConnection, sEmail, sNick
-	                );
+    if (!SqlExec(sSQLCommand.c_str(), "update record"))
+    {
+        LogDbgErr("[DB] Failed to update record for {}", sNick);
+    }
 
-	char * sErrMsg = NULL;
+    const int iRet = sqlite3_changes(m_pSqliteDB);
+    if (iRet != 0)
+    {
+        return;
+    }
 
-	int iRet = sqlite3_exec(m_pSqliteDB, sSQLCommand, NULL, NULL, &sErrMsg);
+    sqlite3_snprintf(static_cast<int>(sSQLCommand.size()),
+                     sSQLCommand.data(),
+                     "INSERT INTO userinfo (nick, nick_lower, last_updated, ip_address, share, description, tag, connection, email) VALUES ("
+                     "%Q,"              // nick
+                     "LOWER(%Q),"       // nick
+                     "DATETIME('now')," // last_updated
+                     "%Q,"              // ip
+                     "%Q,"              // share
+                     "%Q,"              // description
+                     "%Q,"              // tag
+                     "%Q,"              // connection
+                     "%Q"               // email
+                     ");",
+                     sNick.c_str(),
+                     sNick.c_str(),
+                     pUser->m_sIP.data(),
+                     sShare.data(),
+                     sDescription.c_str(),
+                     sTag.c_str(),
+                     sConnection.data(),
+                     sEmail.c_str());
+    sSQLCommand.resize(strlen(sSQLCommand.data()));
 
-	if (iRet != SQLITE_OK)
-	{
-		UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite update record failed: %s", sErrMsg);
-		sqlite3_free(sErrMsg);
-	}
-
-	iRet = sqlite3_changes(m_pSqliteDB);
-	if (iRet != 0)
-	{
-		return;
-	}
-
-	sqlite3_snprintf(1024, sSQLCommand,
-	                 "INSERT INTO userinfo (nick, nick_lower, last_updated, ip_address, share, description, tag, connection, email) VALUES ("
-	                 "%Q," // nick
-	                 "LOWER(%Q)," // nick
-	                 "DATETIME('now')," // last_updated
-	                 "%Q," // ip
-	                 "%Q," // share
-	                 "%Q," // description
-	                 "%Q," // tag
-	                 "%Q," // connection
-	                 "%Q" // email
-	                 ");",
-	                 sNick, sNick, pUser->m_sIP, sShare, sDescription, sTag, sConnection, sEmail
-	                );
-
-	iRet = sqlite3_exec(m_pSqliteDB, sSQLCommand, NULL, NULL, &sErrMsg);
-
-	if (iRet != SQLITE_OK)
-	{
-		UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite insert record failed: %s", sErrMsg);
-		sqlite3_free(sErrMsg);
-	}
+    if (!SqlExec(sSQLCommand.c_str(), "insert record"))
+    {
+        LogDbgErr("[DB] Failed to insert record for {}", sNick);
+    }
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-static bool bFirst = true;
-static bool bSecond = false;
-static char sFirstNick[65];
-static char sFirstIP[40];
-static int iMsgLen = 0;
-static int iAfterHubSecMsgLen = 0;
+namespace {
+bool g_bFirst = true;
+bool g_bSecond = false;
+std::array<char, 65> g_sFirstNick{};
+std::array<char, 40> g_sFirstIP{};
+int g_iMsgLen = 0;
+int g_iAfterHubSecMsgLen = 0;
 
-static int SelectCallBack(void *, int iArgCount, char ** ppArgSTrings, char **)
+int SelectCallBack(void*, int iArgCount, char** ppArgSTrings, char**)
 {
-	if (iArgCount != 8)
-	{
-		UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite SelectCallBack wrong iArgCount: %d", iArgCount);
-		return 0;
-	}
+    if (iArgCount != 8)
+    {
+        UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite SelectCallBack wrong iArgCount: %d", iArgCount);
+        return 0;
+    }
 
-	if (bFirst == true)
-	{
-		bFirst = false;
-		bSecond = true;
+    if (g_bFirst)
+    {
+        g_bFirst = false;
+        g_bSecond = true;
 
-		size_t szLength = strlen(ppArgSTrings[0]);
-		memcpy(sFirstNick, ppArgSTrings[0], szLength);
-		sFirstNick[szLength] = '\0';
+        size_t szLength = strlen(ppArgSTrings[0]);
+        if (szLength == 0 || szLength > 64)
+        {
+            UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid nick length: %zu", szLength);
+            return 0;
+        }
 
-		szLength = strlen(ppArgSTrings[2]);
-		memcpy(sFirstIP, ppArgSTrings[2], szLength);
-		sFirstIP[szLength] = '\0';
+        std::copy_n(ppArgSTrings[0], szLength, g_sFirstNick.begin());
+        g_sFirstNick[szLength] = '\0';
 
-		szLength = strlen(ppArgSTrings[0]);
-		if (szLength == 0 || szLength > 64)
-		{
-			UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid nick length: %zu", szLength);
-			return 0;
-		}
+        szLength = strlen(ppArgSTrings[2]);
+        if (szLength > 39)
+        {
+            UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid first IP length: %zu", szLength);
+            return 0;
+        }
 
-		int iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_NICK], ppArgSTrings[0]);
-		if (iRet <= 0)
-		{
-			return 0;
-		}
-		iMsgLen += iRet;
+        std::copy_n(ppArgSTrings[2], szLength, g_sFirstIP.begin());
+        g_sFirstIP[szLength] = '\0';
 
-		RegUser * pReg = RegManager::m_Ptr->Find(ppArgSTrings[0], szLength);
-		if (pReg != NULL)
-		{
-			iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_PROFILE], ProfileManager::m_Ptr->m_ppProfilesTable[pReg->m_ui16Profile]->m_sName);
-			if (iRet <= 0)
-			{
-				return 0;
-			}
-			iMsgLen += iRet;
-		}
+        if (!SnprintfAppend(ServerManager::m_pGlobalBuffer,
+                            g_iMsgLen,
+                            ServerManager::m_szGlobalBufferSize,
+                            "\n%s: %s",
+                            LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_NICK)].c_str(),
+                            ppArgSTrings[0]))
+        {
+            return 0;
+        }
 
-		// In case when SQL wildcards were used is possible that user is online. Then we don't use data from database, but data that are in server memory.
-		User * pOnlineUser = HashManager::m_Ptr->FindUser(ppArgSTrings[0], szLength);
-		if (pOnlineUser != NULL)
-		{
-			iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s ", LanguageManager::m_Ptr->m_sTexts[LAN_STATUS], LanguageManager::m_Ptr->m_sTexts[LAN_ONLINE_FROM]);
-			if (iRet <= 0)
-			{
-				return 0;
-			}
-			iMsgLen += iRet;
+        RegUser* pReg = RegManager::m_Ptr->Find(std::string_view(ppArgSTrings[0], szLength));
+        if (pReg)
+        {
+            if (!SnprintfAppend(ServerManager::m_pGlobalBuffer,
+                                g_iMsgLen,
+                                ServerManager::m_szGlobalBufferSize,
+                                "\n%s: %s",
+                                LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_PROFILE)].c_str(),
+                                ProfileManager::m_Ptr->m_vpProfilesTable[pReg->m_ui16Profile]->m_sName.c_str()))
+            {
+                return 0;
+            }
+        }
 
-			struct tm *tm = localtime(&pOnlineUser->m_tLoginTime);
-			iRet = (int)strftime(ServerManager::m_pGlobalBuffer + iMsgLen, 256, "%c", tm);
-			if (iRet <= 0)
-			{
-				return 0;
-			}
-			iMsgLen += iRet;
+        // In case when SQL wildcards were used is possible that user is online. Then we don't use data from database, but data that are in server memory.
+        User* pOnlineUser = HashManager::m_Ptr->FindUser(std::string_view(ppArgSTrings[0], szLength));
+        if (pOnlineUser)
+        {
+            if (!BuildUserOnlineInfo(g_iMsgLen, pOnlineUser))
+            {
+                return 0;
+            }
 
-			if (pOnlineUser->m_sIPv4[0] != '\0')
-			{
-				iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s / %s\n%s: %0.02f %s", LanguageManager::m_Ptr->m_sTexts[LAN_IP], pOnlineUser->m_sIP, pOnlineUser->m_sIPv4, LanguageManager::m_Ptr->m_sTexts[LAN_SHARE_SIZE], (double)pOnlineUser->m_ui64SharedSize / 1073741824, LanguageManager::m_Ptr->m_sTexts[LAN_GIGA_BYTES]);
-				if (iRet <= 0)
-				{
-					return 0;
-				}
-				iMsgLen += iRet;
-			}
-			else
-			{
-				iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s\n%s: %0.02f %s", LanguageManager::m_Ptr->m_sTexts[LAN_IP], pOnlineUser->m_sIP, LanguageManager::m_Ptr->m_sTexts[LAN_SHARE_SIZE], (double)pOnlineUser->m_ui64SharedSize / 1073741824, LanguageManager::m_Ptr->m_sTexts[LAN_GIGA_BYTES]);
-				if (iRet <= 0)
-				{
-					return 0;
-				}
-				iMsgLen += iRet;
-			}
+            return 0;
+        }
+        // User is offline, then we use data from database.
+        if (!SnprintfAppend(ServerManager::m_pGlobalBuffer,
+                            g_iMsgLen,
+                            ServerManager::m_szGlobalBufferSize,
+                            "\n%s: %s ",
+                            LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_STATUS)].c_str(),
+                            LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_OFFLINE_FROM)].c_str()))
+        {
+            return 0;
+        }
+        const auto tTime = static_cast<time_t>(strtoull(ppArgSTrings[1], nullptr, 10));
+        const struct tm* tm = localtime(&tTime);
+        const int iStrftimeRet2 = static_cast<int>(strftime(ServerManager::m_pGlobalBuffer + g_iMsgLen, ServerManager::m_szGlobalBufferSize - g_iMsgLen, "%c", tm));
+        if (iStrftimeRet2 <= 0)
+        {
+            return 0;
+        }
+        g_iMsgLen += iStrftimeRet2;
 
-			if (pOnlineUser->m_sDescription != NULL)
-			{
-				iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: ", LanguageManager::m_Ptr->m_sTexts[LAN_DESCRIPTION]);
-				if (iRet <= 0)
-				{
-					return 0;
-				}
-				iMsgLen += iRet;
-				memcpy(ServerManager::m_pGlobalBuffer + iMsgLen, pOnlineUser->m_sDescription, pOnlineUser->m_ui8DescriptionLen);
-				iMsgLen += (int)pOnlineUser->m_ui8DescriptionLen;
-			}
+        szLength = strlen(ppArgSTrings[2]);
+        if (szLength == 0 || szLength > 39)
+        {
+            UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid ip length: %zu", szLength);
+            return 0;
+        }
 
-			if (pOnlineUser->m_sTag != NULL)
-			{
-				iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: ", LanguageManager::m_Ptr->m_sTexts[LAN_TAG]);
-				if (iRet <= 0)
-				{
-					return 0;
-				}
-				iMsgLen += iRet;
-				memcpy(ServerManager::m_pGlobalBuffer + iMsgLen, pOnlineUser->m_sTag, pOnlineUser->m_ui8TagLen);
-				iMsgLen += (int)pOnlineUser->m_ui8TagLen;
-			}
+        szLength = strlen(ppArgSTrings[3]);
+        if (szLength == 0 || szLength > 24)
+        {
+            UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid share length: %zu", szLength);
+            return 0;
+        }
 
-			if (pOnlineUser->m_sConnection != NULL)
-			{
-				iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: ", LanguageManager::m_Ptr->m_sTexts[LAN_CONNECTION]);
-				if (iRet <= 0)
-				{
-					return 0;
-				}
-				iMsgLen += iRet;
-				memcpy(ServerManager::m_pGlobalBuffer + iMsgLen, pOnlineUser->m_sConnection, pOnlineUser->m_ui8ConnectionLen);
-				iMsgLen += (int)pOnlineUser->m_ui8ConnectionLen;
-			}
+        char* sIP = ppArgSTrings[2];
 
-			if (pOnlineUser->m_sEmail != NULL)
-			{
-				iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: ", LanguageManager::m_Ptr->m_sTexts[LAN_EMAIL]);
-				if (iRet <= 0)
-				{
-					return 0;
-				}
-				iMsgLen += iRet;
-				memcpy(ServerManager::m_pGlobalBuffer + iMsgLen, pOnlineUser->m_sEmail, pOnlineUser->m_ui8EmailLen);
-				iMsgLen += (int)pOnlineUser->m_ui8EmailLen;
-			}
+        if (!SnprintfAppend(ServerManager::m_pGlobalBuffer,
+                            g_iMsgLen,
+                            ServerManager::m_szGlobalBufferSize,
+                            "\n%s: %s\n%s: %s",
+                            LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_IP)].c_str(),
+                            sIP,
+                            LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_SHARE_SIZE)].c_str(),
+                            ppArgSTrings[3]))
+        {
+            return 0;
+        }
 
-			if (IpP2Country::m_Ptr->m_ui32Count != 0)
-			{
-				iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: ", LanguageManager::m_Ptr->m_sTexts[LAN_COUNTRY]);
-				if (iRet <= 0)
-				{
-					return 0;
-				}
-				iMsgLen += iRet;
-				memcpy(ServerManager::m_pGlobalBuffer + iMsgLen, IpP2Country::m_Ptr->GetCountry(pOnlineUser->m_ui8Country, false), 2);
-				iMsgLen += 2;
-			}
+        szLength = strlen(ppArgSTrings[4]);
+        if (szLength != 0)
+        {
+            if (szLength > 192)
+            {
+                UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid description length: %zu", szLength);
+                return 0;
+            }
 
-			return 0;
-		}
-		else     // User is offline, then we use data from database.
-		{
-			iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s ", LanguageManager::m_Ptr->m_sTexts[LAN_STATUS], LanguageManager::m_Ptr->m_sTexts[LAN_OFFLINE_FROM]);
-			if (iRet <= 0)
-			{
-				return 0;
-			}
-			iMsgLen += iRet;
-#ifdef _WIN32
-			time_t tTime = (time_t)_strtoui64(ppArgSTrings[1], NULL, 10);
-#else
-			time_t tTime = (time_t)strtoull(ppArgSTrings[1], NULL, 10);
-#endif
-			struct tm *tm = localtime(&tTime);
-			iRet = (int)strftime(ServerManager::m_pGlobalBuffer + iMsgLen, 256, "%c", tm);
-			if (iRet <= 0)
-			{
-				return 0;
-			}
-			iMsgLen += iRet;
+            if (!AppendLabeledField(g_iMsgLen, std::to_underlying(LangIds::LAN_DESCRIPTION), ppArgSTrings[4], szLength))
+            {
+                return 0;
+            }
+        }
 
-			szLength = strlen(ppArgSTrings[2]);
-			if (szLength == 0 || szLength > 39)
-			{
-				UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid ip length: %zu", szLength);
-				return 0;
-			}
+        szLength = strlen(ppArgSTrings[5]);
+        if (szLength != 0)
+        {
+            if (szLength > 192)
+            {
+                UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid tag length: %zu", szLength);
+                return 0;
+            }
 
-			szLength = strlen(ppArgSTrings[3]);
-			if (szLength == 0 || szLength > 24)
-			{
-				UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid share length: %zu", szLength);
-				return 0;
-			}
+            if (!AppendLabeledField(g_iMsgLen, std::to_underlying(LangIds::LAN_TAG), ppArgSTrings[5], szLength))
+            {
+                return 0;
+            }
+        }
 
-			char * sIP = ppArgSTrings[2];
+        szLength = strlen(ppArgSTrings[6]);
+        if (szLength != 0)
+        {
+            if (szLength > 32)
+            {
+                UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid connection length: %zu", szLength);
+                return 0;
+            }
 
-			iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_IP], sIP, LanguageManager::m_Ptr->m_sTexts[LAN_SHARE_SIZE], ppArgSTrings[3]);
-			if (iRet <= 0)
-			{
-				return 0;
-			}
-			iMsgLen += iRet;
+            if (!AppendLabeledField(g_iMsgLen, std::to_underlying(LangIds::LAN_CONNECTION), ppArgSTrings[6], szLength))
+            {
+                return 0;
+            }
+        }
 
-			szLength = strlen(ppArgSTrings[4]);
-			if (szLength != 0)
-			{
-				if (szLength > 192)
-				{
-					UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid description length: %zu", szLength);
-					return 0;
-				}
+        szLength = strlen(ppArgSTrings[7]);
+        if (szLength != 0)
+        {
+            if (szLength > 96)
+            {
+                UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid email length: %zu", szLength);
+                return 0;
+            }
 
-					iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_DESCRIPTION], ppArgSTrings[4]);
-					if (iRet <= 0)
-					{
-						return 0;
-					}
-					iMsgLen += iRet;
-				}
+            if (!AppendLabeledField(g_iMsgLen, std::to_underlying(LangIds::LAN_EMAIL), ppArgSTrings[7], szLength))
+            {
+                return 0;
+            }
+        }
 
-			szLength = strlen(ppArgSTrings[5]);
-			if (szLength != 0)
-			{
-				if (szLength > 192)
-				{
-					UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid tag length: %zu", szLength);
-					return 0;
-				}
+        std::array<uint8_t, 16> ui128IPHash = {};
 
-					iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_TAG], ppArgSTrings[5]);
-					if (iRet <= 0)
-					{
-						return 0;
-					}
-					iMsgLen += iRet;
-				}
+        if (IpP2Country::m_Ptr->m_ui32Count != 0 && HashIP(sIP, ui128IPHash.data()))
+        {
+            if (!SnprintfAppend(ServerManager::m_pGlobalBuffer,
+                                g_iMsgLen,
+                                ServerManager::m_szGlobalBufferSize,
+                                "\n%s: ",
+                                LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_COUNTRY)].c_str()))
+            {
+                return 0;
+            }
 
-			szLength = strlen(ppArgSTrings[6]);
-			if (szLength != 0)
-			{
-				if (szLength > 32)
-				{
-					UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid connection length: %zu", szLength);
-					return 0;
-				}
+            memcpy(ServerManager::m_pGlobalBuffer + g_iMsgLen, IpP2Country::m_Ptr->Find(ui128IPHash.data(), false), 2);
+            g_iMsgLen += 2;
+        }
 
-					iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_CONNECTION], ppArgSTrings[6]);
-					if (iRet <= 0)
-					{
-						return 0;
-					}
-					iMsgLen += iRet;
-				}
+        return 0;
+    }
+    else if (g_bSecond)
+    {
+        g_bSecond = false;
 
-			szLength = strlen(ppArgSTrings[7]);
-			if (szLength != 0)
-			{
-				if (szLength > 96)
-				{
-					UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid email length: %zu", szLength);
-					return 0;
-				}
+        size_t szLength = strlen(g_sFirstNick.data());
+        if (szLength == 0)
+        {
+            UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid nick length: %zu", szLength);
+            return 0;
+        }
 
-					iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_EMAIL], ppArgSTrings[7]);
-					if (iRet <= 0)
-					{
-						return 0;
-					}
-					iMsgLen += iRet;
-				}
+        szLength = strlen(g_sFirstIP.data());
+        if (szLength == 0)
+        {
+            UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid ip length: %zu", szLength);
+            return 0;
+        }
 
-			uint8_t ui128IPHash[16];
-			memset(ui128IPHash, 0, 16);
+        int iAfterHubSecMsgLen = g_iAfterHubSecMsgLen;
+        if (!SnprintfAppend(ServerManager::m_pGlobalBuffer,
+                            iAfterHubSecMsgLen,
+                            ServerManager::m_szGlobalBufferSize,
+                            "\n%s: %s\t\t%s: %s",
+                            LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_NICK)].c_str(),
+                            g_sFirstNick.data(),
+                            LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_IP)].c_str(),
+                            g_sFirstIP.data()))
+        {
+            return 0;
+        }
+        g_iMsgLen = iAfterHubSecMsgLen;
+    }
 
-			if (IpP2Country::m_Ptr->m_ui32Count != 0 && HashIP(sIP, ui128IPHash) == true)
-			{
-				iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: ", LanguageManager::m_Ptr->m_sTexts[LAN_COUNTRY]);
-				if (iRet <= 0)
-				{
-					return 0;
-				}
-				iMsgLen += iRet;
+    size_t szLength = strlen(ppArgSTrings[0]);
+    if (szLength == 0 || szLength > 64)
+    {
+        UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid nick length: %zu", szLength);
+        return 0;
+    }
 
-				memcpy(ServerManager::m_pGlobalBuffer + iMsgLen, IpP2Country::m_Ptr->Find(ui128IPHash, false), 2);
-				iMsgLen += 2;
-			}
+    szLength = strlen(ppArgSTrings[2]);
+    if (szLength == 0 || szLength > 39)
+    {
+        UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid ip length: %zu", szLength);
+        return 0;
+    }
 
-			return 0;
-		}
-	}
-	else if (bSecond == true)
-	{
-		bSecond = false;
+    if (!SnprintfAppend(ServerManager::m_pGlobalBuffer,
+                        g_iMsgLen,
+                        ServerManager::m_szGlobalBufferSize,
+                        "\n%s: %s\t\t%s: %s",
+                        LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_NICK)].c_str(),
+                        ppArgSTrings[0],
+                        LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_IP)].c_str(),
+                        ppArgSTrings[2]))
+    {
+        return 0;
+    }
 
-		size_t szLength = strlen(sFirstNick);
-		if (szLength == 0 || szLength > 64)
-		{
-			UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid nick length: %zu", szLength);
-			return 0;
-		}
-
-		szLength = strlen(sFirstIP);
-		if (szLength == 0 || szLength > 39)
-		{
-			UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid ip length: %zu", szLength);
-			return 0;
-		}
-
-		int iRet = snprintf(ServerManager::m_pGlobalBuffer + iAfterHubSecMsgLen, ServerManager::m_szGlobalBufferSize - iAfterHubSecMsgLen, "\n%s: %s\t\t%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_NICK], sFirstNick, LanguageManager::m_Ptr->m_sTexts[LAN_IP], sFirstIP);
-		if (iRet <= 0)
-		{
-			return 0;
-		}
-		iMsgLen = iAfterHubSecMsgLen + iRet;
-	}
-
-	size_t szLength = strlen(ppArgSTrings[0]);
-	if (szLength == 0 || szLength > 64)
-	{
-		UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid nick length: %zu", szLength);
-		return 0;
-	}
-
-	szLength = strlen(ppArgSTrings[2]);
-	if (szLength == 0 || szLength > 39)
-	{
-		UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search returned invalid ip length: %zu", szLength);
-		return 0;
-	}
-
-	int iRet = snprintf(ServerManager::m_pGlobalBuffer + iMsgLen, ServerManager::m_szGlobalBufferSize - iMsgLen, "\n%s: %s\t\t%s: %s", LanguageManager::m_Ptr->m_sTexts[LAN_NICK], ppArgSTrings[0], LanguageManager::m_Ptr->m_sTexts[LAN_IP], ppArgSTrings[2]);
-	if (iRet <= 0)
-	{
-		return 0;
-	}
-	iMsgLen += iRet;
-
-	return 0;
+    return 0;
 }
+} // namespace
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 // First of two functions to search data in database. Nick will be probably most used.
-bool DBSQLite::SearchNick(ChatCommand * pChatCommand)
+bool DBSQLite::SearchNick(ChatCommand* pChatCommand)
 {
-	if (m_bConnected == false)
-	{
-		return false;
-	}
+    if (!m_bConnected)
+    {
+        return false;
+    }
 
-	char sUtfNick[65];
-	if (TextConverter::m_Ptr->CheckUtf8AndConvert(pChatCommand->m_sCommand, (uint8_t)pChatCommand->m_ui32CommandLen, sUtfNick, 65) == 0)
-	{
-		return false;
-	}
+    std::string sUtfNick(65, '\0');
+    const size_t szUtfNickLen =
+        TextConverter::m_Ptr->CheckUtf8AndConvert(pChatCommand->m_sCommand, static_cast<uint8_t>(pChatCommand->m_ui32CommandLen), sUtfNick.data(), 65);
+    if (szUtfNickLen == 0)
+    {
+        return false;
+    }
+    sUtfNick.resize(szUtfNickLen);
 
-	if (pChatCommand->m_bFromPM == true)
-	{
-		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "$To: %s From: %s $<%s> ", pChatCommand->m_pUser->m_sNick, SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC]);
-	}
-	else
-	{
-		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "<%s> ", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC]);
-	}
+    if (pChatCommand->m_bFromPM)
+    {
+        g_iMsgLen = snprintf(ServerManager::m_pGlobalBuffer,
+                             ServerManager::m_szGlobalBufferSize,
+                             "$To: %s From: %s $<%s> ",
+                             pChatCommand->m_pUser->m_sNick.c_str(),
+                             SettingManager::HubSec(),
+                             SettingManager::HubSec());
+    }
+    else
+    {
+        g_iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "<%s> ", SettingManager::HubSec());
+    }
 
-	if (iMsgLen <= 0)
-	{
-		return false;
-	}
+    if (g_iMsgLen <= 0)
+    {
+        return false;
+    }
 
-	iAfterHubSecMsgLen = iMsgLen;
+    g_iAfterHubSecMsgLen = g_iMsgLen;
 
-	bFirst = true;
-	bSecond = false;
+    g_bFirst = true;
+    g_bSecond = false;
 
-	char sSQLCommand[256];
-	sqlite3_snprintf(256, sSQLCommand, "SELECT nick, %s, ip_address, share, description, tag, connection, email FROM userinfo WHERE nick_lower LIKE LOWER(%Q) ORDER BY last_updated DESC LIMIT 50;", "strftime('%s', last_updated)", sUtfNick);
+    std::string sSQLCommand;
+    sSQLCommand.resize(256);
+    sqlite3_snprintf(256,
+                     sSQLCommand.data(),
+                     "SELECT nick, %s, ip_address, share, description, tag, connection, email FROM userinfo WHERE nick_lower LIKE LOWER(%Q) ORDER BY "
+                     "last_updated DESC LIMIT 50;",
+                     "strftime('%s', last_updated)",
+                     sUtfNick.c_str());
+    sSQLCommand.resize(strlen(sSQLCommand.data()));
 
-	char * sErrMsg = NULL;
+    if (!SqlExec(sSQLCommand.c_str(), "search for nick", SelectCallBack))
+    {
+        return false;
+    }
 
-	int iRet = sqlite3_exec(m_pSqliteDB, sSQLCommand, SelectCallBack, NULL, &sErrMsg);
+    if (g_iMsgLen == g_iAfterHubSecMsgLen)
+    {
+        return false;
+    }
 
-	if (iRet != SQLITE_OK)
-	{
-		UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search for nick failed: %s", sErrMsg);
-		sqlite3_free(sErrMsg);
+    ServerManager::m_pGlobalBuffer[g_iMsgLen] = '|';
+    ServerManager::m_pGlobalBuffer[g_iMsgLen + 1] = '\0';
 
-		return false;
-	}
+    pChatCommand->m_pUser->SendCharDelayed(ServerManager::m_pGlobalBuffer, g_iMsgLen + 1);
 
-	if (iMsgLen == iAfterHubSecMsgLen)
-	{
-		return false;
-	}
-	else
-	{
-		ServerManager::m_pGlobalBuffer[iMsgLen] = '|';
-		ServerManager::m_pGlobalBuffer[iMsgLen + 1] = '\0';
-
-		pChatCommand->m_pUser->SendCharDelayed(ServerManager::m_pGlobalBuffer, iMsgLen + 1);
-
-		return true;
-	}
+    return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 // Second of two fnctions to search data in database. Now using IP.
-bool DBSQLite::SearchIP(ChatCommand * pChatCommand)
+bool DBSQLite::SearchIP(ChatCommand* pChatCommand)
 {
-	if (m_bConnected == false)
-	{
-		return false;
-	}
+    if (!m_bConnected)
+    {
+        return false;
+    }
 
-	if (pChatCommand->m_bFromPM == true)
-	{
-		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "$To: %s From: %s $<%s> ", pChatCommand->m_pUser->m_sNick, SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC]);
-	}
-	else
-	{
-		iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "<%s> ", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC]);
-	}
+    if (pChatCommand->m_bFromPM)
+    {
+        g_iMsgLen = snprintf(ServerManager::m_pGlobalBuffer,
+                             ServerManager::m_szGlobalBufferSize,
+                             "$To: %s From: %s $<%s> ",
+                             pChatCommand->m_pUser->m_sNick.c_str(),
+                             SettingManager::HubSec(),
+                             SettingManager::HubSec());
+    }
+    else
+    {
+        g_iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "<%s> ", SettingManager::HubSec());
+    }
 
-	if (iMsgLen <= 0)
-	{
-		return false;
-	}
+    if (g_iMsgLen <= 0)
+    {
+        return false;
+    }
 
-	iAfterHubSecMsgLen = iMsgLen;
+    g_iAfterHubSecMsgLen = g_iMsgLen;
 
-	bFirst = true;
-	bSecond = false;
+    g_bFirst = true;
+    g_bSecond = false;
 
-	char sSQLCommand[256];
-	sqlite3_snprintf(256, sSQLCommand, "SELECT nick, %s, ip_address, share, description, tag, connection, email FROM userinfo WHERE ip_address LIKE %Q ORDER BY last_updated DESC LIMIT 50;", "strftime('%s', last_updated)", pChatCommand->m_sCommand);
+    std::string sSQLCommand;
+    sSQLCommand.resize(256);
+    sqlite3_snprintf(
+        256,
+        sSQLCommand.data(),
+        "SELECT nick, %s, ip_address, share, description, tag, connection, email FROM userinfo WHERE ip_address LIKE %Q ORDER BY last_updated DESC LIMIT 50;",
+        "strftime('%s', last_updated)",
+        pChatCommand->m_sCommand);
+    sSQLCommand.resize(strlen(sSQLCommand.data()));
 
-	char * sErrMsg = NULL;
+    if (!SqlExec(sSQLCommand.c_str(), "search for ip", SelectCallBack))
+    {
+        return false;
+    }
 
-	int iRet = sqlite3_exec(m_pSqliteDB, sSQLCommand, SelectCallBack, NULL, &sErrMsg);
+    if (g_iMsgLen == g_iAfterHubSecMsgLen)
+    {
+        return false;
+    }
 
-	if (iRet != SQLITE_OK)
-	{
-		UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite search for nick failed: %s", sErrMsg);
-		sqlite3_free(sErrMsg);
+    ServerManager::m_pGlobalBuffer[g_iMsgLen] = '|';
+    ServerManager::m_pGlobalBuffer[g_iMsgLen + 1] = '\0';
 
-		return false;
-	}
+    pChatCommand->m_pUser->SendCharDelayed(ServerManager::m_pGlobalBuffer, g_iMsgLen + 1);
 
-	if (iMsgLen == iAfterHubSecMsgLen)
-	{
-		return false;
-	}
-	else
-	{
-		ServerManager::m_pGlobalBuffer[iMsgLen] = '|';
-		ServerManager::m_pGlobalBuffer[iMsgLen + 1] = '\0';
-
-		pChatCommand->m_pUser->SendCharDelayed(ServerManager::m_pGlobalBuffer, iMsgLen + 1);
-
-		return true;
-	}
+    return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #ifdef FLYLINKDC_USE_SQLITE_REMOVE_OLD_RECORD
 // Function to remove X days old records from database.
 void DBSQLite::RemoveOldRecords(const uint16_t ui16Days)
 {
-	if (m_bConnected == false)
-	{
-		return;
-	}
+    if (!m_bConnected)
+    {
+        return;
+    }
 
-	char sSQLCommand[256];
-	if (snprintf(sSQLCommand, 256, "DELETE FROM userinfo WHERE last_updated < DATETIME('now', '-%hu days', 'localtime');", ui16Days) <= 0)
-	{
-		return;
-	}
+    std::string sSQLCommand;
+    sSQLCommand.resize(256);
+    const int iSQLLen =
+        snprintf(sSQLCommand.data(), sSQLCommand.size(), "DELETE FROM userinfo WHERE last_updated < DATETIME('now', '-%hu days', 'localtime');", ui16Days);
+    if (iSQLLen <= 0)
+    {
+        LogDbg("[WARN] DBSQLite::RemoveOldRecords skipped — snprintf failed.");
+        return;
+    }
+    sSQLCommand.resize(static_cast<size_t>(iSQLLen));
 
-	char * sErrMsg = NULL;
+    SqlExec(sSQLCommand.c_str(), "remove old records");
 
-	int iRet = sqlite3_exec(m_pSqliteDB, sSQLCommand, SelectCallBack, NULL, &sErrMsg);
-
-	if (iRet != SQLITE_OK)
-	{
-		UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite remove old records failed: %s", sErrMsg);
-		sqlite3_free(sErrMsg);
-	}
-
-	iRet = sqlite3_changes(m_pSqliteDB);
-	if (iRet != 0)
-	{
-		UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite removed old records: %d", iRet);
-	}
+    const int iRet = sqlite3_changes(m_pSqliteDB);
+    if (iRet != 0)
+    {
+        UdpDebug::m_Ptr->BroadcastFormat("[LOG] DBSQLite removed old records: %d", iRet);
+    }
 }
 #endif // FLYLINKDC_USE_SQLITE_REMOVE_OLD_RECORD
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

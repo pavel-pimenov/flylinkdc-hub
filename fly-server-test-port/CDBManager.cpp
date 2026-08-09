@@ -1,13 +1,10 @@
 //-----------------------------------------------------------------------------
-//(c) 2007-2024 pavel.pimenov@gmail.com
+//(c) 2007-2026 pavel.pimenov@gmail.com
 //-----------------------------------------------------------------------------
 
-#include <stdio.h>
+#include <cstdio>
 #include "CDBManager.h"
 
-#ifdef _WIN32
-#define snprintf _snprintf
-#else
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -16,48 +13,65 @@
 #define INVALID_SOCKET (-1)
 #define SOCKET_ERROR   (-1)
 #define closesocket(x) close(x)
-
-#endif
 using std::string;
 //==========================================================================
 bool g_setup_log_disable_test_port = true;
-bool g_setup_syslog_disable        = true;
 //==========================================================================
-CFlyLogThreadInfoArray* CFlyServerContext::g_log_array = NULL;
+CFlyLogThreadInfoArray* CFlyServerContext::g_log_array = nullptr;
+//==========================================================================
+namespace {
+std::atomic<size_t> g_active_worker_threads{0};
+std::mutex g_worker_mutex;
+std::condition_variable g_worker_cv;
+
+// RAII guard tracking detached worker threads so the hub can wait for them
+// before tearing down spdlog at process exit (prevents heap-use-after-free).
+class CFlyWorkerThreadGuard
+{
+public:
+	CFlyWorkerThreadGuard() { ++g_active_worker_threads; }
+	~CFlyWorkerThreadGuard()
+	{
+		if (--g_active_worker_threads == 0)
+		{
+			g_worker_cv.notify_all();
+		}
+	}
+};
+} // namespace
+//==========================================================================
+void CFlyServerContext::WaitWorkerThreads()
+{
+	std::unique_lock<std::mutex> l_lock(g_worker_mutex);
+	g_worker_cv.wait_for(l_lock, std::chrono::seconds(30), [] { return g_active_worker_threads == 0; });
+}
 //==========================================================================
 sqlite_int64 get_tick_count()
 {
-#ifdef _WIN32 // Only in windows
-	LARGE_INTEGER l_counter;
-	QueryPerformanceCounter(&l_counter);
-	return l_counter.QuadPart;
-	//return GetTickCount64();
-#else // Linux
 	struct timeval tim;
-	gettimeofday(&tim, NULL);
+	gettimeofday(&tim, nullptr);
 	unsigned int t = ((tim.tv_sec * 1000) + (tim.tv_usec / 1000)) & 0xffffffff;
 	return t;
-#endif // _WIN32
 }
 //==========================================================================
-// ������ - 172.23.17.18:30002172.23.17.18: CID = $FLY-TEST-PORT MSL2NL7QB24PKECJEJFPGWY7S3TGTPMXPWDTWPA172.23.17.18:30002
+#ifdef FLYLINKDC_DEAD_CODE
 static void set_socket_opt(SOCKET p_sock, int p_option, int p_val)
 {
-	int len = sizeof(p_val); // x64 - x86 int ������ ������
+	int len = sizeof(p_val);
 	if(setsockopt(p_sock, SOL_SOCKET, p_option, (char*)&p_val, len) < 0)
-  {
-      std::cout << "set_socket_opt option = "<< p_option << " val = " << p_val << " failed!\n";
-  }
+	{
+		std::cout << "set_socket_opt option = "<< p_option << " val = " << p_val << " failed!\n";
+	}
 }
+#endif // FLYLINKDC_DEAD_CODE
 //==========================================================================
-static void send_udp_tcp_test_port(const std::string& p_PID, const std::string& p_CID, const std::string& p_ip, const string& p_port, bool p_is_tcp)
+static void send_udp_tcp_test_port(const std::string&, const std::string& p_CID, const std::string& p_ip, const string& p_port, bool p_is_tcp)
 {
 #ifdef FLYLINKDC_USE_TEST_PORT_PROMETHEUS	
     g_DB.flyserver_test_port_counter(p_is_tcp ? "tcp": "udp");
 #endif
 
 #ifdef _DEBUG
-#ifdef _WIN32
 	if (p_is_tcp)
 	{
 		std::cout << "TCP test_port - ip = " << p_ip << ":" << p_port << " CID = " << p_CID << " PID = " << p_PID << std::endl;
@@ -67,10 +81,9 @@ static void send_udp_tcp_test_port(const std::string& p_PID, const std::string& 
 		std::cout << "UDP test_port - ip = " << p_ip << ":" << p_port << " CID = " << p_CID << " PID = " << p_PID <<  std::endl;
 	}
 #endif
-#endif
 	const unsigned short l_port = atoi(p_port.c_str());
 	const string l_header = "$FLY-TEST-PORT " + p_CID + p_ip + ':' + p_port + "|";
-	struct sockaddr_in addr = {0};
+	struct sockaddr_in addr = {};
 	int l_result = 0;
 	SOCKET sock = socket(AF_INET, p_is_tcp ? SOCK_STREAM : SOCK_DGRAM, 0);
 	if (sock == INVALID_SOCKET)
@@ -85,11 +98,15 @@ static void send_udp_tcp_test_port(const std::string& p_PID, const std::string& 
 
     if (setsockopt (sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout,
                 sizeof(timeout)) < 0)
+    {
         std::cout << "setsockopt SO_RCVTIMEO failed\n";
+    }
 
     if (setsockopt (sock, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout,
                 sizeof(timeout)) < 0)
+    {
         std::cout << "setsockopt SO_SNDTIMEO failed\n";
+    }
   }
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(l_port);
@@ -127,120 +144,122 @@ static void* thread_proc_udp_tcp_test_port(void* p_param)
 {
 	static volatile LONG g_count_thread = 0;
 	static volatile unsigned g_count_all = 0;
-	CFlySafeGuard l_call_deep(g_count_thread); // TODO - ����� ������� ����� ������� ����� ��
+	CFlySafeGuard l_call_deep(g_count_thread); // TODO - �������� ������� ����� ������� ����� ��
+	CFlyWorkerThreadGuard l_worker_guard;
 	string l_str_deep_call(LONG(l_call_deep), '*');
 	std::unique_ptr<CFlyPortTestThreadInfo> l_info(reinterpret_cast<CFlyPortTestThreadInfo*>(p_param));
-	for (int i = 0; i < l_info->m_ports.size(); ++i)
+	for (size_t i = 0; i < l_info->m_ports.size(); ++i)
 	{
 		send_udp_tcp_test_port(l_info->m_PID, l_info->m_CID, l_info->m_ip, l_info->m_ports[i].first, l_info->m_ports[i].second);
 		//std::cout <<  "[" << l_str_deep_call << "]" <<
 		//	          "[" << ++g_count_all << "] " <<
-		//          l_info->get_type_port(i) << " port-thread-test ip = " << l_info->m_ip << ":" << l_info->m_ports[i].first <<
-		//          " CID = " << l_info->m_CID << " PID = " << l_info->m_PID << std::endl;
-#ifndef _WIN32
-		if (g_setup_syslog_disable == false)
-		{
-			syslog(LOG_NOTICE, "[%s][%u] %s-port-thread-test %s:%s CID = %s PID = %s",
-			       l_str_deep_call.c_str(),
-				   ++g_count_all,
-			       l_info->get_type_port(i),
-			       l_info->m_ip.c_str(),
-			       l_info->m_ports[i].first.c_str(),
-			       l_info->m_CID.c_str(),
-			       l_info->m_PID.c_str());
-		}
-#endif
+		//	          l_info->get_type_port(i) << " port-thread-test ip = " << l_info->m_ip << ":" << l_info->m_ports[i].first <<
+		//	          " CID = " << l_info->m_CID << " PID = " << l_info->m_PID << std::endl;
+		g_count_all += 1;
+		spdlog::info("[{}][{}] {}-port-thread-test {}:{} CID = {} PID = {}",
+			       l_str_deep_call,
+			   g_count_all,
+		       l_info->get_type_port(i),
+		       l_info->m_ip,
+		       l_info->m_ports[i].first,
+		       l_info->m_CID,
+		       l_info->m_PID);
 	}
-	return NULL;
+	return nullptr;
 }
 //========================================================================================================
 static string process_test_port(const CFlyServerContext& p_flyserver_cntx)
 {
 	string l_result;
-	Json::Value l_root;
-	Json::Reader reader(Json::Features::strictMode());
-	const bool parsingSuccessful = reader.parse(p_flyserver_cntx.m_in_query, l_root);
-	if (!parsingSuccessful)
+	nlohmann::json l_root;
+	try
+	{
+		l_root = nlohmann::json::parse(p_flyserver_cntx.m_in_query);
+	}
+	catch (const nlohmann::json::parse_error&)
 	{
 		const char* l_error = "[FLY_POST_QUERY_TEST_PORT] Failed to parse json configuration";
 		std::cout  << l_error << std::endl;
-#ifndef _WIN32
-		syslog(LOG_ERR, "[FLY_POST_QUERY_TEST_PORT] Failed to parse json configuration - %s", l_error);
-#endif
+		spdlog::error("[FLY_POST_QUERY_TEST_PORT] Failed to parse json configuration - {}", l_error);
+		return l_result;
 	}
-	else
+	const auto& l_udp = l_root["udp"];
+	const auto& l_tcp = l_root["tcp"];
+	CFlyPortTestThreadInfo* l_info = nullptr;
+	if (!l_tcp.empty() || !l_udp.empty())
 	{
-		const Json::Value& l_udp = l_root["udp"];
-		const Json::Value& l_tcp = l_root["tcp"];
-		CFlyPortTestThreadInfo* l_info = NULL;
-		if (l_tcp.size() || l_udp.size())
+		if (l_root["CID"].is_null() || l_root["PID"].is_null())
 		{
-			const string l_CID = l_root["CID"].asString();
-			const string l_PID = l_root["PID"].asString();
-			l_info = new CFlyPortTestThreadInfo;
-			l_info->m_ip = p_flyserver_cntx.m_remote_ip;
-			l_info->m_CID = l_CID;
-			l_info->m_PID = l_PID;
-			l_info->m_ports.reserve(l_tcp.size() + l_udp.size());
+			spdlog::error("[FLY_POST_QUERY_TEST_PORT] Missing CID or PID in JSON: {}", p_flyserver_cntx.m_in_query);
+			return l_result;
 		}
-		if (l_info)
-		{
-			for (int j = 0; j < l_udp.size(); ++j)
-			{
-				const std::string l_port = l_udp[j]["port"].asString();
-				l_info->m_ports.push_back(std::make_pair(l_port, false));
-			}
-			for (int k = 0; k < l_tcp.size(); ++k)
-			{
-				const std::string l_port = l_tcp[k]["port"].asString();
-				l_info->m_ports.push_back(std::make_pair(l_port, true));
-			}
-			// �������� ����� ��� ����� TCP
-			if (mg_start_thread(thread_proc_udp_tcp_test_port, l_info))
-			{
-				delete l_info;
-			}
-		}
-		Json::Value l_test_port_result;
-		l_test_port_result["ip"] = p_flyserver_cntx.m_remote_ip;
-		l_result = l_test_port_result.toStyledString();
+		const string l_CID = l_root["CID"].is_string() ? l_root["CID"].get<std::string>() : std::to_string(l_root["CID"].get<int64_t>());
+		const string l_PID = l_root["PID"].is_string() ? l_root["PID"].get<std::string>() : std::to_string(l_root["PID"].get<int64_t>());
+		l_info = new CFlyPortTestThreadInfo;
+		l_info->m_ip = p_flyserver_cntx.m_remote_ip;
+		l_info->m_CID = l_CID;
+		l_info->m_PID = l_PID;
+		l_info->m_ports.reserve(l_tcp.size() + l_udp.size());
 	}
+	if (l_info)
+	{
+		for (size_t j = 0; j < l_udp.size(); ++j)
+		{
+			if (l_udp[j]["port"].is_null())
+			{
+				spdlog::warn("[FLY_POST_QUERY_TEST_PORT] Missing port in UDP entry {}", j);
+				continue;
+			}
+			const std::string l_port = l_udp[j]["port"].is_string() ? l_udp[j]["port"].get<std::string>() : std::to_string(l_udp[j]["port"].get<int64_t>());
+			l_info->m_ports.push_back(std::make_pair(l_port, false));
+		}
+		for (size_t k = 0; k < l_tcp.size(); ++k)
+		{
+			if (l_tcp[k]["port"].is_null())
+			{
+				spdlog::warn("[FLY_POST_QUERY_TEST_PORT] Missing port in TCP entry {}", k);
+				continue;
+			}
+			const std::string l_port = l_tcp[k]["port"].is_string() ? l_tcp[k]["port"].get<std::string>() : std::to_string(l_tcp[k]["port"].get<int64_t>());
+			l_info->m_ports.push_back(std::make_pair(l_port, true));
+		}
+		// �������� ����� ��� ����� TCP
+		if (mg_start_thread(thread_proc_udp_tcp_test_port, l_info))
+		{
+			delete l_info;
+		}
+	}
+	nlohmann::json l_test_port_result;
+	l_test_port_result["ip"] = p_flyserver_cntx.m_remote_ip;
+	l_result = l_test_port_result.dump(4);
 	return l_result;
 }
 //==========================================================================
 static void* thread_proc_store_log(void* p_param)
 {
-	CFlyLogThreadInfoArray* l_p_array = (CFlyLogThreadInfoArray*)p_param;
+	CFlyWorkerThreadGuard l_worker_guard;
+	CFlyLogThreadInfoArray* l_p_array = static_cast<CFlyLogThreadInfoArray*>(p_param);
 
 	for (CFlyLogThreadInfoArray::iterator i = l_p_array->begin(); i != l_p_array->end(); ++i)
 	{
-		const char* l_log_dir_name =  NULL;
+		const char* l_log_dir_name = nullptr;
 		switch (i->m_query_type)
 		{
-#ifdef FLY_SERVER_USE_FULL_LOCAL_LOG
-			case FLY_POST_QUERY_LOGIN:
-				if (!g_setup_log_disable_login)
-					l_log_dir_name = "log-login";
-				break;
-			case FLY_POST_QUERY_GET:
-				l_log_dir_name = "log-get";
-				break;
-#endif
-			case FLY_POST_QUERY_TEST_PORT:
-				//if (!g_setup_log_disable_test_port)
-				//	l_log_dir_name = "log-test-port";
-				break;
+		case FLY_POST_QUERY_TEST_PORT:
+			//if (!g_setup_log_disable_test_port)
+			//	l_log_dir_name = "log-test-port";
+			break;
+		default:
+			break;
 		}
-		if (l_log_dir_name)
+		if (l_log_dir_name) //-V547 always false: case assignments are commented out
 		{
 			const string l_file_name = CFlyServerContext::get_json_file_name(l_log_dir_name, i->m_remote_ip.c_str(), i->m_now);
 			std::fstream l_log_json(l_file_name.c_str(), std::ios_base::out | std::ios_base::trunc);
 			if (!l_log_json.is_open())
 			{
 				std::cout << "Error open file: " << l_file_name << " errno = " << errno << "\r\n";
-#ifndef _WIN32
-				syslog(LOG_ERR, "Error open file: = %s errno = %d", l_file_name.c_str(), errno);
-#endif
+				spdlog::error("Error open file: = {} errno = {}", l_file_name, errno);
 			}
 			else
 			{
@@ -252,18 +271,14 @@ static void* thread_proc_store_log(void* p_param)
 						l_log_json.write(i->m_in_query.c_str(), i->m_in_query.length());
 						if (l_log_json.fail() || !l_log_json.good()) 
 							{
-								std::cout << "Error: failed to write to l_log_json!" << l_file_name << " errno = " << errno <<"\r\n";
-#ifndef _WIN32
-								syslog(LOG_ERR, "Error: failed to write to l_log_json! file = %s errno = %d", l_file_name.c_str(), errno);
-#endif
+						std::cout << "Error: failed to write to l_log_json!" << l_file_name << " errno = " << errno <<"\r\n";
+						spdlog::error("Error: failed to write to l_log_json! file = {} errno = {}", l_file_name, errno);
 							}
 				}
 				else
 				{
-					std::cout << "Error: len(=0) for log file: " << l_file_name << " errno = " << errno << "\r\n";
-#ifndef _WIN32
-					syslog(LOG_ERR, "Error: len(=0) for log file = %s errno = %d", l_file_name.c_str(), errno);
-#endif
+				std::cout << "Error: len(=0) for log file: " << l_file_name << " errno = " << errno << "\r\n";
+				spdlog::error("Error: len(=0) for log file = {} errno = {}", l_file_name, errno);
 				}
 #ifdef _DEBUG
 				if (i->m_query_type != FLY_POST_QUERY_TEST_PORT)
@@ -279,14 +294,12 @@ static void* thread_proc_store_log(void* p_param)
 		}
 	}
 	std::cout << std::endl << "Flush log files count: " << l_p_array->size() << "\r\n";
-#ifndef _WIN32
-	syslog(LOG_NOTICE, "Flush log files count: = %d", int(l_p_array->size()));
-#endif
+	spdlog::info("Flush log files count: = {}", l_p_array->size());
 	delete l_p_array;
-	return NULL;
+	return nullptr;
 }
 //==========================================================================
-void CFlyServerContext::run_db_query(const char* p_content, size_t p_len, CDBManager& p_DB)
+void CFlyServerContext::run_db_query(const char* p_content, size_t p_len, CDBManager&)
 {
 	zlib_uncompress((uint8_t*)p_content, p_len, m_decompress);
 	m_tick_count_start_db = get_tick_count();
@@ -298,11 +311,6 @@ void CFlyServerContext::run_db_query(const char* p_content, size_t p_len, CDBMan
 		std::ofstream l_fs;
 		static int g_id_file;
 		l_fs.open(std::string("flylinkdc-extjson-zlib-file-" + toString(++g_id_file) + ".json.zlib").c_str(), std::ifstream::out);
-#ifdef __linux__
-//		l_fs.open("flylinkdc-extjson-zlib-file-" + toString(++g_id_file) + ".json.zlib", std::ifstream::out);
-#else
-//      l_fs.open("flylinkdc-extjson-zlib-file-" + toString(++g_id_file) + ".json.zlib", std::ifstream::out | std::ifstream::binary);
-#endif
 		l_fs.write(p_content, p_len);
 	}
 #endif // MT_DEBUG
@@ -316,79 +324,70 @@ void CFlyServerContext::run_db_query(const char* p_content, size_t p_len, CDBMan
 	comress_result();
 }
 //==========================================================================
-void CFlyServerContext::send_syslog() const
+void CFlyServerContext::sendDebugLog() const
 {
-	extern unsigned long long g_sum_out_size;
-	extern unsigned long long g_sum_in_size;
-	extern unsigned long long g_z_sum_out_size;
-	extern unsigned long long g_z_sum_in_size;
 	extern unsigned long long g_count_query;
-	if (g_setup_syslog_disable == false)
+	char l_log_buf[512];
+	l_log_buf[0]   = 0;
+	char l_buf_cache[32];
+	l_buf_cache[0] = 0;
+	char l_buf_counter[64];
+	l_buf_counter[0] = 0;
+	if (m_count_cache)
 	{
-		char l_log_buf[512];
-		l_log_buf[0]   = 0;// ���� ����������� 152-160
-		char l_buf_cache[32];
-		l_buf_cache[0] = 0;
-		char l_buf_counter[64];
-		l_buf_counter[0] = 0;
-		if (m_count_cache)
-		{
-			snprintf(l_buf_cache, sizeof(l_buf_cache), "[cache=%u]", (unsigned) m_count_cache);
-		}
-		if (m_count_get_only_counter == 0 && m_count_get_base_media_counter == 1 && m_count_get_ext_media_counter == 1)
-		{
-			snprintf(l_buf_counter, sizeof(l_buf_counter), "%s","[get full Inform!]");
-		}
-		else if (m_count_get_base_media_counter != 0 || m_count_get_ext_media_counter != 0 || m_count_insert != 0)
-		{
-			snprintf(l_buf_counter, sizeof(l_buf_counter), "[cnt=%u,base=%u,ext=%u,new=%u]",
-			         (unsigned)m_count_get_only_counter,
-			         (unsigned)m_count_get_base_media_counter,
-			         (unsigned)m_count_get_ext_media_counter,
-			         (unsigned)m_count_insert);
-		}
-		if (m_query_type == FLY_POST_QUERY_TEST_PORT)
-		{
-			snprintf(l_log_buf, sizeof(l_log_buf), "[%s][%c][%u][%s][%s][in:%u/%u][c:%u][%s]",
-			         m_fly_response.c_str(),
-			         get_compress_flag(),
-			         (unsigned)m_count_file_in_json,
-			         m_uri.c_str(),
-			         m_remote_ip.c_str(),
-			         (unsigned)get_real_query_size(),
-			         (unsigned)m_content_len,
-					(unsigned)g_count_query,
-			         m_user_agent.c_str()
-			        );
-		}
-		else
-		{
-			snprintf(l_log_buf, sizeof(l_log_buf), "[%s][%c][%u]%s[%s][%s][%u/%u->%u/%u][time db=%u][%s]%s%s",
-			         m_fly_response.c_str(),
-			         get_compress_flag(),
-			         (unsigned)m_count_file_in_json,
-			         "",
-			         m_uri.c_str(),
-			         m_remote_ip.c_str(),
-			         (unsigned)get_real_query_size(),
-			         (unsigned)m_content_len,
-			         (unsigned)m_res_stat.size(),
-			         (unsigned)get_http_len(),
-					 (unsigned)get_delta_db(),
-			         m_user_agent.c_str(),
-			         l_buf_cache,
-			         l_buf_counter
-			        );
-		}
-		std::cout << ".";
-		static int g_cnt = 0;
-		if ((++g_cnt % 30) == 0)
-			std::cout << std::endl;
-#ifndef _WIN32 // Only in linux
-		syslog(LOG_NOTICE, "%s", l_log_buf);
-#endif
-		std::cout << l_log_buf << std::endl;
+		snprintf(l_buf_cache, sizeof(l_buf_cache), "[cache=%u]", (unsigned) m_count_cache);
 	}
+	if (m_count_get_only_counter == 0 && m_count_get_base_media_counter == 1 && m_count_get_ext_media_counter == 1)
+	{
+		snprintf(l_buf_counter, sizeof(l_buf_counter), "%s","[get full Inform!]");
+	}
+	else if (m_count_get_base_media_counter != 0 || m_count_get_ext_media_counter != 0 || m_count_insert != 0)
+	{
+		snprintf(l_buf_counter, sizeof(l_buf_counter), "[cnt=%u,base=%u,ext=%u,new=%u]",
+		         (unsigned)m_count_get_only_counter,
+		         (unsigned)m_count_get_base_media_counter,
+		         (unsigned)m_count_get_ext_media_counter,
+		         (unsigned)m_count_insert);
+	}
+	if (m_query_type == FLY_POST_QUERY_TEST_PORT)
+	{
+		snprintf(l_log_buf, sizeof(l_log_buf), "[%s][%c][%u][%s][%s][in:%u/%u][c:%u][%s]",
+		         m_fly_response.c_str(),
+		         get_compress_flag(),
+		         (unsigned)m_count_file_in_json,
+		         m_uri.c_str(),
+		         m_remote_ip.c_str(),
+		         (unsigned)get_real_query_size(),
+		         (unsigned)m_content_len,
+				(unsigned)g_count_query,
+		         m_user_agent.c_str()
+		        );
+	}
+	else
+	{
+		snprintf(l_log_buf, sizeof(l_log_buf), "[%s][%c][%u]%s[%s][%s][%u/%u->%u/%u][time db=%u][%s]%s%s",
+		         m_fly_response.c_str(),
+		         get_compress_flag(),
+		         (unsigned)m_count_file_in_json,
+		         "",
+		         m_uri.c_str(),
+		         m_remote_ip.c_str(),
+		         (unsigned)get_real_query_size(),
+		         (unsigned)m_content_len,
+		         (unsigned)m_res_stat.size(),
+		         (unsigned)get_http_len(),
+				 (unsigned)get_delta_db(),
+		         m_user_agent.c_str(),
+		         l_buf_cache,
+		         l_buf_counter
+		        );
+	}
+	std::cout << ".";
+	static int g_cnt = 0;
+	if ((++g_cnt % 30) == 0)
+		std::cout << std::endl;
+	spdlog::info("{}", l_log_buf);
+	std::cout << l_log_buf << std::endl;
 }
 
 //==========================================================================
@@ -403,7 +402,7 @@ void CFlyServerContext::flush_log_array(bool p_is_force)
 #endif
 		{
 			CFlyLogThreadInfoArray* l_log_array = g_log_array;
-			g_log_array = NULL;
+			g_log_array = nullptr;
 			if (mg_start_thread(thread_proc_store_log, l_log_array))
 			{
 				thread_proc_store_log(l_log_array); // ��������� ��� ������ � �������� l_thread_param
@@ -430,12 +429,10 @@ void CFlyServerContext::run_thread_log()
 	}
 	else
 	{
-		const char* l_log_text = "l_query_type == FLY_POST_QUERY_TEST_PORT";
 #ifdef _DEBUG
+		const char* l_log_text = "l_query_type == FLY_POST_QUERY_TEST_PORT";
 		std::cout << l_log_text << std::endl;
-#ifndef _WIN32
-		syslog(LOG_NOTICE, "%s", l_log_text);
-#endif
+		spdlog::debug("{}", l_log_text);
 #endif // _DEBUG
 	}
 }
@@ -481,7 +478,7 @@ bool zlib_uncompress(const uint8_t* p_zlib_source, size_t p_zlib_len, std::vecto
 		//			#endif
 
 		p_decompress.resize(l_decompress_size);
-		while (1)
+		while (true)
 		{
 			const int l_un_compress_result = uncompress(p_decompress.data(), &l_decompress_size, p_zlib_source, p_zlib_len);
 			if (l_un_compress_result == Z_BUF_ERROR)
@@ -499,10 +496,8 @@ bool zlib_uncompress(const uint8_t* p_zlib_source, size_t p_zlib_len, std::vecto
 				p_decompress.clear(); // ���� ������ - �������� ������. ������ ������ �������� �������.
 									  // TODO ����������� � ��������� ������� ������.
 
-				std::cout << "Error zlib_uncompress: code = " << l_un_compress_result << std::endl;
-#ifndef _WIN32
-				syslog(LOG_ERR, "Error zlib_uncompress: code = %d", l_un_compress_result);
-#endif
+			std::cout << "Error zlib_uncompress: code = " << l_un_compress_result << std::endl;
+			spdlog::error("Error zlib_uncompress: code = {}", l_un_compress_result);
 			}
 			break;
 		};
@@ -512,10 +507,7 @@ bool zlib_uncompress(const uint8_t* p_zlib_source, size_t p_zlib_len, std::vecto
 //========================================================================================================
 void CDBManager::init()
 {
-#ifndef _WIN32
-	openlog("fly-server-test-port", 0, LOG_USER); // LOG_PID
-	syslog(LOG_NOTICE, "CDBManager init");
-#endif
+	spdlog::info("CDBManager init");
 }
 //========================================================================================================
 void CDBManager::shutdown()
@@ -525,9 +517,5 @@ void CDBManager::shutdown()
 CDBManager::~CDBManager()
 {
 	std::cout << std::endl << "* fly-server-test-port CDBManager::~CDBManager" << std::endl;
-#ifndef _WIN32
-	syslog(LOG_NOTICE, "CDBManager destroy!");
-	closelog();
-#endif
 	std::cout << std::endl << "* fly-server-test-port CDBManager destroy!" << std::endl;
 }

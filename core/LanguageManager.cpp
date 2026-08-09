@@ -26,158 +26,94 @@
 #include "SettingManager.h"
 #include "ServerManager.h"
 #include "utility.h"
-#include "tinyxml.h"
+#include <tinyxml2.h>
 //---------------------------------------------------------------------------
-#ifdef _WIN32
-#pragma hdrstop
-#endif
-//---------------------------------------------------------------------------
-LanguageManager * LanguageManager::m_Ptr = nullptr;
 //---------------------------------------------------------------------------
 
-LanguageManager::LanguageManager(void)
+std::unique_ptr<LanguageManager> LanguageManager::m_Ptr;
+//---------------------------------------------------------------------------
+
+LanguageManager::LanguageManager()
 {
-	for (size_t szi = 0; szi < LANG_IDS_END; szi++)
-	{
-		size_t szTextLen = strlen(LangStr[szi]);
-		m_sTexts[szi] = (char *)malloc(szTextLen + 1);
-		if (m_sTexts[szi] == NULL)
-		{
-			AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes in LanguageManager::LanguageManager\n", szTextLen+1);
-
-			exit(EXIT_FAILURE);
-		}
-		memcpy(m_sTexts[szi], LangStr[szi], szTextLen);
-		m_ui16TextsLens[szi] = (uint16_t)szTextLen;
-		m_sTexts[szi][m_ui16TextsLens[szi]] = '\0';
-	}
+    for (size_t szi = 0; szi < std::to_underlying(LangIds::LANG_IDS_END); szi++)
+    {
+        m_sTexts[szi] = LangStr[szi];
+    }
 }
 //---------------------------------------------------------------------------
 
-LanguageManager::~LanguageManager(void)
-{
-	for (size_t szi = 0; szi < LANG_IDS_END; szi++)
-	{
-		free(m_sTexts[szi]);
-	}
-}
+// LanguageManager destructor is = default in header
 //---------------------------------------------------------------------------
 
 void LanguageManager::Load()
 {
-	if (SettingManager::m_Ptr->m_sTexts[SETTXT_LANGUAGE] == NULL)
-	{
-		for (size_t szi = 0; szi < LANG_IDS_END; szi++)
-		{
-			char * sOldText = m_sTexts[szi];
+    if (SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_LANGUAGE)].empty())
+    {
+        for (size_t szi = 0; szi < std::to_underlying(LangIds::LANG_IDS_END); szi++)
+        {
+            m_sTexts[szi] = LangStr[szi];
+        }
+    }
+    else
+    {
+        const std::string sLanguageFile = ServerManager::m_sPath + "/language/" + SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_LANGUAGE)] + ".xml";
 
-			size_t szTextLen = strlen(LangStr[szi]);
-			m_sTexts[szi] = (char *)realloc(sOldText, szTextLen + 1);
-			if (m_sTexts[szi] == NULL)
-			{
-				m_sTexts[szi] = sOldText;
-
-				AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in LanguageManager::Load\n", szTextLen+1);
-
-				continue;
-			}
-
-			memcpy(m_sTexts[szi], LangStr[szi], szTextLen);
-			m_ui16TextsLens[szi] = (uint16_t)szTextLen;
-			m_sTexts[szi][m_ui16TextsLens[szi]] = '\0';
-		}
-	}
-	else
-	{
-#ifdef _WIN32
-		string sLanguageFile = ServerManager::m_sPath + "\\language\\" + string(SettingManager::m_Ptr->m_sTexts[SETTXT_LANGUAGE],
-#else
-		string sLanguageFile = ServerManager::m_sPath + "/language/" + string(SettingManager::m_Ptr->m_sTexts[SETTXT_LANGUAGE],
-#endif
-		                       (size_t)SettingManager::m_Ptr->m_ui16TextsLens[SETTXT_LANGUAGE]) + ".xml";
-
-		TiXmlDocument doc(sLanguageFile.c_str());
-		if (doc.LoadFile() == false)
-		{
-			if (doc.ErrorId() != TiXmlBase::TIXML_ERROR_OPENING_FILE && doc.ErrorId() != TiXmlBase::TIXML_ERROR_DOCUMENT_EMPTY)
-			{
-				int iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "Error loading file %s.xml. %s (Col: %d, Row: %d)", SettingManager::m_Ptr->m_sTexts[SETTXT_LANGUAGE], doc.ErrorDesc(), doc.Column(), doc.Row());
-				if (iMsgLen > 0)
-				{
-#ifdef _BUILD_GUI
-					::MessageBox(NULL, ServerManager::m_pGlobalBuffer, g_sPtokaXTitle, MB_OK | MB_ICONERROR);
-#else
-					AppendLog(ServerManager::m_pGlobalBuffer);
-#endif
-				}
-			}
-		}
-		else
-		{
-			TiXmlHandle cfg(&doc);
-			TiXmlNode *language = cfg.FirstChild("Language").Node();
-			if (language != NULL)
-			{
-				TiXmlNode *text = nullptr;
-				while ((text = language->IterateChildren(text)) != NULL)
-				{
-					if (text->ToElement() == NULL)
-					{
-						continue;
-					}
-
-					const char * sName = text->ToElement()->Attribute("Name");
-					const char * sText = text->ToElement()->GetText();
-					size_t szLen = (sText != NULL ? strlen(sText) : 0);
-					if (szLen != 0 && szLen < 129)
-					{
-						for (size_t szi = 0; szi < LANG_IDS_END; szi++)
-						{
-							if (strcmp(LangXmlStr[szi], sName) == 0)
-							{
-								char * sOldText = m_sTexts[szi];
-								m_sTexts[szi] = (char *)realloc(sOldText, szLen + 1);
-								if (m_sTexts[szi] == NULL)
-								{
-									m_sTexts[szi] = sOldText;
-
-									AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes in LanguageManager::Load1\n", szLen+1);
-
-									break;
-								}
-
-								memcpy(m_sTexts[szi], sText, szLen);
-								m_ui16TextsLens[szi] = (uint16_t)szLen;
-								m_sTexts[szi][m_ui16TextsLens[szi]] = '\0';
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+        tinyxml2::XMLDocument doc;
+        if (doc.LoadFile(sLanguageFile.c_str()) != tinyxml2::XML_SUCCESS)
+        {
+            if (doc.ErrorID() != tinyxml2::XML_ERROR_FILE_NOT_FOUND && doc.ErrorID() != tinyxml2::XML_ERROR_EMPTY_DOCUMENT)
+            {
+                LogXmlError((SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_LANGUAGE)] + ".xml").c_str(), doc.ErrorStr(), 0, 0);
+            }
+        }
+        else
+        {
+            tinyxml2::XMLHandle cfg(&doc);
+            tinyxml2::XMLNode* language = cfg.FirstChildElement("Language").ToNode();
+            if (language)
+            {
+                tinyxml2::XMLElement* text = language->FirstChildElement();
+                while (text)
+                {
+                    const char* sName = text->Attribute("Name");
+                    const char* sText = text->GetText();
+                    const size_t szLen = (sText ? strlen(sText) : 0);
+                    if (szLen != 0 && szLen < 129)
+                    {
+                        for (size_t szi = 0; szi < std::to_underlying(LangIds::LANG_IDS_END); szi++) // NOLINT(modernize-loop-convert) index used in body
+                        {
+                            if (strcmp(LangXmlStr[szi], sName) == 0)
+                            {
+                                m_sTexts[szi].assign(sText, szLen);
+                                break;
+                            }
+                        }
+                    }
+                    text = text->NextSiblingElement();
+                }
+            }
+        }
+    }
 }
-//---------------------------------------------------------------------------
 
 void LanguageManager::GenerateXmlExample()
 {
-	TiXmlDocument xmldoc;
-	xmldoc.InsertEndChild(TiXmlDeclaration("1.0", "windows-1252", "yes"));
-	TiXmlElement xmllanguage("Language");
-	xmllanguage.SetAttribute("Name", "Example English Language");
-	xmllanguage.SetAttribute("Author", "PtokaX");
-	xmllanguage.SetAttribute("Version", PtokaXVersionString " build " BUILD_NUMBER);
+    tinyxml2::XMLDocument xmldoc;
+    xmldoc.InsertEndChild(xmldoc.NewDeclaration("version=\"1.0\" encoding=\"windows-1252\" standalone=\"yes\""));
+    tinyxml2::XMLElement* xmllanguage = xmldoc.NewElement("Language");
+    xmllanguage->SetAttribute("Name", "Example English Language");
+    xmllanguage->SetAttribute("Author", "PtokaX");
+    xmllanguage->SetAttribute("Version", PtokaXVersionString " build " BUILD_NUMBER);
 
-	for (int i = 0; i < LANG_IDS_END; i++)
-	{
-		TiXmlElement xmlstring("String");
-		xmlstring.SetAttribute("Name", LangXmlStr[i]);
-		xmlstring.InsertEndChild(TiXmlText(LangStr[i]));
-		xmllanguage.InsertEndChild(xmlstring);
-	}
+    for (int i = 0; i < std::to_underlying(LangIds::LANG_IDS_END); i++)
+    {
+        tinyxml2::XMLElement* xmlstring = xmldoc.NewElement("String");
+        xmlstring->SetAttribute("Name", LangXmlStr[i]);
+        xmlstring->InsertEndChild(xmldoc.NewText(LangStr[i]));
+        xmllanguage->InsertEndChild(xmlstring);
+    }
 
-	xmldoc.InsertEndChild(xmllanguage);
-	xmldoc.SaveFile("English.xml.example");
+    xmldoc.InsertEndChild(xmllanguage);
+    xmldoc.SaveFile("English.xml.example");
 }
 //---------------------------------------------------------------------------

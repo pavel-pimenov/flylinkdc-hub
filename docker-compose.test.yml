@@ -1,0 +1,35 @@
+services:
+  ptokax-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_TYPE: Debug
+    container_name: ptokax-hub-test
+    ports:
+      - "44110:4411"
+      - "41110:411"
+      - "8889:8888"
+    volumes:
+      - ./cfg-test:/app/cfg
+      - ./scripts:/app/scripts:ro
+      - ./logs-test:/app/logs
+      - ./language:/app/language:ro
+      - crashes:/app/crashes
+    environment:
+      - TZ=Europe/Moscow
+      - LANG=ru_RU.CP1251
+      - LC_ALL=ru_RU.CP1251
+      - LUA_PATH=/app/scripts/?.lua;/app/scripts/libs/?.lua;;
+      - ASAN_OPTIONS=detect_leaks=1:halt_on_error=0:log_exe_name=1
+      - UBSAN_OPTIONS=print_stacktrace=1:halt_on_error=0
+    healthcheck:
+      test: ["CMD", "bash", "-c", "ss -tln | grep -qE ':(4411|411) '"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
+    restart: no
+
+volumes:
+  crashes:

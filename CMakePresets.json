@@ -1,0 +1,99 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "default",
+            "displayName": "Default Configuration",
+            "description": "Default build using Ninja generator",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}"
+            }
+        },
+        {
+            "name": "debug",
+            "displayName": "Debug Configuration",
+            "description": "Debug build with full debugging information",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "ENABLE_ASAN": "ON"
+            }
+        },
+        {
+            "name": "release",
+            "displayName": "Release Configuration",
+            "description": "Optimized release build",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "relwithdebinfo",
+            "displayName": "Release with Debug Info",
+            "description": "Optimized release build with debug information",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+            }
+        },
+        {
+            "name": "minsizerel",
+            "displayName": "MinSize Release",
+            "description": "Release build optimized for size",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "MinSizeRel"
+            }
+        },
+        {
+            "name": "profile",
+            "displayName": "Profile",
+            "description": "Build with gprof profiling support",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Profile"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "default",
+            "displayName": "Default Build",
+            "description": "Build using the default configuration",
+            "configurePreset": "default"
+        },
+        {
+            "name": "debug",
+            "displayName": "Debug Build",
+            "description": "Build using the debug configuration",
+            "configurePreset": "debug"
+        },
+        {
+            "name": "release",
+            "displayName": "Release Build",
+            "description": "Build using the release configuration",
+            "configurePreset": "release"
+        },
+        {
+            "name": "relwithdebinfo",
+            "displayName": "Release with Debug Info Build",
+            "description": "Build using the release with debug info configuration",
+            "configurePreset": "relwithdebinfo"
+        },
+        {
+            "name": "minsizerel",
+            "displayName": "MinSize Release Build",
+            "description": "Build using the minsize release configuration",
+            "configurePreset": "minsizerel"
+        },
+        {
+            "name": "profile",
+            "displayName": "Profile Build",
+            "description": "Build with gprof profiling support",
+            "configurePreset": "profile"
+        }
+    ]
+}

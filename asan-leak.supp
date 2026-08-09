@@ -1,0 +1,5 @@
+leak:libz
+leak:liblua
+leak:sqlite3
+leak:prometheus
+leak:civetweb

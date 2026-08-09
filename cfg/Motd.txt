@@ -1,0 +1,20 @@
+[b]Добро пожаловать в хаб, посвящённый развитию клиента FlylinkDC++ !
+	[color=green]========================================================================[/color][/b]
+	Блог разработчиков:	https://flylinkdc.blogspot.com
+ 
+	[b][color=green]Официальная группа FlylinkDC++ и StrongDC++ в [/color][color=blue]Telegram[/color][color=green]:
+				https://t.me/flylinkdc_team либо 
+				https://tlgg.ru/flylinkdc_team или 
+				tg://resolve?domain=flylinkdc_team [/color]
+	[color=green]========================================================================[/color][/b]
+	Готовые сборки клиента можно скачать по этим ссылкам:
+	FlylinkDC++ r6xx:		https://www.fly-server.ru/install/r6xx/
+
+	[b][color=green]Eсли вы нашли ошибку в FlylinkDC++[/color] — пожалуйста, сообщите об этом по электронной почте: mailto:pavel.pimenov@gmail.com
+	 и обязательно сделайте снимок экрана с ошибкой, как это у вас выглядит.  ( https://ru.wikipedia.org/wiki/Снимок_экрана )
+	[color=green]========================================================================[/color]
+	!rules[/b]			- Правила нашего Хаба
+	... или используйте [b]Меню Хаба[/b] (Правая кнопка Мыши на любом Нике в чате или на Вкладке Хаба в клиенте)
+	
+	[b][color=red]Архивная версия FlylinkDC++ WIKI:  https://web.archive.org/web/20220116110444/http://flylinkdc.com/dokuwiki/doku.php?id=ru:faq[/color][/b]
+	[b][color=green]========================================================================[/color][/b]

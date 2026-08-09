@@ -31,1180 +31,954 @@
 #include "SettingManager.h"
 #include "User.h"
 #include "utility.h"
-#include "tinyxml.h"
+#include <tinyxml2.h>
 //---------------------------------------------------------------------------
-#ifdef _BUILD_GUI
-#include "../gui.win/RegisteredUserDialog.h"
-#include "../gui.win/RegisteredUsersDialog.h"
-#endif
-//---------------------------------------------------------------------------
-RegManager * RegManager::m_Ptr = nullptr;
-//---------------------------------------------------------------------------
-static const char sPtokaXRegiteredUsers[] = "PtokaX Registered Users";
-static const size_t szPtokaXRegiteredUsersLen = sizeof(sPtokaXRegiteredUsers) - 1;
 //---------------------------------------------------------------------------
 
-RegUser::RegUser() : m_tLastBadPass(0), m_pPrev(NULL), m_pNext(NULL), m_pHashTablePrev(NULL), m_pHashTableNext(NULL), m_ui32Hash(0), m_ui16Profile(0), m_ui8BadPassCount(0), m_bPassHash(false)
-{
-	m_sPass = nullptr;
-}
+std::unique_ptr<RegManager> RegManager::m_Ptr;
+//---------------------------------------------------------------------------
+static const char sPtokaXRegiteredUsers[] = "PtokaX Registered Users"; // NOLINT(modernize-avoid-c-arrays)
+static constexpr size_t g_szPtokaXRegiteredUsersLen = sizeof(sPtokaXRegiteredUsers) - 1;
 //---------------------------------------------------------------------------
 
-RegUser::~RegUser()
+// RegUser destructor is = default in header
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+RegUser* RegUser::CreateReg(const char* sRegNick,
+                            const size_t szRegNickLen,
+                            const char* sRegPassword,
+                            const size_t szRegPassLen,
+                            const uint8_t* ui8RegPassHash,
+                            const uint16_t ui16RegProfile)
 {
-	if (m_bPassHash == true)
-	{
-		free(m_ui8PassHash);
-	}
-	else
-	{
-		free(m_sPass);
-	}
+    auto pReg = std::make_unique<RegUser>();
+    if (!pReg)
+    {
+        LogDbg("[MEM] Cannot allocate new Reg in RegUser::CreateReg");
+
+        return nullptr;
+    }
+
+    pReg->m_sNick = std::string(sRegNick, szRegNickLen);
+
+    if (ui8RegPassHash)
+    {
+        pReg->m_vPassData.assign(ui8RegPassHash, ui8RegPassHash + 64);
+        pReg->m_bPassHash = true;
+    }
+    else if (sRegPassword)
+    {
+        pReg->m_vPassData.assign(reinterpret_cast<const uint8_t*>(sRegPassword), reinterpret_cast<const uint8_t*>(sRegPassword) + szRegPassLen);
+        pReg->m_vPassData.push_back('\0');
+    }
+    else
+    {
+        LogDbgErr("[ERR] Empty ui8RegPassHash and sRegPassword in RegUser::RegUser");
+
+        return nullptr;
+    }
+
+    pReg->m_ui16Profile = ui16RegProfile;
+    pReg->m_ui32Hash = HashNick(std::string_view(sRegNick, szRegNickLen));
+
+    return pReg.release();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-RegUser * RegUser::CreateReg(const char * sRegNick, const size_t szRegNickLen, const char * sRegPassword, const size_t szRegPassLen, const uint8_t * ui8RegPassHash, const uint16_t ui16RegProfile)
+bool RegUser::UpdatePassword(std::string_view sNewPass)
 {
-	RegUser * pReg = new (std::nothrow) RegUser();
+    if (!SettingManager::m_Ptr->m_bBools[std::to_underlying(SetBoolIds::SETBOOL_HASH_PASSWORDS)])
+    {
+        if (m_bPassHash)
+        {
+            m_vPassData.assign(reinterpret_cast<const uint8_t*>(sNewPass.data()), reinterpret_cast<const uint8_t*>(sNewPass.data()) + sNewPass.size());
+            m_vPassData.push_back('\0');
+            m_bPassHash = false;
+        }
+        else
+        {
+            std::string_view stored(reinterpret_cast<const char*>(m_vPassData.data()));
+            if (stored != sNewPass)
+            {
+                m_vPassData.assign(reinterpret_cast<const uint8_t*>(sNewPass.data()), reinterpret_cast<const uint8_t*>(sNewPass.data()) + sNewPass.size());
+                m_vPassData.push_back('\0');
+            }
+        }
+    }
+    else
+    {
+        if (m_bPassHash)
+        {
+            if (!HashPassword(sNewPass.data(), sNewPass.size(), m_vPassData.data()))
+            {
+                LogDbgErr("[REG] Failed to hash password for {}", m_sNick);
+            }
+        }
+        else
+        {
+            std::array<uint8_t, 64> ui8Hash = {};
+            if (HashPassword(sNewPass.data(), sNewPass.size(), ui8Hash.data()))
+            {
+                m_vPassData.assign(ui8Hash.begin(), ui8Hash.end());
+                m_bPassHash = true;
+            }
+        }
+    }
 
-	if (pReg == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate new Reg in RegUser::CreateReg\n");
-
-		return NULL;
-	}
-
-	pReg->m_sNick = std::string(sRegNick, szRegNickLen);
-
-	if (ui8RegPassHash != NULL)
-	{
-		pReg->m_ui8PassHash = (uint8_t *)malloc(64);
-		if (pReg->m_ui8PassHash == NULL)
-		{
-			AppendDebugLog("%s - [MEM] Cannot allocate 64 bytes for ui8PassHash in RegUser::RegUser\n");
-
-			delete pReg;
-			return NULL;
-		}
-		memcpy(pReg->m_ui8PassHash, ui8RegPassHash, 64);
-		pReg->m_bPassHash = true;
-	}
-	else if(sRegPassword != NULL)
-	{
-		pReg->m_sPass = (char *)malloc(szRegPassLen + 1);
-		if (pReg->m_sPass == NULL)
-		{
-			AppendDebugLogFormat("[MEM] Cannot allocate %zu bytes for m_sPass in RegUser::RegUser\n", szRegPassLen+1);
-
-			delete pReg;
-			return NULL;
-		}
-		memcpy(pReg->m_sPass, sRegPassword, szRegPassLen);
-		pReg->m_sPass[szRegPassLen] = '\0';
-	}
-	else
-	{
-		AppendDebugLogFormat("[ERR] Empty ui8RegPassHash and sRegPassword in RegUser::RegUser\n");
-
-		delete pReg;
-		return NULL;
-	}
-
-	pReg->m_ui16Profile = ui16RegProfile;
-	pReg->m_ui32Hash = HashNick(sRegNick, szRegNickLen);
-
-	return pReg;
+    return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-bool RegUser::UpdatePassword(const char * sNewPass, const size_t szNewLen)
+RegManager::RegManager() = default;
+//---------------------------------------------------------------------------
+
+RegManager::~RegManager() = default;
+//---------------------------------------------------------------------------
+
+bool RegManager::AddNew(const char* sNick, const char* sPasswd, const uint16_t iProfile)
 {
-	if (SettingManager::m_Ptr->m_bBools[SETBOOL_HASH_PASSWORDS] == false)
-	{
-		if (m_bPassHash == true)
-		{
-			void * sOldBuf = m_ui8PassHash;
-			m_sPass = (char *)realloc(sOldBuf, szNewLen + 1);
-			if (m_sPass == NULL)
-			{
-				m_ui8PassHash = (uint8_t *)sOldBuf;
+    if (Find(sNick))
+    {
+        return false;
+    }
 
-				AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes for m_ui8PassHash->sPass in RegUser::UpdatePassword\n", szNewLen+1);
+    RegUser* pNewUser = nullptr;
 
-				return false;
-			}
-			memcpy(m_sPass, sNewPass, szNewLen);
-			m_sPass[szNewLen] = '\0';
+    if (SettingManager::m_Ptr->m_bBools[std::to_underlying(SetBoolIds::SETBOOL_HASH_PASSWORDS)])
+    {
+        std::array<uint8_t, 64> ui8Hash = {};
 
-			m_bPassHash = false;
-		}
-		else if (strcmp(m_sPass, sNewPass) != 0)
-		{
-			char * sOldPass = m_sPass;
-			m_sPass = (char *)realloc(sOldPass, szNewLen + 1);
-			if (m_sPass == NULL)
-			{
-				m_sPass = sOldPass;
+        const size_t szPassLen = strlen(sPasswd);
 
-				AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes for m_sPass in RegUser::UpdatePassword\n", szNewLen+1);
+        if (!HashPassword(sPasswd, szPassLen, ui8Hash.data()))
+        {
+            return false;
+        }
 
-				return false;
-			}
-			memcpy(m_sPass, sNewPass, szNewLen);
-			m_sPass[szNewLen] = '\0';
-		}
-	}
-	else
-	{
-		if (m_bPassHash == true)
-		{
-			HashPassword(sNewPass, szNewLen, m_ui8PassHash);
-		}
-		else
-		{
-			char * sOldPass = m_sPass;
-			m_ui8PassHash = (uint8_t *)realloc(sOldPass, 64);
-			if (m_ui8PassHash == NULL)
-			{
-				m_sPass = sOldPass;
+        pNewUser = RegUser::CreateReg(sNick, strlen(sNick), nullptr, 0, ui8Hash.data(), iProfile);
+    }
+    else
+    {
+        pNewUser = RegUser::CreateReg(sNick, strlen(sNick), sPasswd, strlen(sPasswd), nullptr, iProfile);
+    }
 
-				AppendDebugLog("%s - [MEM] Cannot reallocate 64 bytes for m_sPass->m_ui8PassHash in RegUser::UpdatePassword\n");
+    if (!pNewUser)
+    {
+        LogDbg("[MEM] Cannot allocate pNewUser in RegManager::AddNew");
 
-				return false;
-			}
+        return false;
+    }
 
-			if (HashPassword(sNewPass, szNewLen, m_ui8PassHash) == true)
-			{
-				m_bPassHash = true;
-			}
-			else
-			{
-				m_sPass = (char *)m_ui8PassHash;
-			}
-		}
-	}
+    Add(pNewUser);
 
-	return true;
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    Save(true);
 
-RegManager::RegManager(void) : m_ui8SaveCalls(0), m_pRegListS(NULL), m_pRegListE(NULL)
-{
-	memset(m_pTable, 0, sizeof(m_pTable));
+    if (!ServerManager::m_bServerRunning)
+    {
+        return true;
+    }
+
+    User* AddedUser = HashManager::m_Ptr->FindUser(pNewUser->m_sNick);
+
+    if (AddedUser)
+    {
+        const bool bAllowedOpChat = ProfileManager::m_Ptr->IsAllowed(AddedUser, ProfileManager::ALLOWEDOPCHAT);
+        AddedUser->m_i32Profile = iProfile;
+
+        if (!((AddedUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR))
+        {
+            if (ProfileManager::m_Ptr->IsAllowed(AddedUser, ProfileManager::HASKEYICON))
+            {
+                AddedUser->m_ui32BoolBits |= User::BIT_OPERATOR;
+            }
+            else
+            {
+                AddedUser->m_ui32BoolBits &= ~User::BIT_OPERATOR;
+            }
+
+            if (((AddedUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR))
+            {
+                // alex82 ... HideUserKey / ������ ���� �����
+                if (!((AddedUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY))
+                {
+                    Users::m_Ptr->Add2OpList(AddedUser);
+                    GlobalDataQueue::m_Ptr->OpListStore(AddedUser->m_sNick.c_str());
+                }
+                if (bAllowedOpChat != ProfileManager::m_Ptr->IsAllowed(AddedUser, ProfileManager::ALLOWEDOPCHAT))
+                {
+                    if (SettingManager::m_Ptr->m_bBools[std::to_underlying(SetBoolIds::SETBOOL_REG_OP_CHAT)] &&
+                        (!SettingManager::m_Ptr->m_bBools[std::to_underlying(SetBoolIds::SETBOOL_REG_BOT)] || !SettingManager::m_Ptr->m_bBotsSameNick))
+                    {
+                        if (!((AddedUser->m_ui32SupportBits & User::SUPPORTBIT_NOHELLO) == User::SUPPORTBIT_NOHELLO))
+                        {
+                            AddedUser->SendCharDelayed(SettingManager::m_Ptr->m_sPreTexts[std::to_underlying(SettingManager::SetPreTxtIds::SETPRETXT_OP_CHAT_HELLO)]);
+                        }
+
+                        AddedUser->SendCharDelayed(SettingManager::m_Ptr->m_sPreTexts[std::to_underlying(SettingManager::SetPreTxtIds::SETPRETXT_OP_CHAT_MYINFO)]);
+                        AddedUser->SendFormat("RegManager::AddNew", true, "$OpList %s$$|", SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_OP_CHAT_NICK)].c_str());
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
 }
 //---------------------------------------------------------------------------
 
-RegManager::~RegManager(void)
+void RegManager::Add(RegUser* pReg)
 {
-	RegUser * curReg = NULL,
-	          * next = m_pRegListS;
+    Add2Table(pReg);
 
-	while (next != NULL)
-	{
-		curReg = next;
-		next = curReg->m_pNext;
+    m_RegList.emplace_back(pReg);
 
-		delete curReg;
-	}
+    return;
 }
 //---------------------------------------------------------------------------
 
-bool RegManager::AddNew(const char * sNick, const char * sPasswd, const uint16_t iProfile)
+void RegManager::Add2Table(RegUser* pReg)
 {
-	if (Find(sNick, strlen(sNick)) != NULL)
-	{
-		return false;
-	}
-
-	RegUser * pNewUser = nullptr;
-
-	if (SettingManager::m_Ptr->m_bBools[SETBOOL_HASH_PASSWORDS] == true)
-	{
-		uint8_t ui8Hash[64];
-
-		size_t szPassLen = strlen(sPasswd);
-
-		if (HashPassword(sPasswd, szPassLen, ui8Hash) == false)
-		{
-			return false;
-		}
-
-		pNewUser = RegUser::CreateReg(sNick, strlen(sNick), NULL, 0, ui8Hash, iProfile);
-	}
-	else
-	{
-		pNewUser = RegUser::CreateReg(sNick, strlen(sNick), sPasswd, strlen(sPasswd), NULL, iProfile);
-	}
-
-	if (pNewUser == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate pNewUser in RegManager::AddNew\n");
-
-		return false;
-	}
-
-	Add(pNewUser);
-
-#ifdef _BUILD_GUI
-	if (RegisteredUsersDialog::m_Ptr != NULL)
-	{
-		RegisteredUsersDialog::m_Ptr->AddReg(pNewUser);
-	}
-#endif
-
-	Save(true);
-
-	if (ServerManager::m_bServerRunning == false)
-	{
-		return true;
-	}
-
-	User * AddedUser = HashManager::m_Ptr->FindUser(pNewUser->m_sNick);
-
-	if (AddedUser != NULL)
-	{
-		bool bAllowedOpChat = ProfileManager::m_Ptr->IsAllowed(AddedUser, ProfileManager::ALLOWEDOPCHAT);
-		AddedUser->m_i32Profile = iProfile;
-
-		if (((AddedUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == false)
-		{
-			if (ProfileManager::m_Ptr->IsAllowed(AddedUser, ProfileManager::HASKEYICON) == true)
-			{
-				AddedUser->m_ui32BoolBits |= User::BIT_OPERATOR;
-			}
-			else
-			{
-				AddedUser->m_ui32BoolBits &= ~User::BIT_OPERATOR;
-			}
-
-			if (((AddedUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == true)
-			{
-				// alex82 ... HideUserKey / ������ ���� �����
-				if (((AddedUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false)
-				{
-					Users::m_Ptr->Add2OpList(AddedUser);
-					GlobalDataQueue::m_Ptr->OpListStore(AddedUser->m_sNick);
-				}
-				if (bAllowedOpChat != ProfileManager::m_Ptr->IsAllowed(AddedUser, ProfileManager::ALLOWEDOPCHAT))
-				{
-					if (SettingManager::m_Ptr->m_bBools[SETBOOL_REG_OP_CHAT] == true &&
-					        (SettingManager::m_Ptr->m_bBools[SETBOOL_REG_BOT] == false || SettingManager::m_Ptr->m_bBotsSameNick == false))
-					{
-						if (((AddedUser->m_ui32SupportBits & User::SUPPORTBIT_NOHELLO) == User::SUPPORTBIT_NOHELLO) == false)
-						{
-							AddedUser->SendCharDelayed(SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_OP_CHAT_HELLO],
-							                           SettingManager::m_Ptr->m_ui16PreTextsLens[SettingManager::SETPRETXT_OP_CHAT_HELLO]);
-						}
-
-						AddedUser->SendCharDelayed(SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_OP_CHAT_MYINFO], SettingManager::m_Ptr->m_ui16PreTextsLens[SettingManager::SETPRETXT_OP_CHAT_MYINFO]);
-						AddedUser->SendFormat("RegManager::AddNew", true, "$OpList %s$$|", SettingManager::m_Ptr->m_sTexts[SETTXT_OP_CHAT_NICK]);
-					}
-				}
-			}
-		}
-	}
-
-	return true;
+    m_Table.emplace(pReg->m_ui32Hash, pReg);
 }
 //---------------------------------------------------------------------------
 
-void RegManager::Add(RegUser * pReg)
+void RegManager::ChangeReg(RegUser* pReg, const char* sNewPasswd, const uint16_t ui16NewProfile)
 {
-	Add2Table(pReg);
+    if (sNewPasswd)
+    {
+        if (!pReg->UpdatePassword(sNewPasswd))
+        {
+            LogDbgErr("[REG] Failed to update password for {}", pReg->m_sNick);
+        }
+    }
 
-	if (m_pRegListE == NULL)
-	{
-		m_pRegListS = pReg;
-		m_pRegListE = pReg;
-	}
-	else
-	{
-		pReg->m_pPrev = m_pRegListE;
-		m_pRegListE->m_pNext = pReg;
-		m_pRegListE = pReg;
-	}
+    pReg->m_ui16Profile = ui16NewProfile;
 
-	return;
+    RegManager::m_Ptr->Save(true);
+
+    if (!ServerManager::m_bServerRunning)
+    {
+        return;
+    }
+
+    User* ChangedUser = HashManager::m_Ptr->FindUser(pReg->m_sNick);
+    if (ChangedUser && ChangedUser->m_i32Profile != static_cast<int32_t>(ui16NewProfile))
+    {
+        const bool bAllowedOpChat = ProfileManager::m_Ptr->IsAllowed(ChangedUser, ProfileManager::ALLOWEDOPCHAT);
+
+        ChangedUser->m_i32Profile = static_cast<int32_t>(ui16NewProfile);
+
+        if (((ChangedUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) !=
+            ProfileManager::m_Ptr->IsAllowed(ChangedUser, ProfileManager::HASKEYICON))
+        {
+            if (ProfileManager::m_Ptr->IsAllowed(ChangedUser, ProfileManager::HASKEYICON))
+            {
+                ChangedUser->m_ui32BoolBits |= User::BIT_OPERATOR;
+                // alex82 ... HideUserKey / ������ ���� �����
+                if (!((ChangedUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY))
+                {
+                    Users::m_Ptr->Add2OpList(ChangedUser);
+                    GlobalDataQueue::m_Ptr->OpListStore(ChangedUser->m_sNick.c_str());
+                }
+            }
+            else
+            {
+                ChangedUser->m_ui32BoolBits &= ~User::BIT_OPERATOR;
+                // alex82 ... HideUserKey / ������ ���� �����
+                if (!((ChangedUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY))
+                {
+                    // alex82 ... ��������� �������� OpList
+                    const int imsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "$Quit %s|", ChangedUser->m_sNick.c_str());
+                    if (CheckSprintf(imsgLen, 128, "RegManager::ChangeReg1"))
+                    {
+                        GlobalDataQueue::m_Ptr->AddQueueItem(ServerManager::m_pGlobalBuffer, imsgLen, nullptr, 0, GlobalDataQueue::Cmd::QUIT);
+                    }
+                    switch (SettingManager::m_Ptr->m_ui8FullMyINFOOption)
+                    {
+                    case 0:
+                        GlobalDataQueue::m_Ptr->AddQueueItem(
+                            ChangedUser->m_sMyInfoLong.data(), ChangedUser->m_ui16MyInfoLongLen, nullptr, 0, GlobalDataQueue::Cmd::MYINFO);
+                        break;
+                    case 1:
+                        GlobalDataQueue::m_Ptr->AddQueueItem(ChangedUser->m_sMyInfoShort.data(),
+                                                             ChangedUser->m_ui16MyInfoShortLen,
+                                                             ChangedUser->m_sMyInfoLong.data(),
+                                                             ChangedUser->m_ui16MyInfoLongLen,
+                                                             GlobalDataQueue::Cmd::MYINFO);
+                        break;
+                    case 2:
+                        GlobalDataQueue::m_Ptr->AddQueueItem(
+                            ChangedUser->m_sMyInfoShort.data(), ChangedUser->m_ui16MyInfoShortLen, nullptr, 0, GlobalDataQueue::Cmd::MYINFO);
+                        break;
+                    default:
+                        break;
+                    }
+                    Users::m_Ptr->DelFromOpList(ChangedUser->m_sNick.c_str());
+                }
+            }
+        }
+
+        if (bAllowedOpChat != ProfileManager::m_Ptr->IsAllowed(ChangedUser, ProfileManager::ALLOWEDOPCHAT))
+        {
+            if (ProfileManager::m_Ptr->IsAllowed(ChangedUser, ProfileManager::ALLOWEDOPCHAT))
+            {
+                if (SettingManager::m_Ptr->m_bBools[std::to_underlying(SetBoolIds::SETBOOL_REG_OP_CHAT)] &&
+                    (!SettingManager::m_Ptr->m_bBools[std::to_underlying(SetBoolIds::SETBOOL_REG_BOT)] || !SettingManager::m_Ptr->m_bBotsSameNick))
+                {
+                    if (!((ChangedUser->m_ui32SupportBits & User::SUPPORTBIT_NOHELLO) == User::SUPPORTBIT_NOHELLO))
+                    {
+                        ChangedUser->SendCharDelayed(SettingManager::m_Ptr->m_sPreTexts[std::to_underlying(SettingManager::SetPreTxtIds::SETPRETXT_OP_CHAT_HELLO)]);
+                    }
+
+                    ChangedUser->SendCharDelayed(SettingManager::m_Ptr->m_sPreTexts[std::to_underlying(SettingManager::SetPreTxtIds::SETPRETXT_OP_CHAT_MYINFO)]);
+                    ChangedUser->SendFormat("RegManager::ChangeReg1", true, "$OpList %s$$|", SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_OP_CHAT_NICK)].c_str());
+                }
+            }
+            else
+            {
+                if (SettingManager::m_Ptr->m_bBools[std::to_underlying(SetBoolIds::SETBOOL_REG_OP_CHAT)] &&
+                    (!SettingManager::m_Ptr->m_bBools[std::to_underlying(SetBoolIds::SETBOOL_REG_BOT)] || !SettingManager::m_Ptr->m_bBotsSameNick))
+                {
+                    ChangedUser->SendFormat("RegManager::ChangeReg2", true, "$Quit %s|", SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_OP_CHAT_NICK)].c_str());
+                }
+            }
+        }
+    }
 }
 //---------------------------------------------------------------------------
 
-void RegManager::Add2Table(RegUser * pReg)
+void RegManager::Delete(RegUser* pReg, const bool /*bFromGui = false*/)
 {
-	const uint16_t ui16dx = CalcHash(pReg->m_ui32Hash);
+    if (ServerManager::m_bServerRunning)
+    {
+        User* pRemovedUser = HashManager::m_Ptr->FindUser(pReg->m_sNick);
 
-	if (m_pTable[ui16dx] != NULL)
-	{
-		m_pTable[ui16dx]->m_pHashTablePrev = pReg;
-		pReg->m_pHashTableNext = m_pTable[ui16dx];
-	}
+        if (pRemovedUser)
+        {
+            pRemovedUser->m_i32Profile = -1;
+            if (((pRemovedUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR))
+            {
+                Users::m_Ptr->DelFromOpList(pRemovedUser->m_sNick.c_str());
+                pRemovedUser->m_ui32BoolBits &= ~User::BIT_OPERATOR;
 
-	m_pTable[ui16dx] = pReg;
+                if (SettingManager::m_Ptr->m_bBools[std::to_underlying(SetBoolIds::SETBOOL_REG_OP_CHAT)] &&
+                    (!SettingManager::m_Ptr->m_bBools[std::to_underlying(SetBoolIds::SETBOOL_REG_BOT)] || !SettingManager::m_Ptr->m_bBotsSameNick))
+                {
+                    pRemovedUser->SendFormat("RegManager::Delete", true, "$Quit %s|", SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_OP_CHAT_NICK)].c_str());
+                }
+            }
+        }
+    }
+
+    Rem(pReg);
+
+    Save(true);
 }
 //---------------------------------------------------------------------------
 
-void RegManager::ChangeReg(RegUser * pReg, const char * sNewPasswd, const uint16_t ui16NewProfile)
+void RegManager::Rem(RegUser* pReg)
 {
-	if (sNewPasswd != NULL)
-	{
-		size_t szPassLen = strlen(sNewPasswd);
+    RemFromTable(pReg);
 
-		pReg->UpdatePassword(sNewPasswd, szPassLen);
-	}
-
-	pReg->m_ui16Profile = ui16NewProfile;
-
-#ifdef _BUILD_GUI
-	if (RegisteredUsersDialog::m_Ptr != NULL)
-	{
-		RegisteredUsersDialog::m_Ptr->RemoveReg(pReg);
-		RegisteredUsersDialog::m_Ptr->AddReg(pReg);
-	}
-#endif
-
-	RegManager::m_Ptr->Save(true);
-
-	if (ServerManager::m_bServerRunning == false)
-	{
-		return;
-	}
-
-	User *ChangedUser = HashManager::m_Ptr->FindUser(pReg->m_sNick);
-	if (ChangedUser != NULL && ChangedUser->m_i32Profile != (int32_t)ui16NewProfile)
-	{
-		bool bAllowedOpChat = ProfileManager::m_Ptr->IsAllowed(ChangedUser, ProfileManager::ALLOWEDOPCHAT);
-
-		ChangedUser->m_i32Profile = (int32_t)ui16NewProfile;
-
-		if (((ChangedUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) !=
-		        ProfileManager::m_Ptr->IsAllowed(ChangedUser, ProfileManager::HASKEYICON))
-		{
-			if (ProfileManager::m_Ptr->IsAllowed(ChangedUser, ProfileManager::HASKEYICON) == true)
-			{
-				ChangedUser->m_ui32BoolBits |= User::BIT_OPERATOR;
-				// alex82 ... HideUserKey / ������ ���� �����
-				if (((ChangedUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false)
-				{
-					Users::m_Ptr->Add2OpList(ChangedUser);
-					GlobalDataQueue::m_Ptr->OpListStore(ChangedUser->m_sNick);
-				}
-			}
-			else
-			{
-				ChangedUser->m_ui32BoolBits &= ~User::BIT_OPERATOR;
-				// alex82 ... HideUserKey / ������ ���� �����
-				if (((ChangedUser->m_ui32InfoBits & User::INFOBIT_HIDE_KEY) == User::INFOBIT_HIDE_KEY) == false)
-				{
-					// alex82 ... ��������� �������� OpList
-					int imsgLen = sprintf(ServerManager::m_pGlobalBuffer, "$Quit %s|", ChangedUser->m_sNick);
-					if (CheckSprintf(imsgLen, 128, "RegManager::ChangeReg1") == true)
-					{
-						GlobalDataQueue::m_Ptr->AddQueueItem(ServerManager::m_pGlobalBuffer, imsgLen, NULL, 0, GlobalDataQueue::CMD_QUIT);
-					}
-					switch (SettingManager::m_Ptr->m_ui8FullMyINFOOption)
-					{
-					case 0:
-						GlobalDataQueue::m_Ptr->AddQueueItem(ChangedUser->m_sMyInfoLong, ChangedUser->m_ui16MyInfoLongLen, NULL, 0, GlobalDataQueue::CMD_MYINFO);
-						break;
-					case 1:
-						GlobalDataQueue::m_Ptr->AddQueueItem(ChangedUser->m_sMyInfoShort, ChangedUser->m_ui16MyInfoShortLen, ChangedUser->m_sMyInfoLong, ChangedUser->m_ui16MyInfoLongLen, GlobalDataQueue::CMD_MYINFO);
-						break;
-					case 2:
-						GlobalDataQueue::m_Ptr->AddQueueItem(ChangedUser->m_sMyInfoShort, ChangedUser->m_ui16MyInfoShortLen, NULL, 0, GlobalDataQueue::CMD_MYINFO);
-						break;
-					default:
-						break;
-					}
-					Users::m_Ptr->DelFromOpList(ChangedUser->m_sNick);
-				}
-			}
-		}
-
-		if (bAllowedOpChat != ProfileManager::m_Ptr->IsAllowed(ChangedUser, ProfileManager::ALLOWEDOPCHAT))
-		{
-			if (ProfileManager::m_Ptr->IsAllowed(ChangedUser, ProfileManager::ALLOWEDOPCHAT) == true)
-			{
-				if (SettingManager::m_Ptr->m_bBools[SETBOOL_REG_OP_CHAT] == true &&
-				        (SettingManager::m_Ptr->m_bBools[SETBOOL_REG_BOT] == false || SettingManager::m_Ptr->m_bBotsSameNick == false))
-				{
-					if (((ChangedUser->m_ui32SupportBits & User::SUPPORTBIT_NOHELLO) == User::SUPPORTBIT_NOHELLO) == false)
-					{
-						ChangedUser->SendCharDelayed(SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_OP_CHAT_HELLO],
-						                             SettingManager::m_Ptr->m_ui16PreTextsLens[SettingManager::SETPRETXT_OP_CHAT_HELLO]);
-					}
-
-					ChangedUser->SendCharDelayed(SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_OP_CHAT_MYINFO], SettingManager::m_Ptr->m_ui16PreTextsLens[SettingManager::SETPRETXT_OP_CHAT_MYINFO]);
-					ChangedUser->SendFormat("RegManager::ChangeReg1", true, "$OpList %s$$|", SettingManager::m_Ptr->m_sTexts[SETTXT_OP_CHAT_NICK]);
-				}
-			}
-			else
-			{
-				if (SettingManager::m_Ptr->m_bBools[SETBOOL_REG_OP_CHAT] == true && (SettingManager::m_Ptr->m_bBools[SETBOOL_REG_BOT] == false || SettingManager::m_Ptr->m_bBotsSameNick == false))
-				{
-					ChangedUser->SendFormat("RegManager::ChangeReg2", true, "$Quit %s|", SettingManager::m_Ptr->m_sTexts[SETTXT_OP_CHAT_NICK]);
-				}
-			}
-		}
-	}
-
-#ifdef _BUILD_GUI
-	if (RegisteredUserDialog::m_Ptr != NULL)
-	{
-		RegisteredUserDialog::m_Ptr->RegChanged(pReg);
-	}
-#endif
+    for (auto it = m_RegList.begin(); it != m_RegList.end(); ++it)
+    {
+        if (it->get() == pReg)
+        {
+            m_RegList.erase(it);
+            break;
+        }
+    }
 }
 //---------------------------------------------------------------------------
 
-#ifdef _BUILD_GUI
-void RegManager::Delete(RegUser * pReg, const bool bFromGui/* = false*/)
+void RegManager::RemFromTable(RegUser* pReg)
 {
-#else
-void RegManager::Delete(RegUser * pReg, const bool /*bFromGui = false*/)
-{
-#endif
-	if (ServerManager::m_bServerRunning == true)
-	{
-		User * pRemovedUser = HashManager::m_Ptr->FindUser(pReg->m_sNick);
-
-		if (pRemovedUser != NULL)
-		{
-			pRemovedUser->m_i32Profile = -1;
-			if (((pRemovedUser->m_ui32BoolBits & User::BIT_OPERATOR) == User::BIT_OPERATOR) == true)
-			{
-				Users::m_Ptr->DelFromOpList(pRemovedUser->m_sNick);
-				pRemovedUser->m_ui32BoolBits &= ~User::BIT_OPERATOR;
-
-				if (SettingManager::m_Ptr->m_bBools[SETBOOL_REG_OP_CHAT] == true && (SettingManager::m_Ptr->m_bBools[SETBOOL_REG_BOT] == false || SettingManager::m_Ptr->m_bBotsSameNick == false))
-				{
-					pRemovedUser->SendFormat("RegManager::Delete", true, "$Quit %s|", SettingManager::m_Ptr->m_sTexts[SETTXT_OP_CHAT_NICK]);
-				}
-			}
-		}
-	}
-
-#ifdef _BUILD_GUI
-	if (bFromGui == false && RegisteredUsersDialog::m_Ptr != NULL)
-	{
-		RegisteredUsersDialog::m_Ptr->RemoveReg(pReg);
-	}
-#endif
-
-	Rem(pReg);
-
-#ifdef _BUILD_GUI
-	if (RegisteredUserDialog::m_Ptr != NULL)
-	{
-		RegisteredUserDialog::m_Ptr->RegDeleted(pReg);
-	}
-#endif
-
-	delete pReg;
-
-	Save(true);
+    const auto range = m_Table.equal_range(pReg->m_ui32Hash);
+    for (auto it = range.first; it != range.second; ++it)
+    {
+        if (it->second == pReg)
+        {
+            m_Table.erase(it);
+            break;
+        }
+    }
 }
 //---------------------------------------------------------------------------
 
-void RegManager::Rem(RegUser * pReg)
+RegUser* RegManager::Find(std::string_view sNick) const
 {
-	RemFromTable(pReg);
+    const uint32_t ui32Hash = HashNick(sNick);
 
-	RegUser *prev, *next;
-	prev = pReg->m_pPrev;
-	next = pReg->m_pNext;
+    const auto range = m_Table.equal_range(ui32Hash);
+    for (auto it = range.first; it != range.second; ++it)
+    {
+        if (iequals(it->second->m_sNick, sNick))
+        {
+            return it->second;
+        }
+    }
 
-	if (prev == NULL)
-	{
-		if (next == NULL)
-		{
-			m_pRegListS = NULL;
-			m_pRegListE = NULL;
-		}
-		else
-		{
-			next->m_pPrev = NULL;
-			m_pRegListS = next;
-		}
-	}
-	else if (next == NULL)
-	{
-		prev->m_pNext = NULL;
-		m_pRegListE = prev;
-	}
-	else
-	{
-		prev->m_pNext = next;
-		next->m_pPrev = prev;
-	}
+    return nullptr;
 }
 //---------------------------------------------------------------------------
 
-void RegManager::RemFromTable(RegUser * pReg)
+RegUser* RegManager::Find(User* pUser) const
 {
-	if (pReg->m_pHashTablePrev == NULL)
-	{
-		const uint16_t ui16dx = CalcHash(pReg->m_ui32Hash);
+    const auto range = m_Table.equal_range(pUser->m_ui32NickHash);
+    for (auto it = range.first; it != range.second; ++it)
+    {
+        if (iequals(it->second->m_sNick, pUser->m_sNick))
+        {
+            return it->second;
+        }
+    }
 
-		if (pReg->m_pHashTableNext == NULL)
-		{
-			m_pTable[ui16dx] = NULL;
-		}
-		else
-		{
-			pReg->m_pHashTableNext->m_pHashTablePrev = NULL;
-			m_pTable[ui16dx] = pReg->m_pHashTableNext;
-		}
-	}
-	else if (pReg->m_pHashTableNext == NULL)
-	{
-		pReg->m_pHashTablePrev->m_pHashTableNext = NULL;
-	}
-	else
-	{
-		pReg->m_pHashTablePrev->m_pHashTableNext = pReg->m_pHashTableNext;
-		pReg->m_pHashTableNext->m_pHashTablePrev = pReg->m_pHashTablePrev;
-	}
-
-	pReg->m_pHashTablePrev = NULL;
-	pReg->m_pHashTableNext = NULL;
+    return nullptr;
 }
 //---------------------------------------------------------------------------
 
-RegUser* RegManager::Find(const char * sNick, const size_t szNickLen)
+RegUser* RegManager::Find(const uint32_t ui32Hash, std::string_view sNick) const
 {
-	uint32_t ui32Hash = HashNick(sNick, szNickLen);
+    const auto range = m_Table.equal_range(ui32Hash);
+    for (auto it = range.first; it != range.second; ++it)
+    {
+        if (iequals(it->second->m_sNick, sNick))
+        {
+            return it->second;
+        }
+    }
 
-	const uint16_t ui16dx = CalcHash(ui32Hash);
-
-	RegUser * cur = NULL,
-	          * next = m_pTable[ui16dx];
-
-	while (next != NULL)
-	{
-		cur = next;
-		next = cur->m_pHashTableNext;
-
-		if (cur->m_ui32Hash == ui32Hash && strcasecmp(cur->m_sNick.c_str(), sNick) == 0)
-		{
-			return cur;
-		}
-	}
-
-	return NULL;
+    return nullptr;
 }
 //---------------------------------------------------------------------------
 
-RegUser* RegManager::Find(User * pUser)
+void RegManager::Load()
 {
-	const uint16_t ui16dx = CalcHash(pUser->m_ui32NickHash);
+    if (!FileExist((ServerManager::m_sPath + "/cfg/RegisteredUsers.pxb").c_str()))
+    {
+        LoadXML();
+        return;
+    }
 
-	RegUser * cur = NULL,
-	          * next = m_pTable[ui16dx];
+    const auto iProfilesCount = static_cast<uint16_t>(ProfileManager::m_Ptr->m_ui16ProfileCount - 1);
 
-	while (next != NULL)
-	{
-		cur = next;
-		next = cur->m_pHashTableNext;
+    PXBReader pxbRegs;
 
-		if (cur->m_ui32Hash == pUser->m_ui32NickHash && strcasecmp(cur->m_sNick.c_str(), pUser->m_sNick) == 0)
-		{
-			return cur;
-		}
-	}
+    // Open regs file
+    if (!pxbRegs.OpenFileRead((ServerManager::m_sPath + "/cfg/RegisteredUsers.pxb").c_str(), 4))
+    {
+        return;
+    }
 
-	return NULL;
-}
-//---------------------------------------------------------------------------
+    // Read file header
+    std::array<uint16_t, 4> ui16Identificators = {};
+    memcpy(ui16Identificators.data(), "FI", 2);
+    memcpy(ui16Identificators.data() + 1, "FV", 2);
+    ui16Identificators[2] = 0;
+    ui16Identificators[3] = 0;
 
-RegUser* RegManager::Find(const uint32_t ui32Hash, const char * sNick)
-{
-	const uint16_t ui16dx = CalcHash(ui32Hash);
+    if (!pxbRegs.ReadNextItem(ui16Identificators.data(), 2))
+    {
+        return;
+    }
 
-	RegUser * cur = NULL,
-	          * next = m_pTable[ui16dx];
+    // Check header if we have correct file
+    if (pxbRegs.m_ui16ItemLengths[0] != g_szPtokaXRegiteredUsersLen ||
+        strncmp(static_cast<const char*>(pxbRegs.m_pItemDatas[0]), sPtokaXRegiteredUsers, g_szPtokaXRegiteredUsersLen) != 0)
+    {
+        return;
+    }
 
-	while (next != NULL)
-	{
-		cur = next;
-		next = cur->m_pHashTableNext;
+    {
+        uint32_t ui32FileVersion;
+        memcpy(&ui32FileVersion, pxbRegs.m_pItemDatas[1], sizeof(ui32FileVersion));
+        ui32FileVersion = ntohl(ui32FileVersion);
 
-		if (cur->m_ui32Hash == ui32Hash && strcasecmp(cur->m_sNick.c_str(), sNick) == 0)
-		{
-			return cur;
-		}
-	}
+        if (ui32FileVersion < 1)
+        {
+            return;
+        }
+    }
 
-	return NULL;
-}
-//---------------------------------------------------------------------------
+    // Read regs =)
+    memcpy(ui16Identificators.data(), "NI", 2);
+    memcpy(ui16Identificators.data() + 1, "PS", 2);
+    memcpy(ui16Identificators.data() + 2, "PR", 2);
+    memcpy(ui16Identificators.data() + 3, "PA", 2);
 
-void RegManager::Load(void)
-{
-#ifdef _WIN32
-	if (FileExist((ServerManager::m_sPath + "\\cfg\\RegisteredUsers.pxb").c_str()) == false)
-	{
-#else
-	if (FileExist((ServerManager::m_sPath + "/cfg/RegisteredUsers.pxb").c_str()) == false)
-	{
-#endif
-		LoadXML();
-		return;
-	}
+    uint16_t iProfile = UINT16_MAX;
+    RegUser* pNewUser = nullptr;
+    std::array<uint8_t, 64> ui8Hash = {};
+    size_t szPassLen = 0;
 
-	uint16_t iProfilesCount = (uint16_t)(ProfileManager::m_Ptr->m_ui16ProfileCount - 1);
+    bool bSuccess = pxbRegs.ReadNextItem(ui16Identificators.data(), 3, 1);
 
-	PXBReader pxbRegs;
+    while (bSuccess)
+    {
+        if (pxbRegs.m_ui16ItemLengths[0] < 65 && pxbRegs.m_ui16ItemLengths[1] < 65 && pxbRegs.m_ui16ItemLengths[2] == 2)
+        {
+            uint16_t ui16Profile;
+            memcpy(&ui16Profile, pxbRegs.m_pItemDatas[2], sizeof(ui16Profile));
+            iProfile = ntohs(ui16Profile);
 
-	// Open regs file
-#ifdef _WIN32
-	if (pxbRegs.OpenFileRead((ServerManager::m_sPath + "\\cfg\\RegisteredUsers.pxb").c_str(), 4) == false)
-	{
-#else
-	if (pxbRegs.OpenFileRead((ServerManager::m_sPath + "/cfg/RegisteredUsers.pxb").c_str(), 4) == false)
-	{
-#endif
-		return;
-	}
+            if (iProfile > iProfilesCount)
+            {
+                iProfile = iProfilesCount;
+            }
 
-	// Read file header
-	uint16_t ui16Identificators[4] = { *((uint16_t *)"FI"), *((uint16_t *)"FV"), *((uint16_t *)"  "), *((uint16_t *)"  ") };
+            pNewUser = nullptr;
 
-	if (pxbRegs.ReadNextItem(ui16Identificators, 2) == false)
-	{
-		return;
-	}
+            if (pxbRegs.m_ui16ItemLengths[3] != 0)
+            {
+                if (SettingManager::m_Ptr->m_bBools[std::to_underlying(SetBoolIds::SETBOOL_HASH_PASSWORDS)])
+                {
+                    szPassLen = static_cast<size_t>(pxbRegs.m_ui16ItemLengths[3]);
 
-	// Check header if we have correct file
-	if (pxbRegs.m_ui16ItemLengths[0] != szPtokaXRegiteredUsersLen || strncmp((char *)pxbRegs.m_pItemDatas[0], sPtokaXRegiteredUsers, szPtokaXRegiteredUsersLen) != 0)
-	{
-		return;
-	}
-
-	{
-		uint32_t ui32FileVersion = ntohl(*((uint32_t *)(pxbRegs.m_pItemDatas[1])));
-
-		if (ui32FileVersion < 1)
-		{
-			return;
-		}
-	}
-
-	// Read regs =)
-	ui16Identificators[0] = *((uint16_t *)"NI");
-	ui16Identificators[1] = *((uint16_t *)"PS");
-	ui16Identificators[2] = *((uint16_t *)"PR");
-	ui16Identificators[3] = *((uint16_t *)"PA");
-
-	uint16_t iProfile = UINT16_MAX;
-	RegUser * pNewUser = NULL;
-	uint8_t ui8Hash[64];
-	size_t szPassLen = 0;
-
-	bool bSuccess = pxbRegs.ReadNextItem(ui16Identificators, 3, 1);
-
-	while (bSuccess == true)
-	{
-		if (pxbRegs.m_ui16ItemLengths[0] < 65 && pxbRegs.m_ui16ItemLengths[1] < 65 && pxbRegs.m_ui16ItemLengths[2] == 2)
-		{
-			iProfile = (uint16_t)ntohs(*((uint16_t *)(pxbRegs.m_pItemDatas[2])));
-
-			if (iProfile > iProfilesCount)
-			{
-				iProfile = iProfilesCount;
-			}
-
-			pNewUser = NULL;
-
-			if (pxbRegs.m_ui16ItemLengths[3] != 0)
-			{
-				if (SettingManager::m_Ptr->m_bBools[SETBOOL_HASH_PASSWORDS] == true)
-				{
-					szPassLen = (size_t)pxbRegs.m_ui16ItemLengths[3];
-
-					if (HashPassword((char *)pxbRegs.m_pItemDatas[3], szPassLen, ui8Hash) == false)
-					{
-						pNewUser = RegUser::CreateReg((char *)pxbRegs.m_pItemDatas[0], pxbRegs.m_ui16ItemLengths[0], (char *)pxbRegs.m_pItemDatas[3], pxbRegs.m_ui16ItemLengths[3], NULL, iProfile);
-					}
-					else
-					{
-						pNewUser = RegUser::CreateReg((char *)pxbRegs.m_pItemDatas[0], pxbRegs.m_ui16ItemLengths[0], NULL, 0, ui8Hash, iProfile);
-					}
-				}
-				else
-				{
-					pNewUser = RegUser::CreateReg((char *)pxbRegs.m_pItemDatas[0], pxbRegs.m_ui16ItemLengths[0], (char *)pxbRegs.m_pItemDatas[3], pxbRegs.m_ui16ItemLengths[3], NULL, iProfile);
-				}
-			}
-			else if (pxbRegs.m_ui16ItemLengths[1] == 64)
-			{
+                    if (!HashPassword(static_cast<const char*>(pxbRegs.m_pItemDatas[3]), szPassLen, ui8Hash.data()))
+                    {
+                        pNewUser = RegUser::CreateReg(static_cast<const char*>(pxbRegs.m_pItemDatas[0]),
+                                                      pxbRegs.m_ui16ItemLengths[0],
+                                                      static_cast<const char*>(pxbRegs.m_pItemDatas[3]),
+                                                      pxbRegs.m_ui16ItemLengths[3],
+                                                      nullptr,
+                                                      iProfile);
+                    }
+                    else
+                    {
+                        pNewUser = RegUser::CreateReg(
+                            static_cast<const char*>(pxbRegs.m_pItemDatas[0]), pxbRegs.m_ui16ItemLengths[0], nullptr, 0, ui8Hash.data(), iProfile);
+                    }
+                }
+                else
+                {
+                    pNewUser = RegUser::CreateReg(static_cast<const char*>(pxbRegs.m_pItemDatas[0]),
+                                                  pxbRegs.m_ui16ItemLengths[0],
+                                                  static_cast<const char*>(pxbRegs.m_pItemDatas[3]),
+                                                  pxbRegs.m_ui16ItemLengths[3],
+                                                  nullptr,
+                                                  iProfile);
+                }
+            }
+            else if (pxbRegs.m_ui16ItemLengths[1] == 64)
+            {
 #ifdef _WITHOUT_SKEIN
-				AppendDebugLog("%s - [ERR] Hashed password found in RegisteredUsers, but PtokaX is compiled without hashing support!\n");
+                LogDbg("[ERR] Hashed password found in RegisteredUsers, but PtokaX is compiled without hashing support!");
 
-				exit(EXIT_FAILURE);
+                exit(EXIT_FAILURE);
 #endif
-				pNewUser = RegUser::CreateReg((char *)pxbRegs.m_pItemDatas[0], pxbRegs.m_ui16ItemLengths[0], NULL, 0, (uint8_t *)pxbRegs.m_pItemDatas[1], iProfile);
-			}
+                pNewUser = RegUser::CreateReg(static_cast<const char*>(pxbRegs.m_pItemDatas[0]),
+                                              pxbRegs.m_ui16ItemLengths[0],
+                                              nullptr,
+                                              0,
+                                              static_cast<const uint8_t*>(pxbRegs.m_pItemDatas[1]),
+                                              iProfile);
+            }
 
-			if (pNewUser == NULL)
-			{
-				AppendDebugLog("%s - [MEM] Cannot allocate pNewUser in RegManager::Load\n");
-				const string l_nick((const char *)pxbRegs.m_pItemDatas[0], pxbRegs.m_ui16ItemLengths[0]);
-				printf("[MEM] Cannot allocate pNewUser in RegManager::Load user = %s\n", l_nick.c_str());
-				// [-] PPA 09.07.2015 exit(EXIT_FAILURE);
-			}
-			else
-			{
-				Add(pNewUser);
-#ifdef _DEBUG
-				//const string l_nick((const char *)pxbRegs.m_pItemDatas[0], pxbRegs.m_ui16ItemLengths[0]);
-				//printf("[MEM] OK Allocate new User = %s\n", l_nick.c_str());
-#endif
-			}
+            if (!pNewUser)
+            {
+                const std::string l_nick(static_cast<const char*>(pxbRegs.m_pItemDatas[0]), pxbRegs.m_ui16ItemLengths[0]);
+                LogDbg("[MEM] Cannot allocate pNewUser in RegManager::Load user = {}", l_nick);
+            }
+            else
+            {
+                Add(pNewUser);
+            }
+        }
 
-		}
-
-		bSuccess = pxbRegs.ReadNextItem(ui16Identificators, 3, 1);
-	}
+        bSuccess = pxbRegs.ReadNextItem(ui16Identificators.data(), 3, 1);
+    }
 }
 //---------------------------------------------------------------------------
 
 void RegManager::LoadXML()
 {
-	uint16_t iProfilesCount = (uint16_t)(ProfileManager::m_Ptr->m_ui16ProfileCount - 1);
+    const auto iProfilesCount = static_cast<uint16_t>(ProfileManager::m_Ptr->m_ui16ProfileCount - 1);
 
-#ifdef _WIN32
-	TiXmlDocument doc((ServerManager::m_sPath + "\\cfg\\RegisteredUsers.xml").c_str());
-#else
-	TiXmlDocument doc((ServerManager::m_sPath + "/cfg/RegisteredUsers.xml").c_str());
-#endif
+    tinyxml2::XMLDocument doc;
+    if (LoadXmlConfig(doc, "RegisteredUsers.xml"))
+    {
+        tinyxml2::XMLHandle cfg(&doc);
+        tinyxml2::XMLNode* registeredusers = cfg.FirstChildElement("RegisteredUsers").ToNode();
+        if (registeredusers)
+        {
+            bool bIsBuggy = false;
+            tinyxml2::XMLElement* child = registeredusers->FirstChildElement();
 
-	if (doc.LoadFile() == false)
-	{
-		if (doc.ErrorId() != TiXmlBase::TIXML_ERROR_OPENING_FILE && doc.ErrorId() != TiXmlBase::TIXML_ERROR_DOCUMENT_EMPTY)
-		{
-			int iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "Error loading file RegisteredUsers.xml. %s (Col: %d, Row: %d)", doc.ErrorDesc(), doc.Column(), doc.Row());
-			if (iMsgLen > 0)
-			{
-#ifdef _BUILD_GUI
-				::MessageBox(NULL, ServerManager::m_pGlobalBuffer, g_sPtokaXTitle, MB_OK | MB_ICONERROR);
-#else
-				AppendLog(ServerManager::m_pGlobalBuffer);
-#endif
-			}
+            while (child)
+            {
+                const char* nick = XmlGetRequiredText(child, "Nick");
+                if (!nick || strlen(nick) > 64)
+                {
+                    child = child->NextSiblingElement();
+                    continue;
+                }
 
-			exit(EXIT_FAILURE);
-		}
-	}
-	else
-	{
-		TiXmlHandle cfg(&doc);
-		TiXmlNode *registeredusers = cfg.FirstChild("RegisteredUsers").Node();
-		if (registeredusers != NULL)
-		{
-			bool bIsBuggy = false;
-			TiXmlNode *child = NULL;
+                const char* pass = XmlGetRequiredText(child, "Password");
+                if (!pass || strlen(pass) > 64)
+                {
+                    child = child->NextSiblingElement();
+                    continue;
+                }
 
-			while ((child = registeredusers->IterateChildren(child)) != NULL)
-			{
-				TiXmlNode *registereduser = child->FirstChild("Nick");
+                int iProfile = 0;
+                if (!XmlGetRequiredInt(child, "Profile", iProfile))
+                {
+                    child = child->NextSiblingElement();
+                    continue;
+                }
+                if (iProfile > iProfilesCount)
+                {
+                    const int iMsgLen = snprintf(ServerManager::m_pGlobalBuffer,
+                                           ServerManager::m_szGlobalBufferSize,
+                                           "%s %s %s! %s %s.",
+                                           LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_USER)].c_str(),
+                                           nick,
+                                           LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_HAVE_NOT_EXIST_PROFILE)].c_str(),
+                                           LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_CHANGED_PROFILE_TO)].c_str(),
+                                           ProfileManager::m_Ptr->m_vpProfilesTable[iProfilesCount]->m_sName.c_str());
+                    if (iMsgLen > 0)
+                    {
+                        LogInfo("{}", ServerManager::m_pGlobalBuffer);
+                    }
 
-				if (registereduser == NULL || (registereduser = registereduser->FirstChild()) == NULL)
-				{
-					continue;
-				}
+                    iProfile = iProfilesCount;
+                    bIsBuggy = true;
+                }
 
-				char *nick = (char *)registereduser->Value();
+                if (!Find(nick))
+                {
+                    RegUser* pNewUser = RegUser::CreateReg(nick, strlen(nick), pass, strlen(pass), nullptr, iProfile);
+                    if (!pNewUser)
+                    {
+                        LogDbg("[MEM] Cannot allocate pNewUser in RegManager::LoadXML");
 
-				if (strlen(nick) > 64 || (registereduser = child->FirstChild("Password")) == NULL ||
-				        (registereduser = registereduser->FirstChild()) == NULL)
-				{
-					continue;
-				}
+                        exit(EXIT_FAILURE);
+                    }
+                    Add(pNewUser);
+                }
+                else
+                {
+                    const int iMsgLen = snprintf(ServerManager::m_pGlobalBuffer,
+                                           ServerManager::m_szGlobalBufferSize,
+                                           "%s %s %s! %s.",
+                                           LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_USER)].c_str(),
+                                           nick,
+                                           LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_IS_ALREADY_IN_REGS)].c_str(),
+                                           LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_USER_DELETED)].c_str());
+                    if (iMsgLen > 0)
+                    {
+                        LogInfo("{}", ServerManager::m_pGlobalBuffer);
+                    }
 
-				char *pass = (char *)registereduser->Value();
-
-				if (strlen(pass) > 64 || (registereduser = child->FirstChild("Profile")) == NULL ||
-				        (registereduser = registereduser->FirstChild()) == NULL)
-				{
-					continue;
-				}
-
-				uint16_t iProfile = (uint16_t)atoi(registereduser->Value());
-
-				if (iProfile > iProfilesCount)
-				{
-					int iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "%s %s %s! %s %s.", LanguageManager::m_Ptr->m_sTexts[LAN_USER], nick, LanguageManager::m_Ptr->m_sTexts[LAN_HAVE_NOT_EXIST_PROFILE],
-					                       LanguageManager::m_Ptr->m_sTexts[LAN_CHANGED_PROFILE_TO], ProfileManager::m_Ptr->m_ppProfilesTable[iProfilesCount]->m_sName);
-					if (iMsgLen > 0)
-					{
-#ifdef _BUILD_GUI
-						::MessageBox(NULL, ServerManager::m_pGlobalBuffer, g_sPtokaXTitle, MB_OK | MB_ICONEXCLAMATION);
-#else
-						AppendLog(ServerManager::m_pGlobalBuffer);
-#endif
-					}
-
-					iProfile = iProfilesCount;
-					bIsBuggy = true;
-				}
-
-				if (Find((char*)nick, strlen(nick)) == NULL)
-				{
-					RegUser * pNewUser = RegUser::CreateReg(nick, strlen(nick), pass, strlen(pass), NULL, iProfile);
-					if (pNewUser == NULL)
-					{
-						AppendDebugLog("%s - [MEM] Cannot allocate pNewUser in RegManager::LoadXML\n");
-
-						exit(EXIT_FAILURE);
-					}
-					Add(pNewUser);
-				}
-				else
-				{
-					int iMsgLen = snprintf(ServerManager::m_pGlobalBuffer, ServerManager::m_szGlobalBufferSize, "%s %s %s! %s.", LanguageManager::m_Ptr->m_sTexts[LAN_USER], nick, LanguageManager::m_Ptr->m_sTexts[LAN_IS_ALREADY_IN_REGS],
-					                       LanguageManager::m_Ptr->m_sTexts[LAN_USER_DELETED]);
-					if (iMsgLen > 0)
-					{
-#ifdef _BUILD_GUI
-						::MessageBox(NULL, ServerManager::m_pGlobalBuffer, g_sPtokaXTitle, MB_OK | MB_ICONEXCLAMATION);
-#else
-						AppendLog(ServerManager::m_pGlobalBuffer);
-#endif
-					}
-
-					bIsBuggy = true;
-				}
-			}
-			if (bIsBuggy == true)
-				Save();
-		}
-	}
+                    bIsBuggy = true;
+                }
+                child = child->NextSiblingElement();
+            }
+            if (bIsBuggy)
+            {
+                Save();
+            }
+        }
+    }
 }
 //---------------------------------------------------------------------------
 
-void RegManager::Save(const bool bSaveOnChange/* = false*/, const bool bSaveOnTime/* = false*/)
+void RegManager::Save(const bool bSaveOnChange /* = false*/, const bool bSaveOnTime /* = false*/)
 {
-	if (bSaveOnTime == true && m_ui8SaveCalls == 0)
-	{
-		return;
-	}
+    if (bSaveOnTime && m_ui8SaveCalls == 0)
+    {
+        return;
+    }
 
-	m_ui8SaveCalls++;
+    m_ui8SaveCalls++;
 
-	if (bSaveOnChange == true && m_ui8SaveCalls < 100)
-	{
-		return;
-	}
+    if (bSaveOnChange && m_ui8SaveCalls < 100)
+    {
+        return;
+    }
 
-	m_ui8SaveCalls = 0;
+    m_ui8SaveCalls = 0;
 
-	PXBReader pxbRegs;
+    PXBReader pxbRegs;
 
-	// Open regs file
-#ifdef _WIN32
-	if (pxbRegs.OpenFileSave((ServerManager::m_sPath + "\\cfg\\RegisteredUsers.pxb").c_str(), 3) == false)
-	{
-#else
-	if (pxbRegs.OpenFileSave((ServerManager::m_sPath + "/cfg/RegisteredUsers.pxb").c_str(), 3) == false)
-	{
-#endif
-		return;
-	}
+    // Open regs file
+    if (!pxbRegs.OpenFileSave((ServerManager::m_sPath + "/cfg/RegisteredUsers.pxb").c_str(), 3))
+    {
+        return;
+    }
 
-	// Write file header
-	pxbRegs.m_sItemIdentifiers[0] = 'F';
-	pxbRegs.m_sItemIdentifiers[1] = 'I';
-	pxbRegs.m_ui16ItemLengths[0] = (uint16_t)szPtokaXRegiteredUsersLen;
-	pxbRegs.m_pItemDatas[0] = (void *)sPtokaXRegiteredUsers;
-	pxbRegs.m_ui8ItemValues[0] = PXBReader::PXB_STRING;
+    // Write file header
+    pxbRegs.m_sItemIdentifiers[0] = 'F';
+    pxbRegs.m_sItemIdentifiers[1] = 'I';
+    pxbRegs.m_ui16ItemLengths[0] = static_cast<uint16_t>(g_szPtokaXRegiteredUsersLen);
+    pxbRegs.m_pItemDatas[0] = sPtokaXRegiteredUsers;
+    pxbRegs.m_ui8ItemValues[0] = PXBReader::PXB_STRING;
 
-	pxbRegs.m_sItemIdentifiers[2] = 'F';
-	pxbRegs.m_sItemIdentifiers[3] = 'V';
-	pxbRegs.m_ui16ItemLengths[1] = 4;
-	uint32_t ui32Version = 1;
-	pxbRegs.m_pItemDatas[1] = (void *)&ui32Version;
-	pxbRegs.m_ui8ItemValues[1] = PXBReader::PXB_FOUR_BYTES;
+    pxbRegs.m_sItemIdentifiers[2] = 'F';
+    pxbRegs.m_sItemIdentifiers[3] = 'V';
+    pxbRegs.m_ui16ItemLengths[1] = 4;
+    const uint32_t ui32Version = 1;
+    pxbRegs.m_pItemDatas[1] = &ui32Version;
+    pxbRegs.m_ui8ItemValues[1] = PXBReader::PXB_FOUR_BYTES;
 
-	if (pxbRegs.WriteNextItem(szPtokaXRegiteredUsersLen + 4, 2) == false)
-	{
-		return;
-	}
+    if (!pxbRegs.WriteNextItem(g_szPtokaXRegiteredUsersLen + 4, 2))
+    {
+        return;
+    }
 
-	pxbRegs.m_sItemIdentifiers[0] = 'N';
-	pxbRegs.m_sItemIdentifiers[1] = 'I';
-	pxbRegs.m_sItemIdentifiers[2] = 'P';
-	pxbRegs.m_sItemIdentifiers[3] = 'A';
-	pxbRegs.m_sItemIdentifiers[4] = 'P';
-	pxbRegs.m_sItemIdentifiers[5] = 'R';
+    pxbRegs.m_sItemIdentifiers[0] = 'N';
+    pxbRegs.m_sItemIdentifiers[1] = 'I';
+    pxbRegs.m_sItemIdentifiers[2] = 'P';
+    pxbRegs.m_sItemIdentifiers[3] = 'A';
+    pxbRegs.m_sItemIdentifiers[4] = 'P';
+    pxbRegs.m_sItemIdentifiers[5] = 'R';
 
-	pxbRegs.m_ui8ItemValues[0] = PXBReader::PXB_STRING;
-	pxbRegs.m_ui8ItemValues[1] = PXBReader::PXB_STRING;
-	pxbRegs.m_ui8ItemValues[2] = PXBReader::PXB_TWO_BYTES;
+    pxbRegs.m_ui8ItemValues[0] = PXBReader::PXB_STRING;
+    pxbRegs.m_ui8ItemValues[1] = PXBReader::PXB_STRING;
+    pxbRegs.m_ui8ItemValues[2] = PXBReader::PXB_TWO_BYTES;
 
-	RegUser * curReg = NULL,
-	          * next = m_pRegListS;
+    for (const auto& curRegPtr : m_RegList)
+    {
+        RegUser* curReg = curRegPtr.get();
 
-	while (next != NULL)
-	{
-		curReg = next;
-		next = curReg->m_pNext;
+        pxbRegs.m_ui16ItemLengths[0] = uint16_t(curReg->m_sNick.length());
+        pxbRegs.m_pItemDatas[0] = curReg->m_sNick.c_str();
+        pxbRegs.m_ui8ItemValues[0] = PXBReader::PXB_STRING;
 
-		pxbRegs.m_ui16ItemLengths[0] = uint16_t(curReg->m_sNick.length());
-		pxbRegs.m_pItemDatas[0] = (void *)curReg->m_sNick.c_str();
-		pxbRegs.m_ui8ItemValues[0] = PXBReader::PXB_STRING;
+        if (curReg->m_bPassHash)
+        {
+            pxbRegs.m_sItemIdentifiers[3] = 'S';
 
-		if (curReg->m_bPassHash == true)
-		{
-			pxbRegs.m_sItemIdentifiers[3] = 'S';
+            pxbRegs.m_ui16ItemLengths[1] = 64;
+            pxbRegs.m_pItemDatas[1] = curReg->m_vPassData.data();
+        }
+        else
+        {
+            pxbRegs.m_sItemIdentifiers[3] = 'A';
 
-			pxbRegs.m_ui16ItemLengths[1] = 64;
-			pxbRegs.m_pItemDatas[1] = (void *)curReg->m_ui8PassHash;
-		}
-		else
-		{
-			pxbRegs.m_sItemIdentifiers[3] = 'A';
+            pxbRegs.m_ui16ItemLengths[1] = static_cast<uint16_t>(!curReg->m_vPassData.empty() ? curReg->m_vPassData.size() - 1 : 0);
+            pxbRegs.m_pItemDatas[1] = curReg->m_vPassData.data();
+        }
 
-			pxbRegs.m_ui16ItemLengths[1] = (uint16_t)strlen(curReg->m_sPass);
-			pxbRegs.m_pItemDatas[1] = (void *)curReg->m_sPass;
-		}
+        pxbRegs.m_ui16ItemLengths[2] = 2;
+        pxbRegs.m_pItemDatas[2] = &curReg->m_ui16Profile;
 
-		pxbRegs.m_ui16ItemLengths[2] = 2;
-		pxbRegs.m_pItemDatas[2] = (void *)&curReg->m_ui16Profile;
+        if (!pxbRegs.WriteNextItem(pxbRegs.m_ui16ItemLengths[0] + pxbRegs.m_ui16ItemLengths[1] + pxbRegs.m_ui16ItemLengths[2], 3))
+        {
+            break;
+        }
+    }
 
-		if (pxbRegs.WriteNextItem(pxbRegs.m_ui16ItemLengths[0] + pxbRegs.m_ui16ItemLengths[1] + pxbRegs.m_ui16ItemLengths[2], 3) == false)
-		{
-			break;
-		}
-	}
-
-	pxbRegs.WriteRemaining();
+    pxbRegs.WriteRemaining();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void RegManager::HashPasswords() const
 {
-	size_t szPassLen = 0;
-	char * sOldPass = NULL;
+    size_t szPassLen = 0;
 
-	RegUser * pCurReg = NULL,
-	          * pNextReg = m_pRegListS;
+    for (const auto& pCurRegPtr : m_RegList)
+    {
+        RegUser* pCurReg = pCurRegPtr.get();
 
-	while (pNextReg != NULL)
-	{
-		pCurReg = pNextReg;
-		pNextReg = pCurReg->m_pNext;
+        if (!pCurReg->m_bPassHash)
+        {
+            std::array<uint8_t, 64> ui8Hash = {};
 
-		if (pCurReg->m_bPassHash == false)
-		{
-			sOldPass = pCurReg->m_sPass;
-			pCurReg->m_ui8PassHash = (uint8_t *)malloc(64);
-			if (pCurReg->m_ui8PassHash == NULL)
-			{
-				pCurReg->m_sPass = sOldPass;
+            szPassLen = !pCurReg->m_vPassData.empty() ? pCurReg->m_vPassData.size() - 1 : 0;
 
-				AppendDebugLog("%s - [MEM] Cannot reallocate 64 bytes for sPass->ui8PassHash in RegManager::HashPasswords\n");
-
-				continue;
-			}
-
-			szPassLen = strlen(sOldPass);
-
-			if (HashPassword(sOldPass, szPassLen, pCurReg->m_ui8PassHash) == true)
-			{
-				pCurReg->m_bPassHash = true;
-				free(sOldPass);
-			}
-			else
-			{
-				free(pCurReg->m_ui8PassHash);
-
-				pCurReg->m_sPass = sOldPass;
-			}
-		}
-	}
+            if (HashPassword(reinterpret_cast<const char*>(pCurReg->m_vPassData.data()), szPassLen, ui8Hash.data()))
+            {
+                pCurReg->m_vPassData.assign(ui8Hash.begin(), ui8Hash.end());
+                pCurReg->m_bPassHash = true;
+            }
+        }
+    }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void RegManager::AddRegCmdLine()
 {
-	char sNick[66];
+    std::string sNick(66, '\0');
 
-nick:
-	printf("Please enter Nick for new Registered User (Maximal length 64 characters. Characters |, $ and space are not allowed): ");
-	if (fgets(sNick, 66, stdin) != NULL)
-	{
-		char * sMatch = strchr(sNick, '\n');
-		if (sMatch != NULL)
-		{
-			sMatch[0] = '\0';
-		}
+    for (;;)
+    {
+        printf("Please enter Nick for new Registered User (Maximal length 64 characters. Characters |, $ and space are not allowed): ");
+        if (fgets(sNick.data(), static_cast<int>(sNick.size()), stdin))
+        {
+            char* sMatch = strchr(sNick.data(), '\n');
+            if (sMatch)
+            {
+                sMatch[0] = '\0';
+                sNick.resize(static_cast<size_t>(sMatch - sNick.data()));
+            }
+            else
+            {
+                sNick.resize(strlen(sNick.data()));
+            }
 
-		sMatch = strpbrk(sNick, " $|");
-		if (sMatch != NULL)
-		{
-			printf("Character '%c' is not allowed in Nick!\n", sMatch[0]);
+            sMatch = strpbrk(sNick.data(), " $|");
+            if (sMatch)
+            {
+                printf("Character '%c' is not allowed in Nick!\n", sMatch[0]);
+                if (!WantAgain())
+                    return;
+                continue;
+            }
 
-			if (WantAgain() == false)
-			{
-				return;
-			}
+            const size_t szLen = sNick.size();
 
-			goto nick;
-		}
+            if (szLen == 0)
+            {
+                printf("No Nick specified!\n");
+                if (!WantAgain())
+                    return;
+                continue;
+            }
 
-		const size_t szLen = strlen(sNick);
+            RegUser* pReg = Find(sNick);
+            if (pReg)
+            {
+                printf("Registered user with nick '%s' already exist!\n", sNick.c_str());
+                if (!WantAgain())
+                    return;
+                continue;
+            }
+        }
+        else
+        {
+            printf("Error reading Nick... ending.\n");
+            exit(EXIT_FAILURE);
+        }
+        break;
+    }
 
-		if (szLen == 0)
-		{
-			printf("No Nick specified!\n");
+    std::string sPassword(66, '\0');
 
-			if (WantAgain() == false)
-			{
-				return;
-			}
+    for (;;)
+    {
+        printf("Please enter Password for new Registered User (Maximal length 64 characters. Character | is not allowed): ");
+        if (fgets(sPassword.data(), static_cast<int>(sPassword.size()), stdin))
+        {
+            char* sMatch = strchr(sPassword.data(), '\n');
+            if (sMatch)
+            {
+                sMatch[0] = '\0';
+                sPassword.resize(static_cast<size_t>(sMatch - sPassword.data()));
+            }
+            else
+            {
+                sPassword.resize(strlen(sPassword.data()));
+            }
 
-			goto nick;
-		}
+            sMatch = strchr(sPassword.data(), '|');
+            if (sMatch)
+            {
+                printf("Character | is not allowed in Password!\n");
+                if (!WantAgain())
+                    return;
+                continue;
+            }
 
-		RegUser * pReg = Find(sNick, strlen(sNick));
-		if (pReg != NULL)
-		{
-			printf("Registered user with nick '%s' already exist!\n", sNick);
+            const size_t szLen = sPassword.size();
 
-			if (WantAgain() == false)
-			{
-				return;
-			}
+            if (szLen == 0)
+            {
+                printf("No Password specified!\n");
+                if (!WantAgain())
+                    return;
+                continue;
+            }
+        }
+        else
+        {
+            printf("Error reading Password... ending.\n");
+            exit(EXIT_FAILURE);
+        }
+        break;
+    }
 
-			goto nick;
-		}
-	}
-	else
-	{
-		printf("Error reading Nick... ending.\n");
-		exit(EXIT_FAILURE);
-	}
+    printf("\nAvailable profiles: \n");
+    for (uint16_t ui16i = 0; ui16i < ProfileManager::m_Ptr->m_ui16ProfileCount; ui16i++)
+    {
+        printf("%hu - %s\n", ui16i, ProfileManager::m_Ptr->m_vpProfilesTable[ui16i]->m_sName.c_str());
+    }
 
-	char sPassword[66];
+    uint16_t ui16Profile = 0;
+    std::array<char, 7> sProfile = {};
 
-password:
-	printf("Please enter Password for new Registered User (Maximal length 64 characters. Character | is not allowed): ");
-	if (fgets(sPassword, 66, stdin) != NULL)
-	{
-		char * sMatch = strchr(sPassword, '\n');
-		if (sMatch != NULL)
-		{
-			sMatch[0] = '\0';
-		}
+    for (;;)
+    {
+        printf("Please enter Profile number for new Registered User: ");
+        if (fgets(sProfile.data(), sProfile.size(), stdin))
+        {
+            char* sMatch = strchr(sProfile.data(), '\n');
+            if (sMatch)
+            {
+                sMatch[0] = '\0';
+            }
 
-		sMatch = strchr(sPassword, '|');
-		if (sMatch != NULL)
-		{
-			printf("Character | is not allowed in Password!\n");
+            const auto ui8Len = static_cast<uint8_t>(strlen(sProfile.data()));
 
-			if (WantAgain() == false)
-			{
-				return;
-			}
+            if (ui8Len == 0)
+            {
+                printf("No Profile specified!\n");
+                if (!WantAgain())
+                    return;
+                continue;
+            }
 
-			goto password;
-		}
+            bool bValid = true;
+            for (const char ch : std::string_view(sProfile.data(), ui8Len))
+            {
+                if (!isdigit(static_cast<unsigned char>(ch)))
+                {
+                    printf("Character '%c' is not valid number!\n", ch);
+                    bValid = false;
+                    break;
+                }
+            }
 
-		const size_t szLen = strlen(sPassword);
+            if (!bValid)
+            {
+                if (!WantAgain())
+                    return;
+                continue;
+            }
 
-		if (szLen == 0)
-		{
-			printf("No Password specified!\n");
+            int iProfile = 0;
+            if (!safe_stoi(sProfile.data(), iProfile))
+            {
+                printf("Invalid profile number '%s'!\n", sProfile.data());
+                if (!WantAgain())
+                    return;
+                continue;
+            }
+            ui16Profile = static_cast<uint16_t>(iProfile);
+            if (ui16Profile >= ProfileManager::m_Ptr->m_ui16ProfileCount)
+            {
+                printf("Profile number %hu not exist!\n", ui16Profile);
+                if (!WantAgain())
+                    return;
+                continue;
+            }
+        }
+        else
+        {
+            printf("Error reading Profile... ending.\n");
+            exit(EXIT_FAILURE);
+        }
+        break;
+    }
 
-			if (WantAgain() == false)
-			{
-				return;
-			}
-
-			goto password;
-		}
-	}
-	else
-	{
-		printf("Error reading Password... ending.\n");
-		exit(EXIT_FAILURE);
-	}
-
-	printf("\nAvailable profiles: \n");
-	for (uint16_t ui16i = 0; ui16i < ProfileManager::m_Ptr->m_ui16ProfileCount; ui16i++)
-	{
-		printf("%hu - %s\n", ui16i, ProfileManager::m_Ptr->m_ppProfilesTable[ui16i]->m_sName);
-	}
-
-	uint16_t ui16Profile = 0;
-	char sProfile[7];
-
-profile:
-
-	printf("Please enter Profile number for new Registered User: ");
-	if (fgets(sProfile, 7, stdin) != NULL)
-	{
-		char * sMatch = strchr(sProfile, '\n');
-		if (sMatch != NULL)
-		{
-			sMatch[0] = '\0';
-		}
-
-		uint8_t ui8Len = (uint8_t)strlen(sProfile);
-
-		if (ui8Len == 0)
-		{
-			printf("No Profile specified!\n");
-
-			if (WantAgain() == false)
-			{
-				return;
-			}
-
-			goto profile;
-		}
-
-		for (uint8_t ui8i = 0; ui8i < ui8Len; ui8i++)
-		{
-			if (isdigit(sProfile[ui8i]) == 0)
-			{
-				printf("Character '%c' is not valid number!\n", sProfile[ui8i]);
-
-				if (WantAgain() == false)
-				{
-					return;
-				}
-
-				goto profile;
-			}
-		}
-
-		ui16Profile = (uint16_t)atoi(sProfile);
-		if (ui16Profile >= ProfileManager::m_Ptr->m_ui16ProfileCount)
-		{
-			printf("Profile number %hu not exist!\n", ui16Profile);
-
-			if (WantAgain() == false)
-			{
-				return;
-			}
-
-			goto profile;
-		}
-	}
-	else
-	{
-		printf("Error reading Profile... ending.\n");
-		exit(EXIT_FAILURE);
-	}
-
-	if (AddNew(sNick, sPassword, ui16Profile) == false)
-	{
-		printf("Error adding new Registered User... ending.\n");
-		exit(EXIT_FAILURE);
-	}
-	else
-	{
-		printf("Registered User with Nick '%s' Password '%s' and Profile '%hu' was added.", sNick, sPassword, ui16Profile);
-	}
+    if (!AddNew(sNick.c_str(), sPassword.c_str(), ui16Profile))
+    {
+        printf("Error adding new Registered User... ending.\n");
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        printf("Registered User with Nick '%s' Password '%s' and Profile '%hu' was added.", sNick.c_str(), sPassword.c_str(), ui16Profile);
+    }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

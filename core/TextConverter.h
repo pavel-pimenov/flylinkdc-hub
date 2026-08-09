@@ -25,21 +25,20 @@
 class TextConverter
 {
 private:
-#ifndef _WIN32
-	iconv_t m_iconvUtfCheck;
-	iconv_t m_iconvAsciiToUtf;
-#endif
+    iconv_t m_iconvUtfCheck;
+    iconv_t m_iconvAsciiToUtf;
 
-	bool CheckUtf8Validity(const char * sInput, const uint8_t ui8InputLen, char * sOutput, const uint8_t ui8OutputSize);
+    [[nodiscard]] auto CheckUtf8Validity(const char* sInput, uint8_t ui8InputLen, char* sOutput, uint8_t ui8OutputSize) -> bool;
 
 public:
-	static TextConverter * m_Ptr;
+    static std::unique_ptr<TextConverter> m_Ptr;
 
-	TextConverter();
-	~TextConverter();
+    TextConverter();
+    ~TextConverter();
 
-	size_t CheckUtf8AndConvert(const char * sInput, const uint8_t ui8InputLen, char * sOutput, const uint8_t ui8OutputSize);
-	DISALLOW_COPY_AND_ASSIGN(TextConverter);
+    [[nodiscard]] size_t CheckUtf8AndConvert(const char* sInput, uint8_t ui8InputLen, char* sOutput, uint8_t ui8OutputSize);
+    TextConverter(const TextConverter&) = delete;
+    auto operator=(const TextConverter&) -> TextConverter& = delete;
 };
 #endif // _WITH_SQLITE
 #endif // FLYLINKDC_USE_DB

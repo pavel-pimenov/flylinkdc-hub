@@ -21,10 +21,49 @@
 #ifndef hashUsrManagerH
 #define hashUsrManagerH
 //---------------------------------------------------------------------------
+#include <string_view>
+//---------------------------------------------------------------------------
 struct User;
 //---------------------------------------------------------------------------
+#include <cstddef>
+#include <cstdint>
+#include <array>
+#include <memory>
 #include <unordered_map>
 #include <string>
+#include <string_view>
+
+inline constexpr size_t IP_USR_HASH_TABLE_SIZE = 65536;
+
+struct IpHashHash
+{
+    auto operator()(const std::array<uint8_t, 16>& a) const noexcept -> size_t
+    {
+        return std::hash<std::string_view>{}(std::string_view(reinterpret_cast<const char*>(a.data()), a.size()));
+    }
+};
+
+struct StringHash
+{
+    using is_transparent = void;
+    auto operator()(std::string_view sv) const noexcept -> size_t
+    {
+        return std::hash<std::string_view>{}(sv);
+    }
+    auto operator()(const std::string& s) const noexcept -> size_t
+    {
+        return std::hash<std::string>{}(s);
+    }
+};
+
+struct StringEqual
+{
+    using is_transparent = void;
+    auto operator()(std::string_view a, std::string_view b) const noexcept -> bool
+    {
+        return a == b;
+    }
+};
 /*
 #include <unordered_set>
 #include <map>
@@ -40,41 +79,38 @@ struct CFlyIPCountUser
 class HashManager
 {
 private:
-	std::unordered_map<std::string, User*> m_NickTable;
+    std::unordered_map<std::string, User*, StringHash, StringEqual> m_NickTable;
 
-	struct IpTableItem
-	{
-		IpTableItem * m_pPrev, * m_pNext;
+    struct IpTableItem
+    {
+        User* m_pFirstUser = nullptr;
 
-		User * m_pFirstUser;
+        uint16_t m_ui16Count = 0;
 
-		uint16_t m_ui16Count;
+        IpTableItem() = default;
+    };
 
-		IpTableItem() : m_pPrev(NULL), m_pNext(NULL), m_pFirstUser(NULL), m_ui16Count(0) { }
+    std::unordered_map<std::array<uint8_t, 16>, IpTableItem, IpHashHash> m_IpTable;
 
-		DISALLOW_COPY_AND_ASSIGN(IpTableItem);
-	};
-
-	IpTableItem * m_pIpTable[65536];
-
-	DISALLOW_COPY_AND_ASSIGN(HashManager);
 public:
-	static HashManager * m_Ptr;
+    static std::unique_ptr<HashManager> m_Ptr;
 
-	HashManager();
-	~HashManager();
+    HashManager(const HashManager&) = delete;
+    auto operator=(const HashManager&) -> HashManager& = delete;
 
-	bool Add(User * pUser);
-	void Remove(User * pUser);
+    HashManager();
+    ~HashManager();
 
-	User * FindUser(const char * sNick, const size_t szNickLen)  const;
-	User * FindUser(const std::string& sNick) const;
-	User * FindUser(const User * pUser)  const;
-	User * FindUser(const uint8_t * m_ui128IpHash) const;
+    [[nodiscard]] auto Add(User* pUser) -> bool;
+    void Remove(User* pUser);
 
-	uint32_t GetUserIpCount(const User * pUser) const;
+    [[nodiscard]] auto FindUser(std::string_view sNick) const -> User*;
+    [[nodiscard]] auto FindUser(const User* pUser) const -> User*;
+    [[nodiscard]] auto FindUser(const uint8_t* m_ui128IpHash) const -> User*;
+
+    [[nodiscard]] auto GetUserIpCount(const User* pUser) const -> uint32_t;
+    [[nodiscard]] auto GetMaxIpCount() const -> uint16_t;
 };
 //---------------------------------------------------------------------------
 
 #endif
-

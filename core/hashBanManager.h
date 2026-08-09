@@ -21,177 +21,207 @@
 #define hashBanManagerH
 
 #include "utility.h"
+#include <list>
+#include <array>
+#include <cstdint>
+#include <unordered_map>
 //---------------------------------------------------------------------------
 struct User;
 //---------------------------------------------------------------------------
 
 struct BanItemBase
 {
-	time_t m_tTempBanExpire;
-	char * m_sReason;
-	char * m_sBy;
-	uint8_t m_ui8Bits;
+    time_t m_tTempBanExpire = 0;
+    std::string m_sReason;
+    std::string m_sBy;
+    uint8_t m_ui8Bits = 0;
 
-	BanItemBase() : m_tTempBanExpire(0), m_sReason(NULL), m_sBy(NULL), m_ui8Bits(0)
-	{
-	}
-	virtual ~BanItemBase();
-	DISALLOW_COPY_AND_ASSIGN(BanItemBase);
+    BanItemBase() = default;
+    virtual ~BanItemBase() = default;
+    BanItemBase(const BanItemBase&) = delete;
+    auto operator=(const BanItemBase&) -> BanItemBase& = delete;
 };
 struct BanItem : public BanItemBase
 {
-	char * m_sNick;
+    std::string m_sNick;
 
-	BanItem * m_pPrev, * m_pNext;
-	BanItem * m_pHashNickTablePrev, * m_pHashNickTableNext;
-	BanItem * m_pHashIpTablePrev, * m_pHashIpTableNext;
+    BanItem *m_pHashIpTablePrev = nullptr, *m_pHashIpTableNext = nullptr;
 
-	uint32_t m_ui32NickHash;
+    uint32_t m_ui32NickHash = 0;
 
-	uint8_t m_ui128IpHash[16];
+    std::array<uint8_t, 16> m_ui128IpHash = {};
 
-	char m_sIp[40];
+    std::array<char, 40> m_sIp = {};
 
-	void initIP(const User* u);
-	void initIP(const char* pIP);
-	BanItem();
-	~BanItem();
+    void initIP(const User* u);
+    void initIP(const char* pIP);
+    BanItem() = default;
+    ~BanItem() override = default;
 
-	DISALLOW_COPY_AND_ASSIGN(BanItem);
+    BanItem(const BanItem&) = delete;
+
+    auto operator=(const BanItem&) -> BanItem& = delete;
 };
 //---------------------------------------------------------------------------
 
 struct RangeBanItem : public BanItemBase
 {
 
-	RangeBanItem * m_pPrev, * m_pNext;
+    Hash128 m_ui128FromIpHash, m_ui128ToIpHash;
 
-	Hash128 m_ui128FromIpHash, m_ui128ToIpHash;
+    std::array<char, 40> m_sIpFrom = {}, m_sIpTo = {};
 
-	char m_sIpFrom[40], m_sIpTo[40] ;
+    RangeBanItem() = default;
+    ~RangeBanItem() override = default;
 
-	RangeBanItem();
-	~RangeBanItem();
+    RangeBanItem(const RangeBanItem&) = delete;
 
-	DISALLOW_COPY_AND_ASSIGN(RangeBanItem);
+    auto operator=(const RangeBanItem&) -> RangeBanItem& = delete;
 };
 //---------------------------------------------------------------------------
 
 class BanManager
 {
 private:
-#define IP_BAN_HASH_TABLE_SIZE 65536
-	BanItem * m_pNickBanTable[IP_BAN_HASH_TABLE_SIZE];
+    std::unordered_multimap<uint32_t, BanItem*> m_NickBanTable;
 
-	struct IpTableItem
-	{
-		IpTableItem * m_pPrev, * m_pNext;
+    // Элемент IP-таблицы банов: голова per-IP цепочки банов (pFirstBan +
+    // BanItem::m_pHashIpTableNext/Prev). Сама цепочка банов с одним IP не тронута —
+    // она используется снаружи (LuaBanManLib, HubCommands-AE).
+    struct IpTableItem
+    {
+        BanItem* pFirstBan = nullptr;
+    };
 
-		BanItem * pFirstBan;
+    // Хешер по 16-байтовому IP-хешу для unordered_map.
+    struct IpHashHash
+    {
+        auto operator()(const std::array<uint8_t, 16>& rKey) const noexcept -> size_t
+        {
+            size_t h = 1469598103934665603ULL;
+            for (const uint8_t b : rKey)
+            {
+                h = (h ^ b) * 1099511628211ULL;
+            }
+            return h;
+        }
+    };
 
-		IpTableItem() : m_pPrev(NULL), m_pNext(NULL), pFirstBan(NULL) { }
+    // IP-таблица банов: ключ — 16-байтовый IP-хеш, значение — голова per-IP цепочки.
+    std::unordered_map<std::array<uint8_t, 16>, IpTableItem, IpHashHash> m_IpBanTable;
 
-		DISALLOW_COPY_AND_ASSIGN(IpTableItem);
-	};
+    [[nodiscard]] auto FindIpBanGeneric(const uint8_t* ui128IpHash, time_t acc_time, uint8_t ui8MatchBits) -> BanItem*;
+    [[nodiscard]] auto FindNickBanGeneric(uint32_t ui32Hash, time_t acc_time, std::string_view sNick, uint8_t ui8MatchBits) -> BanItem*;
+    [[nodiscard]] auto FindRangeBanGeneric(const uint8_t* ui128IpHash, time_t acc_time, uint8_t ui8MatchBits) -> RangeBanItem*;
 
-	IpTableItem * m_pIpBanTable[IP_BAN_HASH_TABLE_SIZE];
+    [[nodiscard]] auto FindNick(uint32_t ui32Hash, time_t acc_time, std::string_view sNick) -> BanItem*;
+    [[nodiscard]] auto FindTempNick(uint32_t ui32Hash, time_t acc_time, std::string_view sNick) -> BanItem*;
+    [[nodiscard]] auto FindPermNick(uint32_t ui32Hash, std::string_view sNick) -> BanItem*;
 
-	uint32_t m_ui32SaveCalled;
+    uint32_t m_ui32SaveCalled = 0;
 
-	DISALLOW_COPY_AND_ASSIGN(BanManager);
 public:
-	static BanManager * m_Ptr;
+    static std::unique_ptr<BanManager> m_Ptr;
 
-	BanItem * m_pTempBanListS, * m_pTempBanListE;
-	BanItem * m_pPermBanListS, * m_pPermBanListE;
-	RangeBanItem * m_pRangeBanListS, * m_pRangeBanListE;
+    std::list<std::unique_ptr<BanItem>> m_TempBanList;
+    std::list<std::unique_ptr<BanItem>> m_PermBanList;
+    std::list<std::unique_ptr<RangeBanItem>> m_RangeBanList;
 
-	enum BanBits
-	{
-		PERM        = 0x1,
-		TEMP        = 0x2,
-		FULL        = 0x4,
-		IP          = 0x8,
-		NICK        = 0x10
-	};
+    enum BanBits : uint8_t
+    {
+        PERM = 0x1,
+        TEMP = 0x2,
+        FULL = 0x4,
+        IP = 0x8,
+        NICK = 0x10
+    };
 
-	BanManager(void);
-	~BanManager(void);
+    BanManager(const BanManager&) = delete;
+    auto operator=(const BanManager&) -> BanManager& = delete;
 
+    BanManager();
+    ~BanManager();
 
-	bool Add(BanItem * pBan);
-	bool Add2Table(BanItem * pBan);
-	void Add2NickTable(BanItem * pBan);
-	bool Add2IpTable(BanItem * pBan);
-	void Rem(BanItem * pBan, const bool bFromGui = false);
-	void RemFromTable(BanItem * pBan);
-	void RemFromNickTable(BanItem * pBan);
-	void RemFromIpTable(BanItem * pBan);
+    [[nodiscard]] auto Add(BanItem* pBan) -> bool;
+    [[nodiscard]] auto Add2Table(BanItem* pBan) -> bool;
+    void Add2NickTable(BanItem* pBan);
+    [[nodiscard]] auto Add2IpTable(BanItem* pBan) -> bool;
+    void Rem(BanItem* pBan, bool bFromGui = false);
+    void RemFromTable(BanItem* pBan);
+    void RemFromNickTable(BanItem* pBan);
+    void RemFromIpTable(BanItem* pBan);
 
-	BanItem* Find(BanItem * pBan); // from gui
-	void Remove(BanItem * pBan); // from gui
+    [[nodiscard]] auto Find(BanItem* pBan) -> BanItem*; // from gui
+    void Remove(BanItem* pBan);                         // from gui
 
-	void AddRange(RangeBanItem * pRangeBan);
-	void RemRange(RangeBanItem * pRangeBan, const bool bFromGui = false);
+    void AddRange(std::unique_ptr<RangeBanItem> pRangeBan);
+    void RemRange(RangeBanItem* pRangeBan, bool bFromGui = false);
 
-	RangeBanItem* FindRange(RangeBanItem * pRangeBan); // from gui
-	void RemoveRange(RangeBanItem * pRangeBan); // from gui
+    [[nodiscard]] auto FindRange(RangeBanItem* pRangeBan) -> RangeBanItem*; // from gui
+    void RemoveRange(RangeBanItem* pRangeBan);                              // from gui
 
-	BanItem* FindNick(User * pUser);
-	BanItem* FindIP(User * pUser);
-	RangeBanItem* FindRange(User * pUser);
+    [[nodiscard]] auto FindNick(User* pUser) -> BanItem*;
+    [[nodiscard]] auto FindIP(User* pUser) -> BanItem*;
+    [[nodiscard]] auto FindRange(User* pUser) -> RangeBanItem*;
 
-	BanItem* FindFull(const uint8_t * ui128IpHash);
-	BanItem* FindFull(const uint8_t * ui128IpHash, const time_t &tAccTime);
-	RangeBanItem* FindFullRange(const uint8_t * ui128IpHash, const time_t &tAccTime);
+    [[nodiscard]] auto FindFull(const uint8_t* ui128IpHash) -> BanItem*;
+    [[nodiscard]] auto FindFull(const uint8_t* ui128IpHash, time_t acc_time) -> BanItem*;
+    [[nodiscard]] auto FindFullRange(const uint8_t* ui128IpHash, time_t acc_time) -> RangeBanItem*;
 
-	BanItem* FindNick(const char * sNick, const size_t szNickLen);
-	BanItem* FindNick(const uint32_t ui32Hash, const time_t &tAccTime, const char * sNick);
-	BanItem* FindIP(const uint8_t * ui128IpHash, const time_t &tAccTime);
-	RangeBanItem* FindRange(const uint8_t * ui128IpHash, const time_t &tAccTime);
-	RangeBanItem* FindRange(const uint8_t * ui128FromHash, const uint8_t * ui128ToHash, const time_t &tAccTime);
+    [[nodiscard]] auto FindNick(std::string_view sNick) -> BanItem*;
 
-	BanItem* FindTempNick(const char * sNick, const size_t szNickLen);
-	BanItem* FindTempNick(const uint32_t ui32Hash, const time_t &tAccTime, const char * sNick);
-	BanItem* FindTempIP(const uint8_t * ui128IpHash, const time_t &tAccTime);
+    [[nodiscard]] auto FindIP(const uint8_t* ui128IpHash, time_t acc_time) -> BanItem*;
+    [[nodiscard]] auto FindRange(const uint8_t* ui128IpHash, time_t acc_time) -> RangeBanItem*;
+    [[nodiscard]] auto FindRange(const uint8_t* ui128FromHash, const uint8_t* ui128ToHash, time_t acc_time) -> RangeBanItem*;
 
-	BanItem* FindPermNick(const char * sNick, const size_t szNickLen);
-	BanItem* FindPermNick(const uint32_t ui32Hash, const char * sNick);
-	BanItem* FindPermIP(const uint8_t * ui128IpHash);
+    [[nodiscard]] auto FindTempNick(std::string_view sNick) -> BanItem*;
+    [[nodiscard]] auto FindTempIP(const uint8_t* ui128IpHash, time_t acc_time) -> BanItem*;
 
-	void Load();
-	void LoadXML();
-	void Save(const bool bForce = false);
+    [[nodiscard]] auto FindPermNick(std::string_view sNick) -> BanItem*;
+    [[nodiscard]] auto FindPermIP(const uint8_t* ui128IpHash) -> BanItem*;
 
-	void ClearTemp(void);
-	void ClearPerm(void);
-	void ClearRange(void);
-	void ClearTempRange(void);
-	void ClearPermRange(void);
+    void Load();
+    void LoadXML();
+    void Save(bool bForce = false);
 
-	bool AddBanInternal(const char * sBy, BanItemBase * pBan);
-	void Ban(User * pUser, const char * sReason, const char * sBy, const bool bFull);
-	char BanIp(User * pUser, const char * sIp, const char * sReason, const char * sBy, const bool bFull);
-	bool NickBan(User * pUser, const char * sNick, const char * sReason, const char * sBy);
+    void ClearTemp();
+    void ClearPerm();
+    void ClearRange();
+    void ClearTempRange();
+    void ClearPermRange();
 
-	void TempBan(User * pUser, const char * sReason, const char * sBy, const uint32_t minutes, const time_t &expiretime, const bool bFull);
-	char TempBanIp(User * pUser, const char * sIp, const char * sReason, const char * sBy, const uint32_t minutes, const time_t &expiretime, const bool bFull);
-	bool NickTempBan(User * pUser, const char * sNick, const char * sReason, const char * sBy, const uint32_t minutes, const time_t &expiretime);
+    [[nodiscard]] auto AddBanInternal(const char* sBy, BanItemBase* pBan) -> bool;
+    void Ban(User* pUser, const char* sReason, const char* sBy, bool bFull);
+    [[nodiscard]] auto BanIp(User* pUser, const char* sIp, const char* sReason, const char* sBy, bool bFull) -> char;
+    [[nodiscard]] auto NickBan(User* pUser, const char* sNick, const char* sReason, const char* sBy) -> bool;
 
-	bool Unban(const char * sWhat);
-	bool PermUnban(const char * sWhat);
-	bool TempUnban(const char * sWhat);
+    void TempBan(User* pUser, const char* sReason, const char* sBy, uint32_t minutes, time_t expiretime, bool bFull);
+    [[nodiscard]] auto TempBanIp(User* pUser, const char* sIp, const char* sReason, const char* sBy, uint32_t minutes, time_t expiretime, bool bFull) -> char;
+    [[nodiscard]] auto NickTempBan(User* pUser, const char* sNick, const char* sReason, const char* sBy, uint32_t minutes, time_t expiretime) -> bool;
 
-	void RemoveAllIP(const uint8_t * ui128IpHash);
-	void RemovePermAllIP(const uint8_t * ui128IpHash);
-	void RemoveTempAllIP(const uint8_t * ui128IpHash);
+    [[nodiscard]] auto Unban(const char* sWhat) -> bool;
+    [[nodiscard]] auto PermUnban(const char* sWhat) -> bool;
+    [[nodiscard]] auto TempUnban(const char* sWhat) -> bool;
 
-	bool RangeBan(const char * sIpFrom, const uint8_t * ui128FromIpHash, const char * sIpTo, const uint8_t * ui128ToIpHash, const char * sReason, const char * sBy, const bool bFull);
-	bool RangeTempBan(const char * sIpFrom, const uint8_t * ui128FromIpHash, const char * sIpTo, const uint8_t * ui128ToIpHash, const char * sReason, const char * sBy, const uint32_t ui32Minutes,
-	                  const time_t &expiretime, const bool bFull);
+    void RemoveAllIP(const uint8_t* ui128IpHash);
+    void RemovePermAllIP(const uint8_t* ui128IpHash);
+    void RemoveTempAllIP(const uint8_t* ui128IpHash);
 
-	bool RangeUnban(const uint8_t * ui128FromIpHash, const uint8_t * ui128ToIpHash);
-	bool RangeUnban(const uint8_t * ui128FromIpHash, const uint8_t * ui128ToIpHash, const uint8_t ui8Type);
+    [[nodiscard]] auto RangeBan(
+        const char* sIpFrom, const uint8_t* ui128FromIpHash, const char* sIpTo, const uint8_t* ui128ToIpHash, const char* sReason, const char* sBy, bool bFull)
+        -> bool;
+    [[nodiscard]] auto RangeTempBan(const char* sIpFrom,
+                                    const uint8_t* ui128FromIpHash,
+                                    const char* sIpTo,
+                                    const uint8_t* ui128ToIpHash,
+                                    const char* sReason,
+                                    const char* sBy,
+                                    uint32_t ui32Minutes,
+                                    time_t expiretime,
+                                    bool bFull) -> bool;
+
+    [[nodiscard]] auto RangeUnban(const uint8_t* ui128FromIpHash, const uint8_t* ui128ToIpHash) -> bool;
+    [[nodiscard]] auto RangeUnban(const uint8_t* ui128FromIpHash, const uint8_t* ui128ToIpHash, unsigned char cType) -> bool;
 };
 //---------------------------------------------------------------------------
 

@@ -21,12 +21,11 @@
 #ifndef ServerManagerH
 #define ServerManagerH
 //---------------------------------------------------------------------------
-#ifdef _WIN32
-#define WM_PX_DO_LOOP (WM_USER+1)
-#endif
+#include <array>
+#include <atomic>
+#include <list>
+#include <memory>
 #include <string>
-
-using std::string;
 
 //---------------------------------------------------------------------------
 class ServerThread;
@@ -35,98 +34,70 @@ class ServerThread;
 class ServerManager
 {
 public:
-	static string m_sPath, m_sScriptPath;
-
-#ifdef _WIN32
-	static string m_sLuaPath, m_sOS;
-#endif
+    static std::string m_sPath, m_sScriptPath;
 
 #ifdef FLYLINKDC_USE_CPU_STAT
-	static double m_dCpuUsages[60], m_dCpuUsage;
+    static std::array<double, 60> m_dCpuUsages;
+    static double m_dCpuUsage;
 #endif
-	static uint64_t m_ui64ActualTick, m_ui64TotalShare;
-	static uint64_t m_ui64BytesRead, m_ui64BytesSent, m_ui64BytesSentSaved;
-	static uint64_t m_ui64LastBytesRead, m_ui64LastBytesSent;
-	static uint64_t m_ui64Mins, m_ui64Hours, m_ui64Days;
+    static std::atomic<uint64_t> m_ui64ActualTick;
+    static uint64_t m_ui64TotalShare;
 
-#ifdef _WIN32
-	static HANDLE m_hConsole;
-#ifdef _BUILD_GUI
-	static HWND m_hMainWindow;
-#endif
-#endif
+    static uint64_t m_ui64BytesRead, m_ui64BytesSent, m_ui64BytesSentSaved;
+    static uint64_t m_ui64LastBytesRead, m_ui64LastBytesSent;
+    static uint64_t m_ui64Mins, m_ui64Hours, m_ui64Days;
 
 #ifdef __MACH__
-	static clock_serv_t m_csMachClock;
+    static clock_serv_t m_csMachClock;
 #endif
 
-	static time_t m_tStartTime;
+    static time_t m_tStartTime;
 
-#if defined(_WIN32) && !defined(_WIN_IOT)
-	static UINT_PTR m_upSecTimer;
-#ifdef FLYLINKDC_REMOVE_REGISTER_THREAD
-	static UINT_PTR m_upRegTimer;
-#endif
-#ifdef _BUILD_GUI
-	static HINSTANCE m_hInstance;
-	static HWND m_hWndActiveDialog;
-#endif
-#endif
+    static std::list<std::unique_ptr<ServerThread>> m_Servers;
 
-	static ServerThread * m_pServersS;
+    // Single shared buffer for all snprintf/string operations in the event loop.
+    // SAFE only because the hub is single-threaded (one event loop).
+    // If multi-threading is ever added, this MUST become thread-local or per-call-site.
+    static char* m_pGlobalBuffer;
 
-	static char * m_pGlobalBuffer;
+    static size_t m_szGlobalBufferSize;
 
-	static size_t m_szGlobalBufferSize;
+    static uint32_t m_ui32CpuCount;
 
-#ifndef _WIN32
-	static uint32_t m_ui32CpuCount;
-#endif
+    static uint32_t m_ui32Joins, m_ui32Parts, m_ui32Logged, m_ui32Peak;
+    static uint32_t m_ui32ConnectionsAccepted, m_ui32ConnectionsClosed;
+    static std::array<uint32_t, 60> m_ui32UploadSpeed, m_ui32DownloadSpeed;
+    static uint32_t m_ui32ActualBytesRead, m_ui32ActualBytesSent;
+    static uint32_t m_ui32AverageBytesRead, m_ui32AverageBytesSent;
 
-	static uint32_t m_ui32Joins, m_ui32Parts, m_ui32Logged, m_ui32Peak;
-	static uint32_t m_ui32UploadSpeed[60], m_ui32DownloadSpeed[60];
-	static uint32_t m_ui32ActualBytesRead, m_ui32ActualBytesSent;
-	static uint32_t m_ui32AverageBytesRead, m_ui32AverageBytesSent;
+    static bool m_bServerRunning, m_bServerTerminated, m_bIsRestart, m_bIsClose;
 
-	static bool m_bServerRunning, m_bServerTerminated, m_bIsRestart, m_bIsClose;
+    static bool m_bDaemon;
 
-#ifdef _WIN32
-#ifndef _BUILD_GUI
-	static bool m_bService;
-#endif
-#else
-	static bool m_bDaemon;
-#endif
+    static bool m_bCmdAutoStart, m_bCmdNoAutoStart, m_bCmdNoTray, m_bUseIPv4, m_bUseIPv6, m_bIPv6DualStack;
 
-	static bool m_bCmdAutoStart, m_bCmdNoAutoStart, m_bCmdNoTray, m_bUseIPv4, m_bUseIPv6, m_bIPv6DualStack;
+    static std::array<char, 16> m_sHubIP;
+    static std::array<char, 40> m_sHubIP6;
 
-	static char m_sHubIP[16], m_sHubIP6[40];
+    static uint8_t m_ui8SrCntr, m_ui8MinTick;
 
-	static uint8_t m_ui8SrCntr, m_ui8MinTick;
+    static void OnSecTimer();
 
-	static void OnSecTimer();
-#ifdef FLYLINKDC_REMOVE_REGISTER_THREAD
-	static void OnRegTimer();
-#endif
+    static void Initialize();
 
-	static void Initialize();
+    static void FinalStop(bool bDeleteServiceLoop);
+    static void ResumeAccepts();
+    static void SuspendAccepts(uint32_t ui32Time);
 
-	static void FinalStop(const bool bDeleteServiceLoop);
-	static void ResumeAccepts();
-	static void SuspendAccepts(const uint32_t ui32Time);
-#ifdef FLYLINKDC_REMOVE_REGISTER_THREAD
-	static void UpdateAutoRegState();
-#endif
+    [[nodiscard]] static auto Start() -> bool;
+    static void UpdateServers();
+    static void Stop();
+    static void FinalClose();
+    static void CreateServerThread(int iAddrFamily, uint16_t ui16PortNumber, bool bResume = false);
 
-	static bool Start();
-	static void UpdateServers();
-	static void Stop();
-	static void FinalClose();
-	static void CreateServerThread(const int iAddrFamily, const uint16_t ui16PortNumber, const bool bResume = false);
+    static void CommandLineSetup();
 
-	static void CommandLineSetup();
-
-	static bool ResolveHubAddress(const bool bSilent = false);
+    [[nodiscard]] static auto ResolveHubAddress(bool bSilent = false) -> bool;
 };
 //---------------------------------------------------------------------------
 

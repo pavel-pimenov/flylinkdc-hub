@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "*.tcc": "cpp",
-        "string": "cpp",
-        "iosfwd": "cpp",
-        "vector": "cpp"
-    },
-    "cmake.exportCompileCommandsFile": true
-}

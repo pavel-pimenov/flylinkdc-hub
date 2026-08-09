@@ -20,41 +20,46 @@
 #ifndef DBSQLiteH
 #define DBSQLiteH
 
-#include "../sqlite/sqlite3.h"
+#include <sqlite3.h>
 
 #ifdef FLYLINKDC_USE_DB
 
-#include "../sqlite/sqlite3.h"
+#include <memory>
+
+#include <sqlite3.h>
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 struct ChatCommand;
 struct User;
-typedef struct sqlite3 sqlite3;
+using sqlite3 = struct sqlite3;
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class DBSQLite
 {
 private:
-	sqlite3 * m_pSqliteDB;
+    sqlite3* m_pSqliteDB;
 
-	bool m_bConnected;
+    bool m_bConnected = false;
+
+    [[nodiscard]] auto SqlExec(const char* sql, const char* label, int (*callback)(void*, int, char**, char**) = nullptr) const -> bool;
 
 public:
-	static DBSQLite * m_Ptr;
+    static std::unique_ptr<DBSQLite> m_Ptr;
 
-	DBSQLite();
-	~DBSQLite();
+    DBSQLite();
+    ~DBSQLite();
 
-	void UpdateRecord(User * pUser);
-	void IncMessageCount(User * pUser);
+    void UpdateRecord(User* pUser);
+    void IncMessageCount(User* pUser);
 
-	bool SearchNick(ChatCommand * pChatCommand);
-	bool SearchIP(ChatCommand * pChatCommand);
+    [[nodiscard]] auto SearchNick(ChatCommand* pChatCommand) -> bool;
+    [[nodiscard]] auto SearchIP(ChatCommand* pChatCommand) -> bool;
 
 #ifdef FLYLINKDC_USE_SQLITE_REMOVE_OLD_RECORD
-	void RemoveOldRecords(const uint16_t ui16Days);
+    void RemoveOldRecords(const uint16_t ui16Days);
 #endif
-	DISALLOW_COPY_AND_ASSIGN(DBSQLite);
+    DBSQLite(const DBSQLite&) = delete;
+    auto operator=(const DBSQLite&) -> DBSQLite& = delete;
 };
 #endif // FLYLINKDC_USE_DB
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

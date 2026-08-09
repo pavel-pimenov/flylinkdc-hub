@@ -23,95 +23,105 @@
 //---------------------------------------------------------------------------
 struct User;
 //---------------------------------------------------------------------------
-static const uint32_t NICKLISTSIZE = 1024 * 8;
-static const uint32_t OPLISTSIZE = 512;
+#include "GlobalDataQueue.h"
+inline constexpr uint32_t NICKLISTSIZE = 1024 * 8;
+inline constexpr uint32_t OPLISTSIZE = 512;
 //---------------------------------------------------------------------------
+#include <array>
+#include <list>
 #include <vector>
 #include <string>
 
 class Users
 {
 private:
-	uint64_t m_ui64ChatMsgsTick, m_ui64ChatLockFromTick;
+    uint64_t m_ui64ChatMsgsTick = 0, m_ui64ChatLockFromTick = 0;
 
-	struct RecTime
-	{
-		uint64_t m_ui64DisConnTick;
+    struct RecTime
+    {
+        uint64_t m_ui64DisConnTick = 0;
 
-		RecTime * m_pPrev, * m_pNext;
+        std::string m_sNick;
+        uint32_t m_ui32NickHash = 0;
 
-		std::string m_sNick;
-		uint32_t m_ui32NickHash;
+        std::array<uint8_t, 16> m_ui128IpHash{};
 
-		uint8_t m_ui128IpHash[16];
+        explicit RecTime(const uint8_t* pIpHash);
 
-		explicit RecTime(const uint8_t * pIpHash);
+        RecTime(const RecTime&) = delete;
 
-		DISALLOW_COPY_AND_ASSIGN(RecTime);
-	};
+        auto operator=(const RecTime&) -> RecTime& = delete;
+    };
 
-	RecTime * m_pRecTimeList;
+    std::list<std::unique_ptr<RecTime>> m_RecTimeList;
 
-	User * m_pUserListE;
+    uint16_t m_ui16ChatMsgs = 0;
 
-	uint16_t m_ui16ChatMsgs;
+    bool m_bChatLocked = false;
 
-	bool m_bChatLocked;
-
-	DISALLOW_COPY_AND_ASSIGN(Users);
 public:
-	static Users * m_Ptr;
+    static std::unique_ptr<Users> m_Ptr;
 
-	User * m_pUserListS;
+    using UserList = std::list<std::unique_ptr<User>>;
+    UserList m_UserList;
 
-	char * m_pNickList, * m_pZNickList, * m_pOpList, * m_pZOpList;
-	char * m_pUserIPList, * m_pZUserIPList, * m_pMyInfos, * m_pZMyInfos;
-	char * m_pMyInfosTag, * m_pZMyInfosTag;
+    std::vector<char> m_NickList, m_ZNickList, m_OpList, m_ZOpList;
+    std::vector<char> m_UserIPList, m_ZUserIPList, m_MyInfos, m_ZMyInfos;
+    std::vector<char> m_MyInfosTag, m_ZMyInfosTag;
 
-	uint32_t m_ui32MyInfosLen, m_ui32MyInfosSize;
-	uint32_t m_ui32MyInfosTagLen, m_ui32MyInfosTagSize, m_ui32ZMyInfosTagLen, m_ui32ZMyInfosTagSize;
-	uint32_t m_ui32NickListLen, m_ui32NickListSize;
-	uint32_t m_ui32OpListLen, m_ui32OpListSize;
-	uint32_t m_ui32UserIPListSize, m_ui32UserIPListLen, m_ui32ZUserIPListSize, m_ui32ZUserIPListLen;
+    uint32_t m_ui32MyInfosLen = 0, m_ui32MyInfosSize = 0;
+    uint32_t m_ui32ZMyInfosLen = 0, m_ui32ZMyInfosSize = 0;
+    uint32_t m_ui32MyInfosTagLen = 0, m_ui32MyInfosTagSize = 0;
+    uint32_t m_ui32ZMyInfosTagLen = 0, m_ui32ZMyInfosTagSize = 0;
+    uint32_t m_ui32NickListLen = 0, m_ui32NickListSize = 0;
+    uint32_t m_ui32ZNickListLen = 0, m_ui32ZNickListSize = 0;
+    uint32_t m_ui32OpListLen = 0, m_ui32OpListSize = 0;
+    uint32_t m_ui32ZOpListLen = 0, m_ui32ZOpListSize = 0;
+    uint32_t m_ui32UserIPListSize = 0, m_ui32UserIPListLen = 0, m_ui32ZUserIPListSize = 0, m_ui32ZUserIPListLen = 0;
 
-	uint32_t m_ui32ZMyInfosLen, m_ui32ZMyInfosSize;
-	uint32_t m_ui32ZNickListLen, m_ui32ZNickListSize;
-	uint32_t m_ui32ZOpListLen, m_ui32ZOpListSize;
-
-	uint16_t m_ui16ActSearchs, m_ui16PasSearchs;
+    uint16_t m_ui16ActSearchs = 0, m_ui16PasSearchs = 0;
 
 #ifdef USE_FLYLINKDC_EXT_JSON
-	std::string m_AllExtJSON;
+    std::string m_AllExtJSON;
 #endif
 
-	Users();
-	~Users();
+    Users(const Users&) = delete;
+    auto operator=(const Users&) -> Users& = delete;
 
-	void DisconnectAll();
-	void AddUser(User * pUser);
-	void RemUser(User * pUser);
-	void Add2NickList(User * pUser);
-	void AddBot2NickList(const char * sNick, const size_t szNickLen, const bool bIsOp);
-	void Add2OpList(User * pUser);
-	void DelFromNickList(const char * sNick, const bool bIsOp);
-	void DelFromOpList(const char * sNick);
-	void SendChat2All(User * pUser, const char * sData, const size_t szChatLen, void * pQueueItem);
-	void Add2MyInfos(User * pUser);
-	void DelFromMyInfos(User * pUser);
+    Users();
+    ~Users();
+
+    void DisconnectAll();
+    void AddUser(std::unique_ptr<User> pUser);
+    void RemUser(User* pUser);
+    // Erase the user pointed to by the given iterator; returns the next valid iterator.
+    // Safe to use while iterating m_UserList (avoids use-after-free on erase).
+    UserList::iterator RemUser(UserList::iterator it);
+    void Add2NickList(User* pUser);
+    void AddBot2NickList(const char* sNick, size_t szNickLen, bool bIsOp);
+    void AddBot2NickList(const std::string& sNick, const bool bIsOp)
+    {
+        AddBot2NickList(sNick.c_str(), sNick.size(), bIsOp);
+    }
+    void Add2OpList(User* pUser);
+    void DelFromNickList(const char* sNick, bool bIsOp);
+    void DelFromOpList(const char* sNick);
+    void SendChat2All(User* pUser, const char* sData, size_t szChatLen, GlobalDataQueue::QueueItem* pQueueItem);
+    void Add2MyInfos(User* pUser);
+    void DelFromMyInfos(User* pUser);
 #ifdef USE_FLYLINKDC_EXT_JSON
-	void Add2ExtJSON(const User * pUser);
-	void DelFromExtJSONInfos(const User * pUser);
+    void Add2ExtJSON(const User* pUser);
+    void DelFromExtJSONInfos(const User* pUser);
 #endif
-	void Add2MyInfosTag(User * pUser);
-	void DelFromMyInfosTag(User * pUser);
-	void AddBot2MyInfos(const char * sMyInfo);
-	void DelBotFromMyInfos(const char * sMyInfo);
-	void Add2UserIP(User * pUser);
-	void DelFromUserIP(User * pUser);
-	void Add2RecTimes(User * pUser);
-	bool CheckRecTime(User * pUser);
+    void Add2MyInfosTag(User* pUser);
+    void DelFromMyInfosTag(User* pUser);
+    void AddBot2MyInfos(const char* sMyInfo);
+    void DelBotFromMyInfos(const char* sMyInfo);
+    void Add2UserIP(User* pUser);
+    void DelFromUserIP(User* pUser);
+    void Add2RecTimes(User* pUser);
+    [[nodiscard]] auto CheckRecTime(User* pUser) -> bool;
 };
 //---------------------------------------------------------------------------
 
 #endif
-

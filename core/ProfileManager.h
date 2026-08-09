@@ -21,116 +21,123 @@
 #ifndef ProfileManagerH
 #define ProfileManagerH
 //---------------------------------------------------------------------------
+#include <array>
+#include <memory>
+#include <optional>
+#include <string>
+#include <vector>
+//---------------------------------------------------------------------------
 struct User;
 //---------------------------------------------------------------------------
 
 struct ProfileItem
 {
-	char * m_sName;
+    std::string m_sName;
 
-	bool m_bPermissions[256];
+    std::array<bool, 256> m_bPermissions{};
 
-	ProfileItem();
-	~ProfileItem();
+    ProfileItem();
 
-	DISALLOW_COPY_AND_ASSIGN(ProfileItem);
+    ProfileItem(const ProfileItem&) = delete;
 
+    auto operator=(const ProfileItem&) -> ProfileItem& = delete;
 };
 //---------------------------------------------------------------------------
 
 class ProfileManager
 {
 private:
+    [[nodiscard]] auto CreateProfile(const char* sName) -> ProfileItem*;
 
-	ProfileItem * CreateProfile(const char * sName);
+    void Load();
+    void LoadXML();
 
-	void Load();
-	void LoadXML();
 public:
-	static ProfileManager * m_Ptr;
+    static std::unique_ptr<ProfileManager> m_Ptr;
 
-	ProfileItem ** m_ppProfilesTable;
+    std::vector<std::unique_ptr<ProfileItem>> m_vpProfilesTable;
 
-	uint16_t m_ui16ProfileCount;
+    uint16_t m_ui16ProfileCount = 0;
 
-	enum ProfilePermissions
-	{
-		HASKEYICON,
-		NODEFLOODGETNICKLIST,
-		NODEFLOODMYINFO,
-		NODEFLOODSEARCH,
-		NODEFLOODPM,
-		NODEFLOODMAINCHAT,
-		MASSMSG,
-		TOPIC,
-		TEMP_BAN,
-		REFRESHTXT,
-		NOTAGCHECK,
-		TEMP_UNBAN,
-		DELREGUSER,
-		ADDREGUSER,
-		NOCHATLIMITS,
-		NOMAXHUBCHECK,
-		NOSLOTHUBRATIO,
-		NOSLOTCHECK,
-		NOSHARELIMIT,
-		CLRPERMBAN,
-		CLRTEMPBAN,
-		GETINFO,
-		GETBANLIST,
-		RSTSCRIPTS,
-		RSTHUB,
-		TEMPOP,
-		GAG,
-		REDIRECT,
-		BAN,
-		KICK,
-		DROP,
-		ENTERFULLHUB,
-		ENTERIFIPBAN,
-		ALLOWEDOPCHAT,
-		SENDALLUSERIP,
-		RANGE_BAN,
-		RANGE_UNBAN,
-		RANGE_TBAN,
-		RANGE_TUNBAN,
-		GET_RANGE_BANS,
-		CLR_RANGE_BANS,
-		CLR_RANGE_TBANS,
-		UNBAN,
-		NOSEARCHLIMITS,
-		SENDFULLMYINFOS,
-		NOIPCHECK,
-		CLOSE,
-		NODEFLOODCTM,
-		NODEFLOODRCTM,
-		NODEFLOODSR,
-		NODEFLOODRECV,
-		NOCHATINTERVAL,
-		NOPMINTERVAL,
-		NOSEARCHINTERVAL,
-		NOUSRSAMEIP,
-		NORECONNTIME
-	};
+    enum ProfilePermissions : uint8_t
+    {
+        HASKEYICON,
+        NODEFLOODGETNICKLIST,
+        NODEFLOODMYINFO,
+        NODEFLOODSEARCH,
+        NODEFLOODPM,
+        NODEFLOODMAINCHAT,
+        MASSMSG,
+        TOPIC,
+        TEMP_BAN,
+        REFRESHTXT,
+        NOTAGCHECK,
+        TEMP_UNBAN,
+        DELREGUSER,
+        ADDREGUSER,
+        NOCHATLIMITS,
+        NOMAXHUBCHECK,
+        NOSLOTHUBRATIO,
+        NOSLOTCHECK,
+        NOSHARELIMIT,
+        CLRPERMBAN,
+        CLRTEMPBAN,
+        GETINFO,
+        GETBANLIST,
+        RSTSCRIPTS,
+        RSTHUB,
+        TEMPOP,
+        GAG,
+        REDIRECT,
+        BAN,
+        KICK,
+        DROP,
+        ENTERFULLHUB,
+        ENTERIFIPBAN,
+        ALLOWEDOPCHAT,
+        SENDALLUSERIP,
+        RANGE_BAN,
+        RANGE_UNBAN,
+        RANGE_TBAN,
+        RANGE_TUNBAN,
+        GET_RANGE_BANS,
+        CLR_RANGE_BANS,
+        CLR_RANGE_TBANS,
+        UNBAN,
+        NOSEARCHLIMITS,
+        SENDFULLMYINFOS,
+        NOIPCHECK,
+        CLOSE,
+        NODEFLOODCTM,
+        NODEFLOODRCTM,
+        NODEFLOODSR,
+        NODEFLOODRECV,
+        NOCHATINTERVAL,
+        NOPMINTERVAL,
+        NOSEARCHINTERVAL,
+        NOUSRSAMEIP,
+        NORECONNTIME
+    };
 
-	ProfileManager();
-	~ProfileManager();
+    ProfileManager();
+    ~ProfileManager();
 
-	bool IsAllowed(const User * pUser, const uint32_t ui32Option) const;
-	bool IsProfileAllowed(const int32_t i32Profile, const uint32_t ui32Option) const;
-	int32_t AddProfile(const char * sName);
-	int32_t GetProfileIndex(const char * sName);
-	int32_t RemoveProfileByName(const char * sName);
-	void MoveProfileDown(const uint16_t ui16Profile);
-	void MoveProfileUp(const uint16_t ui16Profile);
-	void ChangeProfileName(const uint16_t ui16Profile, const char * sName, const size_t szLen);
-	void ChangeProfilePermission(const uint16_t ui16Profile, const size_t szId, const bool bValue);
-	void SaveProfiles();
-	bool RemoveProfile(const uint16_t ui16Profile);
+    [[nodiscard]] auto IsAllowed(const User* pUser, uint32_t ui32Option) const -> bool;
+    [[nodiscard]] auto IsProfileAllowed(int32_t i32Profile, uint32_t ui32Option) const -> bool;
+    [[nodiscard]] auto AddProfile(const char* sName) -> int32_t;
+    [[nodiscard]] std::optional<uint16_t> GetProfileIndex(const char* sName) const;
+    [[nodiscard]] auto RemoveProfileByName(const char* sName) -> int32_t;
+    void MoveProfileDown(uint16_t ui16Profile);
+    void MoveProfileUp(uint16_t ui16Profile);
+    void ChangeProfileName(uint16_t ui16Profile, const char* sName, size_t szLen);
+    void ChangeProfilePermission(uint16_t ui16Profile, size_t szId, bool bValue);
+    void SaveProfiles();
+    [[nodiscard]] auto RemoveProfile(uint16_t ui16Profile) -> bool;
 
-	DISALLOW_COPY_AND_ASSIGN(ProfileManager);
+    ProfileManager(const ProfileManager&) = delete;
+
+    auto operator=(const ProfileManager&) -> ProfileManager& = delete;
 };
 //---------------------------------------------------------------------------
 
 #endif
-

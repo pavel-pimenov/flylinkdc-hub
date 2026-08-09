@@ -20,121 +20,118 @@
 #ifndef LuaScriptH
 #define LuaScriptH
 //---------------------------------------------------------------------------
+#include <string>
+//---------------------------------------------------------------------------
 struct User;
 struct Script;
 //---------------------------------------------------------------------------
 
 struct ScriptBot
 {
-	ScriptBot * m_pPrev, * m_pNext;
+    ScriptBot* m_pPrev = nullptr;
+    ScriptBot* m_pNext = nullptr;
 
-	char *m_sNick;
-	char *m_sMyINFO;
+    std::string m_sNick;
+    std::string m_sMyINFO;
 
-	bool m_bIsOP;
+    bool m_bIsOP = false;
 
-	ScriptBot();
-	~ScriptBot();
+    ScriptBot();
+    ~ScriptBot();
 
-	static ScriptBot * CreateScriptBot(const char * sBotNick, const size_t szNickLen, const char * sDescription, const size_t szDscrLen, const char * sEmail, const size_t szEmailLen, const bool bOP);
-	// alex82 ... RegBot / �������� �������������� ������� ��� �������� ���� � ����������� $MyINFO
-	static ScriptBot * CreateScriptBot(const char * sNick, const size_t szNickLen, const char * sBotMyINFO, const size_t szMyINFOLen, const bool bOP);
-	DISALLOW_COPY_AND_ASSIGN(ScriptBot);
+    ScriptBot(const ScriptBot&) = delete;
+    auto operator=(const ScriptBot&) -> ScriptBot& = delete;
+
+    [[nodiscard]] static auto
+    CreateScriptBot(const char* sBotNick, size_t szNickLen, const char* sDescription, size_t szDscrLen, const char* sEmail, size_t szEmailLen, bool bOP)
+        -> ScriptBot*;
+    // alex82 ... RegBot / �������� �������������� ������� ��� �������� ���� � ����������� $MyINFO
+    [[nodiscard]] static auto CreateScriptBot(const char* sBotNick, size_t szNickLen, const char* sBotMyINFO, size_t szMyINFOLen, bool bOP) -> ScriptBot*;
 };
 //------------------------------------------------------------------------------
 
 struct ScriptTimer
 {
-#if defined(_WIN32) && !defined(_WIN_IOT)
-	UINT_PTR m_uiTimerId;
-#else
-	uint64_t m_ui64Interval;
-	uint64_t m_ui64LastTick;
-#endif
+    uint64_t m_ui64Interval = 0;
+    uint64_t m_ui64LastTick = 0;
 
-	ScriptTimer * m_pPrev, * m_pNext;
+    lua_State* m_pLua = nullptr;
 
-	lua_State * m_pLua;
+    std::string m_sFunctionName;
 
-	char * m_sFunctionName;
+    int m_iFunctionRef = 0;
 
-	int m_iFunctionRef;
+    static constexpr const char m_sDefaultTimerFunc[] = "OnTimer"; // NOLINT(modernize-avoid-c-arrays)
 
-	static char m_sDefaultTimerFunc[];
+    ScriptTimer() = default;
+    ~ScriptTimer() = default;
 
-	ScriptTimer();
-	~ScriptTimer();
+    ScriptTimer(const ScriptTimer&) = delete;
+    auto operator=(const ScriptTimer&) -> ScriptTimer& = delete;
 
-#if defined(_WIN32) && !defined(_WIN_IOT)
-	static ScriptTimer * CreateScriptTimer(UINT_PTR uiTmrId, const char * sFunctName, const size_t szLen, const int iRef, lua_State * pLuaState);
-#else
-	static ScriptTimer * CreateScriptTimer(const char * sFunctName, const size_t szLen, const int iRef, lua_State * pLuaState);
-#endif
-	DISALLOW_COPY_AND_ASSIGN(ScriptTimer);
-
+    [[nodiscard]] static auto CreateScriptTimer(const char* sFunctName, size_t szLen, int iRef, lua_State* pLuaState) -> ScriptTimer*;
 };
 //------------------------------------------------------------------------------
 
 struct Script
 {
-	Script * m_pPrev, * m_pNext;
+    ScriptBot* m_pBotList = nullptr;
 
-	ScriptBot * m_pBotList;
+    lua_State* m_pLua = nullptr;
 
-	lua_State * m_pLua;
+    std::string m_sName;
 
-	char * m_sName;
+    uint32_t m_ui32DataArrivals = UINT32_MAX;
 
-	uint32_t m_ui32DataArrivals;
+    uint16_t m_ui16Functions = UINT16_MAX;
 
-	uint16_t m_ui16Functions;
+    uint32_t m_ui32LuaCallCount = 0;
+    uint64_t m_ui64LuaTimeNsec = 0;
 
-	bool m_bEnabled, m_bRegUDP, m_bProcessed;
+    bool m_bEnabled = false;
+    bool m_bProcessed = false;
 
-	enum LuaFunctions
-	{
-		ONSTARTUP         = 0x1,
-		ONEXIT            = 0x2,
-		ONERROR           = 0x4,
-		USERCONNECTED     = 0x8,
-		REGCONNECTED      = 0x10,
-		OPCONNECTED       = 0x20,
-		USERDISCONNECTED  = 0x40,
-		REGDISCONNECTED   = 0x80,
-		OPDISCONNECTED    = 0x100
-	};
+    enum LuaFunctions : uint16_t
+    {
+        ONSTARTUP = 0x1,
+        ONEXIT = 0x2,
+        ONERROR = 0x4,
+        USERCONNECTED = 0x8,
+        REGCONNECTED = 0x10,
+        OPCONNECTED = 0x20,
+        USERDISCONNECTED = 0x40,
+        REGDISCONNECTED = 0x80,
+        OPDISCONNECTED = 0x100
+    };
 
-	Script();
-	~Script();
+    Script() = default;
+    ~Script();
 
-	static Script * CreateScript(const char *sName, const bool enabled);
-	DISALLOW_COPY_AND_ASSIGN(Script);
+    Script(const Script&) = delete;
+    auto operator=(const Script&) -> Script& = delete;
+
+    [[nodiscard]] static auto CreateScript(const char* sName, bool enabled) -> Script*;
 };
 //------------------------------------------------------------------------------
 
-bool ScriptStart(Script * pScript);
-void ScriptStop(Script * pScript);
+[[nodiscard]] auto ScriptStart(Script* pScript) -> bool;
+void ScriptStop(Script* pScript);
 
-int ScriptGetGC(Script * pScript);
+[[nodiscard]] auto ScriptGetGC(Script* pScript) -> int;
 
-void ScriptOnStartup(Script * pScript);
-void ScriptOnExit(Script * pScript);
+void ScriptOnStartup(Script* pScript);
+void ScriptOnExit(Script* pScript);
 
-void ScriptPushUser(lua_State * pLua, User * pUser, const bool bFullTable = false);
-void ScriptPushUserExtended(lua_State * pLua, User * pUser, const int iTable);
+void ScriptPushUser(lua_State* pLua, User* pUser, bool bFullTable = false);
+void ScriptPushUserExtended(lua_State* pLua, User* pUser, int iTable);
 
-User * ScriptGetUser(lua_State * pLua, const int iTop, const char * sFunction);
+[[nodiscard]] auto ScriptGetUser(lua_State* pLua, int iTop, const char* sFunction) -> User*;
 
-void ScriptError(Script * pScript);
+void ScriptError(Script* pScript);
 
-#if defined(_WIN32) && !defined(_WIN_IOT)
-void ScriptOnTimer(const UINT_PTR& uiTimerId);
-#else
-void ScriptOnTimer(const uint64_t &ui64ActualMillis);
-#endif
+void ScriptOnTimer(uint64_t ui64ActualMillis);
 
-int ScriptTraceback(lua_State * pLua);
+[[nodiscard]] auto ScriptTraceback(lua_State* pLua) -> int;
 //------------------------------------------------------------------------------
 
 #endif
-

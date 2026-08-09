@@ -21,37 +21,67 @@
 #define DeFloodH
 //---------------------------------------------------------------------------
 
-enum DefloodTypes
+enum class DefloodTypes : uint8_t
 {
-	DEFLOOD_GETNICKLIST,
-	DEFLOOD_MYINFO,
-	DEFLOOD_SEARCH,
-	DEFLOOD_CHAT,
-	DEFLOOD_PM,
-	DEFLOOD_SAME_SEARCH,
-	DEFLOOD_SAME_PM,
-	DEFLOOD_SAME_CHAT,
-	DEFLOOD_SAME_MULTI_PM,
-	DEFLOOD_SAME_MULTI_CHAT,
-	DEFLOOD_CTM,
-	DEFLOOD_RCTM,
-	DEFLOOD_SR,
-	DEFLOOD_MAX_DOWN,
-	INTERVAL_CHAT,
-	INTERVAL_PM,
-	INTERVAL_SEARCH
+    GETNICKLIST,
+    MYINFO,
+    SEARCH,
+    CHAT,
+    PM,
+    SAME_SEARCH,
+    SAME_PM,
+    SAME_CHAT,
+    SAME_MULTI_PM,
+    SAME_MULTI_CHAT,
+    CTM,
+    RCTM,
+    SR,
+    MAX_DOWN,
+    INTERVAL_CHAT,
+    INTERVAL_PM,
+    INTERVAL_SEARCH
 };
 //---------------------------------------------------------------------------
 
-bool DeFloodCheckForFlood(User * pUser, const uint8_t ui8DefloodType, const int16_t ui16Action, uint16_t &ui16Count, uint64_t &ui64LastOkTick, const int16_t ui16DefloodCount, const uint32_t ui32DefloodTime, const char * sOtherNick = NULL);
-bool DeFloodCheckForSameFlood(User * pUser, const uint8_t ui8DefloodType, const int16_t ui16Action, uint16_t &ui16Count, const uint64_t &ui64LastOkTick, const int16_t ui16DefloodCount, const uint32_t ui32DefloodTime, const char * sNewData,
-                              const size_t ui32NewDataLen, const char * sOldData, const uint16_t ui16OldDataLen, bool &bNewData, const char * sOtherNick = NULL);
-bool DeFloodCheckForDataFlood(User * pUser, const uint8_t ui8DefloodType, const int16_t ui16Action, uint32_t &ui32Count, uint64_t &ui64LastOkTick, const int16_t ui16DefloodCount, const uint32_t ui32DefloodTime);
-void DeFloodDoAction(User * pUser, const uint8_t ui8DefloodType, const int16_t ui16Action, uint16_t &ui16Count, const char * sOtherNick);
-bool DeFloodCheckForWarn(User * pUser, const uint8_t ui8DefloodType, const char * sOtherNick);
-const char * DeFloodGetMessage(const uint8_t ui8DefloodType, const uint8_t ui8MsgId);
-void DeFloodReport(User * pUser, const uint8_t ui8DefloodType, const char *sAction);
-bool DeFloodCheckInterval(User * pUser, const uint8_t ui8DefloodType, uint16_t &ui16Count, uint64_t &ui64LastOkTick, const int16_t ui16DefloodCount, const uint32_t ui32DefloodTime, const char * sOtherNick = NULL);
+[[nodiscard]] auto DeFloodCheckForFlood(User* pUser,
+                          DefloodTypes eDefloodType,
+                          int16_t ui16Action,
+                          uint16_t& ui16Count,
+                          uint64_t& ui64LastOkTick,
+                          int16_t ui16DefloodCount,
+                          uint32_t ui32DefloodTime,
+                          const char* sOtherNick = nullptr) -> bool;
+[[nodiscard]] auto DeFloodCheckForSameFlood(User* pUser,
+                              DefloodTypes eDefloodType,
+                              int16_t ui16Action,
+                              uint16_t& ui16Count,
+                              uint64_t ui64LastOkTick,
+                              int16_t ui16DefloodCount,
+                              uint32_t ui32DefloodTime,
+                              const char* sNewData,
+                              size_t ui32NewDataLen,
+                              const char* sOldData,
+                              uint16_t ui16OldDataLen,
+                              bool& bNewData,
+                              const char* sOtherNick = nullptr) -> bool;
+[[nodiscard]] auto DeFloodCheckForDataFlood(User* pUser,
+                              DefloodTypes eDefloodType,
+                              int16_t ui16Action,
+                              uint32_t& ui32Count,
+                              uint64_t& ui64LastOkTick,
+                              int16_t ui16DefloodCount,
+                              uint32_t ui32DefloodTime) -> bool;
+void DeFloodDoAction(User* pUser, DefloodTypes eDefloodType, int16_t ui16Action, uint16_t& ui16Count, const char* sOtherNick);
+[[nodiscard]] auto DeFloodCheckForWarn(User* pUser, DefloodTypes eDefloodType, const char* sOtherNick) -> bool;
+[[nodiscard]] auto DeFloodGetMessage(DefloodTypes eDefloodType, uint8_t ui8MsgId) -> const char*;
+void DeFloodReport(User* pUser, DefloodTypes eDefloodType, const char* sAction);
+[[nodiscard]] auto DeFloodCheckInterval(User* pUser,
+                          DefloodTypes eDefloodType,
+                          uint16_t& ui16Count,
+                          uint64_t& ui64LastOkTick,
+                          int16_t ui16DefloodCount,
+                          uint32_t ui32DefloodTime,
+                          const char* sOtherNick = nullptr) -> bool;
 //---------------------------------------------------------------------------
 
 #endif

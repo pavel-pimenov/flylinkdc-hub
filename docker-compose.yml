@@ -1,0 +1,123 @@
+services:
+  ptokax:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_TYPE: ${BUILD_TYPE:-Release}
+    container_name: ptokax-hub
+    ports:
+      - "411:411"
+      - "4111:4111"
+      - "8888:8888"
+      - "37015:37015"
+    volumes:
+      - ./cfg:/app/cfg
+      - ./scripts:/app/scripts
+      - ./logs:/app/logs
+      - ./language:/app/language
+      - crashes:/app/crashes
+    restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 50000
+        hard: 50000
+    environment:
+      - TZ=Europe/Moscow
+      - LANG=ru_RU.CP1251
+      - LC_ALL=ru_RU.CP1251
+      - LUA_PATH=/app/scripts/?.lua;/app/scripts/libs/?.lua;;
+    healthcheck:
+      test: ["CMD", "bash", "-c", "ss -tln | grep -qE ':(4111|8888) ' && bash -c 'echo > /dev/tcp/localhost/8888'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  bot:
+    profiles: ["disable"]
+    image: python:3.14-slim
+    depends_on:
+      ptokax:
+        condition: service_healthy
+    volumes:
+      - ./dc-bot.py:/app/dc-bot.py:ro
+    command: ["python3", "-u", "/app/dc-bot.py", "ptokax", "4111"]
+    restart: unless-stopped
+
+  loadgen:
+    profiles: ["disable"]
+    image: python:3.14-slim
+    depends_on:
+      ptokax:
+        condition: service_healthy
+    volumes:
+      - ./dc-loadgen.py:/app/dc-loadgen.py:ro
+    command: ["python3", "-u", "/app/dc-loadgen.py", "ptokax", "4111", "10", "3600"]
+    restart: unless-stopped
+
+  victorialogs:
+    image: victoriametrics/victoria-logs:v1.51.0
+    container_name: victoria-logs
+    ports:
+      - "9428:9428"
+    volumes:
+      - vl-data:/victoria-logs-data
+    command: >
+      -storageDataPath=/victoria-logs-data
+      -httpListenAddr=:9428
+    restart: unless-stopped
+
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:v1.146.0
+    container_name: victoria-metrics
+    ports:
+      - "8428:8428"
+    volumes:
+      - vm-data:/victoria-metrics-data
+      - ./victoriametrics.yml:/etc/victoriametrics/scrape.yml:ro
+    command: >
+      -promscrape.config=/etc/victoriametrics/scrape.yml
+      -storageDataPath=/victoria-metrics-data
+      -httpListenAddr=:8428
+    restart: unless-stopped
+
+  vector:
+    image: timberio/vector:0.47.0-alpine
+    container_name: vector
+    depends_on:
+      - victorialogs
+    volumes:
+      - ./logs:/logs:ro
+      - ./vector.toml:/etc/vector/vector.toml:ro
+    command: ["--config", "/etc/vector/vector.toml"]
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:13.0.3
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    environment:
+      - GF_INSTALL_PLUGINS=victoriametrics-logs-datasource
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD in .env file (see .env.example)}
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/hub-overview.json
+    depends_on:
+      - victoriametrics
+      - victorialogs
+    restart: unless-stopped
+
+volumes:
+  vm-data:
+  vl-data:
+  grafana-data:
+  crashes:

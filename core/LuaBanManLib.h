@@ -21,11 +21,7 @@
 #define LuaBanManLibH
 //------------------------------------------------------------------------------
 
-#if LUA_VERSION_NUM > 501
-int RegBanMan(lua_State * pLua);
-#else
-void RegBanMan(lua_State * pLua);
-#endif
+[[nodiscard]] auto RegBanMan(lua_State* pLua) -> int;
 //------------------------------------------------------------------------------
 
 #endif

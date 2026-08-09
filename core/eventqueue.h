@@ -21,56 +21,61 @@
 #define eventqueueH
 //---------------------------------------------------------------------------
 #include "CriticalSection.h"
+#include <array>
+#include <list>
 #include <string>
 
 class EventQueue
 {
-private:
-
-	struct Event
-	{
-		Event * m_pPrev, * m_pNext;
-
-		std::string m_sMsg;
-
-		uint8_t m_ui128IpHash[16];
-		uint8_t m_ui8Id;
-
-		explicit Event(const char* p_message);
-
-		DISALLOW_COPY_AND_ASSIGN(Event);
-	};
-
-	Event * m_pNormalE, * m_pThreadE;
-
-	CriticalSection m_csEventQueue;
-	DISALLOW_COPY_AND_ASSIGN(EventQueue);
 public:
-	static EventQueue * m_Ptr;
+    enum class EventType : uint8_t
+    {
+        RESTART,
+        RSTSCRIPTS,
+        RSTSCRIPT,
+        STOPSCRIPT,
+        STOP_SCRIPTING,
+        SHUTDOWN,
+        REGSOCK_MSG,
+        SRVTHREAD_MSG,
+        UDP_SR
+    };
 
-	Event * m_pNormalS, * m_pThreadS;
+private:
+    struct Event
+    {
+        std::string m_sMsg;
 
-	enum
-	{
-		EVENT_RESTART,
-		EVENT_RSTSCRIPTS,
-		EVENT_RSTSCRIPT,
-		EVENT_STOPSCRIPT,
-		EVENT_STOP_SCRIPTING,
-		EVENT_SHUTDOWN,
-		EVENT_REGSOCK_MSG,
-		EVENT_SRVTHREAD_MSG,
-		EVENT_UDP_SR
-	};
+        std::array<uint8_t, 16> m_ui128IpHash{};
+        EventType m_eId = EventType::RESTART;
 
-	EventQueue();
-	~EventQueue();
+        explicit Event(const char* p_message);
 
-	void AddNormal(const uint8_t ui8Id, const char * sMsg);
-	void AddThread(const uint8_t ui8Id, const char * sMsg, const sockaddr_storage * sas = NULL);
-	void ProcessEvents();
+        Event(const Event&) = delete;
+
+        auto operator=(const Event&) -> Event& = delete;
+    };
+
+    CriticalSection m_csEventQueue;
+
+public:
+    static std::unique_ptr<EventQueue> m_Ptr;
+
+    std::list<std::unique_ptr<Event>> m_NormalEvents;
+    std::list<std::unique_ptr<Event>> m_ThreadEvents;
+
+    uint32_t m_ui32NormalDepth = 0;
+
+    EventQueue(const EventQueue&) = delete;
+    auto operator=(const EventQueue&) -> EventQueue& = delete;
+
+    EventQueue() = default;
+    ~EventQueue();
+
+    void AddNormal(EventType eId, const char* sMsg);
+    void AddThread(EventType eId, const char* sMsg, const sockaddr_storage* sas = nullptr);
+    void ProcessEvents();
 };
 //---------------------------------------------------------------------------
 
 #endif
-

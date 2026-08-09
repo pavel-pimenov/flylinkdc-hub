@@ -1,0 +1,30 @@
+#
+# PtokaX scripts settings file
+#
+
+antispam2.lua	=	1
+GagMeSoftly.lua	=	0
+monologue.lua	=	1
+a_mat.lua	=	1
+schathist.lua	=	1
+regme.lua	=	1
+cl_stats.lua	=	1
+opchat_history.lua	=	1
+HubMenu.lua	=	1
+adm.lua	=	1
+nick_protect.lua	=	1
+CountryStats.lua	=	1
+Holidays.lua	=	1
+Rubik.lua	=	1
+Jingles.lua	=	1
+Rubik2.lua	=	1
+favicon.lua	=	1
+gethuburl.lua	=	1
+z_ranks.lua	=	0
+HadMeSoftly.lua	=	0
+checklocale.lua	=	1
+hider.lua	=	1
+NewYear_1.2.lua	=	1
+pxsettings.lua	=	0
+pxinfo.lua	=	0
+files.lua	=	1

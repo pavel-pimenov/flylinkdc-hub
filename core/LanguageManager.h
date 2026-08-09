@@ -20,26 +20,25 @@
 #ifndef LanguageManagerH
 #define LanguageManagerH
 //---------------------------------------------------------------------------
+#include <string>
 #include "LanguageIds.h"
 //---------------------------------------------------------------------------
 
 class LanguageManager
 {
-private:
-	DISALLOW_COPY_AND_ASSIGN(LanguageManager);
 public:
-	static LanguageManager * m_Ptr;
+    LanguageManager(const LanguageManager&) = delete;
+    auto operator=(const LanguageManager&) -> LanguageManager& = delete;
+    static std::unique_ptr<LanguageManager> m_Ptr;
 
-	char * m_sTexts[LANG_IDS_END]; //LanguageManager::m_Ptr->m_sTexts[]
-	uint16_t m_ui16TextsLens[LANG_IDS_END]; //LanguageManager::m_Ptr->m_ui16TextsLens[]
+    std::array<std::string, std::to_underlying(LangIds::LANG_IDS_END)> m_sTexts{}; // LanguageManager::m_Ptr->m_sTexts[]
 
-	LanguageManager(void);
-	~LanguageManager(void);
+    LanguageManager();
+    ~LanguageManager() = default;
 
-	//char * GetLangStr(size_t TextId); //LanguageManager->GetLangStr
-	void Load();
+    void Load();
 
-	static void GenerateXmlExample();
+    static void GenerateXmlExample();
 };
 //---------------------------------------------------------------------------
 

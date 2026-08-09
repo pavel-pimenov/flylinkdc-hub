@@ -32,2006 +32,1463 @@
 #include "utility.h"
 #include "GlobalDataQueue.h"
 //---------------------------------------------------------------------------
-#ifdef _WIN32
-#pragma hdrstop
-#endif
 //---------------------------------------------------------------------------
 #include "LuaScript.h"
 //---------------------------------------------------------------------------
 
-static void PushBan(lua_State * pLua, BanItem * pBan)
+static void PushBan(lua_State* pLua, BanItem* pBan)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	lua_checkstack(pLua, 3); // we need 3 (1 table, 2 id, 3 value) empty slots in stack, check it to be sure
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    lua_checkstack(pLua, 3); // we need 3 (1 table, 2 id, 3 value) empty slots in stack, check it to be sure
 
-	lua_newtable(pLua);
-	int i = lua_gettop(pLua);
+    lua_newtable(pLua);
+    const int i = lua_gettop(pLua);
 
-	lua_pushliteral(pLua, "sIP");
-	if (pBan->m_sIp[0] == '\0')
-	{
-		lua_pushnil(pLua);
-	}
-	else
-	{
-		lua_pushstring(pLua, pBan->m_sIp);
-	}
-	lua_rawset(pLua, i);
+    lua_pushliteral(pLua, "sIP");
+    if (pBan->m_sIp[0] == '\0')
+    {
+        lua_pushnil(pLua);
+    }
+    else
+    {
+        lua_pushstring(pLua, pBan->m_sIp.data());
+    }
+    lua_rawset(pLua, i);
 
-	lua_pushliteral(pLua, "sNick");
-	if (pBan->m_sNick == NULL)
-	{
-		lua_pushnil(pLua);
-	}
-	else
-	{
-		lua_pushstring(pLua, pBan->m_sNick);
-	}
-	lua_rawset(pLua, i);
+    lua_pushliteral(pLua, "sNick");
+    if (pBan->m_sNick.empty())
+    {
+        lua_pushnil(pLua);
+    }
+    else
+    {
+        lua_pushstring(pLua, pBan->m_sNick.c_str());
+    }
+    lua_rawset(pLua, i);
 
-	lua_pushliteral(pLua, "sReason");
-	if (pBan->m_sReason == NULL)
-	{
-		lua_pushnil(pLua);
-	}
-	else
-	{
-		lua_pushstring(pLua, pBan->m_sReason);
-	}
-	lua_rawset(pLua, i);
+    lua_pushliteral(pLua, "sReason");
+    if (pBan->m_sReason.empty())
+    {
+        lua_pushnil(pLua);
+    }
+    else
+    {
+        lua_pushstring(pLua, pBan->m_sReason.c_str());
+    }
+    lua_rawset(pLua, i);
 
-	lua_pushliteral(pLua, "sBy");
-	if (pBan->m_sBy == NULL)
-	{
-		lua_pushnil(pLua);
-	}
-	else
-	{
-		lua_pushstring(pLua, pBan->m_sBy);
-	}
-	lua_rawset(pLua, i);
+    lua_pushliteral(pLua, "sBy");
+    if (pBan->m_sBy.empty())
+    {
+        lua_pushnil(pLua);
+    }
+    else
+    {
+        lua_pushstring(pLua, pBan->m_sBy.c_str());
+    }
+    lua_rawset(pLua, i);
 
-	lua_pushliteral(pLua, "iExpireTime");
-#if LUA_VERSION_NUM < 503
-	((pBan->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == false ? lua_pushnil(pLua) : lua_pushnumber(pLua, (double)pBan->m_tTempBanExpire);
-#else
-	((pBan->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == false ? lua_pushnil(pLua) : lua_pushinteger(pLua, pBan->m_tTempBanExpire);
-#endif
-	lua_rawset(pLua, i);
+    lua_pushliteral(pLua, "iExpireTime");
+    !((pBan->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) ? lua_pushnil(pLua) : lua_pushinteger(pLua, pBan->m_tTempBanExpire);
 
-	lua_pushliteral(pLua, "bIpBan");
-	((pBan->m_ui8Bits & BanManager::IP) == BanManager::IP) == true ? lua_pushboolean(pLua, 1) : lua_pushnil(pLua);
-	lua_rawset(pLua, i);
+    lua_rawset(pLua, i);
 
-	lua_pushliteral(pLua, "bNickBan");
-	((pBan->m_ui8Bits & BanManager::NICK) == BanManager::NICK) == true ? lua_pushboolean(pLua, 1) : lua_pushnil(pLua);
-	lua_rawset(pLua, i);
+    lua_pushliteral(pLua, "bIpBan");
+    ((pBan->m_ui8Bits & BanManager::IP) == BanManager::IP) ? lua_pushboolean(pLua, 1) : lua_pushnil(pLua);
+    lua_rawset(pLua, i);
 
-	lua_pushliteral(pLua, "bFullIpBan");
-	((pBan->m_ui8Bits & BanManager::FULL) == BanManager::FULL) == true ? lua_pushboolean(pLua, 1) : lua_pushnil(pLua);
-	lua_rawset(pLua, i);
+    lua_pushliteral(pLua, "bNickBan");
+    ((pBan->m_ui8Bits & BanManager::NICK) == BanManager::NICK) ? lua_pushboolean(pLua, 1) : lua_pushnil(pLua);
+    lua_rawset(pLua, i);
+
+    lua_pushliteral(pLua, "bFullIpBan");
+    ((pBan->m_ui8Bits & BanManager::FULL) == BanManager::FULL) ? lua_pushboolean(pLua, 1) : lua_pushnil(pLua);
+    lua_rawset(pLua, i);
 }
 //------------------------------------------------------------------------------
 
-static void PushRangeBan(lua_State * pLua, RangeBanItem * pRangeBan)
+static void PushRangeBan(lua_State* pLua, RangeBanItem* pRangeBan)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	lua_checkstack(pLua, 3); // we need 3 (1 table, 2 id, 3 value) empty slots in stack, check it to be sure
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    lua_checkstack(pLua, 3); // we need 3 (1 table, 2 id, 3 value) empty slots in stack, check it to be sure
 
-	lua_newtable(pLua);
-	int i = lua_gettop(pLua);
+    lua_newtable(pLua);
+    const int i = lua_gettop(pLua);
 
-	lua_pushliteral(pLua, "sIPFrom");
-	lua_pushstring(pLua, pRangeBan->m_sIpFrom);
-	lua_rawset(pLua, i);
+    lua_pushliteral(pLua, "sIPFrom");
+    lua_pushstring(pLua, pRangeBan->m_sIpFrom.data());
+    lua_rawset(pLua, i);
 
-	lua_pushliteral(pLua, "sIPTo");
-	lua_pushstring(pLua, pRangeBan->m_sIpTo);
-	lua_rawset(pLua, i);
+    lua_pushliteral(pLua, "sIPTo");
+    lua_pushstring(pLua, pRangeBan->m_sIpTo.data());
+    lua_rawset(pLua, i);
 
-	lua_pushliteral(pLua, "sReason");
-	if (pRangeBan->m_sReason == NULL)
-	{
-		lua_pushnil(pLua);
-	}
-	else
-	{
-		lua_pushstring(pLua, pRangeBan->m_sReason);
-	}
-	lua_rawset(pLua, i);
+    lua_pushliteral(pLua, "sReason");
+    if (pRangeBan->m_sReason.empty())
+    {
+        lua_pushnil(pLua);
+    }
+    else
+    {
+        lua_pushstring(pLua, pRangeBan->m_sReason.c_str());
+    }
+    lua_rawset(pLua, i);
 
-	lua_pushliteral(pLua, "sBy");
-	if (pRangeBan->m_sBy == NULL)
-	{
-		lua_pushnil(pLua);
-	}
-	else
-	{
-		lua_pushstring(pLua, pRangeBan->m_sBy);
-	}
-	lua_rawset(pLua, i);
+    lua_pushliteral(pLua, "sBy");
+    if (pRangeBan->m_sBy.empty())
+    {
+        lua_pushnil(pLua);
+    }
+    else
+    {
+        lua_pushstring(pLua, pRangeBan->m_sBy.c_str());
+    }
+    lua_rawset(pLua, i);
 
-	lua_pushliteral(pLua, "iExpireTime");
-#if LUA_VERSION_NUM < 503
-	((pRangeBan->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == false ? lua_pushnil(pLua) : lua_pushnumber(pLua, (double)pRangeBan->m_tTempBanExpire);
-#else
-	((pRangeBan->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == false ? lua_pushnil(pLua) : lua_pushinteger(pLua, pRangeBan->m_tTempBanExpire);
-#endif
-	lua_rawset(pLua, i);
+    lua_pushliteral(pLua, "iExpireTime");
+    !((pRangeBan->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) ? lua_pushnil(pLua) : lua_pushinteger(pLua, pRangeBan->m_tTempBanExpire);
 
-	lua_pushliteral(pLua, "bFullIpBan");
-	((pRangeBan->m_ui8Bits & BanManager::FULL) == BanManager::FULL) == true ? lua_pushboolean(pLua, 1) : lua_pushnil(pLua);
-	lua_rawset(pLua, i);
+    lua_rawset(pLua, i);
+
+    lua_pushliteral(pLua, "bFullIpBan");
+    ((pRangeBan->m_ui8Bits & BanManager::FULL) == BanManager::FULL) ? lua_pushboolean(pLua, 1) : lua_pushnil(pLua);
+    lua_rawset(pLua, i);
 }
 //------------------------------------------------------------------------------
 
-static int Save(lua_State * pLua)
+static int Save(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 0)
-	{
-		luaL_error(pLua, "bad argument count to 'Save' (0 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		return 0;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS(pLua, 0);
 
-	BanManager::m_Ptr->Save(true);
+    BanManager::m_Ptr->Save(true);
 
-	return 0;
+    return 0;
 }
 //------------------------------------------------------------------------------
 
-static int GetBans(lua_State * pLua)
+static int GetBans(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 0)
-	{
-		luaL_error(pLua, "bad argument count to 'GetBans' (0 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 0);
 
-	lua_newtable(pLua);
-	int t = lua_gettop(pLua), i = 0;
+    lua_newtable(pLua);
+    const int t = lua_gettop(pLua); int i = 0;
 
-	time_t acc_time;
-	time(&acc_time);
+    time_t acc_time;
+    time(&acc_time);
 
-	BanItem * curBan = NULL,
-	          * nextBan = BanManager::m_Ptr->m_pTempBanListS;
+    {
+        auto it = BanManager::m_Ptr->m_TempBanList.begin();
+        while (it != BanManager::m_Ptr->m_TempBanList.end())
+        {
+            BanItem* curBan = it->get();
+            ++it;
 
-	while (nextBan != NULL)
-	{
-		curBan = nextBan;
-		nextBan = curBan->m_pNext;
+            if (acc_time > curBan->m_tTempBanExpire)
+            {
+                BanManager::m_Ptr->Rem(curBan);
+                std::unique_ptr<BanItem> guard(curBan);
 
-		if (acc_time > curBan->m_tTempBanExpire)
-		{
-			BanManager::m_Ptr->Rem(curBan);
-			delete curBan;
+                continue;
+            }
 
-			continue;
-		}
+            lua_pushinteger(pLua, ++i);
 
-#if LUA_VERSION_NUM < 503
-		lua_pushnumber(pLua, ++i);
-#else
-		lua_pushinteger(pLua, ++i);
-#endif
-		PushBan(pLua, curBan);
-		lua_rawset(pLua, t);
-	}
+            PushBan(pLua, curBan);
+            lua_rawset(pLua, t);
+        }
+    }
 
-	nextBan = BanManager::m_Ptr->m_pPermBanListS;
+    for (const auto& pBan : BanManager::m_Ptr->m_PermBanList)
+    {
+        lua_pushinteger(pLua, ++i);
 
-	while (nextBan != NULL)
-	{
-		curBan = nextBan;
-		nextBan = curBan->m_pNext;
+        PushBan(pLua, pBan.get());
+        lua_rawset(pLua, t);
+    }
 
-#if LUA_VERSION_NUM < 503
-		lua_pushnumber(pLua, ++i);
-#else
-		lua_pushinteger(pLua, ++i);
-#endif
-		PushBan(pLua, curBan);
-		lua_rawset(pLua, t);
-	}
-
-	return 1;
+    return 1;
 }
 //---------------------------------------------------------------------------
 
-static int GetTempBans(lua_State * pLua)
+static int GetTempBans(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 0)
-	{
-		luaL_error(pLua, "bad argument count to 'GetTempBans' (0 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 0);
 
-	lua_newtable(pLua);
-	int t = lua_gettop(pLua), i = 0;
+    lua_newtable(pLua);
+    const int t = lua_gettop(pLua); int i = 0;
 
-	time_t acc_time;
-	time(&acc_time);
+    time_t acc_time;
+    time(&acc_time);
 
-	BanItem * curBan = NULL,
-	          * nextBan = BanManager::m_Ptr->m_pTempBanListS;
+    {
+        auto it = BanManager::m_Ptr->m_TempBanList.begin();
+        while (it != BanManager::m_Ptr->m_TempBanList.end())
+        {
+            BanItem* curBan = it->get();
+            ++it;
 
-	while (nextBan != NULL)
-	{
-		curBan = nextBan;
-		nextBan = curBan->m_pNext;
+            if (acc_time > curBan->m_tTempBanExpire)
+            {
+                BanManager::m_Ptr->Rem(curBan);
+                std::unique_ptr<BanItem> guard(curBan);
 
-		if (acc_time > curBan->m_tTempBanExpire)
-		{
-			BanManager::m_Ptr->Rem(curBan);
-			delete curBan;
+                continue;
+            }
 
-			continue;
-		}
+            lua_pushinteger(pLua, ++i);
 
-#if LUA_VERSION_NUM < 503
-		lua_pushnumber(pLua, ++i);
-#else
-		lua_pushinteger(pLua, ++i);
-#endif
-		PushBan(pLua, curBan);
-		lua_rawset(pLua, t);
-	}
+            PushBan(pLua, curBan);
+            lua_rawset(pLua, t);
+        }
+    }
 
-	return 1;
+    return 1;
 }
 //------------------------------------------------------------------------------
 
-static int GetPermBans(lua_State * pLua)
+static int GetPermBans(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 0)
-	{
-		luaL_error(pLua, "bad argument count to 'GetPermBans' (0 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 0);
 
-	lua_newtable(pLua);
-	int t = lua_gettop(pLua), i = 0;
+    lua_newtable(pLua);
+    const int t = lua_gettop(pLua); int i = 0;
 
-	BanItem * curBan = NULL,
-	          * nextBan = BanManager::m_Ptr->m_pPermBanListS;
+    for (const auto& pBan : BanManager::m_Ptr->m_PermBanList)
+    {
+        lua_pushinteger(pLua, ++i);
 
-	while (nextBan != NULL)
-	{
-		curBan = nextBan;
-		nextBan = curBan->m_pNext;
+        PushBan(pLua, pBan.get());
+        lua_rawset(pLua, t);
+    }
 
-#if LUA_VERSION_NUM < 503
-		lua_pushnumber(pLua, ++i);
-#else
-		lua_pushinteger(pLua, ++i);
-#endif
-		PushBan(pLua, curBan);
-		lua_rawset(pLua, t);
-	}
-
-	return 1;
+    return 1;
 }
 //------------------------------------------------------------------------------
 
-static int GetBan(lua_State * pLua)
+static int GetBan(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 1)
-	{
-		luaL_error(pLua, "bad argument count to 'GetBan' (1 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 1);
 
-	if (lua_type(pLua, 1) != LUA_TSTRING)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    if (lua_type(pLua, 1) != LUA_TSTRING)
+    {
+        luaL_checktype(pLua, 1, LUA_TSTRING);
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	time_t acc_time;
-	time(&acc_time);
+    time_t acc_time;
+    time(&acc_time);
 
-	size_t szLen;
-	const char * sValue = lua_tolstring(pLua, 1, &szLen);
+    size_t szLen;
+    const char* sValue = lua_tolstring(pLua, 1, &szLen);
 
-	BanItem * pBan = BanManager::m_Ptr->FindNick(sValue, szLen);
+    BanItem* pBan = BanManager::m_Ptr->FindNick(std::string_view(sValue, szLen));
 
-	Hash128 ui128Hash;
+    Hash128 ui128Hash;
 
-	if (HashIP(sValue, ui128Hash) == true)
-	{
-		lua_settop(pLua, 0);
+    if (HashIP(sValue, ui128Hash))
+    {
+        lua_settop(pLua, 0);
 
-		lua_newtable(pLua);
-		int t = lua_gettop(pLua), i = 0;
+        lua_newtable(pLua);
+        const int t = lua_gettop(pLua); int i = 0;
 
-		if (pBan != NULL)
-		{
-#if LUA_VERSION_NUM < 503
-			lua_pushnumber(pLua, ++i);
-#else
-			lua_pushinteger(pLua, ++i);
-#endif
-			PushBan(pLua, pBan);
-			lua_rawset(pLua, t);
-		}
+        if (pBan)
+        {
+            lua_pushinteger(pLua, ++i);
 
-		pBan = BanManager::m_Ptr->FindIP(ui128Hash, acc_time);
-		if (pBan != NULL)
-		{
-#if LUA_VERSION_NUM < 503
-			lua_pushnumber(pLua, ++i);
-#else
-			lua_pushinteger(pLua, ++i);
-#endif
-			PushBan(pLua, pBan);
-			lua_rawset(pLua, t);
+            PushBan(pLua, pBan);
+            lua_rawset(pLua, t);
+        }
 
-			BanItem * curBan = NULL,
-			          * nextBan = pBan->m_pHashIpTableNext;
+        pBan = BanManager::m_Ptr->FindIP(ui128Hash, acc_time);
+        if (pBan)
+        {
+            lua_pushinteger(pLua, ++i);
 
-			while (nextBan != NULL)
-			{
-				curBan = nextBan;
-				nextBan = curBan->m_pHashIpTableNext;
+            PushBan(pLua, pBan);
+            lua_rawset(pLua, t);
 
-				if ((((curBan->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == true) && acc_time > curBan->m_tTempBanExpire)
-				{
-					BanManager::m_Ptr->Rem(curBan);
-					delete curBan;
+            BanItem *curBan = nullptr, *nextBan = pBan->m_pHashIpTableNext;
 
-					continue;
-				}
+            while (nextBan)
+            {
+                curBan = nextBan;
+                nextBan = curBan->m_pHashIpTableNext;
 
-#if LUA_VERSION_NUM < 503
-				lua_pushnumber(pLua, ++i);
-#else
-				lua_pushinteger(pLua, ++i);
-#endif
-				PushBan(pLua, curBan);
-				lua_rawset(pLua, t);
-			}
-		}
-		return 1;
-	}
-	else
-	{
-		lua_settop(pLua, 0);
+                if ((((curBan->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP)) && acc_time > curBan->m_tTempBanExpire)
+                {
+                    BanManager::m_Ptr->Rem(curBan);
+                    std::unique_ptr<BanItem> guard(curBan);
 
-		if (pBan == NULL)
-		{
-			lua_pushnil(pLua);
-			return 1;
-		}
+                    continue;
+                }
 
-		PushBan(pLua, pBan);
-		return 1;
-	}
+                lua_pushinteger(pLua, ++i);
+
+                PushBan(pLua, curBan);
+                lua_rawset(pLua, t);
+            }
+        }
+        return 1;
+    }
+
+    lua_settop(pLua, 0);
+
+    if (!pBan)
+    {
+        lua_pushnil(pLua);
+        return 1;
+    }
+
+    PushBan(pLua, pBan);
+    return 1;
 }
 //------------------------------------------------------------------------------
 
-static int GetPermBan(lua_State * pLua)
+static int GetPermBan(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 1)
-	{
-		luaL_error(pLua, "bad argument count to 'GetPermBan' (1 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 1);
 
-	if (lua_type(pLua, 1) != LUA_TSTRING)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    if (lua_type(pLua, 1) != LUA_TSTRING)
+    {
+        luaL_checktype(pLua, 1, LUA_TSTRING);
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	size_t szLen;
-	const char * sValue = lua_tolstring(pLua, 1, &szLen);
+    size_t szLen;
+    const char* sValue = lua_tolstring(pLua, 1, &szLen);
 
-	BanItem * Ban = BanManager::m_Ptr->FindPermNick(sValue, szLen);
+    BanItem* Ban = BanManager::m_Ptr->FindPermNick(std::string_view(sValue, szLen));
 
-	Hash128 ui128Hash;
+    Hash128 ui128Hash;
 
-	if (HashIP(sValue, ui128Hash) == true)
-	{
-		lua_settop(pLua, 0);
+    if (HashIP(sValue, ui128Hash))
+    {
+        lua_settop(pLua, 0);
 
-		lua_newtable(pLua);
-		int t = lua_gettop(pLua), i = 0;
+        lua_newtable(pLua);
+        const int t = lua_gettop(pLua); int i = 0;
 
-		if (Ban != NULL)
-		{
-#if LUA_VERSION_NUM < 503
-			lua_pushnumber(pLua, ++i);
-#else
-			lua_pushinteger(pLua, ++i);
-#endif
-			PushBan(pLua, Ban);
-			lua_rawset(pLua, t);
-		}
+        if (Ban)
+        {
+            lua_pushinteger(pLua, ++i);
 
-		Ban = BanManager::m_Ptr->FindPermIP(ui128Hash);
-		if (Ban != NULL)
-		{
-#if LUA_VERSION_NUM < 503
-			lua_pushnumber(pLua, ++i);
-#else
-			lua_pushinteger(pLua, ++i);
-#endif
-			PushBan(pLua, Ban);
-			lua_rawset(pLua, t);
+            PushBan(pLua, Ban);
+            lua_rawset(pLua, t);
+        }
 
-			BanItem * curBan = NULL,
-			          * nextBan = Ban->m_pHashIpTableNext;
+        Ban = BanManager::m_Ptr->FindPermIP(ui128Hash);
+        if (Ban)
+        {
+            lua_pushinteger(pLua, ++i);
 
-			while (nextBan != NULL)
-			{
-				curBan = nextBan;
-				nextBan = curBan->m_pHashIpTableNext;
+            PushBan(pLua, Ban);
+            lua_rawset(pLua, t);
 
-				if (((curBan->m_ui8Bits & BanManager::PERM) == BanManager::PERM) == false)
-				{
-					continue;
-				}
+            BanItem *curBan = nullptr, *nextBan = Ban->m_pHashIpTableNext;
 
-#if LUA_VERSION_NUM < 503
-				lua_pushnumber(pLua, ++i);
-#else
-				lua_pushinteger(pLua, ++i);
-#endif
-				PushBan(pLua, curBan);
-				lua_rawset(pLua, t);
-			}
-		}
-		return 1;
-	}
-	else
-	{
-		lua_settop(pLua, 0);
+            while (nextBan)
+            {
+                curBan = nextBan;
+                nextBan = curBan->m_pHashIpTableNext;
 
-		if (Ban == NULL)
-		{
-			lua_pushnil(pLua);
-			return 1;
-		}
+                if (!((curBan->m_ui8Bits & BanManager::PERM) == BanManager::PERM))
+                {
+                    continue;
+                }
 
-		PushBan(pLua, Ban);
-		return 1;
-	}
+                lua_pushinteger(pLua, ++i);
+
+                PushBan(pLua, curBan);
+                lua_rawset(pLua, t);
+            }
+        }
+        return 1;
+    }
+
+    lua_settop(pLua, 0);
+
+    if (!Ban)
+    {
+        lua_pushnil(pLua);
+        return 1;
+    }
+
+    PushBan(pLua, Ban);
+    return 1;
 }
 //------------------------------------------------------------------------------
 
-static int GetTempBan(lua_State * pLua)
+static int GetTempBan(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 1)
-	{
-		luaL_error(pLua, "bad argument count to 'GetTempBan' (1 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 1);
 
-	if (lua_type(pLua, 1) != LUA_TSTRING)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    if (lua_type(pLua, 1) != LUA_TSTRING)
+    {
+        luaL_checktype(pLua, 1, LUA_TSTRING);
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	time_t acc_time;
-	time(&acc_time);
+    time_t acc_time;
+    time(&acc_time);
 
-	size_t szLen;
-	const char * sValue = lua_tolstring(pLua, 1, &szLen);
+    size_t szLen;
+    const char* sValue = lua_tolstring(pLua, 1, &szLen);
 
-	BanItem * Ban = BanManager::m_Ptr->FindTempNick(sValue, szLen);
+    BanItem* Ban = BanManager::m_Ptr->FindTempNick(std::string_view(sValue, szLen));
 
-	Hash128 ui128Hash;
+    Hash128 ui128Hash;
 
-	if (HashIP(sValue, ui128Hash) == true)
-	{
-		lua_settop(pLua, 0);
+    if (HashIP(sValue, ui128Hash))
+    {
+        lua_settop(pLua, 0);
 
-		lua_newtable(pLua);
-		int t = lua_gettop(pLua), i = 0;
+        lua_newtable(pLua);
+        const int t = lua_gettop(pLua); int i = 0;
 
-		if (Ban != NULL)
-		{
-#if LUA_VERSION_NUM < 503
-			lua_pushnumber(pLua, ++i);
-#else
-			lua_pushinteger(pLua, ++i);
-#endif
-			PushBan(pLua, Ban);
-			lua_rawset(pLua, t);
-		}
+        if (Ban)
+        {
+            lua_pushinteger(pLua, ++i);
 
-		Ban = BanManager::m_Ptr->FindTempIP(ui128Hash, acc_time);
-		if (Ban != NULL)
-		{
-#if LUA_VERSION_NUM < 503
-			lua_pushnumber(pLua, ++i);
-#else
-			lua_pushinteger(pLua, ++i);
-#endif
-			PushBan(pLua, Ban);
-			lua_rawset(pLua, t);
+            PushBan(pLua, Ban);
+            lua_rawset(pLua, t);
+        }
 
-			BanItem * curBan = NULL,
-			          * nextBan = Ban->m_pHashIpTableNext;
+        Ban = BanManager::m_Ptr->FindTempIP(ui128Hash, acc_time);
+        if (Ban)
+        {
+            lua_pushinteger(pLua, ++i);
 
-			while (nextBan != NULL)
-			{
-				curBan = nextBan;
-				nextBan = curBan->m_pHashIpTableNext;
+            PushBan(pLua, Ban);
+            lua_rawset(pLua, t);
 
-				if (((curBan->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == true)
-				{
-					if (acc_time > curBan->m_tTempBanExpire)
-					{
-						BanManager::m_Ptr->Rem(curBan);
-						delete curBan;
+            BanItem *curBan = nullptr, *nextBan = Ban->m_pHashIpTableNext;
 
-						continue;
-					}
+            while (nextBan)
+            {
+                curBan = nextBan;
+                nextBan = curBan->m_pHashIpTableNext;
 
-#if LUA_VERSION_NUM < 503
-					lua_pushnumber(pLua, ++i);
-#else
-					lua_pushinteger(pLua, ++i);
-#endif
-					PushBan(pLua, curBan);
-					lua_rawset(pLua, t);
-				}
-			}
-		}
-		return 1;
-	}
-	else
-	{
-		lua_settop(pLua, 0);
+                if (((curBan->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP))
+                {
+                    if (acc_time > curBan->m_tTempBanExpire)
+                    {
+                        BanManager::m_Ptr->Rem(curBan);
+                        std::unique_ptr<BanItem> guard(curBan);
 
-		if (Ban == NULL)
-		{
-			lua_pushnil(pLua);
-			return 1;
-		}
+                        continue;
+                    }
 
-		PushBan(pLua, Ban);
-		return 1;
-	}
+                    lua_pushinteger(pLua, ++i);
+
+                    PushBan(pLua, curBan);
+                    lua_rawset(pLua, t);
+                }
+            }
+        }
+        return 1;
+    }
+
+    lua_settop(pLua, 0);
+
+    if (!Ban)
+    {
+        lua_pushnil(pLua);
+        return 1;
+    }
+
+    PushBan(pLua, Ban);
+    return 1;
 }
 //------------------------------------------------------------------------------
 
-static int GetRangeBans(lua_State * pLua)
+static int GetRangeBans(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 0)
-	{
-		luaL_error(pLua, "bad argument count to 'GetRangeBans' (0 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 0);
 
-	lua_newtable(pLua);
-	int t = lua_gettop(pLua), i = 0;
+    lua_newtable(pLua);
+    const int t = lua_gettop(pLua); int i = 0;
 
-	time_t acc_time;
-	time(&acc_time);
+    time_t acc_time;
+    time(&acc_time);
 
-	RangeBanItem * curBan = NULL,
-	               * nextBan = BanManager::m_Ptr->m_pRangeBanListS;
+    auto& rangeList = BanManager::m_Ptr->m_RangeBanList;
+    auto it = rangeList.begin();
+    while (it != rangeList.end())
+    {
+        RangeBanItem* curBan = it->get();
 
-	while (nextBan != NULL)
-	{
-		curBan = nextBan;
-		nextBan = curBan->m_pNext;
+        if ((((curBan->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP)) && acc_time > curBan->m_tTempBanExpire)
+        {
+            it = rangeList.erase(it);
 
-		if ((((curBan->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == true) && acc_time > curBan->m_tTempBanExpire)
-		{
-			BanManager::m_Ptr->RemRange(curBan);
-			delete curBan;
+            continue;
+        }
 
-			continue;
-		}
+        lua_pushinteger(pLua, ++i);
 
-#if LUA_VERSION_NUM < 503
-		lua_pushnumber(pLua, ++i);
-#else
-		lua_pushinteger(pLua, ++i);
-#endif
-		PushRangeBan(pLua, curBan);
-		lua_rawset(pLua, t);
-	}
+        PushRangeBan(pLua, curBan);
+        lua_rawset(pLua, t);
+    }
 
-	return 1;
+    return 1;
 }
 //------------------------------------------------------------------------------
 
-static int GetTempRangeBans(lua_State * pLua)
+static int GetTempRangeBans(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 0)
-	{
-		luaL_error(pLua, "bad argument count to 'GetTempRangeBans' (0 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 0);
 
-	lua_newtable(pLua);
-	int t = lua_gettop(pLua), i = 0;
+    lua_newtable(pLua);
+    const int t = lua_gettop(pLua); int i = 0;
 
-	time_t acc_time;
-	time(&acc_time);
+    time_t acc_time;
+    time(&acc_time);
 
-	RangeBanItem * curBan = NULL,
-	               * nextBan = BanManager::m_Ptr->m_pRangeBanListS;
+    auto& rangeList = BanManager::m_Ptr->m_RangeBanList;
+    auto it = rangeList.begin();
+    while (it != rangeList.end())
+    {
+        RangeBanItem* curBan = it->get();
 
-	while (nextBan != NULL)
-	{
-		curBan = nextBan;
-		nextBan = curBan->m_pNext;
+        if (!((curBan->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP))
+        {
+            ++it;
+            continue;
+        }
 
-		if (((curBan->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == false)
-		{
-			continue;
-		}
+        if (acc_time > curBan->m_tTempBanExpire)
+        {
+            it = rangeList.erase(it);
 
-		if (acc_time > curBan->m_tTempBanExpire)
-		{
-			BanManager::m_Ptr->RemRange(curBan);
-			delete curBan;
+            continue;
+        }
 
-			continue;
-		}
+        lua_pushinteger(pLua, ++i);
 
-#if LUA_VERSION_NUM < 503
-		lua_pushnumber(pLua, ++i);
-#else
-		lua_pushinteger(pLua, ++i);
-#endif
-		PushRangeBan(pLua, curBan);
-		lua_rawset(pLua, t);
-	}
+        PushRangeBan(pLua, curBan);
+        lua_rawset(pLua, t);
+    }
 
-	return 1;
+    return 1;
 }
 //------------------------------------------------------------------------------
 
-static int GetPermRangeBans(lua_State * pLua)
+static int GetPermRangeBans(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 0)
-	{
-		luaL_error(pLua, "bad argument count to 'GetPermRangeBans' (0 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 0);
 
-	lua_newtable(pLua);
-	int t = lua_gettop(pLua), i = 0;
+    lua_newtable(pLua);
+    const int t = lua_gettop(pLua); int i = 0;
 
-	RangeBanItem * curBan = NULL,
-	               * nextBan = BanManager::m_Ptr->m_pRangeBanListS;
+    for (const auto& pCurBan : BanManager::m_Ptr->m_RangeBanList)
+    {
+        RangeBanItem* curBan = pCurBan.get();
 
-	while (nextBan != NULL)
-	{
-		curBan = nextBan;
-		nextBan = curBan->m_pNext;
+        if (!((curBan->m_ui8Bits & BanManager::PERM) == BanManager::PERM))
+        {
+            continue;
+        }
 
-		if (((curBan->m_ui8Bits & BanManager::PERM) == BanManager::PERM) == false)
-		{
-			continue;
-		}
+        lua_pushinteger(pLua, ++i);
 
-#if LUA_VERSION_NUM < 503
-		lua_pushnumber(pLua, ++i);
-#else
-		lua_pushinteger(pLua, ++i);
-#endif
-		PushRangeBan(pLua, curBan);
-		lua_rawset(pLua, t);
-	}
+        PushRangeBan(pLua, curBan);
+        lua_rawset(pLua, t);
+    }
 
-	return 1;
+    return 1;
 }
 //------------------------------------------------------------------------------
 
-static int GetRangeBan(lua_State * pLua)
+static int GetRangeBan(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 2)
-	{
-		luaL_error(pLua, "bad argument count to 'GetRangeBan' (2 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 2);
 
-	if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		luaL_checktype(pLua, 2, LUA_TSTRING);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING)
+    {
+        luaL_checktype(pLua, 1, LUA_TSTRING);
+        luaL_checktype(pLua, 2, LUA_TSTRING);
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	size_t szFromLen, szToLen;
-	const char * sFrom = lua_tolstring(pLua, 1, &szFromLen);
-	const char * sTo = lua_tolstring(pLua, 2, &szToLen);
+    size_t szFromLen, szToLen;
+    const char* sFrom = lua_tolstring(pLua, 1, &szFromLen);
+    const char* sTo = lua_tolstring(pLua, 2, &szToLen);
 
-	Hash128 ui128FromHash, ui128ToHash;
+    Hash128 ui128FromHash, ui128ToHash;
 
-	if (szFromLen == 0 || szToLen == 0 || HashIP(sFrom, ui128FromHash) == false || HashIP(sTo, ui128ToHash) == false || memcmp(ui128ToHash, ui128FromHash, 16) <= 0)
-	{
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    if (szFromLen == 0 || szToLen == 0 || !HashIP(sFrom, ui128FromHash) || !HashIP(sTo, ui128ToHash) || memcmp(ui128ToHash, ui128FromHash, 16) <= 0)
+    {
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	lua_settop(pLua, 0);
+    lua_settop(pLua, 0);
 
-	time_t acc_time;
-	time(&acc_time);
+    time_t acc_time;
+    time(&acc_time);
 
-	RangeBanItem * cur = NULL,
-	               * next = BanManager::m_Ptr->m_pRangeBanListS;
+    auto& rangeList = BanManager::m_Ptr->m_RangeBanList;
+    auto it = rangeList.begin();
+    while (it != rangeList.end())
+    {
+        RangeBanItem* cur = it->get();
 
-	while (next != NULL)
-	{
-		cur = next;
-		next = cur->m_pNext;
+        if (memcmp(cur->m_ui128FromIpHash, ui128FromHash, 16) == 0 && memcmp(cur->m_ui128ToIpHash, ui128ToHash, 16) == 0)
+        {
+            // PPK ... check if it's temban and then if it's expired
+            if (((cur->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP))
+            {
+                if (acc_time >= cur->m_tTempBanExpire)
+                {
+                    it = rangeList.erase(it);
 
-		if (memcmp(cur->m_ui128FromIpHash, ui128FromHash, 16) == 0 && memcmp(cur->m_ui128ToIpHash, ui128ToHash, 16) == 0)
-		{
-			// PPK ... check if it's temban and then if it's expired
-			if (((cur->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == true)
-			{
-				if (acc_time >= cur->m_tTempBanExpire)
-				{
-					BanManager::m_Ptr->RemRange(cur);
-					delete cur;
+                    continue;
+                }
+            }
+            PushRangeBan(pLua, cur);
+            return 1;
+        }
 
-					continue;
-				}
-			}
-			PushRangeBan(pLua, cur);
-			return 1;
-		}
-	}
+        ++it;
+    }
 
-	lua_pushnil(pLua);
-	return 1;
+    lua_pushnil(pLua);
+    return 1;
 }
 //------------------------------------------------------------------------------
 
-static int GetRangePermBan(lua_State * pLua)
+static int GetRangePermBan(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 2)
-	{
-		luaL_error(pLua, "bad argument count to 'GetRangePermBan' (2 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 2);
 
-	if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		luaL_checktype(pLua, 2, LUA_TSTRING);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING)
+    {
+        luaL_checktype(pLua, 1, LUA_TSTRING);
+        luaL_checktype(pLua, 2, LUA_TSTRING);
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	size_t szFromLen, szToLen;
-	const char * sFrom = lua_tolstring(pLua, 1, &szFromLen);
-	const char * sTo = lua_tolstring(pLua, 2, &szToLen);
+    size_t szFromLen, szToLen;
+    const char* sFrom = lua_tolstring(pLua, 1, &szFromLen);
+    const char* sTo = lua_tolstring(pLua, 2, &szToLen);
 
-	Hash128 ui128FromHash, ui128ToHash;
+    Hash128 ui128FromHash, ui128ToHash;
 
-	if (szFromLen == 0 || szToLen == 0 || HashIP(sFrom, ui128FromHash) == false || HashIP(sTo, ui128ToHash) == false || memcmp(ui128ToHash, ui128FromHash, 16) <= 0)
-	{
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    if (szFromLen == 0 || szToLen == 0 || !HashIP(sFrom, ui128FromHash) || !HashIP(sTo, ui128ToHash) || memcmp(ui128ToHash, ui128FromHash, 16) <= 0)
+    {
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	lua_settop(pLua, 0);
+    lua_settop(pLua, 0);
 
-	RangeBanItem * cur = NULL,
-	               * next = BanManager::m_Ptr->m_pRangeBanListS;
+    auto& rangeList = BanManager::m_Ptr->m_RangeBanList;
+    auto it = rangeList.begin();
+    while (it != rangeList.end())
+    {
+        RangeBanItem* cur = it->get();
 
-	while (next != NULL)
-	{
-		cur = next;
-		next = cur->m_pNext;
+        if (memcmp(cur->m_ui128FromIpHash, ui128FromHash, 16) == 0 && memcmp(cur->m_ui128ToIpHash, ui128ToHash, 16) == 0)
+        {
+            if (((cur->m_ui8Bits & BanManager::PERM) == BanManager::PERM))
+            {
+                PushRangeBan(pLua, cur);
+                return 1;
+            }
+        }
 
-		if (memcmp(cur->m_ui128FromIpHash, ui128FromHash, 16) == 0 && memcmp(cur->m_ui128ToIpHash, ui128ToHash, 16) == 0)
-		{
-			if (((cur->m_ui8Bits & BanManager::PERM) == BanManager::PERM) == true)
-			{
-				PushRangeBan(pLua, cur);
-				return 1;
-			}
-		}
-	}
+        ++it;
+    }
 
-	lua_pushnil(pLua);
-	return 1;
+    lua_pushnil(pLua);
+    return 1;
 }
 //------------------------------------------------------------------------------
 
-static int GetRangeTempBan(lua_State * pLua)
+static int GetRangeTempBan(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 2)
-	{
-		luaL_error(pLua, "bad argument count to 'GetRangeTempBan' (2 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 2);
 
-	if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		luaL_checktype(pLua, 2, LUA_TSTRING);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING)
+    {
+        luaL_checktype(pLua, 1, LUA_TSTRING);
+        luaL_checktype(pLua, 2, LUA_TSTRING);
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	size_t szFromLen, szToLen;
-	const char * sFrom = lua_tolstring(pLua, 1, &szFromLen);
-	const char * sTo = lua_tolstring(pLua, 2, &szToLen);
+    size_t szFromLen, szToLen;
+    const char* sFrom = lua_tolstring(pLua, 1, &szFromLen);
+    const char* sTo = lua_tolstring(pLua, 2, &szToLen);
 
-	Hash128 ui128FromHash, ui128ToHash;
+    Hash128 ui128FromHash, ui128ToHash;
 
-	if (szFromLen == 0 || szToLen == 0 || HashIP(sFrom, ui128FromHash) == false || HashIP(sTo, ui128ToHash) == false || memcmp(ui128ToHash, ui128FromHash, 16) <= 0)
-	{
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    if (szFromLen == 0 || szToLen == 0 || !HashIP(sFrom, ui128FromHash) || !HashIP(sTo, ui128ToHash) || memcmp(ui128ToHash, ui128FromHash, 16) <= 0)
+    {
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	lua_settop(pLua, 0);
+    lua_settop(pLua, 0);
 
-	time_t acc_time;
-	time(&acc_time);
+    time_t acc_time;
+    time(&acc_time);
 
-	RangeBanItem * cur = NULL,
-	               * next = BanManager::m_Ptr->m_pRangeBanListS;
+    auto& rangeList = BanManager::m_Ptr->m_RangeBanList;
+    auto it = rangeList.begin();
+    while (it != rangeList.end())
+    {
+        RangeBanItem* cur = it->get();
 
-	while (next != NULL)
-	{
-		cur = next;
-		next = cur->m_pNext;
+        if (memcmp(cur->m_ui128FromIpHash, ui128FromHash, 16) == 0 && memcmp(cur->m_ui128ToIpHash, ui128ToHash, 16) == 0)
+        {
+            // PPK ... check if it's temban and then if it's expired
+            if (((cur->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP))
+            {
+                if (acc_time >= cur->m_tTempBanExpire)
+                {
+                    it = rangeList.erase(it);
 
-		if (memcmp(cur->m_ui128FromIpHash, ui128FromHash, 16) == 0 && memcmp(cur->m_ui128ToIpHash, ui128ToHash, 16) == 0)
-		{
-			// PPK ... check if it's temban and then if it's expired
-			if (((cur->m_ui8Bits & BanManager::TEMP) == BanManager::TEMP) == true)
-			{
-				if (acc_time >= cur->m_tTempBanExpire)
-				{
-					BanManager::m_Ptr->RemRange(cur);
-					delete cur;
+                    continue;
+                }
 
-					continue;
-				}
+                PushRangeBan(pLua, cur);
+                return 1;
+            }
+        }
 
-				PushRangeBan(pLua, cur);
-				return 1;
-			}
-		}
-	}
+        ++it;
+    }
 
-	lua_pushnil(pLua);
-	return 1;
+    lua_pushnil(pLua);
+    return 1;
 }
 //------------------------------------------------------------------------------
 
-static int Unban(lua_State * pLua)
+static int UnbanByString(lua_State* pLua, bool (BanManager::*pUnbanMethod)(const char*))
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 1)
-	{
-		luaL_error(pLua, "bad argument count to 'Unban' (1 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 1);
+    LUA_CHECK_TYPE(pLua, 1, LUA_TSTRING);
 
-	if (lua_type(pLua, 1) != LUA_TSTRING)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    size_t szLen;
+    const char* sWhat = lua_tolstring(pLua, 1, &szLen);
 
-	size_t szLen;
-	const char * sWhat = lua_tolstring(pLua, 1, &szLen);
+    if (szLen == 0)
+    {
+        LUA_PUSH_NIL(pLua);
+    }
 
-	if (szLen == 0)
-	{
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    if (!(*BanManager::m_Ptr.*pUnbanMethod)(sWhat))
+    {
+        LUA_PUSH_NIL(pLua);
+    }
+    else
+    {
+        LUA_PUSH_BOOL(pLua, true);
+    }
 
-	if (BanManager::m_Ptr->Unban(sWhat) == false)
-	{
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-	}
-	else
-	{
-		lua_settop(pLua, 0);
-		lua_pushboolean(pLua, 1);
-	}
+    return 1;
+}
 
-	return 1;
+static int Unban(lua_State* pLua)
+{
+    return UnbanByString(pLua, &BanManager::Unban);
+}
+static int UnbanPerm(lua_State* pLua)
+{
+    return UnbanByString(pLua, &BanManager::PermUnban);
+}
+static int UnbanTemp(lua_State* pLua)
+{
+    return UnbanByString(pLua, &BanManager::TempUnban);
 }
 //------------------------------------------------------------------------------
 
-static int UnbanPerm(lua_State * pLua)
+static int UnbanAllByMethod(lua_State* pLua, void (BanManager::*pRemoveMethod)(const uint8_t*))
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 1)
-	{
-		luaL_error(pLua, "bad argument count to 'UnbanPerm' (1 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS(pLua, 1);
+    LUA_CHECK_TYPE(pLua, 1, LUA_TSTRING);
 
-	if (lua_type(pLua, 1) != LUA_TSTRING)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    size_t szLen;
+    const char* sIP = lua_tolstring(pLua, 1, &szLen);
 
-	size_t szLen;
-	const char * sWhat = lua_tolstring(pLua, 1, &szLen);
+    Hash128 ui128Hash;
 
-	if (szLen == 0)
-	{
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    if (szLen == 0 || !HashIP(sIP, ui128Hash))
+    {
+        lua_settop(pLua, 0);
+        return 0;
+    }
 
-	if (BanManager::m_Ptr->PermUnban(sWhat) == false)
-	{
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-	}
-	else
-	{
-		lua_settop(pLua, 0);
-		lua_pushboolean(pLua, 1);
-	}
+    lua_settop(pLua, 0);
 
-	return 1;
+    (*BanManager::m_Ptr.*pRemoveMethod)(ui128Hash);
+
+    return 0;
+}
+
+static int UnbanAll(lua_State* pLua)
+{
+    return UnbanAllByMethod(pLua, &BanManager::RemoveAllIP);
+}
+static int UnbanPermAll(lua_State* pLua)
+{
+    return UnbanAllByMethod(pLua, &BanManager::RemovePermAllIP);
+}
+static int UnbanTempAll(lua_State* pLua)
+{
+    return UnbanAllByMethod(pLua, &BanManager::RemoveTempAllIP);
 }
 //------------------------------------------------------------------------------
 
-static int UnbanTemp(lua_State * pLua)
+static int RangeUnbanByType(lua_State* pLua, uint8_t ui8Type)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 1)
-	{
-		luaL_error(pLua, "bad argument count to 'UnbanTemp' (1 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 2);
+    LUA_CHECK_TYPE(pLua, 1, LUA_TSTRING);
+    LUA_CHECK_TYPE(pLua, 2, LUA_TSTRING);
 
-	if (lua_type(pLua, 1) != LUA_TSTRING)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    size_t szFromIpLen, szToIpLen;
+    const char* sFromIp = lua_tolstring(pLua, 1, &szFromIpLen);
+    const char* sToIp = lua_tolstring(pLua, 2, &szToIpLen);
 
-	size_t szLen;
-	const char * sWhat = lua_tolstring(pLua, 1, &szLen);
+    Hash128 ui128FromHash, ui128ToHash;
 
-	if (szLen == 0)
-	{
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    if (szFromIpLen != 0 && szToIpLen != 0 && HashIP(sFromIp, ui128FromHash) && HashIP(sToIp, ui128ToHash) && memcmp(ui128ToHash, ui128FromHash, 16) > 0 &&
+        BanManager::m_Ptr->RangeUnban(ui128FromHash, ui128ToHash, ui8Type))
+    {
+        LUA_PUSH_BOOL(pLua, true);
+    }
 
-	if (BanManager::m_Ptr->TempUnban(sWhat) == false)
-	{
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-	}
-	else
-	{
-		lua_settop(pLua, 0);
-		lua_pushboolean(pLua, 1);
-	}
+    LUA_PUSH_NIL(pLua);
+}
 
-	return 1;
+static int RangeUnban(lua_State* pLua)
+{
+    return RangeUnbanByType(pLua, 0);
+}
+static int RangeUnbanPerm(lua_State* pLua)
+{
+    return RangeUnbanByType(pLua, BanManager::PERM);
+}
+static int RangeUnbanTemp(lua_State* pLua)
+{
+    return RangeUnbanByType(pLua, BanManager::TEMP);
 }
 //------------------------------------------------------------------------------
 
-static int UnbanAll(lua_State * pLua)
+static int ClearBans(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 1)
-	{
-		luaL_error(pLua, "bad argument count to 'UnbanAll' (1 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		return 0;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 0);
 
-	if (lua_type(pLua, 1) != LUA_TSTRING)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		lua_settop(pLua, 0);
-		return 0;
-	}
+    BanManager::m_Ptr->ClearTemp();
+    BanManager::m_Ptr->ClearPerm();
 
-	size_t szLen;
-	const char * sIP = lua_tolstring(pLua, 1, &szLen);
-
-	Hash128 ui128Hash;
-
-	if (szLen == 0 || HashIP(sIP, ui128Hash) == false)
-	{
-		lua_settop(pLua, 0);
-		return 0;
-	}
-
-	lua_settop(pLua, 0);
-
-	BanManager::m_Ptr->RemoveAllIP(ui128Hash);
-
-	return 0;
+    return 0;
 }
 //------------------------------------------------------------------------------
 
-static int UnbanPermAll(lua_State * pLua)
+static int ClearSingleBanType(lua_State* pLua, void (BanManager::*pClearMethod)())
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 1)
-	{
-		luaL_error(pLua, "bad argument count to 'UnbanPermAll' (1 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		return 0;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 0);
 
-	if (lua_type(pLua, 1) != LUA_TSTRING)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		lua_settop(pLua, 0);
-		return 0;
-	}
+    (*BanManager::m_Ptr.*pClearMethod)();
 
-	size_t szLen;
-	const char * sIP = lua_tolstring(pLua, 1, &szLen);
+    return 0;
+}
 
-	Hash128 ui128Hash;
-
-	if (szLen == 0 || HashIP(sIP, ui128Hash) == false)
-	{
-		lua_settop(pLua, 0);
-		return 0;
-	}
-
-	lua_settop(pLua, 0);
-
-	BanManager::m_Ptr->RemovePermAllIP(ui128Hash);
-
-	return 0;
+static int ClearPermBans(lua_State* pLua)
+{
+    return ClearSingleBanType(pLua, &BanManager::ClearPerm);
+}
+static int ClearTempBans(lua_State* pLua)
+{
+    return ClearSingleBanType(pLua, &BanManager::ClearTemp);
+}
+static int ClearRangeBans(lua_State* pLua)
+{
+    return ClearSingleBanType(pLua, &BanManager::ClearRange);
+}
+static int ClearRangePermBans(lua_State* pLua)
+{
+    return ClearSingleBanType(pLua, &BanManager::ClearPermRange);
+}
+static int ClearRangeTempBans(lua_State* pLua)
+{
+    return ClearSingleBanType(pLua, &BanManager::ClearTempRange);
 }
 //------------------------------------------------------------------------------
 
-static int UnbanTempAll(lua_State * pLua)
+static int Ban(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 1)
-	{
-		luaL_error(pLua, "bad argument count to 'UnbanTempAll' (1 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		return 0;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 4);
 
-	if (lua_type(pLua, 1) != LUA_TSTRING)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		lua_settop(pLua, 0);
-		return 0;
-	}
+    if (lua_type(pLua, 1) != LUA_TTABLE || lua_type(pLua, 2) != LUA_TSTRING || lua_type(pLua, 3) != LUA_TSTRING || lua_type(pLua, 4) != LUA_TBOOLEAN)
+    {
+        luaL_checktype(pLua, 1, LUA_TTABLE);
+        luaL_checktype(pLua, 2, LUA_TSTRING);
+        luaL_checktype(pLua, 3, LUA_TSTRING);
+        luaL_checktype(pLua, 4, LUA_TBOOLEAN);
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	size_t szLen;
-	const char * sIP = lua_tolstring(pLua, 1, &szLen);
+    User* u = ScriptGetUser(pLua, 4, "Ban");
 
-	Hash128 ui128Hash;
+    if (!u)
+    {
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	if (szLen == 0 || HashIP(sIP, ui128Hash) == false)
-	{
-		lua_settop(pLua, 0);
-		return 0;
-	}
+    size_t szReasonLen;
+    const char* sReason = lua_tolstring(pLua, 2, &szReasonLen);
+    if (szReasonLen == 0)
+    {
+        sReason = nullptr;
+    }
 
-	lua_settop(pLua, 0);
+    size_t szByLen;
+    const char* sBy = lua_tolstring(pLua, 3, &szByLen);
+    if (szByLen == 0)
+    {
+        sBy = nullptr;
+    }
 
-	BanManager::m_Ptr->RemoveTempAllIP(ui128Hash);
+    const bool bFull = lua_toboolean(pLua, 4) != 0;
 
-	return 0;
+    BanManager::m_Ptr->Ban(u, sReason, sBy, bFull);
+
+    UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) banned by script.", u->m_sNick.c_str(), u->m_sIP.data());
+
+    u->Close();
+
+    lua_settop(pLua, 0);
+    lua_pushboolean(pLua, 1);
+    return 1;
 }
 //------------------------------------------------------------------------------
 
-static int RangeUnban(lua_State * pLua)
+static int BanIP(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 2)
-	{
-		luaL_error(pLua, "bad argument count to 'RangeUnban' (2 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 4);
 
-	if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		luaL_checktype(pLua, 2, LUA_TSTRING);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING || lua_type(pLua, 3) != LUA_TSTRING || lua_type(pLua, 4) != LUA_TBOOLEAN)
+    {
+        luaL_checktype(pLua, 1, LUA_TSTRING);
+        luaL_checktype(pLua, 2, LUA_TSTRING);
+        luaL_checktype(pLua, 3, LUA_TSTRING);
+        luaL_checktype(pLua, 4, LUA_TBOOLEAN);
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	size_t szFromIpLen, szToIpLen;
-	const char * sFromIp = lua_tolstring(pLua, 1, &szFromIpLen);
-	const char * sToIp = lua_tolstring(pLua, 2, &szToIpLen);
+    size_t szIpLen;
+    const char* sIP = lua_tolstring(pLua, 1, &szIpLen);
+    if (szIpLen == 0)
+    {
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	Hash128 ui128FromHash, ui128ToHash;
+    size_t szReasonLen;
+    const char* sReason = lua_tolstring(pLua, 2, &szReasonLen);
+    if (szReasonLen == 0)
+    {
+        sReason = nullptr;
+    }
 
-	if (szFromIpLen != 0 && szToIpLen != 0 && HashIP(sFromIp, ui128FromHash) == true && HashIP(sToIp, ui128ToHash) == true &&
-	        memcmp(ui128ToHash, ui128FromHash, 16) > 0 && BanManager::m_Ptr->RangeUnban(ui128FromHash, ui128ToHash) == true)
-	{
-		lua_settop(pLua, 0);
-		lua_pushboolean(pLua, 1);
-		return 1;
-	}
+    size_t szByLen;
+    const char* sBy = lua_tolstring(pLua, 3, &szByLen);
+    if (szByLen == 0)
+    {
+        sBy = nullptr;
+    }
 
-	lua_settop(pLua, 0);
-	lua_pushnil(pLua);
-	return 1;
+    const bool bFull = lua_toboolean(pLua, 4) != 0;
+
+    if (BanManager::m_Ptr->BanIp(nullptr, sIP, sReason, sBy, bFull) == 0)
+    {
+        lua_settop(pLua, 0);
+        lua_pushboolean(pLua, 1);
+    }
+    else
+    {
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+    }
+
+    return 1;
 }
 //------------------------------------------------------------------------------
 
-static int RangeUnbanPerm(lua_State * pLua)
+static int BanNick(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 2)
-	{
-		luaL_error(pLua, "bad argument count to 'RangeUnbanPerm' (2 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 3);
 
-	if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		luaL_checktype(pLua, 2, LUA_TSTRING);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING || lua_type(pLua, 3) != LUA_TSTRING)
+    {
+        luaL_checktype(pLua, 1, LUA_TSTRING);
+        luaL_checktype(pLua, 2, LUA_TSTRING);
+        luaL_checktype(pLua, 3, LUA_TSTRING);
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	size_t szFromIpLen, szToIpLen;
-	const char * sFromIp = lua_tolstring(pLua, 1, &szFromIpLen);
-	const char * sToIp = lua_tolstring(pLua, 2, &szToIpLen);
+    size_t szNickLen;
+    const char* sNick = lua_tolstring(pLua, 1, &szNickLen);
+    if (szNickLen == 0)
+    {
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	Hash128 ui128FromHash, ui128ToHash;
+    size_t szReasonLen;
+    const char* sReason = lua_tolstring(pLua, 2, &szReasonLen);
+    if (szReasonLen == 0)
+    {
+        sReason = nullptr;
+    }
 
-	if (szFromIpLen != 0 && szToIpLen != 0 && HashIP(sFromIp, ui128FromHash) == true && HashIP(sToIp, ui128ToHash) == true &&
-	        memcmp(ui128ToHash, ui128FromHash, 16) > 0 && BanManager::m_Ptr->RangeUnban(ui128FromHash, ui128ToHash, BanManager::PERM) == true)
-	{
-		lua_settop(pLua, 0);
-		lua_pushboolean(pLua, 1);
-		return 1;
-	}
+    size_t szByLen;
+    const char* sBy = lua_tolstring(pLua, 3, &szByLen);
+    if (szByLen == 0)
+    {
+        sBy = nullptr;
+    }
 
-	lua_settop(pLua, 0);
-	lua_pushnil(pLua);
-	return 1;
+    User* curUser = HashManager::m_Ptr->FindUser(std::string_view(sNick, szNickLen));
+    if (curUser)
+    {
+        if (BanManager::m_Ptr->NickBan(curUser, nullptr, sReason, sBy))
+        {
+            UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) nickbanned by script.", curUser->m_sNick.c_str(), curUser->m_sIP.data());
+
+            curUser->Close();
+            lua_settop(pLua, 0);
+            lua_pushboolean(pLua, 1);
+        }
+        else
+        {
+            curUser->Close();
+            lua_settop(pLua, 0);
+            lua_pushnil(pLua);
+        }
+    }
+    else
+    {
+        if (BanManager::m_Ptr->NickBan(nullptr, sNick, sReason, sBy))
+        {
+            UdpDebug::m_Ptr->BroadcastFormat("[SYS] Nick %s nickbanned by script.", sNick);
+
+            lua_settop(pLua, 0);
+            lua_pushboolean(pLua, 1);
+        }
+        else
+        {
+            lua_settop(pLua, 0);
+            lua_pushnil(pLua);
+        }
+    }
+
+    return 1;
 }
 //------------------------------------------------------------------------------
 
-static int RangeUnbanTemp(lua_State * pLua)
+static int TempBan(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 2)
-	{
-		luaL_error(pLua, "bad argument count to 'RangeUnbanTemp' (2 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 5);
 
-	if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		luaL_checktype(pLua, 2, LUA_TSTRING);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    if (lua_type(pLua, 1) != LUA_TTABLE || lua_type(pLua, 2) != LUA_TNUMBER || lua_type(pLua, 3) != LUA_TSTRING || lua_type(pLua, 4) != LUA_TSTRING ||
+        lua_type(pLua, 5) != LUA_TBOOLEAN)
+    {
+        luaL_checktype(pLua, 1, LUA_TTABLE);
+        luaL_checktype(pLua, 2, LUA_TNUMBER);
+        luaL_checktype(pLua, 3, LUA_TSTRING);
+        luaL_checktype(pLua, 4, LUA_TSTRING);
+        luaL_checktype(pLua, 5, LUA_TBOOLEAN);
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	size_t szFromIpLen, szToIpLen;
-	const char * sFromIp = lua_tolstring(pLua, 1, &szFromIpLen);
-	const char * sToIp = lua_tolstring(pLua, 2, &szToIpLen);
+    User* u = ScriptGetUser(pLua, 5, "TempBan");
 
-	Hash128 ui128FromHash, ui128ToHash;
+    if (!u)
+    {
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	if (szFromIpLen != 0 && szToIpLen != 0 && HashIP(sFromIp, ui128FromHash) == true && HashIP(sToIp, ui128ToHash) == true &&
-	        memcmp(ui128ToHash, ui128FromHash, 16) > 0 && BanManager::m_Ptr->RangeUnban(ui128FromHash, ui128ToHash, BanManager::TEMP) == true)
-	{
-		lua_settop(pLua, 0);
-		lua_pushboolean(pLua, 1);
-		return 1;
-	}
+    const auto iMinutes = LuaInt<uint32_t>(pLua, 2);
 
-	lua_settop(pLua, 0);
-	lua_pushnil(pLua);
-	return 1;
+    size_t szReasonLen;
+    const char* sReason = lua_tolstring(pLua, 3, &szReasonLen);
+    if (szReasonLen == 0)
+    {
+        sReason = nullptr;
+    }
+
+    size_t szByLen;
+    const char* sBy = lua_tolstring(pLua, 4, &szByLen);
+    if (szByLen == 0)
+    {
+        sBy = nullptr;
+    }
+
+    const bool bFull = lua_toboolean(pLua, 5) != 0;
+
+    BanManager::m_Ptr->TempBan(u, sReason, sBy, iMinutes, 0, bFull);
+
+    UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) tempbanned by script.", u->m_sNick.c_str(), u->m_sIP.data());
+
+    u->Close();
+
+    lua_settop(pLua, 0);
+    lua_pushboolean(pLua, 1);
+    return 1;
 }
 //------------------------------------------------------------------------------
 
-static int ClearBans(lua_State * pLua)
+static int TempBanIP(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 0)
-	{
-		luaL_error(pLua, "bad argument count to 'ClearBans' (0 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 5);
 
-	BanManager::m_Ptr->ClearTemp();
-	BanManager::m_Ptr->ClearPerm();
+    if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TNUMBER || lua_type(pLua, 3) != LUA_TSTRING || lua_type(pLua, 4) != LUA_TSTRING ||
+        lua_type(pLua, 5) != LUA_TBOOLEAN)
+    {
+        luaL_checktype(pLua, 1, LUA_TSTRING);
+        luaL_checktype(pLua, 2, LUA_TNUMBER);
+        luaL_checktype(pLua, 3, LUA_TSTRING);
+        luaL_checktype(pLua, 4, LUA_TSTRING);
+        luaL_checktype(pLua, 5, LUA_TBOOLEAN);
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	return 0;
+    size_t szIpLen;
+    const char* sIP = lua_tolstring(pLua, 1, &szIpLen);
+    if (szIpLen == 0)
+    {
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
+
+    const auto i32Minutes = LuaInt<uint32_t>(pLua, 2);
+
+    size_t szReasonLen;
+    const char* sReason = lua_tolstring(pLua, 3, &szReasonLen);
+    if (szReasonLen == 0)
+    {
+        sReason = nullptr;
+    }
+
+    size_t szByLen;
+    const char* sBy = lua_tolstring(pLua, 4, &szByLen);
+    if (szByLen == 0)
+    {
+        sBy = nullptr;
+    }
+
+    const bool bFull = lua_toboolean(pLua, 5) != 0;
+
+    if (BanManager::m_Ptr->TempBanIp(nullptr, sIP, sReason, sBy, i32Minutes, 0, bFull) == 0)
+    {
+        lua_settop(pLua, 0);
+        lua_pushboolean(pLua, 1);
+    }
+    else
+    {
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+    }
+
+    return 1;
 }
 //------------------------------------------------------------------------------
 
-static int ClearPermBans(lua_State * pLua)
+static int TempBanNick(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 0)
-	{
-		luaL_error(pLua, "bad argument count to 'ClearPermBans' (0 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 4);
 
-	BanManager::m_Ptr->ClearPerm();
+    if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TNUMBER || lua_type(pLua, 3) != LUA_TSTRING || lua_type(pLua, 4) != LUA_TSTRING)
+    {
+        luaL_checktype(pLua, 1, LUA_TSTRING);
+        luaL_checktype(pLua, 2, LUA_TNUMBER);
+        luaL_checktype(pLua, 3, LUA_TSTRING);
+        luaL_checktype(pLua, 4, LUA_TSTRING);
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	return 0;
+    size_t szNickLen;
+    const char* sNick = lua_tolstring(pLua, 1, &szNickLen);
+    if (szNickLen == 0)
+    {
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
+
+    const auto i32Minutes = LuaInt<uint32_t>(pLua, 2);
+
+    size_t szReasonLen;
+    const char* sReason = lua_tolstring(pLua, 3, &szReasonLen);
+    if (szReasonLen == 0)
+    {
+        sReason = nullptr;
+    }
+
+    size_t szByLen;
+    const char* sBy = lua_tolstring(pLua, 4, &szByLen);
+    if (szByLen == 0)
+    {
+        sBy = nullptr;
+    }
+
+    User* curUser = HashManager::m_Ptr->FindUser(std::string_view(sNick, szNickLen));
+    if (curUser)
+    {
+        if (BanManager::m_Ptr->NickTempBan(curUser, nullptr, sReason, sBy, i32Minutes, 0))
+        {
+            UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) nickbanned by script.", curUser->m_sNick.c_str(), curUser->m_sIP.data());
+
+            curUser->Close();
+            lua_settop(pLua, 0);
+            lua_pushboolean(pLua, 1);
+        }
+        else
+        {
+            curUser->Close();
+            lua_settop(pLua, 0);
+            lua_pushnil(pLua);
+        }
+    }
+    else
+    {
+        if (BanManager::m_Ptr->NickTempBan(nullptr, sNick, sReason, sBy, i32Minutes, 0))
+        {
+            UdpDebug::m_Ptr->BroadcastFormat("[SYS] Nick %s nickbanned by script.", sNick);
+
+            lua_settop(pLua, 0);
+            lua_pushboolean(pLua, 1);
+        }
+        else
+        {
+            lua_settop(pLua, 0);
+            lua_pushnil(pLua);
+        }
+    }
+
+    return 1;
 }
 //------------------------------------------------------------------------------
 
-static int ClearTempBans(lua_State * pLua)
+static int RangeBan(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 0)
-	{
-		luaL_error(pLua, "bad argument count to 'ClearTempBans' (0 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 5);
 
-	BanManager::m_Ptr->ClearTemp();
+    if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING || lua_type(pLua, 3) != LUA_TSTRING || lua_type(pLua, 4) != LUA_TSTRING ||
+        lua_type(pLua, 5) != LUA_TBOOLEAN)
+    {
+        luaL_checktype(pLua, 1, LUA_TSTRING);
+        luaL_checktype(pLua, 2, LUA_TSTRING);
+        luaL_checktype(pLua, 3, LUA_TSTRING);
+        luaL_checktype(pLua, 4, LUA_TSTRING);
+        luaL_checktype(pLua, 5, LUA_TBOOLEAN);
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	return 0;
+    size_t szFromIpLen;
+    const char* sFromIP = lua_tolstring(pLua, 1, &szFromIpLen);
+
+    size_t szToIpLen;
+    const char* sToIP = lua_tolstring(pLua, 2, &szToIpLen);
+
+    size_t szReasonLen;
+    const char* sReason = lua_tolstring(pLua, 3, &szReasonLen);
+    if (szReasonLen == 0)
+    {
+        sReason = nullptr;
+    }
+
+    size_t szByLen;
+    const char* sBy = lua_tolstring(pLua, 4, &szByLen);
+    if (szByLen == 0)
+    {
+        sBy = nullptr;
+    }
+
+    const bool bFull = lua_toboolean(pLua, 5) != 0;
+
+    Hash128 ui128FromHash, ui128ToHash;
+
+    if (szFromIpLen != 0 && szToIpLen != 0 && HashIP(sFromIP, ui128FromHash) && HashIP(sToIP, ui128ToHash) && memcmp(ui128ToHash, ui128FromHash, 16) > 0 &&
+        BanManager::m_Ptr->RangeBan(sFromIP, ui128FromHash, sToIP, ui128ToHash, sReason, sBy, bFull))
+    {
+        lua_settop(pLua, 0);
+        lua_pushboolean(pLua, 1);
+        return 1;
+    }
+
+    lua_settop(pLua, 0);
+    lua_pushnil(pLua);
+    return 1;
 }
 //------------------------------------------------------------------------------
 
-static int ClearRangeBans(lua_State * pLua)
+static int RangeTempBan(lua_State* pLua)
 {
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 0)
-	{
-		luaL_error(pLua, "bad argument count to 'ClearRangeBans' (0 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
+    GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
+    LUA_CHECK_ARGS_RET_NIL(pLua, 6);
 
-	BanManager::m_Ptr->ClearRange();
+    if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING || lua_type(pLua, 3) != LUA_TNUMBER || lua_type(pLua, 4) != LUA_TSTRING ||
+        lua_type(pLua, 5) != LUA_TSTRING || lua_type(pLua, 6) != LUA_TBOOLEAN)
+    {
+        luaL_checktype(pLua, 1, LUA_TSTRING);
+        luaL_checktype(pLua, 2, LUA_TSTRING);
+        luaL_checktype(pLua, 3, LUA_TNUMBER);
+        luaL_checktype(pLua, 4, LUA_TSTRING);
+        luaL_checktype(pLua, 5, LUA_TSTRING);
+        luaL_checktype(pLua, 6, LUA_TBOOLEAN);
+        lua_settop(pLua, 0);
+        lua_pushnil(pLua);
+        return 1;
+    }
 
-	return 0;
+    size_t szFromIpLen;
+    const char* sFromIP = lua_tolstring(pLua, 1, &szFromIpLen);
+
+    size_t szToIpLen;
+    const char* sToIP = lua_tolstring(pLua, 2, &szToIpLen);
+
+    const auto i32Minutes = LuaInt<uint32_t>(pLua, 3);
+
+    size_t szReasonLen;
+    const char* sReason = lua_tolstring(pLua, 4, &szReasonLen);
+    if (szReasonLen == 0)
+    {
+        sReason = nullptr;
+    }
+
+    size_t szByLen;
+    const char* sBy = lua_tolstring(pLua, 5, &szByLen);
+    if (szByLen == 0)
+    {
+        sBy = nullptr;
+    }
+
+    const bool bFull = lua_toboolean(pLua, 6) != 0;
+
+    Hash128 ui128FromHash, ui128ToHash;
+
+    if (szFromIpLen != 0 && szToIpLen != 0 && HashIP(sFromIP, ui128FromHash) && HashIP(sToIP, ui128ToHash) && memcmp(ui128ToHash, ui128FromHash, 16) > 0 &&
+        BanManager::m_Ptr->RangeTempBan(sFromIP, ui128FromHash, sToIP, ui128ToHash, sReason, sBy, i32Minutes, 0, bFull))
+    {
+        lua_settop(pLua, 0);
+        lua_pushboolean(pLua, 1);
+        return 1;
+    }
+
+    lua_settop(pLua, 0);
+    lua_pushnil(pLua);
+    return 1;
 }
 //------------------------------------------------------------------------------
 
-static int ClearRangePermBans(lua_State * pLua)
-{
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 0)
-	{
-		luaL_error(pLua, "bad argument count to 'ClearRangePermBans' (0 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	BanManager::m_Ptr->ClearPermRange();
-
-	return 0;
-}
-//------------------------------------------------------------------------------
-
-static int ClearRangeTempBans(lua_State * pLua)
-{
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 0)
-	{
-		luaL_error(pLua, "bad argument count to 'ClearRangeTempBans' (0 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	BanManager::m_Ptr->ClearTempRange();
-
-	return 0;
-}
-//------------------------------------------------------------------------------
-
-static int Ban(lua_State * pLua)
-{
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 4)
-	{
-		luaL_error(pLua, "bad argument count to 'Ban' (4 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	if (lua_type(pLua, 1) != LUA_TTABLE || lua_type(pLua, 2) != LUA_TSTRING || lua_type(pLua, 3) != LUA_TSTRING || lua_type(pLua, 4) != LUA_TBOOLEAN)
-	{
-		luaL_checktype(pLua, 1, LUA_TTABLE);
-		luaL_checktype(pLua, 2, LUA_TSTRING);
-		luaL_checktype(pLua, 3, LUA_TSTRING);
-		luaL_checktype(pLua, 4, LUA_TBOOLEAN);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	User *u = ScriptGetUser(pLua, 4, "Ban");
-
-	if (u == NULL)
-	{
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	size_t szReasonLen;
-	const char * sReason = lua_tolstring(pLua, 2, &szReasonLen);
-	if (szReasonLen == 0)
-	{
-		sReason = nullptr;
-	}
-
-	size_t szByLen;
-	const char *sBy = lua_tolstring(pLua, 3, &szByLen);
-	if (szByLen == 0)
-	{
-		sBy = nullptr;
-	}
-
-	bool bFull = lua_toboolean(pLua, 4) == 0 ? false : true;
-
-	BanManager::m_Ptr->Ban(u, sReason, sBy, bFull);
-
-	UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) banned by script.", u->m_sNick, u->m_sIP);
-
-	u->Close();
-
-	lua_settop(pLua, 0);
-	lua_pushboolean(pLua, 1);
-	return 1;
-}
-//------------------------------------------------------------------------------
-
-static int BanIP(lua_State * pLua)
-{
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 4)
-	{
-		luaL_error(pLua, "bad argument count to 'Ban' (4 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING || lua_type(pLua, 3) != LUA_TSTRING || lua_type(pLua, 4) != LUA_TBOOLEAN)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		luaL_checktype(pLua, 2, LUA_TSTRING);
-		luaL_checktype(pLua, 3, LUA_TSTRING);
-		luaL_checktype(pLua, 4, LUA_TBOOLEAN);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	size_t szIpLen;
-	const char * sIP = lua_tolstring(pLua, 1, &szIpLen);
-	if (szIpLen == 0)
-	{
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	size_t szReasonLen;
-	const char * sReason = lua_tolstring(pLua, 2, &szReasonLen);
-	if (szReasonLen == 0)
-	{
-		sReason = nullptr;
-	}
-
-	size_t szByLen;
-	const char * sBy = lua_tolstring(pLua, 3, &szByLen);
-	if (szByLen == 0)
-	{
-		sBy = nullptr;
-	}
-
-	bool bFull = lua_toboolean(pLua, 4) == 0 ? false : true;
-
-	if (BanManager::m_Ptr->BanIp(NULL, sIP, sReason, sBy, bFull) == 0)
-	{
-		lua_settop(pLua, 0);
-		lua_pushboolean(pLua, 1);
-	}
-	else
-	{
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-	}
-
-	return 1;
-}
-//------------------------------------------------------------------------------
-
-static int BanNick(lua_State * pLua)
-{
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 3)
-	{
-		luaL_error(pLua, "bad argument count to 'BanNick' (3 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING || lua_type(pLua, 3) != LUA_TSTRING)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		luaL_checktype(pLua, 2, LUA_TSTRING);
-		luaL_checktype(pLua, 3, LUA_TSTRING);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	size_t szNickLen;
-	const char * sNick = lua_tolstring(pLua, 1, &szNickLen);
-	if (szNickLen == 0)
-	{
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	size_t szReasonLen;
-	const char * sReason = lua_tolstring(pLua, 2, &szReasonLen);
-	if (szReasonLen == 0)
-	{
-		sReason = nullptr;
-	}
-
-	size_t szByLen;
-	const char * sBy = lua_tolstring(pLua, 3, &szByLen);
-	if (szByLen == 0)
-	{
-		sBy = nullptr;
-	}
-
-	User *curUser = HashManager::m_Ptr->FindUser(sNick, szNickLen);
-	if (curUser != NULL)
-	{
-		if (BanManager::m_Ptr->NickBan(curUser, NULL, sReason, sBy) == true)
-		{
-			UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) nickbanned by script.", curUser->m_sNick, curUser->m_sIP);
-
-			curUser->Close();
-			lua_settop(pLua, 0);
-			lua_pushboolean(pLua, 1);
-		}
-		else
-		{
-			curUser->Close();
-			lua_settop(pLua, 0);
-			lua_pushnil(pLua);
-		}
-	}
-	else
-	{
-		if (BanManager::m_Ptr->NickBan(NULL, sNick, sReason, sBy) == true)
-		{
-			UdpDebug::m_Ptr->BroadcastFormat("[SYS] Nick %s nickbanned by script.", sNick);
-
-			lua_settop(pLua, 0);
-			lua_pushboolean(pLua, 1);
-		}
-		else
-		{
-			lua_settop(pLua, 0);
-			lua_pushnil(pLua);
-		}
-	}
-
-	return 1;
-}
-//------------------------------------------------------------------------------
-
-static int TempBan(lua_State * pLua)
-{
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 5)
-	{
-		luaL_error(pLua, "bad argument count to 'TempBan' (5 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	if (lua_type(pLua, 1) != LUA_TTABLE || lua_type(pLua, 2) != LUA_TNUMBER || lua_type(pLua, 3) != LUA_TSTRING ||
-	        lua_type(pLua, 4) != LUA_TSTRING || lua_type(pLua, 5) != LUA_TBOOLEAN)
-	{
-		luaL_checktype(pLua, 1, LUA_TTABLE);
-		luaL_checktype(pLua, 2, LUA_TNUMBER);
-		luaL_checktype(pLua, 3, LUA_TSTRING);
-		luaL_checktype(pLua, 4, LUA_TSTRING);
-		luaL_checktype(pLua, 5, LUA_TBOOLEAN);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	User *u = ScriptGetUser(pLua, 5, "TempBan");
-
-	if (u == NULL)
-	{
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-#if LUA_VERSION_NUM < 503
-	uint32_t iMinutes = (uint32_t)lua_tonumber(pLua, 2);
-#else
-	uint32_t iMinutes = (uint32_t)lua_tointeger(pLua, 2);
-#endif
-
-	size_t szReasonLen;
-	const char * sReason = lua_tolstring(pLua, 3, &szReasonLen);
-	if (szReasonLen == 0)
-	{
-		sReason = nullptr;
-	}
-
-	size_t szByLen;
-	const char * sBy = lua_tolstring(pLua, 4, &szByLen);
-	if (szByLen == 0)
-	{
-		sBy = nullptr;
-	}
-
-	bool bFull = lua_toboolean(pLua, 5) == 0 ? false : true;
-
-	BanManager::m_Ptr->TempBan(u, sReason, sBy, iMinutes, 0, bFull);
-
-	UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) tempbanned by script.", u->m_sNick, u->m_sIP);
-
-	u->Close();
-
-	lua_settop(pLua, 0);
-	lua_pushboolean(pLua, 1);
-	return 1;
-}
-//------------------------------------------------------------------------------
-
-static int TempBanIP(lua_State * pLua)
-{
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 5)
-	{
-		luaL_error(pLua, "bad argument count to 'TempBanIP' (5 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TNUMBER || lua_type(pLua, 3) != LUA_TSTRING ||
-	        lua_type(pLua, 4) != LUA_TSTRING || lua_type(pLua, 5) != LUA_TBOOLEAN)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		luaL_checktype(pLua, 2, LUA_TNUMBER);
-		luaL_checktype(pLua, 3, LUA_TSTRING);
-		luaL_checktype(pLua, 4, LUA_TSTRING);
-		luaL_checktype(pLua, 5, LUA_TBOOLEAN);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	size_t szIpLen;
-	const char * sIP = lua_tolstring(pLua, 1, &szIpLen);
-	if (szIpLen == 0)
-	{
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-#if LUA_VERSION_NUM < 503
-	uint32_t i32Minutes = (uint32_t)lua_tonumber(pLua, 2);
-#else
-	uint32_t i32Minutes = (uint32_t)lua_tointeger(pLua, 2);
-#endif
-
-	size_t szReasonLen;
-	const char * sReason = lua_tolstring(pLua, 3, &szReasonLen);
-	if (szReasonLen == 0)
-	{
-		sReason = nullptr;
-	}
-
-	size_t szByLen;
-	const char * sBy = lua_tolstring(pLua, 4, &szByLen);
-	if (szByLen == 0)
-	{
-		sBy = nullptr;
-	}
-
-	bool bFull = lua_toboolean(pLua, 5) == 0 ? false : true;
-
-	if (BanManager::m_Ptr->TempBanIp(NULL, sIP, sReason, sBy, i32Minutes, 0, bFull) == 0)
-	{
-		lua_settop(pLua, 0);
-		lua_pushboolean(pLua, 1);
-	}
-	else
-	{
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-	}
-
-	return 1;
-}
-//------------------------------------------------------------------------------
-
-static int TempBanNick(lua_State * pLua)
-{
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 4)
-	{
-		luaL_error(pLua, "bad argument count to 'TempBanNick' (4 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TNUMBER || lua_type(pLua, 3) != LUA_TSTRING || lua_type(pLua, 4) != LUA_TSTRING)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		luaL_checktype(pLua, 2, LUA_TNUMBER);
-		luaL_checktype(pLua, 3, LUA_TSTRING);
-		luaL_checktype(pLua, 4, LUA_TSTRING);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	size_t szNickLen;
-	const char * sNick = lua_tolstring(pLua, 1, &szNickLen);
-	if (szNickLen == 0)
-	{
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-#if LUA_VERSION_NUM < 503
-	uint32_t i32Minutes = (uint32_t)lua_tonumber(pLua, 2);
-#else
-	uint32_t i32Minutes = (uint32_t)lua_tointeger(pLua, 2);
-#endif
-
-	size_t szReasonLen;
-	const char * sReason = lua_tolstring(pLua, 3, &szReasonLen);
-	if (szReasonLen == 0)
-	{
-		sReason = nullptr;
-	}
-
-	size_t szByLen;
-	const char * sBy = lua_tolstring(pLua, 4, &szByLen);
-	if (szByLen == 0)
-	{
-		sBy = nullptr;
-	}
-
-	User *curUser = HashManager::m_Ptr->FindUser(sNick, szNickLen);
-	if (curUser != NULL)
-	{
-		if (BanManager::m_Ptr->NickTempBan(curUser, NULL, sReason, sBy, i32Minutes, 0) == true)
-		{
-			UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) nickbanned by script.", curUser->m_sNick, curUser->m_sIP);
-
-			curUser->Close();
-			lua_settop(pLua, 0);
-			lua_pushboolean(pLua, 1);
-		}
-		else
-		{
-			curUser->Close();
-			lua_settop(pLua, 0);
-			lua_pushnil(pLua);
-		}
-	}
-	else
-	{
-		if (BanManager::m_Ptr->NickTempBan(NULL, sNick, sReason, sBy, i32Minutes, 0) == true)
-		{
-			UdpDebug::m_Ptr->BroadcastFormat("[SYS] Nick %s nickbanned by script.", sNick);
-
-			lua_settop(pLua, 0);
-			lua_pushboolean(pLua, 1);
-		}
-		else
-		{
-			lua_settop(pLua, 0);
-			lua_pushnil(pLua);
-		}
-	}
-
-	return 1;
-}
-//------------------------------------------------------------------------------
-
-static int RangeBan(lua_State * pLua)
-{
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 5)
-	{
-		luaL_error(pLua, "bad argument count to 'RangeBan' (5 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING || lua_type(pLua, 3) != LUA_TSTRING ||
-	        lua_type(pLua, 4) != LUA_TSTRING || lua_type(pLua, 5) != LUA_TBOOLEAN)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		luaL_checktype(pLua, 2, LUA_TSTRING);
-		luaL_checktype(pLua, 3, LUA_TSTRING);
-		luaL_checktype(pLua, 4, LUA_TSTRING);
-		luaL_checktype(pLua, 5, LUA_TBOOLEAN);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	size_t szFromIpLen;
-	const char * sFromIP = lua_tolstring(pLua, 1, &szFromIpLen);
-
-	size_t szToIpLen;
-	const char * sToIP = lua_tolstring(pLua, 2, &szToIpLen);
-
-	size_t szReasonLen;
-	const char * sReason = lua_tolstring(pLua, 3, &szReasonLen);
-	if (szReasonLen == 0)
-	{
-		sReason = nullptr;
-	}
-
-	size_t szByLen;
-	const char * sBy = lua_tolstring(pLua, 4, &szByLen);
-	if (szByLen == 0)
-	{
-		sBy = nullptr;
-	}
-
-	bool bFull = lua_toboolean(pLua, 5) == 0 ? false : true;
-
-	Hash128 ui128FromHash, ui128ToHash;
-
-	if (szFromIpLen != 0 && szToIpLen != 0 && HashIP(sFromIP, ui128FromHash) == true && HashIP(sToIP, ui128ToHash) == true &&
-	        memcmp(ui128ToHash, ui128FromHash, 16) > 0 && BanManager::m_Ptr->RangeBan(sFromIP, ui128FromHash, sToIP, ui128ToHash, sReason, sBy, bFull) == true)
-	{
-		lua_settop(pLua, 0);
-		lua_pushboolean(pLua, 1);
-		return 1;
-	}
-
-	lua_settop(pLua, 0);
-	lua_pushnil(pLua);
-	return 1;
-}
-//------------------------------------------------------------------------------
-
-static int RangeTempBan(lua_State * pLua)
-{
-	GlobalDataQueue::m_Ptr->PrometheusLuaInc(__func__);
-	if (lua_gettop(pLua) != 6)
-	{
-		luaL_error(pLua, "bad argument count to 'RangeTempBan' (6 expected, got %d)", lua_gettop(pLua));
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	if (lua_type(pLua, 1) != LUA_TSTRING || lua_type(pLua, 2) != LUA_TSTRING || lua_type(pLua, 3) != LUA_TNUMBER ||
-	        lua_type(pLua, 4) != LUA_TSTRING || lua_type(pLua, 5) != LUA_TSTRING || lua_type(pLua, 6) != LUA_TBOOLEAN)
-	{
-		luaL_checktype(pLua, 1, LUA_TSTRING);
-		luaL_checktype(pLua, 2, LUA_TSTRING);
-		luaL_checktype(pLua, 3, LUA_TNUMBER);
-		luaL_checktype(pLua, 4, LUA_TSTRING);
-		luaL_checktype(pLua, 5, LUA_TSTRING);
-		luaL_checktype(pLua, 6, LUA_TBOOLEAN);
-		lua_settop(pLua, 0);
-		lua_pushnil(pLua);
-		return 1;
-	}
-
-	size_t szFromIpLen;
-	const char * sFromIP = lua_tolstring(pLua, 1, &szFromIpLen);
-
-	size_t szToIpLen;
-	const char * sToIP = lua_tolstring(pLua, 2, &szToIpLen);
-
-#if LUA_VERSION_NUM < 503
-	uint32_t i32Minutes = (uint32_t)lua_tonumber(pLua, 3);
-#else
-	uint32_t i32Minutes = (uint32_t)lua_tointeger(pLua, 3);
-#endif
-
-	size_t szReasonLen;
-	const char * sReason = lua_tolstring(pLua, 4, &szReasonLen);
-	if (szReasonLen == 0)
-	{
-		sReason = nullptr;
-	}
-
-	size_t szByLen;
-	const char * sBy = lua_tolstring(pLua, 5, &szByLen);
-	if (szByLen == 0)
-	{
-		sBy = nullptr;
-	}
-
-	bool bFull = lua_toboolean(pLua, 6) == 0 ? false : true;
-
-	Hash128 ui128FromHash, ui128ToHash;
-
-	if (szFromIpLen != 0 && szToIpLen != 0 && HashIP(sFromIP, ui128FromHash) == true && HashIP(sToIP, ui128ToHash) == true &&
-	        memcmp(ui128ToHash, ui128FromHash, 16) > 0 && BanManager::m_Ptr->RangeTempBan(sFromIP, ui128FromHash, sToIP, ui128ToHash, sReason, sBy, i32Minutes, 0, bFull) == true)
-	{
-		lua_settop(pLua, 0);
-		lua_pushboolean(pLua, 1);
-		return 1;
-	}
-
-	lua_settop(pLua, 0);
-	lua_pushnil(pLua);
-	return 1;
-}
-//------------------------------------------------------------------------------
-
-static const luaL_Reg BanManRegs[] =
-{
-	{ "Save", Save },
-	{ "GetBans", GetBans },
-	{ "GetTempBans", GetTempBans },
-	{ "GetPermBans", GetPermBans },
-	{ "GetBan", GetBan },
-	{ "GetPermBan", GetPermBan },
-	{ "GetTempBan", GetTempBan },
-	{ "GetRangeBans", GetRangeBans },
-	{ "GetTempRangeBans", GetTempRangeBans },
-	{ "GetPermRangeBans", GetPermRangeBans },
-	{ "GetRangeBan", GetRangeBan },
-	{ "GetRangePermBan", GetRangePermBan },
-	{ "GetRangeTempBan", GetRangeTempBan },
-	{ "Unban", Unban },
-	{ "UnbanPerm", UnbanPerm },
-	{ "UnbanTemp", UnbanTemp },
-	{ "UnbanAll", UnbanAll },
-	{ "UnbanPermAll", UnbanPermAll },
-	{ "UnbanTempAll", UnbanTempAll },
-	{ "RangeUnban", RangeUnban },
-	{ "RangeUnbanPerm", RangeUnbanPerm },
-	{ "RangeUnbanTemp", RangeUnbanTemp },
-	{ "ClearBans", ClearBans },
-	{ "ClearPermBans", ClearPermBans },
-	{ "ClearTempBans", ClearTempBans },
-	{ "ClearRangeBans", ClearRangeBans },
-	{ "ClearRangePermBans", ClearRangePermBans },
-	{ "ClearRangeTempBans", ClearRangeTempBans },
-	{ "Ban", Ban },
-	{ "BanIP", BanIP },
-	{ "BanNick", BanNick },
-	{ "TempBan", TempBan },
-	{ "TempBanIP", TempBanIP },
-	{ "TempBanNick", TempBanNick },
-	{ "RangeBan", RangeBan },
-	{ "RangeTempBan", RangeTempBan },
-	{ NULL, NULL }
-};
+static const luaL_Reg BanManRegs[] = {{"Save", Save}, // NOLINT(modernize-avoid-c-arrays)
+                                      {"GetBans", GetBans},
+                                      {"GetTempBans", GetTempBans},
+                                      {"GetPermBans", GetPermBans},
+                                      {"GetBan", GetBan},
+                                      {"GetPermBan", GetPermBan},
+                                      {"GetTempBan", GetTempBan},
+                                      {"GetRangeBans", GetRangeBans},
+                                      {"GetTempRangeBans", GetTempRangeBans},
+                                      {"GetPermRangeBans", GetPermRangeBans},
+                                      {"GetRangeBan", GetRangeBan},
+                                      {"GetRangePermBan", GetRangePermBan},
+                                      {"GetRangeTempBan", GetRangeTempBan},
+                                      {"Unban", Unban},
+                                      {"UnbanPerm", UnbanPerm},
+                                      {"UnbanTemp", UnbanTemp},
+                                      {"UnbanAll", UnbanAll},
+                                      {"UnbanPermAll", UnbanPermAll},
+                                      {"UnbanTempAll", UnbanTempAll},
+                                      {"RangeUnban", RangeUnban},
+                                      {"RangeUnbanPerm", RangeUnbanPerm},
+                                      {"RangeUnbanTemp", RangeUnbanTemp},
+                                      {"ClearBans", ClearBans},
+                                      {"ClearPermBans", ClearPermBans},
+                                      {"ClearTempBans", ClearTempBans},
+                                      {"ClearRangeBans", ClearRangeBans},
+                                      {"ClearRangePermBans", ClearRangePermBans},
+                                      {"ClearRangeTempBans", ClearRangeTempBans},
+                                      {"Ban", Ban},
+                                      {"BanIP", BanIP},
+                                      {"BanNick", BanNick},
+                                      {"TempBan", TempBan},
+                                      {"TempBanIP", TempBanIP},
+                                      {"TempBanNick", TempBanNick},
+                                      {"RangeBan", RangeBan},
+                                      {"RangeTempBan", RangeTempBan},
+                                      {nullptr, nullptr}};
 //---------------------------------------------------------------------------
 
-#if LUA_VERSION_NUM > 501
-int RegBanMan(lua_State * pLua)
+int RegBanMan(lua_State* pLua)
 {
-	luaL_newlib(pLua, BanManRegs);
-	return 1;
-#else
-void RegBanMan(lua_State * pLua)
-{
-	luaL_register(pLua, "BanMan", BanManRegs);
-#endif
+    luaL_newlib(pLua, BanManRegs);
+    return 1;
 }
 //---------------------------------------------------------------------------

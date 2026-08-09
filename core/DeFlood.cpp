@@ -30,489 +30,460 @@
 //---------------------------------------------------------------------------
 #include "DeFlood.h"
 //---------------------------------------------------------------------------
+#include "LanguageManager.h"
 
-bool DeFloodCheckForFlood(User * pUser, const uint8_t ui8DefloodType, const int16_t ui16Action,
-                          uint16_t &ui16Count, uint64_t &ui64LastOkTick,
-                          const int16_t ui16DefloodCount, const uint32_t ui32DefloodTime, const char * sOtherNick/* = NULL*/)
+// Lookup table for DeFloodGetMessage: maps DefloodTypes × msgId → LangIds
+struct DefloodMsgEntry
 {
-	if (ui16Count == 0)
-	{
-		ui64LastOkTick = ServerManager::m_ui64ActualTick;
-	}
-	else if (ui16Count == ui16DefloodCount)
-	{
-		if ((ui64LastOkTick + ui32DefloodTime) > ServerManager::m_ui64ActualTick)
-		{
-			DeFloodDoAction(pUser, ui8DefloodType, ui16Action, ui16Count, sOtherNick);
-			return true;
-		}
-		else
-		{
-			ui64LastOkTick = ServerManager::m_ui64ActualTick;
-			ui16Count = 0;
-		}
-	}
-	else if (ui16Count > ui16DefloodCount)
-	{
-		if ((ui64LastOkTick + ui32DefloodTime) > ServerManager::m_ui64ActualTick)
-		{
-			if (ui16Action == 2 && ui16Count == (ui16DefloodCount * 2))
-			{
-				pUser->m_ui32DefloodWarnings++;
+    int m_sWarning; // msgId 0
+    int m_sAction;  // msgId 1
+    int m_sReport;  // msgId 2
+};
 
-				if (DeFloodCheckForWarn(pUser, ui8DefloodType, sOtherNick) == true)
-				{
-					return true;
-				}
-				ui16Count -= ui16DefloodCount;
-			}
-			ui16Count++;
-			return true;
-		}
-		else
-		{
-			ui64LastOkTick = ServerManager::m_ui64ActualTick;
-			ui16Count = 0;
-		}
-	}
-	else if ((ui64LastOkTick + ui32DefloodTime) <= ServerManager::m_ui64ActualTick)
-	{
-		ui64LastOkTick = ServerManager::m_ui64ActualTick;
-		ui16Count = 0;
-	}
+static constexpr DefloodMsgEntry g_defloodMessages[] = { // NOLINT(modernize-avoid-c-arrays)
+    // GETNICKLIST
+    {std::to_underlying(LangIds::LAN_PLS_DONT_FLOOD_WITH_GetNickList), std::to_underlying(LangIds::LAN_GetNickList_FLOODING), std::to_underlying(LangIds::LAN_GetNickList_FLOODER)},
+    // MYINFO
+    {std::to_underlying(LangIds::LAN_PLS_DONT_FLOOD_WITH_MyINFO), std::to_underlying(LangIds::LAN_MyINFO_FLOODING), std::to_underlying(LangIds::LAN_MyINFO_FLOODER)},
+    // SEARCH
+    {std::to_underlying(LangIds::LAN_PLS_DONT_FLOOD_WITH_SEARCHES), std::to_underlying(LangIds::LAN_SEARCH_FLOODING), std::to_underlying(LangIds::LAN_SEARCH_FLOODER)},
+    // CHAT
+    {std::to_underlying(LangIds::LAN_PLS_DONT_FLOOD_CHAT), std::to_underlying(LangIds::LAN_CHAT_FLOODING), std::to_underlying(LangIds::LAN_CHAT_FLOODER)},
+    // PM
+    {std::to_underlying(LangIds::LAN_PLS_DONT_FLOOD_WITH_PM), std::to_underlying(LangIds::LAN_PM_FLOODING), std::to_underlying(LangIds::LAN_PM_FLOODER)},
+    // SAME_SEARCH
+    {std::to_underlying(LangIds::LAN_PLS_DONT_FLOOD_WITH_SAME_SEARCHES), std::to_underlying(LangIds::LAN_SAME_SEARCH_FLOODING), std::to_underlying(LangIds::LAN_SAME_SEARCH_FLOODER)},
+    // SAME_PM
+    {std::to_underlying(LangIds::LAN_PLS_DONT_FLOOD_WITH_SAME_PM), std::to_underlying(LangIds::LAN_SAME_PM_FLOODING), std::to_underlying(LangIds::LAN_SAME_PM_FLOODER)},
+    // SAME_CHAT
+    {std::to_underlying(LangIds::LAN_PLS_DONT_FLOOD_SAME_CHAT), std::to_underlying(LangIds::LAN_SAME_CHAT_FLOODING), std::to_underlying(LangIds::LAN_SAME_CHAT_FLOODER)},
+    // SAME_MULTI_PM
+    {std::to_underlying(LangIds::LAN_PLS_DONT_FLOOD_WITH_SAME_MULTI_PM), std::to_underlying(LangIds::LAN_SAME_MULTI_PM_FLOODING), std::to_underlying(LangIds::LAN_SAME_MULTI_PM_FLOODER)},
+    // SAME_MULTI_CHAT
+    {std::to_underlying(LangIds::LAN_PLS_DONT_FLOOD_SAME_MULTI_CHAT), std::to_underlying(LangIds::LAN_SAME_MULTI_CHAT_FLOODING), std::to_underlying(LangIds::LAN_SAME_MULTI_CHAT_FLOODER)},
+    // CTM
+    {std::to_underlying(LangIds::LAN_PLS_DONT_FLOOD_WITH_CTM), std::to_underlying(LangIds::LAN_CTM_FLOODING), std::to_underlying(LangIds::LAN_CTM_FLOODER)},
+    // RCTM
+    {std::to_underlying(LangIds::LAN_PLS_DONT_FLOOD_WITH_RCTM), std::to_underlying(LangIds::LAN_RCTM_FLOODING), std::to_underlying(LangIds::LAN_RCTM_FLOODER)},
+    // SR
+    {std::to_underlying(LangIds::LAN_PLS_DONT_FLOOD_WITH_SR), std::to_underlying(LangIds::LAN_SR_FLOODING), std::to_underlying(LangIds::LAN_SR_FLOODER)},
+    // MAX_DOWN
+    {std::to_underlying(LangIds::LAN_PLS_DONT_FLOOD_WITH_DATA), std::to_underlying(LangIds::LAN_DATA_FLOODING), std::to_underlying(LangIds::LAN_DATA_FLOODER)},
+    // INTERVAL_CHAT (only msgId 0 used)
+    {std::to_underlying(LangIds::LAN_SECONDS_BEFORE_NEXT_CHAT_MSG), {}, {}},
+    // INTERVAL_PM (only msgId 0 used)
+    {std::to_underlying(LangIds::LAN_SECONDS_BEFORE_NEXT_PM), {}, {}},
+    // INTERVAL_SEARCH (only msgId 0 used)
+    {std::to_underlying(LangIds::LAN_SECONDS_BEFORE_NEXT_SEARCH), {}, {}},
+};
 
-	ui16Count++;
-	return false;
+bool DeFloodCheckForFlood(User* pUser,
+                          DefloodTypes eDefloodType,
+                          const int16_t ui16Action,
+                          uint16_t& ui16Count,
+                          uint64_t& ui64LastOkTick,
+                          const int16_t ui16DefloodCount,
+                          const uint32_t ui32DefloodTime,
+                          const char* sOtherNick /* = nullptr*/)
+{
+    if (ui16Count == 0)
+    {
+        ui64LastOkTick = ServerManager::m_ui64ActualTick;
+    }
+    else if (ui16Count == ui16DefloodCount)
+    {
+        if ((ui64LastOkTick + ui32DefloodTime) > ServerManager::m_ui64ActualTick) [[unlikely]]
+        {
+            DeFloodDoAction(pUser, eDefloodType, ui16Action, ui16Count, sOtherNick);
+            return true;
+        }
+        ui64LastOkTick = ServerManager::m_ui64ActualTick;
+        ui16Count = 0;
+    }
+    else if (ui16Count > ui16DefloodCount)
+    {
+        if ((ui64LastOkTick + ui32DefloodTime) > ServerManager::m_ui64ActualTick) [[unlikely]]
+        {
+            if (ui16Action == 2 && ui16Count == (ui16DefloodCount * 2))
+            {
+                pUser->m_ui32DefloodWarnings++;
+
+                if (DeFloodCheckForWarn(pUser, eDefloodType, sOtherNick))
+                {
+                    return true;
+                }
+                ui16Count -= ui16DefloodCount;
+            }
+            ui16Count++;
+            return true;
+        }
+        ui64LastOkTick = ServerManager::m_ui64ActualTick;
+        ui16Count = 0;
+    }
+    else if ((ui64LastOkTick + ui32DefloodTime) <= ServerManager::m_ui64ActualTick)
+    {
+        ui64LastOkTick = ServerManager::m_ui64ActualTick;
+        ui16Count = 0;
+    }
+
+    ui16Count++;
+    return false;
 }
 //---------------------------------------------------------------------------
 
-bool DeFloodCheckForSameFlood(User * pUser, const uint8_t ui8DefloodType, const int16_t ui16Action,
-                              uint16_t &ui16Count, const uint64_t &ui64LastOkTick,
-                              const int16_t ui16DefloodCount, const uint32_t ui32DefloodTime,
-                              const char * sNewData, const size_t ui32NewDataLen,
-                              const char * sOldData, const uint16_t ui16OldDataLen, bool &bNewData, const char * sOtherNick/* = NULL*/)
+bool DeFloodCheckForSameFlood(User* pUser,
+                              DefloodTypes eDefloodType,
+                              const int16_t ui16Action,
+                              uint16_t& ui16Count,
+                              uint64_t ui64LastOkTick,
+                              const int16_t ui16DefloodCount,
+                              const uint32_t ui32DefloodTime,
+                              const char* sNewData,
+                              const size_t ui32NewDataLen,
+                              const char* sOldData,
+                              const uint16_t ui16OldDataLen,
+                              bool& bNewData,
+                              const char* sOtherNick /* = nullptr*/)
 {
-	if (ui16OldDataLen == 0 && ui32NewDataLen == 0)
-		return false;
-	if ((uint32_t)ui16OldDataLen == ui32NewDataLen && (ServerManager::m_ui64ActualTick >= ui64LastOkTick &&
-	        (ui64LastOkTick + ui32DefloodTime) > ServerManager::m_ui64ActualTick) &&
-	        memcmp(sNewData, sOldData, ui16OldDataLen) == 0)
-	{
-		if (ui16Count < ui16DefloodCount)
-		{
-			ui16Count++;
+    if (ui16OldDataLen == 0 && ui32NewDataLen == 0)
+    {
+        return false;
+    }
+    if (static_cast<uint32_t>(ui16OldDataLen) == ui32NewDataLen &&
+        (ServerManager::m_ui64ActualTick >= ui64LastOkTick && (ui64LastOkTick + ui32DefloodTime) > ServerManager::m_ui64ActualTick) &&
+        memcmp(sNewData, sOldData, ui16OldDataLen) == 0)
+    {
+        if (ui16Count < ui16DefloodCount)
+        {
+            ui16Count++;
 
-			return false;
-		}
-		else if (ui16Count == ui16DefloodCount)
-		{
-			DeFloodDoAction(pUser, ui8DefloodType, ui16Action, ui16Count, sOtherNick);
-			if (pUser->m_ui8State < User::STATE_CLOSING)
-			{
-				ui16Count++;
-			}
+            return false;
+        }
+        if (ui16Count == ui16DefloodCount)
+        {
+            DeFloodDoAction(pUser, eDefloodType, ui16Action, ui16Count, sOtherNick);
+            if (std::to_underlying(pUser->m_ui8State) < std::to_underlying(User::UserStates::STATE_CLOSING))
+            {
+                ui16Count++;
+            }
 
-			return true;
-		}
-		else
-		{
-			if (ui16Action == 2 && ui16Count == (ui16DefloodCount * 2))
-			{
-				pUser->m_ui32DefloodWarnings++;
+            return true;
+        }
+        if (ui16Action == 2 && ui16Count == (ui16DefloodCount * 2))
+        {
+            pUser->m_ui32DefloodWarnings++;
 
-				if (DeFloodCheckForWarn(pUser, ui8DefloodType, sOtherNick) == true)
-				{
-					return true;
-				}
-				ui16Count -= ui16DefloodCount;
-			}
-			ui16Count++;
+            if (DeFloodCheckForWarn(pUser, eDefloodType, sOtherNick))
+            {
+                return true;
+            }
+            ui16Count -= ui16DefloodCount;
+        }
+        ui16Count++;
 
-			return true;
-		}
-	}
-	else
-	{
-		bNewData = true;
-		return false;
-	}
+        return true;
+    }
+    bNewData = true;
+    return false;
 }
 //---------------------------------------------------------------------------
 
-bool DeFloodCheckForDataFlood(User * pUser, const uint8_t ui8DefloodType, const int16_t ui16Action,
-                              uint32_t &ui32Count, uint64_t &ui64LastOkTick,
-                              const int16_t ui16DefloodCount, const uint32_t ui32DefloodTime)
+bool DeFloodCheckForDataFlood(User* pUser,
+                              DefloodTypes eDefloodType,
+                              const int16_t ui16Action,
+                              uint32_t& ui32Count,
+                              uint64_t& ui64LastOkTick,
+                              const int16_t ui16DefloodCount,
+                              const uint32_t ui32DefloodTime)
 {
-	if ((uint16_t)(ui32Count / 1024) >= ui16DefloodCount)
-	{
-		if ((ui64LastOkTick + ui32DefloodTime) > ServerManager::m_ui64ActualTick)
-		{
-			if ((pUser->m_ui32BoolBits & User::BIT_RECV_FLOODER) == User::BIT_RECV_FLOODER)
-			{
-				return true;
-			}
-			pUser->m_ui32BoolBits |= User::BIT_RECV_FLOODER;
-			uint16_t ui16Count = (uint16_t)ui32Count;
-			DeFloodDoAction(pUser, ui8DefloodType, ui16Action, ui16Count, NULL);
-			return true;
-		}
-		else
-		{
-			pUser->m_ui32BoolBits &= ~User::BIT_RECV_FLOODER;
-			ui64LastOkTick = ServerManager::m_ui64ActualTick;
-			ui32Count = 0;
-			return false;
-		}
-	}
-	else if ((ui64LastOkTick + ui32DefloodTime) <= ServerManager::m_ui64ActualTick)
-	{
-		pUser->m_ui32BoolBits &= ~User::BIT_RECV_FLOODER;
-		ui64LastOkTick = ServerManager::m_ui64ActualTick;
-		ui32Count = 0;
-		return false;
-	}
+    if (static_cast<uint16_t>(ui32Count / 1024) >= ui16DefloodCount)
+    {
+        if ((ui64LastOkTick + ui32DefloodTime) > ServerManager::m_ui64ActualTick) [[unlikely]]
+        {
+            if ((pUser->m_ui32BoolBits & User::BIT_RECV_FLOODER) == User::BIT_RECV_FLOODER)
+            {
+                return true;
+            }
+            pUser->m_ui32BoolBits |= User::BIT_RECV_FLOODER;
+            auto ui16Count = static_cast<uint16_t>(ui32Count);
+            DeFloodDoAction(pUser, eDefloodType, ui16Action, ui16Count, nullptr);
+            return true;
+        }
+        pUser->m_ui32BoolBits &= ~User::BIT_RECV_FLOODER;
+        ui64LastOkTick = ServerManager::m_ui64ActualTick;
+        ui32Count = 0;
+        return false;
+    }
+    else if ((ui64LastOkTick + ui32DefloodTime) <= ServerManager::m_ui64ActualTick)
+    {
+        pUser->m_ui32BoolBits &= ~User::BIT_RECV_FLOODER;
+        ui64LastOkTick = ServerManager::m_ui64ActualTick;
+        ui32Count = 0;
+        return false;
+    }
 
-	return false;
+    return false;
 }
 //---------------------------------------------------------------------------
 
-void DeFloodDoAction(User * pUser, const uint8_t ui8DefloodType, const int16_t ui16Action, uint16_t &ui16Count, const char * sOtherNick)
+void DeFloodDoAction(User* pUser, DefloodTypes eDefloodType, const int16_t ui16Action, uint16_t& ui16Count, const char* sOtherNick)
 {
-	switch (ui16Action)
-	{
-	case 1:
-	{
-		pUser->SendFormatCheckPM("DeFloodDoAction1", sOtherNick, true, "<%s> %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], DeFloodGetMessage(ui8DefloodType, 0));
+    switch (ui16Action)
+    {
+    case 1:
+    {
+        pUser->SendFormatCheckPM("DeFloodDoAction1", sOtherNick, true, "<%s> %s!|", SettingManager::HubSec(), DeFloodGetMessage(eDefloodType, 0));
 
-		if (ui8DefloodType != DEFLOOD_MAX_DOWN)
-		{
-			ui16Count++;
-		}
-		return;
-	}
-	case 2:
-		pUser->m_ui32DefloodWarnings++;
+        if (eDefloodType != DefloodTypes::MAX_DOWN)
+        {
+            ui16Count++;
+        }
+        return;
+    }
+    case 2:
 
-		if (DeFloodCheckForWarn(pUser, ui8DefloodType, sOtherNick) == false && ui8DefloodType != DEFLOOD_MAX_DOWN)
-		{
-			ui16Count++;
-		}
+        pUser->m_ui32DefloodWarnings++;
 
-		return;
-	case 3:
-	{
-		pUser->SendFormatCheckPM("DeFloodDoAction2", sOtherNick, false, "<%s> %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], DeFloodGetMessage(ui8DefloodType, 0));
+        if (!DeFloodCheckForWarn(pUser, eDefloodType, sOtherNick) && eDefloodType != DefloodTypes::MAX_DOWN)
+        {
+            ui16Count++;
+        }
 
-		DeFloodReport(pUser, ui8DefloodType, LanguageManager::m_Ptr->m_sTexts[LAN_WAS_DISCONNECTED]);
+        return;
+    case 3:
+    {
+        pUser->SendFormatCheckPM("DeFloodDoAction2", sOtherNick, false, "<%s> %s!|", SettingManager::HubSec(), DeFloodGetMessage(eDefloodType, 0));
 
-		pUser->Close();
-		return;
-	}
-	case 4:
-	{
-		BanManager::m_Ptr->TempBan(pUser, DeFloodGetMessage(ui8DefloodType, 1), NULL, 0, 0, false);
+        DeFloodReport(pUser, eDefloodType, LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_WAS_DISCONNECTED)].c_str());
 
-		pUser->SendFormatCheckPM("DeFloodDoAction3", sOtherNick, false, "<%s> %s: %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC],  LanguageManager::m_Ptr->m_sTexts[LAN_YOU_BEING_KICKED_BCS], DeFloodGetMessage(ui8DefloodType, 1));
+        pUser->Close();
+        return;
+    }
+    case 4:
+    {
+        BanManager::m_Ptr->TempBan(pUser, DeFloodGetMessage(eDefloodType, 1), nullptr, 0, 0, false);
 
-		DeFloodReport(pUser, ui8DefloodType, LanguageManager::m_Ptr->m_sTexts[LAN_WAS_KICKED]);
+        pUser->SendFormatCheckPM("DeFloodDoAction3",
+                                 sOtherNick,
+                                 false,
+                                 "<%s> %s: %s!|",
+                                 SettingManager::HubSec(),
+                                 LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_YOU_BEING_KICKED_BCS)].c_str(),
+                                 DeFloodGetMessage(eDefloodType, 1));
 
-		pUser->Close();
-		return;
-	}
-	case 5:
-	{
-		BanManager::m_Ptr->TempBan(pUser, DeFloodGetMessage(ui8DefloodType, 1), NULL, SettingManager::m_Ptr->m_i16Shorts[SETSHORT_DEFLOOD_TEMP_BAN_TIME], 0, false);
+        DeFloodReport(pUser, eDefloodType, LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_WAS_KICKED)].c_str());
 
-		pUser->SendFormatCheckPM("DeFloodDoAction4", sOtherNick, false, "<%s> %s: %s %s: %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_HAD_BEEN_TEMP_BANNED_TO], formatTime(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_DEFLOOD_TEMP_BAN_TIME]),
-		                         LanguageManager::m_Ptr->m_sTexts[LAN_BECAUSE_LWR], DeFloodGetMessage(ui8DefloodType, 1));
+        pUser->Close();
+        return;
+    }
+    case 5:
+    {
+        BanManager::m_Ptr->TempBan(
+            pUser, DeFloodGetMessage(eDefloodType, 1), nullptr, SettingManager::m_Ptr->m_i16Shorts[std::to_underlying(SetShortIds::SETSHORT_DEFLOOD_TEMP_BAN_TIME)], 0, false);
 
-		DeFloodReport(pUser, ui8DefloodType, LanguageManager::m_Ptr->m_sTexts[LAN_WAS_TEMPORARY_BANNED]);
+        pUser->SendFormatCheckPM("DeFloodDoAction4",
+                                 sOtherNick,
+                                 false,
+                                 "<%s> %s: %s %s: %s!|",
+                                 SettingManager::HubSec(),
+                                 LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_YOU_HAD_BEEN_TEMP_BANNED_TO)].c_str(),
+                                 formatTime(SettingManager::m_Ptr->m_i16Shorts[std::to_underlying(SetShortIds::SETSHORT_DEFLOOD_TEMP_BAN_TIME)]).c_str(),
+                                 LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_BECAUSE_LWR)].c_str(),
+                                 DeFloodGetMessage(eDefloodType, 1));
 
-		pUser->Close();
-		return;
-	}
-	case 6:
-	{
-		BanManager::m_Ptr->Ban(pUser, DeFloodGetMessage(ui8DefloodType, 1), NULL, false);
+        DeFloodReport(pUser, eDefloodType, LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_WAS_TEMPORARY_BANNED)].c_str());
 
-		pUser->SendFormatCheckPM("DeFloodDoAction5", sOtherNick, false, "<%s> %s: %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_ARE_BEING_BANNED_BECAUSE], DeFloodGetMessage(ui8DefloodType, 1));
+        pUser->Close();
+        return;
+    }
+    case 6:
+    {
+        BanManager::m_Ptr->Ban(pUser, DeFloodGetMessage(eDefloodType, 1), nullptr, false);
 
-		DeFloodReport(pUser, ui8DefloodType, LanguageManager::m_Ptr->m_sTexts[LAN_WAS_BANNED]);
+        pUser->SendFormatCheckPM("DeFloodDoAction5",
+                                 sOtherNick,
+                                 false,
+                                 "<%s> %s: %s!|",
+                                 SettingManager::HubSec(),
+                                 LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_YOU_ARE_BEING_BANNED_BECAUSE)].c_str(),
+                                 DeFloodGetMessage(eDefloodType, 1));
 
-		pUser->Close();
-		return;
-	}
-	}
+        DeFloodReport(pUser, eDefloodType, LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_WAS_BANNED)].c_str());
+
+        pUser->Close();
+        return;
+    }
+    default:
+        break;
+    }
 }
 //---------------------------------------------------------------------------
 
-bool DeFloodCheckForWarn(User * pUser, const uint8_t ui8DefloodType, const char * sOtherNick)
+bool DeFloodCheckForWarn(User* pUser, DefloodTypes eDefloodType, const char* sOtherNick)
 {
-	if (pUser->m_ui32DefloodWarnings < (uint32_t)SettingManager::m_Ptr->m_i16Shorts[SETSHORT_DEFLOOD_WARNING_COUNT])
-	{
-		pUser->SendFormat("DeFloodCheckForWarn", true, "<%s> %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], DeFloodGetMessage(ui8DefloodType, 0));
-		return false;
-	}
-	else
-	{
-		switch (SettingManager::m_Ptr->m_i16Shorts[SETSHORT_DEFLOOD_WARNING_ACTION])
-		{
-		case 0:
-		{
-			pUser->SendFormatCheckPM("DeFloodCheckForWarn1", sOtherNick, false, "<%s> %s: %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_ARE_BEING_DISCONNECTED_BECAUSE], DeFloodGetMessage(ui8DefloodType, 1));
+    if (pUser->m_ui32DefloodWarnings < static_cast<uint32_t>(SettingManager::m_Ptr->m_i16Shorts[std::to_underlying(SetShortIds::SETSHORT_DEFLOOD_WARNING_COUNT)]))
+    {
+        pUser->SendFormat("DeFloodCheckForWarn", true, "<%s> %s!|", SettingManager::HubSec(), DeFloodGetMessage(eDefloodType, 0));
+        return false;
+    }
 
-			DeFloodReport(pUser, ui8DefloodType, LanguageManager::m_Ptr->m_sTexts[LAN_WAS_DISCONNECTED]);
+    switch (SettingManager::m_Ptr->m_i16Shorts[std::to_underlying(SetShortIds::SETSHORT_DEFLOOD_WARNING_ACTION)])
+    {
+    case 0:
+    {
+        pUser->SendFormatCheckPM("DeFloodCheckForWarn1",
+                                 sOtherNick,
+                                 false,
+                                 "<%s> %s: %s!|",
+                                 SettingManager::HubSec(),
+                                 LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_YOU_ARE_BEING_DISCONNECTED_BECAUSE)].c_str(),
+                                 DeFloodGetMessage(eDefloodType, 1));
 
-			break;
-		}
-		case 1:
-		{
-			BanManager::m_Ptr->TempBan(pUser, DeFloodGetMessage(ui8DefloodType, 1), NULL, 0, 0, false);
+        DeFloodReport(pUser, eDefloodType, LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_WAS_DISCONNECTED)].c_str());
 
-			pUser->SendFormatCheckPM("DeFloodCheckForWarn2", sOtherNick, false, "<%s> %s: %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_BEING_KICKED_BCS], DeFloodGetMessage(ui8DefloodType, 1));
+        break;
+    }
+    case 1:
+    {
+        BanManager::m_Ptr->TempBan(pUser, DeFloodGetMessage(eDefloodType, 1), nullptr, 0, 0, false);
 
-			DeFloodReport(pUser, ui8DefloodType, LanguageManager::m_Ptr->m_sTexts[LAN_WAS_KICKED]);
+        pUser->SendFormatCheckPM("DeFloodCheckForWarn2",
+                                 sOtherNick,
+                                 false,
+                                 "<%s> %s: %s!|",
+                                 SettingManager::HubSec(),
+                                 LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_YOU_BEING_KICKED_BCS)].c_str(),
+                                 DeFloodGetMessage(eDefloodType, 1));
 
-			break;
-		}
-		case 2:
-		{
-			BanManager::m_Ptr->TempBan(pUser, DeFloodGetMessage(ui8DefloodType, 1), NULL, SettingManager::m_Ptr->m_i16Shorts[SETSHORT_DEFLOOD_TEMP_BAN_TIME], 0, false);
+        DeFloodReport(pUser, eDefloodType, LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_WAS_KICKED)].c_str());
 
-			pUser->SendFormatCheckPM("DeFloodCheckForWarn3", sOtherNick, false, "<%s> %s: %s %s: %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_HAD_BEEN_TEMP_BANNED_TO], formatTime(SettingManager::m_Ptr->m_i16Shorts[SETSHORT_DEFLOOD_TEMP_BAN_TIME]),
-			                         LanguageManager::m_Ptr->m_sTexts[LAN_BECAUSE_LWR], DeFloodGetMessage(ui8DefloodType, 1));
+        break;
+    }
+    case 2:
+    {
+        BanManager::m_Ptr->TempBan(
+            pUser, DeFloodGetMessage(eDefloodType, 1), nullptr, SettingManager::m_Ptr->m_i16Shorts[std::to_underlying(SetShortIds::SETSHORT_DEFLOOD_TEMP_BAN_TIME)], 0, false);
 
-			DeFloodReport(pUser, ui8DefloodType, LanguageManager::m_Ptr->m_sTexts[LAN_WAS_TEMPORARY_BANNED]);
+        pUser->SendFormatCheckPM("DeFloodCheckForWarn3",
+                                 sOtherNick,
+                                 false,
+                                 "<%s> %s: %s %s: %s!|",
+                                 SettingManager::HubSec(),
+                                 LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_YOU_HAD_BEEN_TEMP_BANNED_TO)].c_str(),
+                                 formatTime(SettingManager::m_Ptr->m_i16Shorts[std::to_underlying(SetShortIds::SETSHORT_DEFLOOD_TEMP_BAN_TIME)]).c_str(),
+                                 LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_BECAUSE_LWR)].c_str(),
+                                 DeFloodGetMessage(eDefloodType, 1));
 
-			break;
-		}
-		case 3:
-		{
-			BanManager::m_Ptr->Ban(pUser, DeFloodGetMessage(ui8DefloodType, 1), NULL, false);
+        DeFloodReport(pUser, eDefloodType, LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_WAS_TEMPORARY_BANNED)].c_str());
 
-			pUser->SendFormatCheckPM("DeFloodCheckForWarn4", sOtherNick, false, "<%s> %s: %s!|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_YOU_ARE_BEING_BANNED_BECAUSE], DeFloodGetMessage(ui8DefloodType, 1));
+        break;
+    }
+    case 3:
+    {
+        BanManager::m_Ptr->Ban(pUser, DeFloodGetMessage(eDefloodType, 1), nullptr, false);
 
-			DeFloodReport(pUser, ui8DefloodType, LanguageManager::m_Ptr->m_sTexts[LAN_WAS_BANNED]);
+        pUser->SendFormatCheckPM("DeFloodCheckForWarn4",
+                                 sOtherNick,
+                                 false,
+                                 "<%s> %s: %s!|",
+                                 SettingManager::HubSec(),
+                                 LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_YOU_ARE_BEING_BANNED_BECAUSE)].c_str(),
+                                 DeFloodGetMessage(eDefloodType, 1));
 
-			break;
-		}
-		}
+        DeFloodReport(pUser, eDefloodType, LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_WAS_BANNED)].c_str());
 
-		pUser->Close();
-		return true;
-	}
+        break;
+    }
+    default:
+        break;
+    }
+
+    pUser->Close();
+    return true;
 }
 //---------------------------------------------------------------------------
 
-const char * DeFloodGetMessage(const uint8_t ui8DefloodType, const uint8_t ui8MsgId)
+const char* DeFloodGetMessage(DefloodTypes eDefloodType, const uint8_t ui8MsgId)
 {
-	switch (ui8DefloodType)
-	{
-	case DEFLOOD_GETNICKLIST:
-		switch (ui8MsgId)
-		{
-		case 0:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_PLS_DONT_FLOOD_WITH_GetNickList];
-		case 1:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_GetNickList_FLOODING];
-		case 2:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_GetNickList_FLOODER];
-		}
-		break;
-	case DEFLOOD_MYINFO:
-		switch (ui8MsgId)
-		{
-		case 0:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_PLS_DONT_FLOOD_WITH_MyINFO];
-		case 1:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_MyINFO_FLOODING];
-		case 2:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_MyINFO_FLOODER];
-		}
-		break;
-	case DEFLOOD_SEARCH:
-		switch (ui8MsgId)
-		{
-		case 0:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_PLS_DONT_FLOOD_WITH_SEARCHES];
-		case 1:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_SEARCH_FLOODING];
-		case 2:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_SEARCH_FLOODER];
-		}
-		break;
-	case DEFLOOD_CHAT:
-		switch (ui8MsgId)
-		{
-		case 0:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_PLS_DONT_FLOOD_CHAT];
-		case 1:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_CHAT_FLOODING];
-		case 2:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_CHAT_FLOODER];
-		}
-		break;
-	case DEFLOOD_PM:
-		switch (ui8MsgId)
-		{
-		case 0:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_PLS_DONT_FLOOD_WITH_PM];
-		case 1:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_PM_FLOODING];
-		case 2:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_PM_FLOODER];
-		}
-		break;
-	case DEFLOOD_SAME_SEARCH:
-		switch (ui8MsgId)
-		{
-		case 0:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_PLS_DONT_FLOOD_WITH_SAME_SEARCHES];
-		case 1:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_SAME_SEARCH_FLOODING];
-		case 2:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_SAME_SEARCH_FLOODER];
-		}
-		break;
-	case DEFLOOD_SAME_PM:
-		switch (ui8MsgId)
-		{
-		case 0:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_PLS_DONT_FLOOD_WITH_SAME_PM];
-		case 1:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_SAME_PM_FLOODING];
-		case 2:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_SAME_PM_FLOODER];
-		}
-		break;
-	case DEFLOOD_SAME_CHAT:
-		switch (ui8MsgId)
-		{
-		case 0:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_PLS_DONT_FLOOD_SAME_CHAT];
-		case 1:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_SAME_CHAT_FLOODING];
-		case 2:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_SAME_CHAT_FLOODER];
-		}
-		break;
-	case DEFLOOD_SAME_MULTI_PM:
-		switch (ui8MsgId)
-		{
-		case 0:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_PLS_DONT_FLOOD_WITH_SAME_MULTI_PM];
-		case 1:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_SAME_MULTI_PM_FLOODING];
-		case 2:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_SAME_MULTI_PM_FLOODER];
-		}
-		break;
-	case DEFLOOD_SAME_MULTI_CHAT:
-		switch (ui8MsgId)
-		{
-		case 0:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_PLS_DONT_FLOOD_SAME_MULTI_CHAT];
-		case 1:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_SAME_MULTI_CHAT_FLOODING];
-		case 2:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_SAME_MULTI_CHAT_FLOODER];
-		}
-		break;
-	case DEFLOOD_CTM:
-		switch (ui8MsgId)
-		{
-		case 0:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_PLS_DONT_FLOOD_WITH_CTM];
-		case 1:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_CTM_FLOODING];
-		case 2:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_CTM_FLOODER];
-		}
-		break;
-	case DEFLOOD_RCTM:
-		switch (ui8MsgId)
-		{
-		case 0:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_PLS_DONT_FLOOD_WITH_RCTM];
-		case 1:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_RCTM_FLOODING];
-		case 2:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_RCTM_FLOODER];
-		}
-		break;
-	case DEFLOOD_SR:
-		switch (ui8MsgId)
-		{
-		case 0:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_PLS_DONT_FLOOD_WITH_SR];
-		case 1:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_SR_FLOODING];
-		case 2:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_SR_FLOODER];
-		}
-		break;
-	case DEFLOOD_MAX_DOWN:
-		switch (ui8MsgId)
-		{
-		case 0:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_PLS_DONT_FLOOD_WITH_DATA];
-		case 1:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_DATA_FLOODING];
-		case 2:
-			return LanguageManager::m_Ptr->m_sTexts[LAN_DATA_FLOODER];
-		}
-		break;
-	case INTERVAL_CHAT:
-		return LanguageManager::m_Ptr->m_sTexts[LAN_SECONDS_BEFORE_NEXT_CHAT_MSG];
-	case INTERVAL_PM:
-		return LanguageManager::m_Ptr->m_sTexts[LAN_SECONDS_BEFORE_NEXT_PM];
-	case INTERVAL_SEARCH:
-		return LanguageManager::m_Ptr->m_sTexts[LAN_SECONDS_BEFORE_NEXT_SEARCH];
-	}
-	return "";
+    const auto idx = std::to_underlying(eDefloodType);
+    if (idx >= std::size(g_defloodMessages) || ui8MsgId > 2)
+    {
+        return "";
+    }
+
+    const auto& entry = g_defloodMessages[idx];
+    switch (ui8MsgId)
+    {
+    case 0:
+        return LanguageManager::m_Ptr->m_sTexts[entry.m_sWarning].c_str();
+    case 1:
+        return LanguageManager::m_Ptr->m_sTexts[entry.m_sAction].c_str();
+    case 2:
+        return LanguageManager::m_Ptr->m_sTexts[entry.m_sReport].c_str();
+    default:
+        return "";
+    }
 }
 //---------------------------------------------------------------------------
 
-void DeFloodReport(User * pUser, const uint8_t ui8DefloodType, const char *sAction)
+void DeFloodReport(User* pUser, DefloodTypes eDefloodType, const char* sAction)
 {
-	if (SettingManager::m_Ptr->m_bBools[SETBOOL_DEFLOOD_REPORT] == true)
-	{
-		GlobalDataQueue::m_Ptr->StatusMessageFormat("DeFloodReport", "<%s> *** %s %s %s %s %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], DeFloodGetMessage(ui8DefloodType, 2), pUser->m_sNick, LanguageManager::m_Ptr->m_sTexts[LAN_WITH_IP], pUser->m_sIP, sAction);
-	}
+    if (SettingManager::m_Ptr->m_bBools[std::to_underlying(SetBoolIds::SETBOOL_DEFLOOD_REPORT)])
+    {
+        GlobalDataQueue::m_Ptr->StatusMessageFormat("DeFloodReport",
+                                                    "<%s> *** %s %s %s %s %s.|",
+                                                    SettingManager::HubSec(),
+                                                    DeFloodGetMessage(eDefloodType, 2),
+                                                    pUser->m_sNick.c_str(),
+                                                    LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_WITH_IP)].c_str(),
+                                                    pUser->m_sIP.data(),
+                                                    sAction);
+    }
 
-	UdpDebug::m_Ptr->BroadcastFormat("[SYS] Flood type %hu from %s (%s) - user closed.", (uint16_t)ui8DefloodType, pUser->m_sNick, pUser->m_sIP);
+    UdpDebug::m_Ptr->BroadcastFormat(
+        "[SYS] Flood type %hu from %s (%s) - user closed.", std::to_underlying(eDefloodType), pUser->m_sNick.c_str(), pUser->m_sIP.data());
 }
 //---------------------------------------------------------------------------
 
-bool DeFloodCheckInterval(User * pUser, const uint8_t ui8DefloodType, uint16_t &ui16Count, uint64_t &ui64LastOkTick, const int16_t ui16DefloodCount, const uint32_t ui32DefloodTime, const char * sOtherNick/* = NULL*/)
+bool DeFloodCheckInterval(User* pUser,
+                          DefloodTypes eDefloodType,
+                          uint16_t& ui16Count,
+                          uint64_t& ui64LastOkTick,
+                          const int16_t ui16DefloodCount,
+                          const uint32_t ui32DefloodTime,
+                          const char* sOtherNick /* = nullptr*/)
 {
-	if (ui16Count == 0)
-	{
-		ui64LastOkTick = ServerManager::m_ui64ActualTick;
-	}
-	else if (ui16Count >= ui16DefloodCount)
-	{
-		if ((ui64LastOkTick + ui32DefloodTime) > ServerManager::m_ui64ActualTick)
-		{
-			ui16Count++;
+    if (ui16Count == 0)
+    {
+        ui64LastOkTick = ServerManager::m_ui64ActualTick;
+    }
+    else if (ui16Count >= ui16DefloodCount)
+    {
+        if ((ui64LastOkTick + ui32DefloodTime) > ServerManager::m_ui64ActualTick) [[unlikely]]
+        {
+            ui16Count++;
 
-			pUser->SendFormatCheckPM("DeFloodCheckInterval", sOtherNick, true, "<%s> %s %" PRIu64 " %s.|", SettingManager::m_Ptr->m_sPreTexts[SettingManager::SETPRETXT_HUB_SEC], LanguageManager::m_Ptr->m_sTexts[LAN_PLEASE_WAIT], (ui64LastOkTick + ui32DefloodTime) - ServerManager::m_ui64ActualTick, DeFloodGetMessage(ui8DefloodType, 0));
+            pUser->SendFormatCheckPM("DeFloodCheckInterval",
+                                     sOtherNick,
+                                     true,
+                                     "<%s> %s %" PRIu64 " %s.|",
+                                     SettingManager::HubSec(),
+                                     LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_PLEASE_WAIT)].c_str(),
+                                     (ui64LastOkTick + ui32DefloodTime) - ServerManager::m_ui64ActualTick,
+                                     DeFloodGetMessage(eDefloodType, 0));
 
-			return true;
-		}
-		else
-		{
-			ui64LastOkTick = ServerManager::m_ui64ActualTick;
-			ui16Count = 0;
-		}
-	}
-	else if ((ui64LastOkTick + ui32DefloodTime) <= ServerManager::m_ui64ActualTick)
-	{
-		ui64LastOkTick = ServerManager::m_ui64ActualTick;
-		ui16Count = 0;
-	}
+            return true;
+        }
+        ui64LastOkTick = ServerManager::m_ui64ActualTick;
+        ui16Count = 0;
+    }
+    else if ((ui64LastOkTick + ui32DefloodTime) <= ServerManager::m_ui64ActualTick)
+    {
+        ui64LastOkTick = ServerManager::m_ui64ActualTick;
+        ui16Count = 0;
+    }
 
-	ui16Count++;
-	return false;
+    ui16Count++;
+    return false;
 }
 //---------------------------------------------------------------------------

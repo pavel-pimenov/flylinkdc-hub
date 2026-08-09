@@ -21,69 +21,79 @@
 #ifndef UdpDebugH
 #define UdpDebugH
 //---------------------------------------------------------------------------
+#include "CriticalSection.h"
+
+#include <list>
+#include <memory>
 #include <string>
+#include <vector>
 
 struct User;
 //---------------------------------------------------------------------------
-extern bool g_isUseSyslog;
 
 class UdpDebug
 {
 private:
-	char * sDebugBuffer, * sDebugHead;
+    mutable std::vector<char> m_sDebugBuffer;
+    mutable char* m_sDebugHead = nullptr;
+    uint32_t m_ui32SubscriberCount = 0;
+    mutable CriticalSection m_csUdpDebug;
 
-	struct UdpDbgItem
-	{
-		sockaddr_storage sas_to;
+    struct UdpDbgItem
+    {
+        sockaddr_storage sas_to = {};
 
-		UdpDbgItem * m_pPrev, * m_pNext;
+        std::string m_sNick;
+        int s = -1;
 
-		std::string m_sNick;
-#ifdef _WIN32
-		SOCKET s;
-#else
-		int s;
-#endif
+        int sas_len = 0;
 
-		int sas_len;
+        uint32_t m_ui32Hash = 0;
 
-		uint32_t ui32Hash;
+        bool m_bIsScript = false, m_bAllData = true;
 
-		bool bIsScript, bAllData;
+        UdpDbgItem();
+        ~UdpDbgItem();
+        UdpDbgItem(const UdpDbgItem&) = delete;
+        auto operator=(const UdpDbgItem&) -> UdpDbgItem& = delete;
+    };
+    void CreateBuffer();
+    void DeleteBuffer();
+    void DeleteAllItems();
 
-		UdpDbgItem();
-		~UdpDbgItem();
-		DISALLOW_COPY_AND_ASSIGN(UdpDbgItem);
-	};
-	DISALLOW_COPY_AND_ASSIGN(UdpDebug);
-
-	void CreateBuffer();
-	void DeleteBuffer();
 public:
-	static UdpDebug * m_Ptr;
+    static std::unique_ptr<UdpDebug> m_Ptr;
 
-	UdpDbgItem * pDbgItemList;
+    std::list<std::unique_ptr<UdpDbgItem>> m_DbgItemList;
 
-	UdpDebug();
-	~UdpDebug();
+    UdpDebug(const UdpDebug&) = delete;
+    auto operator=(const UdpDebug&) -> UdpDebug& = delete;
 
-	void Broadcast(const std::string& p_msg) const
-	{
-		if (!p_msg.empty())
-		{
-			Broadcast(p_msg.c_str(), p_msg.size());
-		}
-	}
-	void Broadcast(const char * sMsg, const size_t szMsgLen) const;
-	void BroadcastFormat(const char * sFormatMsg, ...) const;
-	bool New(User * pUser, const uint16_t ui16Port);
-	bool New(const char * sIP, const uint16_t ui16Port, const bool bAllData, const char * sScriptName);
-	bool Remove(User * pUser);
-	void Remove(const char * sScriptName);
-	bool CheckUdpSub(User * pUser, const bool bSendMsg = false) const;
-	void Send(const char * sScriptName, const char * sMessage, const size_t szMsgLen) const;
-	void Cleanup();
-	void UpdateHubName();
+    UdpDebug() = default;
+    ~UdpDebug();
+
+    void Broadcast(const std::string& p_msg) const
+    {
+        if (!p_msg.empty())
+        {
+            Broadcast(p_msg.c_str(), p_msg.size());
+        }
+    }
+    void Broadcast(const char* sMsg, size_t szMsgLen) const;
+    void BroadcastFormat(const char* sFormatMsg, ...) const;
+    [[nodiscard]] auto New(User* pUser, uint16_t ui16Port) -> bool;
+    [[nodiscard]] auto New(const char* sIP, uint16_t ui16Port, bool bAllData, const char* sScriptName) -> bool;
+    [[nodiscard]] auto Remove(User* pUser) -> bool;
+    void Remove(const char* sScriptName);
+    [[nodiscard]] auto CheckUdpSub(User* pUser, bool bSndMess = false) const -> bool;
+    void Send(const char* sScriptName, const char* sMessage, size_t szMsgLen) const;
+    void Cleanup();
+    void UpdateHubName();
+
+    [[nodiscard]] auto GetSubscriberCount() const -> uint32_t
+    {
+        return m_ui32SubscriberCount;
+    }
 };
 //---------------------------------------------------------------------------
 

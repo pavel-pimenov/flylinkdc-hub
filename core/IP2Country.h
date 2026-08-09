@@ -19,35 +19,38 @@
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #ifndef IP2CountryH
 #define IP2CountryH
-//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------
+
+#include <vector>
 
 class IpP2Country
 {
 private:
-	uint32_t * m_ui32RangeFrom, * m_ui32RangeTo;
-	uint8_t * m_ui8RangeCI, * m_ui8IPv6RangeCI;
-	uint8_t * m_ui128IPv6RangeFrom, * m_ui128IPv6RangeTo;
+    std::vector<uint32_t> m_ui32RangeFrom, m_ui32RangeTo;
+    std::vector<uint8_t> m_ui8RangeCI, m_ui8IPv6RangeCI;
+    std::vector<uint8_t> m_ui128IPv6RangeFrom, m_ui128IPv6RangeTo;
 
-	uint32_t m_ui32Size, m_ui32IPv6Size;
+    void LoadIPv4();
+    void LoadIPv6();
 
-	DISALLOW_COPY_AND_ASSIGN(IpP2Country);
-	void LoadIPv4();
-	void LoadIPv6();
 public:
-	static IpP2Country * m_Ptr;
+    IpP2Country(const IpP2Country&) = delete;
+    auto operator=(const IpP2Country&) -> IpP2Country& = delete;
 
-	uint32_t m_ui32Count, m_ui32IPv6Count;
+    static std::unique_ptr<IpP2Country> m_Ptr;
 
-	IpP2Country();
-	~IpP2Country();
+    uint32_t m_ui32Count = 0, m_ui32IPv6Count = 0;
 
-	const char * Find(const uint8_t * ui128IpHash, const bool bCountryName);
-	uint8_t Find(const uint8_t * ui128IpHash);
+    IpP2Country();
+    ~IpP2Country() = default;
 
-	static const char * GetCountry(const uint8_t ui8dx, const bool bCountryName);
-	static const char * GetCountryName(const char * sCode);
+    [[nodiscard]] auto Find(const uint8_t* ui128IpHash, bool bCountryName) const -> const char*;
+    [[nodiscard]] uint8_t Find(const uint8_t* ui128IpHash) const;
 
-	void Reload();
+    [[nodiscard]] static auto GetCountry(uint8_t ui8dx, bool bCountryName) -> const char*;
+    [[nodiscard]] static auto GetCountryName(const char* sCode) -> const char*;
+
+    void Reload();
 };
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

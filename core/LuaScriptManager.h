@@ -27,96 +27,108 @@ struct User;
 struct DcCommand;
 //------------------------------------------------------------------------------
 
+#include <atomic>
+#include <list>
+#include <memory>
+#include <vector>
+
 class ScriptManager
 {
 private:
-	Script * m_pRunningScriptE;
+    void AddRunningScript(Script* pScript);
+    void RemoveRunningScript(Script* pScript);
+    void RebuildRunningList();
 
-	DISALLOW_COPY_AND_ASSIGN(ScriptManager);
+    void LoadXML();
 
-	void AddRunningScript(Script * pScript);
-	void RemoveRunningScript(Script * pScript);
-
-	void LoadXML();
 public:
-	static ScriptManager * m_Ptr;
+    static std::unique_ptr<ScriptManager> m_Ptr;
 
-	Script * m_pRunningScriptS;
+    // Non-owning list of currently-running scripts, kept in m_ppScriptTable
+    // order. Memory is owned by m_ppScriptTable (freed in the destructor).
+    std::list<Script*> m_RunningScriptList;
 
-	Script ** m_ppScriptTable;
-	User * m_pActualUser;
+    std::vector<Script*> m_ppScriptTable;
+    User* m_pActualUser = nullptr;
 
-	ScriptTimer * m_pTimerListS, * m_pTimerListE;
+    std::list<std::unique_ptr<ScriptTimer>> m_TimerList;
+    // Incremented on every timer add/remove so ScriptOnTimer can detect the
+    // list being modified from inside a Lua callback and bail out safely.
+    uint64_t m_ui64TimerListGen = 0;
 
-	uint8_t m_ui8ScriptCount, m_ui8BotsCount;
+    uint8_t m_ui8BotsCount = 0;
 
-	volatile bool m_bMoved;
+    std::atomic<bool> m_bMoved{false};
 
-	enum LuaArrivals
-	{
-		CHAT_ARRIVAL,
-		KEY_ARRIVAL,
-		VALIDATENICK_ARRIVAL,
-		PASSWORD_ARRIVAL,
-		VERSION_ARRIVAL,
-		GETNICKLIST_ARRIVAL,
-		MYINFO_ARRIVAL,
-		GETINFO_ARRIVAL,
-		SEARCH_ARRIVAL,
-		TO_ARRIVAL,
-		CONNECTTOME_ARRIVAL,
-		MULTICONNECTTOME_ARRIVAL,
-		REVCONNECTTOME_ARRIVAL,
-		SR_ARRIVAL,
-		UDP_SR_ARRIVAL,
-		KICK_ARRIVAL,
-		OPFORCEMOVE_ARRIVAL,
-		SUPPORTS_ARRIVAL,
-		BOTINFO_ARRIVAL,
-		CLOSE_ARRIVAL,
-		UNKNOWN_ARRIVAL
+    enum LuaArrivals : uint8_t
+    {
+        CHAT_ARRIVAL,
+        KEY_ARRIVAL,
+        VALIDATENICK_ARRIVAL,
+        PASSWORD_ARRIVAL,
+        VERSION_ARRIVAL,
+        GETNICKLIST_ARRIVAL,
+        MYINFO_ARRIVAL,
+        GETINFO_ARRIVAL,
+        SEARCH_ARRIVAL,
+        TO_ARRIVAL,
+        CONNECTTOME_ARRIVAL,
+        MULTICONNECTTOME_ARRIVAL,
+        REVCONNECTTOME_ARRIVAL,
+        SR_ARRIVAL,
+        UDP_SR_ARRIVAL,
+        KICK_ARRIVAL,
+        OPFORCEMOVE_ARRIVAL,
+        SUPPORTS_ARRIVAL,
+        BOTINFO_ARRIVAL,
+        CLOSE_ARRIVAL,
+        UNKNOWN_ARRIVAL
 #ifdef USE_FLYLINKDC_EXT_JSON
-		, EXTJSON_ARRIVAL
+        ,
+        EXTJSON_ARRIVAL
 #endif
-		// alex82 ... More arrivals
-		, BAD_PASS_ARRIVAL
-		, VALIDATE_DENIDE_ARRIVAL
-	};
+        // alex82 ... More arrivals
+        ,
+        BAD_PASS_ARRIVAL,
+        VALIDATE_DENIDE_ARRIVAL
+    };
 
-	ScriptManager();
-	~ScriptManager();
+    ScriptManager(const ScriptManager&) = delete;
+    auto operator=(const ScriptManager&) -> ScriptManager& = delete;
 
-	void Start();
-	void Stop();
+    ScriptManager();
+    ~ScriptManager();
 
-	void SaveScripts();
+    void Start();
+    void Stop();
 
-	void CheckForDeletedScripts();
-	void CheckForNewScripts();
+    void SaveScripts();
 
-	void Restart();
-	Script * FindScript(const char * sName);
-	Script * FindScript(const lua_State * pLua);
-	uint8_t FindScriptIdx(const char * sName);
+    void CheckForDeletedScripts();
+    void CheckForNewScripts();
 
-	bool AddScript(const char * sName, const bool bEnabled, const bool bNew);
+    void Restart();
+    [[nodiscard]] auto FindScript(const char* sName) -> Script*;
+    [[nodiscard]] auto FindScript(const lua_State* pLua) -> Script*;
+    [[nodiscard]] auto FindScriptIdx(const char* sName) -> uint8_t;
 
-	bool StartScript(Script * pScript, const bool bEnable);
-	void StopScript(Script * pScript, const bool bDisable);
+    [[nodiscard]] auto AddScript(const char* sName, bool bEnabled, bool bNew) -> bool;
 
-	void MoveScript(const uint8_t ui8ScriptPosInTbl, const bool bUp);
+    [[nodiscard]] auto StartScript(Script* pScript, bool bEnable) -> bool;
+    void StopScript(Script* pScript, bool bDisable);
 
-	void DeleteScript(const uint8_t ui8ScriptPosInTbl);
+    void MoveScript(uint8_t ui8ScriptPosInTbl, bool bUp);
 
-	void OnStartup();
-	void OnExit(const bool bForce = false);
-	bool Arrival(DcCommand * pDcCommand, const uint8_t ui8Type);
-	bool UserConnected(User * pUser);
-	void UserDisconnected(User * pUser, Script * pScript = NULL);
+    void DeleteScript(uint8_t ui8ScriptPosInTbl);
 
-	void PrepareMove(lua_State * pLua);
+    void OnStartup();
+    void OnExit(bool bForce = false);
+    [[nodiscard]] auto Arrival(DcCommand* pDcCommand, uint8_t ui8Type) -> bool;
+    [[nodiscard]] auto UserConnected(User* pUser) -> bool;
+    void UserDisconnected(User* pUser, Script* pScript = nullptr);
+
+    void PrepareMove(lua_State* pLua);
 };
 //------------------------------------------------------------------------------
 
 #endif
-

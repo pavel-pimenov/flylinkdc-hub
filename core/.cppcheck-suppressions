@@ -1,0 +1,21 @@
+// cppcheck 2.19.0 suppressions for PtokaX core
+// Generated 2026-06-30
+
+// --- False positives ---
+// identicalInnerCondition removed: safe_free is now a template function, not a macro
+
+// --- Handled by clang-tidy (modernize-use-override) ---
+missingOverride
+
+// --- C-style casts are pervasive; tracked separately ---
+cstyleCast
+
+// --- Unity build makes single-file 'unused' analysis misleading ---
+unusedFunction
+
+// --- Include handling is done via -I flags ---
+missingIncludeSystem
+
+// --- Info-level noise ---
+normalCheckLevelMaxBranches
+toomanyconfigs

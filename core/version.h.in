@@ -1,0 +1,4 @@
+#pragma once
+
+#define PtokaX_VERSION "@PROJECT_VERSION@"
+#define PtokaX_BUILD @GIT_BUILD_NUMBER@

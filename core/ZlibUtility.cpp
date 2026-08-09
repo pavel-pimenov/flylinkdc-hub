@@ -26,309 +26,137 @@
 #include "GlobalDataQueue.h"
 
 //---------------------------------------------------------------------------
-#ifdef _WIN32
-#pragma hdrstop
-#endif
 #include <zlib.h>
 //---------------------------------------------------------------------------
-static const uint32_t ZBUFFERLEN = PTOKAX_GLOBAL_BUFF_SIZE;
-static const uint32_t ZMINLEN = 128;
-#define Z_PTOKAX_COMPRESSION 8
+static constexpr uint32_t g_ui32ZBufferLen = PTOKAX_GLOBAL_BUFF_SIZE;
+static constexpr uint32_t g_ui32ZMinLen = 128;
+static constexpr int Z_PTOKAX_COMPRESSION = 8;
 //---------------------------------------------------------------------------
-ZlibUtility * ZlibUtility::m_Ptr = nullptr;
+std::unique_ptr<ZlibUtility> ZlibUtility::m_Ptr;
 //---------------------------------------------------------------------------
 
-ZlibUtility::ZlibUtility() : m_pZbuffer(NULL), m_szZbufferSize(0)
+ZlibUtility::ZlibUtility()
 {
-	// allocate buffer for zlib
-	m_pZbuffer = (char *)calloc(ZBUFFERLEN, 1);
-	if (m_pZbuffer == NULL)
-	{
-		AppendDebugLogFormat("[MEM] Cannot allocate %u bytes for m_pZbuffer in ZlibUtility::ZlibUtility\n", ZBUFFERLEN);
-		exit(EXIT_FAILURE);
-	}
-	memcpy(m_pZbuffer, "$ZOn|", 5);
-	m_szZbufferSize = ZBUFFERLEN;
+    m_vZbuffer.resize(g_ui32ZBufferLen, '\0');
+    memcpy(m_vZbuffer.data(), "$ZOn|", 5);
 }
 //---------------------------------------------------------------------------
 
-ZlibUtility::~ZlibUtility()
-{
-	free(m_pZbuffer);
-}
+// ZlibUtility destructor is = default in header
 //---------------------------------------------------------------------------
 
-char * ZlibUtility::CreateZPipe(const char *sInData, const size_t szInDataSize, uint32_t &ui32OutDataLen)
+char* ZlibUtility::CreateZPipe(std::string_view sInData, uint32_t& ui32OutDataLen)
 {
 
 #ifdef USE_FLYLINKDC_EXT_JSON
-#ifdef _WIN32
-	printf("\r\n\r\n[1]CreateZPipe [size = %u], sInData = [%s]\r\n", szInDataSize, sInData);
-#endif
 #ifdef _DEBUG
-	AppendDebugLog("\r\n[1] CreateZPipe", szInDataSize);
-	AppendDebugLog(sInData, 0);
+    LogDbg("[1] CreateZPipe {} bytes", sInData.size());
+    LogDbg("{}", sInData);
 #endif
 #endif
 
-	// prepare Zbuffer
-	if (m_szZbufferSize < szInDataSize + 128)
-	{
-		size_t szOldZbufferSize = m_szZbufferSize;
+    // prepare Zbuffer
+    if (m_vZbuffer.size() < sInData.size() + 128)
+    {
+        m_vZbuffer.resize(Allign(sInData.size() + 128));
+    }
 
-		m_szZbufferSize = Allign(szInDataSize + 128);
+    z_stream stream = {};
 
-		char * pOldBuf = m_pZbuffer;
-		m_pZbuffer = (char *)realloc(pOldBuf, m_szZbufferSize);
-		if (m_pZbuffer == NULL)
-		{
-			m_pZbuffer = pOldBuf;
-			m_szZbufferSize = szOldZbufferSize;
-			ui32OutDataLen = 0;
+    stream.zalloc = Z_NULL;
+    stream.zfree = Z_NULL;
+    stream.data_type = Z_TEXT;
 
-			AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes for m_pZbuffer in ZlibUtility::CreateZPipe\n", m_szZbufferSize);
+    deflateInit(&stream, Z_PTOKAX_COMPRESSION);
 
-			return m_pZbuffer;
-		}
-	}
+    stream.next_in = reinterpret_cast<Bytef*>(const_cast<char*>(sInData.data()));
+    stream.avail_in = static_cast<uInt>(sInData.size());
 
-	z_stream stream;
+    stream.next_out = reinterpret_cast<Bytef*>(m_vZbuffer.data()) + 5;
+    stream.avail_out = static_cast<uInt>(m_vZbuffer.size() - 5);
 
-	// init zlib struct
-	memset(&stream, 0, sizeof(stream));
+    // compress
+    if (deflate(&stream, Z_FINISH) != Z_STREAM_END)
+    {
+        deflateEnd(&stream);
+        LogDbg("[ERR] deflate error");
+        ui32OutDataLen = 0;
+        return m_vZbuffer.data();
+    }
 
-	stream.zalloc = Z_NULL;
-	stream.zfree  = Z_NULL;
-	stream.data_type = Z_TEXT;
+    ui32OutDataLen = stream.total_out + 5;
 
-	deflateInit(&stream, Z_PTOKAX_COMPRESSION);
+    // cleanup zlib
+    deflateEnd(&stream);
 
-	stream.next_in  = (Bytef*)sInData;
-	stream.avail_in = (uInt)szInDataSize;
-
-	stream.next_out = (Bytef*)m_pZbuffer + 5;
-	stream.avail_out = (uInt)m_szZbufferSize-5;
-
-	// compress
-	if (deflate(&stream, Z_FINISH) != Z_STREAM_END)
-	{
-		deflateEnd(&stream);
-		AppendDebugLog("%s - [ERR] deflate error\n");
-		ui32OutDataLen = 0;
-		return m_pZbuffer;
-	}
-
-	ui32OutDataLen = stream.total_out + 5;
-
-	// cleanup zlib
-	deflateEnd(&stream);
-
-	if (ui32OutDataLen >= szInDataSize)
-	{
-		ui32OutDataLen = 0;
-	}
-    GlobalDataQueue::m_Ptr->PrometheusZlibBytes("ZPipeIn",szInDataSize);
-    GlobalDataQueue::m_Ptr->PrometheusZlibBytes("ZPipeOut",ui32OutDataLen);
-	return m_pZbuffer;
+    if (ui32OutDataLen >= sInData.size())
+    {
+        ui32OutDataLen = 0;
+    }
+    GlobalDataQueue::m_Ptr->PrometheusZlibBytes("ZPipeIn", static_cast<int>(sInData.size()));
+    GlobalDataQueue::m_Ptr->PrometheusZlibBytes("ZPipeOut", static_cast<int>(ui32OutDataLen));
+    return m_vZbuffer.data();
 }
 //---------------------------------------------------------------------------
 
-char * ZlibUtility::CreateZPipe(const char *sInData, const size_t szInDataSize, char *sOutData, uint32_t &ui32OutDataLen, uint32_t &ui32OutDataSize)
+void ZlibUtility::CreateZPipe(std::string_view sInData, std::vector<char>& vOutData, uint32_t& ui32OutDataLen, const char* sMetricPrefix)
 {
-	if (szInDataSize < ZMINLEN)
-		return sOutData;
-#ifdef USE_FLYLINKDC_EXT_JSON
-#ifdef _DEBUG
-	AppendDebugLog("\r\n[2] CreateZPipe", szInDataSize);
-	AppendDebugLog(sInData, 0);
-#endif
-#ifdef _WIN32
-	printf("\r\n\r\n[2]CreateZPipe [size = %u], sInData = [%s]\r\n", szInDataSize, sInData);
-#endif
-#endif
+    if (sInData.size() < g_ui32ZMinLen)
+    {
+        return;
+    }
 
-	// prepare Zbuffer
-	if (m_szZbufferSize < szInDataSize + 128)
-	{
-		size_t szOldZbufferSize = m_szZbufferSize;
+    // prepare Zbuffer
+    if (m_vZbuffer.size() < sInData.size() + 128)
+    {
+        m_vZbuffer.resize(Allign(sInData.size() + 128));
+    }
 
-		m_szZbufferSize = Allign(szInDataSize + 128);
+    z_stream stream = {};
 
-		char * pOldBuf = m_pZbuffer;
-		m_pZbuffer = (char *)realloc(pOldBuf, m_szZbufferSize);
-		if (m_pZbuffer == NULL)
-		{
-			m_pZbuffer = pOldBuf;
-			m_szZbufferSize = szOldZbufferSize;
-			ui32OutDataLen = 0;
+    stream.zalloc = Z_NULL;
+    stream.zfree = Z_NULL;
+    stream.data_type = Z_TEXT;
 
-			AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes for m_pZbuffer in ZlibUtility::CreateZPipe\n", m_szZbufferSize);
+    deflateInit(&stream, Z_PTOKAX_COMPRESSION);
 
-			return sOutData;
-		}
-	}
+    stream.next_in = reinterpret_cast<Bytef*>(const_cast<char*>(sInData.data()));
+    stream.avail_in = static_cast<uInt>(sInData.size());
 
-	z_stream stream;
+    stream.next_out = reinterpret_cast<Bytef*>(m_vZbuffer.data()) + 5;
+    stream.avail_out = static_cast<uInt>(m_vZbuffer.size() - 5);
 
-	// init zlib struct
-	memset(&stream, 0, sizeof(stream));
+    // compress
+    if (deflate(&stream, Z_FINISH) != Z_STREAM_END)
+    {
+        deflateEnd(&stream);
+        LogDbg("[ERR] deflate error");
+        return;
+    }
 
-	stream.zalloc = Z_NULL;
-	stream.zfree  = Z_NULL;
-	stream.data_type = Z_TEXT;
+    ui32OutDataLen = stream.total_out + 5;
 
-	deflateInit(&stream, Z_PTOKAX_COMPRESSION);
+    // cleanup zlib
+    deflateEnd(&stream);
 
-	stream.next_in  = (Bytef*)sInData;
-	stream.avail_in = (uInt)szInDataSize;
+    if (ui32OutDataLen >= sInData.size())
+    {
+        ui32OutDataLen = 0;
+        return;
+    }
 
-	stream.next_out = (Bytef*)m_pZbuffer + 5;
-	stream.avail_out = (uInt)m_szZbufferSize-5;
+    // prepare out buffer
+    if (vOutData.size() < ui32OutDataLen)
+    {
+        vOutData.resize(Allign(ui32OutDataLen + 1));
+    }
 
-	// compress
-	if (deflate(&stream, Z_FINISH) != Z_STREAM_END)
-	{
-		deflateEnd(&stream);
-		AppendDebugLog("%s - [ERR] deflate error\n");
-		return sOutData;
-	}
+    memcpy(vOutData.data(), m_vZbuffer.data(), ui32OutDataLen);
 
-	ui32OutDataLen = stream.total_out + 5;
-
-	// cleanup zlib
-	deflateEnd(&stream);
-
-	if (ui32OutDataLen >= szInDataSize)
-	{
-		ui32OutDataLen = 0;
-		return sOutData;
-	}
-
-	// prepare out buffer
-	if (ui32OutDataSize < ui32OutDataLen)
-	{
-		size_t uiOldOutDataSize = ui32OutDataSize;
-
-		ui32OutDataSize = Allign(ui32OutDataLen) - 1;
-		char * pOldBuf = sOutData;
-		sOutData = (char *)realloc(pOldBuf, ui32OutDataSize + 1);
-		if (sOutData == NULL)
-		{
-			sOutData = pOldBuf;
-			ui32OutDataSize = uiOldOutDataSize;
-			ui32OutDataLen = 0;
-
-			AppendDebugLogFormat("[MEM] Cannot reallocate %u bytes for sOutData in ZlibUtility::CreateZPipe\n", ui32OutDataSize+1);
-
-			return sOutData;
-		}
-	}
-
-	memcpy(sOutData, m_pZbuffer, ui32OutDataLen);
-    GlobalDataQueue::m_Ptr->PrometheusZlibBytes("ZPipe2In",szInDataSize);
-    GlobalDataQueue::m_Ptr->PrometheusZlibBytes("ZPipe2Out",ui32OutDataLen);
-
-	return sOutData;
-}
-//---------------------------------------------------------------------------
-
-char * ZlibUtility::CreateZPipeAlign(const char *sInData, const size_t szInDataSize, char * sOutData, uint32_t &ui32OutDataLen, uint32_t &ui32OutDataSize)
-{
-	if (szInDataSize < ZMINLEN)
-		return sOutData;
-#ifdef USE_FLYLINKDC_EXT_JSON
-#ifdef _DEBUG
-	AppendDebugLog("\r\n[3] CreateZPipe", szInDataSize);
-	AppendDebugLog(sInData, 0);
-#endif
-#ifdef _WIN32
-	printf("\r\n\r\n[3]CreateZPipe [size = %u], sInData = [%s]\r\n", szInDataSize, sInData);
-#endif
-#endif
-
-	// prepare Zbuffer
-	if (m_szZbufferSize < szInDataSize + 128)
-	{
-		size_t szOldZbufferSize = m_szZbufferSize;
-
-		m_szZbufferSize = Allign(szInDataSize + 128);
-
-		char * pOldBuf = m_pZbuffer;
-		m_pZbuffer = (char *)realloc(pOldBuf, m_szZbufferSize);
-		if (m_pZbuffer == NULL)
-		{
-			m_pZbuffer = pOldBuf;
-			m_szZbufferSize = szOldZbufferSize;
-			ui32OutDataLen = 0;
-
-			AppendDebugLogFormat("[MEM] Cannot reallocate %zu bytes for m_pZbuffer in ZlibUtility::CreateZPipe\n", m_szZbufferSize);
-
-			return sOutData;
-		}
-	}
-
-	z_stream stream;
-
-	// init zlib struct
-	memset(&stream, 0, sizeof(stream));
-
-	stream.zalloc = Z_NULL;
-	stream.zfree  = Z_NULL;
-	stream.data_type = Z_TEXT;
-
-	deflateInit(&stream, Z_PTOKAX_COMPRESSION);
-
-	stream.next_in  = (Bytef*)sInData;
-	stream.avail_in = (uInt)szInDataSize;
-
-	stream.next_out = (Bytef*)m_pZbuffer + 5;
-	stream.avail_out = (uInt)m_szZbufferSize-5;
-
-	// compress
-	if (deflate(&stream, Z_FINISH) != Z_STREAM_END)
-	{
-		deflateEnd(&stream);
-		AppendDebugLog("%s - [ERR] deflate error\n");
-		return sOutData;
-	}
-
-	ui32OutDataLen = stream.total_out + 5;
-
-	// cleanup zlib
-	deflateEnd(&stream);
-
-	if (ui32OutDataLen >= szInDataSize)
-	{
-		ui32OutDataLen = 0;
-		return sOutData;
-	}
-
-	// prepare out buffer
-	if (ui32OutDataSize < ui32OutDataLen)
-	{
-		unsigned int uiOldOutDataSize = ui32OutDataSize;
-
-		ui32OutDataSize = Allign(ui32OutDataLen + 1);
-
-		char * pOldBuf = sOutData;
-		sOutData = (char *)realloc(pOldBuf, ui32OutDataSize);
-		if (sOutData == NULL)
-		{
-			sOutData = pOldBuf;
-			ui32OutDataSize = uiOldOutDataSize;
-			ui32OutDataLen = 0;
-
-			AppendDebugLogFormat("[MEM] Cannot reallocate %u bytes for sOutData in ZlibUtility::CreateZPipe\n", ui32OutDataSize+1);
-
-			return sOutData;
-		}
-	}
-
-	memcpy(sOutData, m_pZbuffer, ui32OutDataLen);
-
-    GlobalDataQueue::m_Ptr->PrometheusZlibBytes("ZPipeAlignIn",szInDataSize);
-    GlobalDataQueue::m_Ptr->PrometheusZlibBytes("ZPipeAlignOut",ui32OutDataLen);
-
-	return sOutData;
+    // Prometheus metrics with configurable prefix
+    const std::string sInMetric = std::string(sMetricPrefix) + "In";
+    const std::string sOutMetric = std::string(sMetricPrefix) + "Out";
+    GlobalDataQueue::m_Ptr->PrometheusZlibBytes(sInMetric.c_str(), static_cast<int>(sInData.size()));
+    GlobalDataQueue::m_Ptr->PrometheusZlibBytes(sOutMetric.c_str(), static_cast<int>(ui32OutDataLen));
 }
 //---------------------------------------------------------------------------

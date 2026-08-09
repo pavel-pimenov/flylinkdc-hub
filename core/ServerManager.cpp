@@ -19,6 +19,7 @@
 
 //---------------------------------------------------------------------------
 #include "stdinc.h"
+#include <sstream>
 //---------------------------------------------------------------------------
 #include "ServerManager.h"
 //---------------------------------------------------------------------------
@@ -38,101 +39,75 @@
 #include "utility.h"
 #include "ZlibUtility.h"
 //---------------------------------------------------------------------------
-#ifdef _WIN32
-#pragma hdrstop
-#endif
 //---------------------------------------------------------------------------
 #include "HubCommands.h"
 #include "IP2Country.h"
 #include "LuaScript.h"
-#include "RegThread.h"
 #include "ResNickManager.h"
 #include "ServerThread.h"
 #include "TextConverter.h"
 #include "TextFileManager.h"
-//#include "TLSManager.h"
 #include "UDPThread.h"
 //---------------------------------------------------------------------------
-#ifdef _BUILD_GUI
-#include "../gui.win/MainWindow.h"
-#include "../gui.win/MainWindowPageScripts.h"
-#endif
 //---------------------------------------------------------------------------
 #ifdef _WITH_SQLITE
 #include "DB-SQLite.h"
-#elif _WITH_POSTGRES
-#include "DB-PostgreSQL.h"
-#elif _WITH_MYSQL
-#include "DB-MySQL.h"
 #endif
 //---------------------------------------------------------------------------
-static ServerThread * m_pServersE = nullptr;
 
-#ifdef _BUILD_GUI
-HWND ServerManager::m_hMainWindow;
-#endif
+template <typename Ptr>
+inline void allocMgr(Ptr& ptr)
+{
+    ptr = std::make_unique<typename Ptr::element_type>();
+    if (!ptr)
+    {
+        LogDbg("[MEM] Cannot allocate manager");
+        exit(EXIT_FAILURE);
+    }
+}
 
 //---------------------------------------------------------------------------
-
-#ifdef _WIN32
-#ifndef _WIN_IOT
-UINT_PTR ServerManager::m_upSecTimer = 0;
-#ifdef FLYLINKDC_REMOVE_REGISTER_THREAD
-UINT_PTR ServerManager::m_upRegTimer = 0;
-#endif
-#endif
-
-HANDLE ServerManager::m_hConsole = nullptr;
-string ServerManager::m_sLuaPath, ServerManager::m_sOS;
-#endif
 
 #ifdef __MACH__
 clock_serv_t ServerManager::m_csMachClock;
 #endif
 
-string ServerManager::m_sPath, ServerManager::m_sScriptPath;
+std::string ServerManager::m_sPath, ServerManager::m_sScriptPath;
 size_t ServerManager::m_szGlobalBufferSize = 0;
-char * ServerManager::m_pGlobalBuffer = NULL;
+char* ServerManager::m_pGlobalBuffer = nullptr;
 bool ServerManager::m_bCmdAutoStart = false, ServerManager::m_bCmdNoAutoStart = false, ServerManager::m_bCmdNoTray = false, ServerManager::m_bUseIPv4 = true,
-                    ServerManager::m_bUseIPv6 = true, ServerManager::m_bIPv6DualStack = false;
+     ServerManager::m_bUseIPv6 = true, ServerManager::m_bIPv6DualStack = false;
 
 #ifdef FLYLINKDC_USE_CPU_STAT
-double ServerManager::m_dCpuUsages[60];
+std::array<double, 60> ServerManager::m_dCpuUsages{};
 double ServerManager::m_dCpuUsage = 0;
 #endif
 
-uint64_t ServerManager::m_ui64ActualTick = 0, ServerManager::m_ui64TotalShare = 0;
+std::atomic<uint64_t> ServerManager::m_ui64ActualTick{0};
+uint64_t ServerManager::m_ui64TotalShare = 0;
 uint64_t ServerManager::m_ui64BytesRead = 0, ServerManager::m_ui64BytesSent = 0, ServerManager::m_ui64BytesSentSaved = 0;
 uint64_t ServerManager::m_ui64LastBytesRead = 0, ServerManager::m_ui64LastBytesSent = 0;
 uint64_t ServerManager::m_ui64Mins = 0, ServerManager::m_ui64Hours = 0, ServerManager::m_ui64Days = 0;
 
-#ifndef _WIN32
 uint32_t ServerManager::m_ui32CpuCount = 0;
-#endif
 
-uint32_t ServerManager::m_ui32UploadSpeed[60], ServerManager::m_ui32DownloadSpeed[60];
+std::array<uint32_t, 60> ServerManager::m_ui32UploadSpeed{}, ServerManager::m_ui32DownloadSpeed{};
 uint32_t ServerManager::m_ui32Joins = 0, ServerManager::m_ui32Parts = 0, ServerManager::m_ui32Logged = 0, ServerManager::m_ui32Peak = 0;
+uint32_t ServerManager::m_ui32ConnectionsAccepted = 0, ServerManager::m_ui32ConnectionsClosed = 0;
 uint32_t ServerManager::m_ui32ActualBytesRead = 0, ServerManager::m_ui32ActualBytesSent = 0;
 uint32_t ServerManager::m_ui32AverageBytesRead = 0, ServerManager::m_ui32AverageBytesSent = 0;
 
-ServerThread * ServerManager::m_pServersS = NULL;
+std::list<std::unique_ptr<ServerThread>> ServerManager::m_Servers;
 
 time_t ServerManager::m_tStartTime = 0;
 
-bool ServerManager::m_bServerRunning = false, ServerManager::m_bServerTerminated = false, ServerManager::m_bIsRestart = false, ServerManager::m_bIsClose = false;
+bool ServerManager::m_bServerRunning = false, ServerManager::m_bServerTerminated = false, ServerManager::m_bIsRestart = false,
+     ServerManager::m_bIsClose = false;
 
-#ifdef _WIN32
-#ifndef _BUILD_GUI
-bool ServerManager::m_bService = false;
-#else
-HINSTANCE ServerManager::m_hInstance;
-HWND ServerManager::m_hWndActiveDialog;
-#endif
-#else
 bool ServerManager::m_bDaemon = false;
-#endif
 
-char ServerManager::m_sHubIP[16], ServerManager::m_sHubIP6[40];
+std::array<char, 16> ServerManager::m_sHubIP{};
+std::array<char, 40> ServerManager::m_sHubIP6{};
 
 uint8_t ServerManager::m_ui8SrCntr = 0, ServerManager::m_ui8MinTick = 0;
 //---------------------------------------------------------------------------
@@ -140,1245 +115,762 @@ uint8_t ServerManager::m_ui8SrCntr = 0, ServerManager::m_ui8MinTick = 0;
 void ServerManager::OnSecTimer()
 {
 #ifdef FLYLINKDC_USE_CPU_STAT
-#ifdef _WIN32
-	FILETIME tmpa, tmpb, kernelTimeFT, userTimeFT;
-	GetProcessTimes(GetCurrentProcess(), &tmpa, &tmpb, &kernelTimeFT, &userTimeFT);
-	int64_t kernelTime = kernelTimeFT.dwLowDateTime | (((int64_t)kernelTimeFT.dwHighDateTime) << 32);
-	int64_t userTime = userTimeFT.dwLowDateTime | (((int64_t)userTimeFT.dwHighDateTime) << 32);
-	double dcpuSec = double(kernelTime + userTime) / double(10000000I64);
-	m_dCpuUsage = dcpuSec - m_dCpuUsages[m_ui8MinTick];
-	m_dCpuUsages[m_ui8MinTick] = dcpuSec;
-#else
-	struct rusage rs;
+    struct rusage rs;
 
-	getrusage(RUSAGE_SELF, &rs);
+    getrusage(RUSAGE_SELF, &rs);
 
-	double dcpuSec = double(rs.ru_utime.tv_sec) + (double(rs.ru_utime.tv_usec) / 1000000) +
-	                 double(rs.ru_stime.tv_sec) + (double(rs.ru_stime.tv_usec) / 1000000);
-	m_dCpuUsage = dcpuSec - m_dCpuUsages[m_ui8MinTick];
-	m_dCpuUsages[m_ui8MinTick] = dcpuSec;
-#endif
+    const double dcpuSec =
+        double(rs.ru_utime.tv_sec) + (double(rs.ru_utime.tv_usec) / 1000000) + double(rs.ru_stime.tv_sec) + (double(rs.ru_stime.tv_usec) / 1000000);
+    m_dCpuUsage = dcpuSec - m_dCpuUsages[m_ui8MinTick];
+    m_dCpuUsages[m_ui8MinTick] = dcpuSec;
 #endif
 
-	if (++m_ui8MinTick == 60)
-	{
-		m_ui8MinTick = 0;
-	}
+    if (++m_ui8MinTick == 60)
+    {
+        m_ui8MinTick = 0;
+    }
 
-#ifdef _WIN32
-	if (m_bServerRunning == false)
-	{
-		return;
-	}
-#endif
+    m_ui64ActualTick++;
 
-	m_ui64ActualTick++;
+    m_ui32ActualBytesRead = static_cast<uint32_t>(m_ui64BytesRead - m_ui64LastBytesRead);
+    m_ui32ActualBytesSent = static_cast<uint32_t>(m_ui64BytesSent - m_ui64LastBytesSent);
+    m_ui64LastBytesRead = m_ui64BytesRead;
+    m_ui64LastBytesSent = m_ui64BytesSent;
 
-	m_ui32ActualBytesRead = (uint32_t)(m_ui64BytesRead - m_ui64LastBytesRead);
-	m_ui32ActualBytesSent = (uint32_t)(m_ui64BytesSent - m_ui64LastBytesSent);
-	m_ui64LastBytesRead = m_ui64BytesRead;
-	m_ui64LastBytesSent = m_ui64BytesSent;
+    m_ui32AverageBytesSent -= m_ui32UploadSpeed[m_ui8MinTick];
+    m_ui32AverageBytesRead -= m_ui32DownloadSpeed[m_ui8MinTick];
 
-	m_ui32AverageBytesSent -= m_ui32UploadSpeed[m_ui8MinTick];
-	m_ui32AverageBytesRead -= m_ui32DownloadSpeed[m_ui8MinTick];
+    m_ui32UploadSpeed[m_ui8MinTick] = m_ui32ActualBytesSent;
+    m_ui32DownloadSpeed[m_ui8MinTick] = m_ui32ActualBytesRead;
 
-	m_ui32UploadSpeed[m_ui8MinTick] = m_ui32ActualBytesSent;
-	m_ui32DownloadSpeed[m_ui8MinTick] = m_ui32ActualBytesRead;
-
-	m_ui32AverageBytesSent += m_ui32UploadSpeed[m_ui8MinTick];
-	m_ui32AverageBytesRead += m_ui32DownloadSpeed[m_ui8MinTick];
-
-#ifdef _BUILD_GUI
-	MainWindow::m_Ptr->UpdateStats();
-	MainWindowPageScripts::m_Ptr->UpdateMemUsage();
-#endif
+    m_ui32AverageBytesSent += m_ui32UploadSpeed[m_ui8MinTick];
+    m_ui32AverageBytesRead += m_ui32DownloadSpeed[m_ui8MinTick];
 }
 //---------------------------------------------------------------------------
-#ifdef FLYLINKDC_REMOVE_REGISTER_THREAD
-void ServerManager::m_OnRegTimer()
-{
-	if (SettingManager::m_Ptr->m_bBools[SETBOOL_AUTO_REG] == true && SettingManager::m_Ptr->m_sTexts[SETTXT_REGISTER_SERVERS] != NULL)
-	{
-		// First destroy old hublist reg thread if any
-		if (RegisterThread::m_Ptr != NULL)
-		{
-			RegisterThread::m_Ptr->Close();
-			RegisterThread::m_Ptr->WaitFor();
-			safe_delete(RegisterThread::m_Ptr);
-		}
-
-		// Create hublist reg thread
-		RegisterThread::m_Ptr = new (std::nothrow) RegisterThread();
-		if (RegisterThread::m_Ptr == NULL)
-		{
-			AppendDebugLog("%s - [MEM] Cannot allocate RegisterThread::m_Ptr in ServerOnRegTimer\n");
-			return;
-		}
-
-		// Setup hublist reg thread
-		RegisterThread::m_Ptr->Setup(SettingManager::m_Ptr->m_sTexts[SETTXT_REGISTER_SERVERS], SettingManager::m_Ptr->m_ui16TextsLens[SETTXT_REGISTER_SERVERS]);
-
-		// Start the hublist reg thread
-		RegisterThread::m_Ptr->Resume();
-	}
-}
-#endif // #ifdef FLYLINKDC_REMOVE_REGISTER_THREAD
-//---------------------------------------------------------------------------
-
 void ServerManager::Initialize()
 {
-	setlocale(LC_ALL, "");
+    setlocale(LC_ALL, "");
 
-	time_t acctime;
-	time(&acctime);
-#ifdef _WIN32
-	srand((uint32_t)acctime);
+    time_t acctime;
+    time(&acctime);
+    srandom(acctime);
 
-	WSADATA wsaData;
-	WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (!DirExist((ServerManager::m_sPath + "/logs").c_str()))
+    {
+        if (mkdir((ServerManager::m_sPath + "/logs").c_str(), 0755) == -1)
+        {
+            if (m_bDaemon)
+            {
+                spdlog::error("Creating of logs directory failed!");
+            }
+            else
+            {
+                printf("Creating  of logs directory failed!");
+            }
+        }
+    }
+    if (!DirExist((ServerManager::m_sPath + "/cfg").c_str()))
+    {
+        if (mkdir((ServerManager::m_sPath + "/cfg").c_str(), 0755) == -1)
+        {
+            LogInfo("Creating of cfg directory failed!");
+        }
+    }
+    if (!DirExist((ServerManager::m_sPath + "/scripts").c_str()))
+    {
+        if (mkdir((ServerManager::m_sPath + "/scripts").c_str(), 0755) == -1)
+        {
+            LogInfo("Creating of scripts directory failed!");
+        }
+    }
+    if (!DirExist((ServerManager::m_sPath + "/texts").c_str()))
+    {
+        if (mkdir((ServerManager::m_sPath + "/texts").c_str(), 0755) == -1)
+        {
+            LogInfo("Creating of texts directory failed!");
+        }
+    }
 
-	if (DirExist((ServerManager::m_sPath + "\\cfg").c_str()) == false)
-	{
-		CreateDirectory((ServerManager::m_sPath + "\\cfg").c_str(), NULL);
-	}
-	if (DirExist((ServerManager::m_sPath + "\\logs").c_str()) == false)
-	{
-		CreateDirectory((ServerManager::m_sPath + "\\logs").c_str(), NULL);
-	}
-	if (DirExist((ServerManager::m_sPath + "\\scripts").c_str()) == false)
-	{
-		CreateDirectory((ServerManager::m_sPath + "\\scripts").c_str(), NULL);
-	}
-	if (DirExist((ServerManager::m_sPath + "\\texts").c_str()) == false)
-	{
-		CreateDirectory((ServerManager::m_sPath + "\\texts").c_str(), NULL);
-	}
+    ServerManager::m_sScriptPath = ServerManager::m_sPath + "/scripts/";
 
-	ServerManager::m_sScriptPath = ServerManager::m_sPath + "\\scripts\\";
+    // get cpu count
+    std::string sCpuInfo;
+    if (ReadWholeFile("/proc/cpuinfo", sCpuInfo))
+    {
+        std::istringstream iss(sCpuInfo);
+        std::string sLine;
+        while (std::getline(iss, sLine))
+        {
+            if (iequals(std::string_view(sLine).substr(0, 10), "model name") || sLine.starts_with("Processor") || sLine.starts_with("cpu model"))
+            {
+                m_ui32CpuCount++;
+            }
+        }
+    }
 
-	ServerManager::m_sLuaPath = ServerManager::m_sPath + '/';
+    if (m_ui32CpuCount == 0)
+    {
+        m_ui32CpuCount = 1;
+    }
+    CreateGlobalBuffer();
 
-	char * sTempLuaPath = (char *)ServerManager::m_sLuaPath.c_str();
-	for (size_t szi = 0; szi < ServerManager::m_sPath.size(); szi++)
-	{
-		if (sTempLuaPath[szi] == '\\')
-		{
-			sTempLuaPath[szi] = '/';
-		}
-	}
-
-	SetupOsVersion();
-#else
-	srandom(acctime);
-
-	if (DirExist((ServerManager::m_sPath + "/logs").c_str()) == false)
-	{
-		if (mkdir((ServerManager::m_sPath + "/logs").c_str(), 0755) == -1)
-		{
-			if (m_bDaemon == true)
-			{
-				syslog(LOG_USER | LOG_ERR, "Creating  of logs directory failed!\n");
-			}
-			else
-			{
-				printf("Creating  of logs directory failed!");
-			}
-		}
-	}
-	if (DirExist((ServerManager::m_sPath + "/cfg").c_str()) == false)
-	{
-		if (mkdir((ServerManager::m_sPath + "/cfg").c_str(), 0755) == -1)
-		{
-			AppendLog("Creating of cfg directory failed!");
-		}
-	}
-	if (DirExist((ServerManager::m_sPath + "/scripts").c_str()) == false)
-	{
-		if (mkdir((ServerManager::m_sPath + "/scripts").c_str(), 0755) == -1)
-		{
-			AppendLog("Creating of scripts directory failed!");
-		}
-	}
-	if (DirExist((ServerManager::m_sPath + "/texts").c_str()) == false)
-	{
-		if (mkdir((ServerManager::m_sPath + "/texts").c_str(), 0755) == -1)
-		{
-			AppendLog("Creating of texts directory failed!");
-		}
-	}
-
-	ServerManager::m_sScriptPath = ServerManager::m_sPath + "/scripts/";
-
-	// get cpu count
-	FILE *fp = fopen("/proc/cpuinfo", "r");
-	if (fp != NULL)
-	{
-		char buf[1024];
-		while (fgets(buf, 1024, fp) != NULL)
-		{
-			if (strncasecmp(buf, "model name", 10) == 0 || strncmp(buf, "Processor", 9) == 0 || strncmp(buf, "cpu model", 9) == 0)
-			{
-				m_ui32CpuCount++;
-			}
-		}
-
-		fclose(fp);
-	}
-
-	if (m_ui32CpuCount == 0)
-	{
-		m_ui32CpuCount = 1;
-	}
-#endif
-	CreateGlobalBuffer();
-
-	CheckForIPv6();
+    CheckForIPv6();
 
 #ifdef __MACH__
-	mach_port_t mpMachHost = mach_host_self();
-	host_get_clock_service(mpMachHost, SYSTEM_CLOCK, &ServerManager::m_csMachClock);
-	mach_port_deallocate(mach_task_self(), mpMachHost);
+    mach_port_t mpMachHost = mach_host_self();
+    host_get_clock_service(mpMachHost, SYSTEM_CLOCK, &ServerManager::m_csMachClock);
+    mach_port_deallocate(mach_task_self(), mpMachHost);
 #endif
 
-	ReservedNicksManager::m_Ptr = new (std::nothrow) ReservedNicksManager();
-	if (ReservedNicksManager::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate ReservedNicksManager::m_Ptr in ServerInitialize\n");
-		exit(EXIT_FAILURE);
-	}
+    allocMgr(ReservedNicksManager::m_Ptr);
 
-	m_ui64ActualTick = m_ui64TotalShare = 0;
-	m_ui64BytesRead = m_ui64BytesSent = m_ui64BytesSentSaved = 0;
+    m_ui64ActualTick = m_ui64TotalShare = 0;
+    m_ui64BytesRead = m_ui64BytesSent = m_ui64BytesSentSaved = 0;
 
-	m_ui32ActualBytesRead = m_ui32ActualBytesSent = m_ui32AverageBytesRead = m_ui32AverageBytesSent = 0;
+    m_ui32ActualBytesRead = m_ui32ActualBytesSent = m_ui32AverageBytesRead = m_ui32AverageBytesSent = 0;
 
-	m_ui32Joins = m_ui32Parts = m_ui32Logged = m_ui32Peak = 0;
+    m_ui32Joins = m_ui32Parts = m_ui32Logged = m_ui32Peak = 0;
 
-	m_pServersS = NULL;
-	m_pServersE = NULL;
+    m_Servers.clear();
 
-	m_tStartTime = 0;
+    m_tStartTime = 0;
 
-	m_ui64Mins = m_ui64Hours = m_ui64Days = 0;
+    m_ui64Mins = m_ui64Hours = m_ui64Days = 0;
 
-	m_bServerRunning = m_bIsRestart = m_bIsClose = false;
+    m_bServerRunning = m_bIsRestart = m_bIsClose = false;
 
-	m_sHubIP[0] = '\0';
-	m_sHubIP6[0] = '\0';
+    m_sHubIP[0] = '\0';
+    m_sHubIP6[0] = '\0';
 
-	m_ui8SrCntr = 0;
+    m_ui8SrCntr = 0;
 
-	ZlibUtility::m_Ptr = new (std::nothrow) ZlibUtility();
-	if (ZlibUtility::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate ZlibUtility::m_Ptr in ServerInitialize\n");
-		exit(EXIT_FAILURE);
-	}
+    allocMgr(ZlibUtility::m_Ptr);
 
-	m_ui8MinTick = 0;
+    m_ui8MinTick = 0;
 
-	m_ui64LastBytesRead = m_ui64LastBytesSent = 0;
-
-	for (uint8_t ui8i = 0 ; ui8i < 60; ui8i++)
-	{
-#ifdef FLYLINKDC_USE_CPU_STAT
-		m_dCpuUsages[ui8i] = 0;
-#endif
-		m_ui32UploadSpeed[ui8i] = 0;
-		m_ui32DownloadSpeed[ui8i] = 0;
-	}
+    m_ui64LastBytesRead = m_ui64LastBytesSent = 0;
 
 #ifdef FLYLINKDC_USE_CPU_STAT
-	m_dCpuUsage = 0.0;
+    m_dCpuUsage = 0.0;
 #endif
 
-	SettingManager::m_Ptr = new (std::nothrow) SettingManager();
-	if (SettingManager::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate SettingManager::m_Ptr in ServerInitialize\n");
-		exit(EXIT_FAILURE);
-	}
+    allocMgr(SettingManager::m_Ptr);
 #ifdef FLYLINKDC_USE_DB
 #if defined(_WITH_SQLITE)
 
-	TextConverter::m_Ptr = new (std::nothrow) TextConverter();
-	if (TextConverter::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate TextConverter::m_Ptr in ServerInitialize\n");
-		exit(EXIT_FAILURE);
-	}
+    allocMgr(TextConverter::m_Ptr);
 #endif
 #endif
 
-	LanguageManager::m_Ptr = new (std::nothrow) LanguageManager();
-	if (LanguageManager::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate LanguageManager::m_Ptr in ServerInitialize\n");
-		exit(EXIT_FAILURE);
-	}
+    allocMgr(LanguageManager::m_Ptr);
 
-	LanguageManager::m_Ptr->Load();
+    LanguageManager::m_Ptr->Load();
 
-	ProfileManager::m_Ptr = new (std::nothrow) ProfileManager();
-	if (ProfileManager::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate ProfileManager::m_Ptr in ServerInitialize\n");
-		exit(EXIT_FAILURE);
-	}
+    allocMgr(ProfileManager::m_Ptr);
 
-	RegManager::m_Ptr = new (std::nothrow) RegManager();
-	if (RegManager::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate RegManager::m_Ptr in ServerInitialize\n");
-		exit(EXIT_FAILURE);
-	}
+    allocMgr(RegManager::m_Ptr);
 
-	// Load registered users
-	RegManager::m_Ptr->Load();
+    // Load registered users
+    RegManager::m_Ptr->Load();
 
-	BanManager::m_Ptr = new (std::nothrow) BanManager();
-	if (BanManager::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate BanManager::m_Ptr in ServerInitialize\n");
-		exit(EXIT_FAILURE);
-	}
+    allocMgr(BanManager::m_Ptr);
 
-	// load banlist
-	BanManager::m_Ptr->Load();
+    // load banlist
+    BanManager::m_Ptr->Load();
 
-	TextFilesManager::m_Ptr = new (std::nothrow) TextFilesManager();
-	if (TextFilesManager::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate TextFilesManager::m_Ptr in ServerInitialize\n");
-		exit(EXIT_FAILURE);
-	}
+    allocMgr(TextFilesManager::m_Ptr);
 
-	UdpDebug::m_Ptr = new (std::nothrow) UdpDebug();
-	if (UdpDebug::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate UdpDebug::m_Ptr in ServerInitialize\n");
-		exit(EXIT_FAILURE);
-	}
+    allocMgr(UdpDebug::m_Ptr);
 
-	ScriptManager::m_Ptr = new (std::nothrow) ScriptManager();
-	if (ScriptManager::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate ScriptManager::m_Ptr in ServerInitialize\n");
-		exit(EXIT_FAILURE);
-	}
+    allocMgr(ScriptManager::m_Ptr);
 
-#ifdef _BUILD_GUI
-	MainWindow::m_Ptr = new (std::nothrow) MainWindow();
-
-	if (MainWindow::m_Ptr == NULL || MainWindow::m_Ptr->CreateEx() == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate MainWindow::m_Ptr in ServerInitialize\n");
-		exit(EXIT_FAILURE);
-	}
-
-	m_hMainWindow = MainWindow::m_Ptr->m_hWnd;
-#endif
-
-	SettingManager::m_Ptr->UpdateAll();
-
-#if defined(_WIN32) && !defined(_WIN_IOT)
-	m_upSecTimer = SetTimer(NULL, 0, 1000, NULL);
-
-	if (m_upSecTimer == 0)
-	{
-		AppendDebugLog("%s - [ERR] Cannot startsectimer in ServerInitialize\n");
-		exit(EXIT_FAILURE);
-	}
-
-#ifdef FLYLINKDC_REMOVE_REGISTER_THREAD
-	m_upRegTimer = 0;
-#endif
-#endif
+    SettingManager::m_Ptr->UpdateAll();
 }
 //---------------------------------------------------------------------------
 
 bool ServerManager::Start()
 {
-	time(&m_tStartTime);
+    time(&m_tStartTime);
 
-	SettingManager::m_Ptr->UpdateAll();
+    SettingManager::m_Ptr->UpdateAll();
 
-	TextFilesManager::m_Ptr->RefreshTextFiles();
+    TextFilesManager::m_Ptr->RefreshTextFiles();
 
-#ifdef _BUILD_GUI
-	MainWindow::m_Ptr->EnableStartButton(FALSE);
-#endif
+    m_ui64ActualTick = m_ui64TotalShare = 0;
 
-	m_ui64ActualTick = m_ui64TotalShare = 0;
+    m_ui64BytesRead = m_ui64BytesSent = m_ui64BytesSentSaved = 0;
 
-	m_ui64BytesRead = m_ui64BytesSent = m_ui64BytesSentSaved = 0;
+    m_ui32ActualBytesRead = m_ui32ActualBytesSent = m_ui32AverageBytesRead = m_ui32AverageBytesSent = 0;
 
-	m_ui32ActualBytesRead = m_ui32ActualBytesSent = m_ui32AverageBytesRead = m_ui32AverageBytesSent = 0;
+    m_ui32Joins = m_ui32Parts = m_ui32Logged = m_ui32Peak = 0;
 
-	m_ui32Joins = m_ui32Parts = m_ui32Logged = m_ui32Peak = 0;
+    m_ui64Mins = m_ui64Hours = m_ui64Days = 0;
 
-	m_ui64Mins = m_ui64Hours = m_ui64Days = 0;
+    m_ui8SrCntr = 0;
 
-	m_ui8SrCntr = 0;
+    m_sHubIP[0] = '\0';
+    m_sHubIP6[0] = '\0';
 
-	m_sHubIP[0] = '\0';
-	m_sHubIP6[0] = '\0';
+    (void)ResolveHubAddress();
 
-#ifdef _BUILD_GUI
-	if (ResolveHubAddress() == false)
-	{
-		MainWindow::m_Ptr->EnableStartButton(TRUE);
-		return false;
-	}
-#else
-	ResolveHubAddress();
-#endif
+    for (unsigned short m_ui16PortNumber : SettingManager::m_Ptr->m_ui16PortNumbers)
+    {
+        if (m_ui16PortNumber == 0)
+        {
+            break;
+        }
 
-	for (uint8_t ui8i = 0; ui8i < 25; ui8i++)
-	{
-		if (SettingManager::m_Ptr->m_ui16PortNumbers[ui8i] == 0)
-		{
-			break;
-		}
+        if (!m_bUseIPv6)
+        {
+            CreateServerThread(AF_INET, m_ui16PortNumber);
+            continue;
+        }
 
-		if(m_bUseIPv6 == false)
-		{
-			CreateServerThread(AF_INET, SettingManager::m_Ptr->m_ui16PortNumbers[ui8i]);
-			continue;
-		}
+        CreateServerThread(AF_INET6, m_ui16PortNumber);
 
-		CreateServerThread(AF_INET6, SettingManager::m_Ptr->m_ui16PortNumbers[ui8i]);
+        if (SettingManager::m_Ptr->m_bBools[std::to_underlying(SetBoolIds::SETBOOL_BIND_ONLY_SINGLE_IP)] || !m_bIPv6DualStack)
+        {
+            CreateServerThread(AF_INET, m_ui16PortNumber);
+        }
+    }
 
-		if(SettingManager::m_Ptr->m_bBools[SETBOOL_BIND_ONLY_SINGLE_IP] == true || m_bIPv6DualStack == false)
-		{
-			CreateServerThread(AF_INET, SettingManager::m_Ptr->m_ui16PortNumbers[ui8i]);
-		}
-	}
-
-	if (m_pServersS == NULL)
-	{
-#ifdef _BUILD_GUI
-		::MessageBox(MainWindow::m_Ptr->m_hWnd, LanguageManager::m_Ptr->m_sTexts[LAN_NO_VALID_TCP_PORT_SPECIFIED], LanguageManager::m_Ptr->m_sTexts[LAN_ERROR], MB_OK | MB_ICONERROR);
-		MainWindow::m_Ptr->EnableStartButton(TRUE);
-#else
-		AppendLog(LanguageManager::m_Ptr->m_sTexts[LAN_NO_VALID_TCP_PORT_SPECIFIED]);
-#endif
-		return false;
-	}
-
-	AppendLog("Serving started");
-
-//  if(tlsenabled == true) {
-	/*        TLSManager = new (std::nothrow) TLSMan();
-	        if(TLSManager == NULL) {
-	            AppendDebugLog("%s - [MEM] Cannot allocate TLSManager in ServerStart\n", 0);
-	            exit(EXIT_FAILURE);
-	        }*/
-//  }
+    if (m_Servers.empty())
+    {
+        LogInfo("{}", LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_NO_VALID_TCP_PORT_SPECIFIED)]);
+        return false;
+    }
 
 #ifdef FLYLINKDC_USE_DB
 #ifdef _WITH_SQLITE
-	DBSQLite::m_Ptr = new (std::nothrow) DBSQLite();
-	if (DBSQLite::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate DBSQLite::m_Ptr in ServerStart\n");
-		exit(EXIT_FAILURE);
-	}
-#elif _WITH_POSTGRES
-	DBPostgreSQL::m_Ptr = new (std::nothrow) DBPostgreSQL();
-	if (DBPostgreSQL::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate DBPostgreSQL::m_Ptr in ServerStart\n");
-		exit(EXIT_FAILURE);
-	}
-#elif _WITH_MYSQL
-	DBMySQL::m_Ptr = new (std::nothrow) DBMySQL();
-	if (DBMySQL::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate DBMySQL::m_Ptr in ServerStart\n");
-		exit(EXIT_FAILURE);
-	}
+    allocMgr(DBSQLite::m_Ptr);
 #endif
 #endif // FLYLINKDC_USE_DB
-	IpP2Country::m_Ptr = new (std::nothrow) IpP2Country();
-	if (IpP2Country::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate IpP2Country::m_Ptr in ServerStart\n");
-		exit(EXIT_FAILURE);
-	}
+    allocMgr(IpP2Country::m_Ptr);
 
-	EventQueue::m_Ptr = new (std::nothrow) EventQueue();
-	if (EventQueue::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate EventQueue::m_Ptr in ServerStart\n");
-		exit(EXIT_FAILURE);
-	}
+    allocMgr(EventQueue::m_Ptr);
 
-	HashManager::m_Ptr = new (std::nothrow) HashManager();
-	if (HashManager::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate HashManager::m_Ptr in ServerStart\n");
-		exit(EXIT_FAILURE);
-	}
+    allocMgr(HashManager::m_Ptr);
 
-	Users::m_Ptr = new (std::nothrow) Users();
-	if (Users::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate Users::m_Ptr in ServerStart\n");
-		exit(EXIT_FAILURE);
-	}
+    allocMgr(Users::m_Ptr);
 
-	GlobalDataQueue::m_Ptr = new (std::nothrow) GlobalDataQueue();
-	if (GlobalDataQueue::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate GlobalDataQueue::m_Ptr in ServerStart\n");
-		exit(EXIT_FAILURE);
-	}
+    allocMgr(GlobalDataQueue::m_Ptr);
 
-	DcCommands::m_Ptr = new (std::nothrow) DcCommands();
-	if (DcCommands::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate DcCommands::m_Ptr in ServerStart\n");
-		exit(EXIT_FAILURE);
-	}
+    GlobalDataQueue::m_Ptr->PrometheusStartTime(static_cast<double>(ServerManager::m_tStartTime));
 
-	// add botname to reserved nicks
-	ReservedNicksManager::m_Ptr->AddReservedNick(SettingManager::m_Ptr->m_sTexts[SETTXT_BOT_NICK]);
-	SettingManager::m_Ptr->UpdateBot();
+    LogInfo("Serving started");
 
-	// add opchat botname to reserved nicks
-	ReservedNicksManager::m_Ptr->AddReservedNick(SettingManager::m_Ptr->m_sTexts[SETTXT_OP_CHAT_NICK]);
-	SettingManager::m_Ptr->UpdateOpChat();
+    allocMgr(DcCommands::m_Ptr);
 
-	ReservedNicksManager::m_Ptr->AddReservedNick(SettingManager::m_Ptr->m_sTexts[SETTXT_ADMIN_NICK]);
+    // add botname to reserved nicks
+    ReservedNicksManager::m_Ptr->AddReservedNick(SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_BOT_NICK)].c_str());
+    SettingManager::m_Ptr->UpdateBot();
+
+    // add opchat botname to reserved nicks
+    ReservedNicksManager::m_Ptr->AddReservedNick(SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_OP_CHAT_NICK)].c_str());
+    SettingManager::m_Ptr->UpdateOpChat();
+
+    ReservedNicksManager::m_Ptr->AddReservedNick(SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_ADMIN_NICK)].c_str());
 
 #ifdef FLYLINKDC_USE_UDP_THREAD
-	if ((uint16_t)atoi(SettingManager::m_Ptr->m_sTexts[SETTXT_UDP_PORT]) != 0)
-	{
-		if(m_bUseIPv6 == false)
-		{
-			UDPThread::m_PtrIPv6 = UDPThread::Create(AF_INET);
-		}
-		else
-		{
-			UDPThread::m_PtrIPv6 = UDPThread::Create(AF_INET6);
+    int iUdpPort = 0;
+    if (safe_stoi(SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_UDP_PORT)].c_str(), iUdpPort) && static_cast<uint16_t>(iUdpPort) != 0)
+    {
+        if (!m_bUseIPv6)
+        {
+            UDPThread::m_PtrIPv6 = UDPThread::Create(AF_INET);
+        }
+        else
+        {
+            UDPThread::m_PtrIPv6 = UDPThread::Create(AF_INET6);
 
-			if(SettingManager::m_Ptr->m_bBools[SETBOOL_BIND_ONLY_SINGLE_IP] == true || m_bIPv6DualStack == false)
-			{
-				UDPThread::m_PtrIPv6 = UDPThread::Create(AF_INET);
-			}
-		}
-	}
+            if (SettingManager::m_Ptr->m_bBools[std::to_underlying(SetBoolIds::SETBOOL_BIND_ONLY_SINGLE_IP)] || !m_bIPv6DualStack)
+            {
+                UDPThread::Destroy(UDPThread::m_PtrIPv6);
+                UDPThread::m_PtrIPv6 = UDPThread::Create(AF_INET);
+            }
+        }
+    }
 #endif
 
-	if (SettingManager::m_Ptr->m_bBools[SETBOOL_ENABLE_SCRIPTING] == true)
-	{
-		ScriptManager::m_Ptr->Start();
-	}
+    if (SettingManager::m_Ptr->m_bBools[std::to_underlying(SetBoolIds::SETBOOL_ENABLE_SCRIPTING)])
+    {
+        ScriptManager::m_Ptr->Start();
+    }
 
-	ServiceLoop::m_Ptr = new (std::nothrow) ServiceLoop();
-	if (ServiceLoop::m_Ptr == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate ServiceLoop::m_Ptr in ServerStart\n");
-		exit(EXIT_FAILURE);
-	}
+    allocMgr(ServiceLoop::m_Ptr);
 
-	// Start the server socket threads
-	ServerThread * cur = NULL,
-	               * next = m_pServersS;
+    // Start the server socket threads
+    for (const auto& pServer : m_Servers)
+    {
+        pServer->Resume();
+    }
 
-	while (next != NULL)
-	{
-		cur = next;
-		next = cur->m_pNext;
+    m_bServerRunning = true;
 
-		cur->Resume();
-	}
+    // Call lua_Main
+    ScriptManager::m_Ptr->OnStartup();
 
-	m_bServerRunning = true;
-
-	// Call lua_Main
-	ScriptManager::m_Ptr->OnStartup();
-
-#ifdef _BUILD_GUI
-	MainWindow::m_Ptr->SetStatusValue((string(LanguageManager::m_Ptr->m_sTexts[LAN_RUNNING], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RUNNING]) + "...").c_str());
-	MainWindow::m_Ptr->SetStartButtonText(LanguageManager::m_Ptr->m_sTexts[LAN_STOP_HUB]);
-	MainWindow::m_Ptr->EnableStartButton(TRUE);
-	MainWindow::m_Ptr->EnableGuiItems(TRUE);
-#endif
-
-#if defined(_WIN32) && !defined(_WIN_IOT)
-	//Start the HubRegistration timer
-	if (SettingManager::m_Ptr->m_bBools[SETBOOL_AUTO_REG] == true)
-	{
-#ifdef FLYLINKDC_REMOVE_REGISTER_THREAD
-		m_upRegTimer = SetTimer(NULL, 0, 901000, NULL);
-
-
-		if (m_upRegTimer == 0)
-		{
-			AppendDebugLog("%s - [ERR] Cannot start regtimer in ServerStart\n");
-			exit(EXIT_FAILURE);
-		}
-#endif
-	}
-
-	if (::SetEvent(ServiceLoop::m_Ptr->m_hLoopEvents[0]) == 0)
-	{
-		AppendDebugLog("%s - [ERR] Cannot set m_hLoopEvent in ServerManager::Start\n");
-		exit(EXIT_FAILURE);
-	}
-#endif
-
-	return true;
+    return true;
 }
 //---------------------------------------------------------------------------
 
 void ServerManager::Stop()
 {
-#ifdef _BUILD_GUI
-	MainWindow::m_Ptr->EnableStartButton(FALSE);
-#endif
 
-	int iRet = snprintf(m_pGlobalBuffer, m_szGlobalBufferSize, "Serving stopped (UL: %" PRIu64 " [%" PRIu64 "], DL: %" PRIu64 ")", m_ui64BytesSent, m_ui64BytesSentSaved, m_ui64BytesRead);
-	if (iRet > 0)
-	{
-		AppendLog(m_pGlobalBuffer);
-	}
+    const int iRet = snprintf(m_pGlobalBuffer,
+                        m_szGlobalBufferSize,
+                        "Serving stopped (UL: %" PRIu64 " [%" PRIu64 "], DL: %" PRIu64 ")",
+                        m_ui64BytesSent,
+                        m_ui64BytesSentSaved,
+                        m_ui64BytesRead);
+    if (iRet > 0)
+    {
+        LogInfo("{}", m_pGlobalBuffer);
+    }
 
-#ifdef FLYLINKDC_REMOVE_REGISTER_THREAD
-#if defined(_WIN32) && !defined(_WIN_IOT)
-	//Stop the HubRegistration timer
-	if (SettingManager::m_Ptr->m_bBools[SETBOOL_AUTO_REG] == true)
-	{
-		if (KillTimer(NULL, m_upRegTimer) == 0)
-		{
-			AppendDebugLog("%s - [ERR] Cannot stop regtimer in ServerStop\n");
-			exit(EXIT_FAILURE);
-		}
-	}
-#endif
-#endif
+    for (const auto& pServer : m_Servers)
+    {
+        pServer->Close();
+        pServer->WaitFor();
+    }
 
-	ServerThread * cur = NULL,
-	               * next = m_pServersS;
+    m_Servers.clear();
 
-	while (next != NULL)
-	{
-		cur = next;
-		next = cur->m_pNext;
-
-		cur->Close();
-		cur->WaitFor();
-
-		delete cur;
-	}
-
-	m_pServersS = nullptr;
-	m_pServersE = nullptr;
-
-	// stop the main hub loop
-	if (ServiceLoop::m_Ptr != NULL)
-	{
-		m_bServerTerminated = true;
-	}
-	else
-	{
-		FinalStop(false);
-	}
+    // stop the main hub loop
+    if (ServiceLoop::m_Ptr)
+    {
+        m_bServerTerminated = true;
+    }
+    else
+    {
+        FinalStop(false);
+    }
 }
 //---------------------------------------------------------------------------
 
-void ServerManager::FinalStop(const bool bDeleteServiceLoop)
+void ServerManager::FinalStop(bool bDeleteServiceLoop)
 {
-	if (bDeleteServiceLoop == true)
-	{
-		safe_delete(ServiceLoop::m_Ptr);
-	}
+    if (bDeleteServiceLoop)
+    {
+        ServiceLoop::m_Ptr.reset();
+    }
 
-	if (SettingManager::m_Ptr->m_bBools[SETBOOL_ENABLE_SCRIPTING] == true)
-	{
-		ScriptManager::m_Ptr->Stop();
-	}
+    if (SettingManager::m_Ptr->m_bBools[std::to_underlying(SetBoolIds::SETBOOL_ENABLE_SCRIPTING)])
+    {
+        ScriptManager::m_Ptr->Stop();
+    }
 
 #ifdef FLYLINKDC_USE_UDP_THREAD
 #ifdef FLYLINKDC_USE_UDP_THREAD_IP6
-	UDPThread::Destroy(UDPThread::m_PtrIPv6);
+    UDPThread::Destroy(UDPThread::m_PtrIPv6);
 #endif
 
-	UDPThread::Destroy(UDPThread::m_PtrIPv4);
+    UDPThread::Destroy(UDPThread::m_PtrIPv4);
 #endif
 
-	// delete userlist field
-	if (Users::m_Ptr != NULL)
-	{
-		Users::m_Ptr->DisconnectAll();
-		safe_delete(Users::m_Ptr);
-	}
+    // delete userlist field
+    if (Users::m_Ptr)
+    {
+        Users::m_Ptr->DisconnectAll();
+        Users::m_Ptr.reset();
+    }
 
-	safe_delete(DcCommands::m_Ptr);
+    DcCommands::m_Ptr.reset();
 
-	// delete hashed userlist manager
-	safe_delete(HashManager::m_Ptr);
+    // delete hashed userlist manager
+    HashManager::m_Ptr.reset();
 
+    GlobalDataQueue::m_Ptr.reset();
+    EventQueue::m_Ptr.reset();
 
-	safe_delete(GlobalDataQueue::m_Ptr);
-#ifdef FLYLINKDC_REMOVE_REGISTER_THREAD
-	if (RegisterThread::m_Ptr != NULL)
-	{
-		RegisterThread::m_Ptr->Close();
-		RegisterThread::m_Ptr->WaitFor();
-		safe_delete(RegisterThread::m_Ptr);
-	}
-#endif
-	safe_delete(EventQueue::m_Ptr);
-
-	safe_delete(IpP2Country::m_Ptr);
+    IpP2Country::m_Ptr.reset();
 
 #ifdef FLYLINKDC_USE_DB
 #ifdef _WITH_SQLITE
-	safe_delete(DBSQLite::m_Ptr);
-#elif _WITH_POSTGRES
-	safe_delete(DBPostgreSQL::m_Ptr);
-#elif _WITH_MYSQL
-	safe_delete(DBMySQL::m_Ptr);
+    DBSQLite::m_Ptr.reset();
 #endif
 #endif // FLYLINKDC_USE_DB
 
-	/*  if(TLSManager != NULL) {
-	        safe_delete(TLSManager);
-	    }*/
+    // userstat  // better here ;)
 
-	//userstat  // better here ;)
-//    sqldb->FinalizeAllVisits();
+    m_ui8SrCntr = 0;
+    m_ui32Joins = m_ui32Parts = m_ui32Logged = 0;
 
-#ifdef _BUILD_GUI
-	MainWindow::m_Ptr->SetStatusValue((string(LanguageManager::m_Ptr->m_sTexts[LAN_STOPPED], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_STOPPED]) + ".").c_str());
-	MainWindow::m_Ptr->SetStartButtonText(LanguageManager::m_Ptr->m_sTexts[LAN_START_HUB]);
-	MainWindow::m_Ptr->EnableStartButton(TRUE);
-	MainWindow::m_Ptr->EnableGuiItems(FALSE);
-#endif
+    UdpDebug::m_Ptr->Cleanup();
 
-	m_ui8SrCntr = 0;
-	m_ui32Joins = m_ui32Parts = m_ui32Logged = 0;
+    m_bServerRunning = false;
 
-	UdpDebug::m_Ptr->Cleanup();
+    if (m_bIsRestart)
+    {
+        m_bIsRestart = false;
 
-	m_bServerRunning = false;
-
-	if (m_bIsRestart == true)
-	{
-		m_bIsRestart = false;
-
-		// start hub
-#ifdef _BUILD_GUI
-		if (Start() == false)
-		{
-			MainWindow::m_Ptr->SetStatusValue((string(LanguageManager::m_Ptr->m_sTexts[LAN_READY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_READY]) + ".").c_str());
-		}
-#else
-		if (Start() == false)
-		{
-			AppendLog("[ERR] Server start failed in ServerFinalStop");
-			exit(EXIT_FAILURE);
-		}
-#endif
-	}
-	else if (m_bIsClose == true)
-	{
-		FinalClose();
-	}
+        // start hub
+        if (!Start())
+        {
+            LogError("Server start failed in ServerFinalStop");
+            exit(EXIT_FAILURE);
+        }
+    }
+    else if (m_bIsClose)
+    {
+        FinalClose();
+    }
 }
 //---------------------------------------------------------------------------
 
 void ServerManager::FinalClose()
 {
-#if defined(_WIN32) && !defined(_WIN_IOT)
-	KillTimer(NULL, m_upSecTimer);
-#endif
 
-	BanManager::m_Ptr->Save(true);
+    BanManager::m_Ptr->Save(true);
 
-	ProfileManager::m_Ptr->SaveProfiles();
+    ProfileManager::m_Ptr->SaveProfiles();
 
-	RegManager::m_Ptr->Save();
+    RegManager::m_Ptr->Save();
 
-	ScriptManager::m_Ptr->SaveScripts();
+    ScriptManager::m_Ptr->SaveScripts();
 
-	SettingManager::m_Ptr->Save();
+    SettingManager::m_Ptr->Save();
 
-	safe_delete(ScriptManager::m_Ptr);
-	safe_delete(TextFilesManager::m_Ptr);
-	safe_delete(ProfileManager::m_Ptr);
-	safe_delete(UdpDebug::m_Ptr);
-	safe_delete(RegManager::m_Ptr);
-	safe_delete(BanManager::m_Ptr);
-	safe_delete(ZlibUtility::m_Ptr);
-	safe_delete(LanguageManager::m_Ptr);
+    ScriptManager::m_Ptr.reset();
+    TextFilesManager::m_Ptr.reset();
+    ProfileManager::m_Ptr.reset();
+    UdpDebug::m_Ptr.reset();
+    RegManager::m_Ptr.reset();
+    BanManager::m_Ptr.reset();
+    ZlibUtility::m_Ptr.reset();
+    LanguageManager::m_Ptr.reset();
 #ifdef FLYLINKDC_USE_DB
 #if defined(_WITH_SQLITE)
-	safe_delete(TextConverter::m_Ptr);
+    TextConverter::m_Ptr.reset();
 #endif
 #endif
-	safe_delete(SettingManager::m_Ptr);
-	safe_delete(ReservedNicksManager::m_Ptr);
-
-#ifdef _BUILD_GUI
-	MainWindow::m_Ptr->SaveGuiSettings();
-#endif
+    SettingManager::m_Ptr.reset();
+    ReservedNicksManager::m_Ptr->Save();
+    ReservedNicksManager::m_Ptr.reset();
 
 #ifdef __MACH__
-	mach_port_deallocate(mach_task_self(), m_csMachClock);
+    mach_port_deallocate(mach_task_self(), m_csMachClock);
 #endif
 
-	DeleteGlobalBuffer();
-
-#ifdef _WIN32
-
-	WSACleanup();
-
-#ifndef _WIN_IOT
-	::PostQuitMessage(0);
-#endif
-#endif
+    DeleteGlobalBuffer();
 }
 //---------------------------------------------------------------------------
 
 void ServerManager::UpdateServers()
 {
-	bool bFound = false;
+    bool bFound = false;
 
-	// Remove servers for ports we don't want use anymore
-	ServerThread * pCur = NULL,
-	               * pNext = m_pServersS;
+    // Remove servers for ports we don't want use anymore
+    for (auto it = m_Servers.begin(); it != m_Servers.end();)
+    {
+        bFound = false;
 
-	while (pNext != NULL)
-	{
-		pCur = pNext;
-		pNext = pCur->m_pNext;
+        for (const unsigned short m_ui16PortNumber : SettingManager::m_Ptr->m_ui16PortNumbers)
+        {
+            if (m_ui16PortNumber == 0)
+            {
+                break;
+            }
 
-		bFound = false;
+            if ((*it)->m_ui16Port == m_ui16PortNumber)
+            {
+                bFound = true;
+                break;
+            }
+        }
 
-		for (uint8_t ui8i = 0; ui8i < 25; ui8i++)
-		{
-			if (SettingManager::m_Ptr->m_ui16PortNumbers[ui8i] == 0)
-			{
-				break;
-			}
+        if (!bFound)
+        {
+            (*it)->Close();
+            (*it)->WaitFor();
+            it = m_Servers.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
 
-			if (pCur->m_ui16Port == SettingManager::m_Ptr->m_ui16PortNumbers[ui8i])
-			{
-				bFound = true;
-				break;
-			}
-		}
+    // Add servers for ports that not running
+    for (const unsigned short m_ui16PortNumber : SettingManager::m_Ptr->m_ui16PortNumbers)
+    {
+        if (m_ui16PortNumber == 0)
+        {
+            break;
+        }
 
-		if (bFound == false)
-		{
-			if (pCur->m_pPrev == NULL)
-			{
-				if (pCur->m_pNext == NULL)
-				{
-					m_pServersS = NULL;
-					m_pServersE = NULL;
-				}
-				else
-				{
-					pCur->m_pNext->m_pPrev = NULL;
-					m_pServersS = pCur->m_pNext;
-				}
-			}
-			else if (pCur->m_pNext == NULL)
-			{
-				pCur->m_pPrev->m_pNext = NULL;
-				m_pServersE = pCur->m_pPrev;
-			}
-			else
-			{
-				pCur->m_pPrev->m_pNext = pCur->m_pNext;
-				pCur->m_pNext->m_pPrev = pCur->m_pPrev;
-			}
+        bFound = false;
 
-			pCur->Close();
-			pCur->WaitFor();
+        for (const auto& pServer : m_Servers)
+        {
+            if (pServer->m_ui16Port == m_ui16PortNumber)
+            {
+                bFound = true;
+                break;
+            }
+        }
 
-			delete pCur;
-		}
-	}
+        if (!bFound)
+        {
+            if (!m_bUseIPv6)
+            {
+                CreateServerThread(AF_INET, m_ui16PortNumber);
+                continue;
+            }
 
-	// Add servers for ports that not running
-	for (uint8_t ui8i = 0; ui8i < 25; ui8i++)
-	{
-		if (SettingManager::m_Ptr->m_ui16PortNumbers[ui8i] == 0)
-		{
-			break;
-		}
+            CreateServerThread(AF_INET6, m_ui16PortNumber);
 
-		bFound = false;
-
-		pCur = NULL,
-		pNext = m_pServersS;
-
-		while (pNext != NULL)
-		{
-			pCur = pNext;
-			pNext = pCur->m_pNext;
-
-			if (pCur->m_ui16Port == SettingManager::m_Ptr->m_ui16PortNumbers[ui8i])
-			{
-				bFound = true;
-				break;
-			}
-		}
-
-		if (bFound == false)
-		{
-			if (m_bUseIPv6 == false)
-			{
-				CreateServerThread(AF_INET, SettingManager::m_Ptr->m_ui16PortNumbers[ui8i]);
-				continue;
-			}
-
-			CreateServerThread(AF_INET6, SettingManager::m_Ptr->m_ui16PortNumbers[ui8i]);
-
-			if (SettingManager::m_Ptr->m_bBools[SETBOOL_BIND_ONLY_SINGLE_IP] == true || m_bIPv6DualStack == false)
-			{
-				CreateServerThread(AF_INET, SettingManager::m_Ptr->m_ui16PortNumbers[ui8i]);
-			}
-		}
-	}
+            if (SettingManager::m_Ptr->m_bBools[std::to_underlying(SetBoolIds::SETBOOL_BIND_ONLY_SINGLE_IP)] || !m_bIPv6DualStack)
+            {
+                CreateServerThread(AF_INET, m_ui16PortNumber);
+            }
+        }
+    }
 }
 //---------------------------------------------------------------------------
 
 void ServerManager::ResumeAccepts()
 {
-	if (m_bServerRunning == false)
-	{
-		return;
-	}
+    if (!m_bServerRunning)
+    {
+        LogDbg("[SYS] ResumeAccepts called when server is not running.");
+        return;
+    }
 
-	ServerThread * cur = NULL,
-	               * next = m_pServersS;
-
-	while (next != NULL)
-	{
-		cur = next;
-		next = cur->m_pNext;
-
-		cur->ResumeSck();
-	}
+    for (const auto& pServer : m_Servers)
+    {
+        pServer->ResumeSck();
+    }
 }
 //---------------------------------------------------------------------------
 
 void ServerManager::SuspendAccepts(const uint32_t ui32Time)
 {
-	if (m_bServerRunning == false)
-	{
-		return;
-	}
+    if (!m_bServerRunning)
+    {
+        LogDbg("[SYS] SuspendAccepts called when server is not running.");
+        return;
+    }
 
-	if (ui32Time != 0)
-	{
-		UdpDebug::m_Ptr->BroadcastFormat("[SYS] Suspending listening threads to %u seconds.", ui32Time);
-	}
-	else
-	{
-		const char sSuspendMsg[] = "[SYS] Suspending listening threads.";
-		UdpDebug::m_Ptr->Broadcast(sSuspendMsg, sizeof(sSuspendMsg) - 1);
-	}
+    if (ui32Time != 0)
+    {
+        UdpDebug::m_Ptr->BroadcastFormat("[SYS] Suspending listening threads to %u seconds.", ui32Time);
+    }
+    else
+    {
+        const char sSuspendMsg[] = "[SYS] Suspending listening threads."; // NOLINT(modernize-avoid-c-arrays)
+        UdpDebug::m_Ptr->Broadcast(sSuspendMsg, sizeof(sSuspendMsg) - 1);
+    }
 
-	ServerThread * cur = NULL,
-	               * next = m_pServersS;
-
-	while (next != NULL)
-	{
-		cur = next;
-		next = cur->m_pNext;
-
-		cur->SuspendSck(ui32Time);
-	}
+    for (const auto& pServer : m_Servers)
+    {
+        pServer->SuspendSck(ui32Time);
+    }
 }
 //---------------------------------------------------------------------------
-#ifdef FLYLINKDC_REMOVE_REGISTER_THREAD
-void ServerManager::UpdateAutoRegState()
+
+void ServerManager::CreateServerThread(const int iAddrFamily, const uint16_t ui16PortNumber, const bool bResume /* = false*/)
 {
-	if (m_bServerRunning == false)
-	{
-		return;
-	}
+    auto pServer = std::make_unique<ServerThread>(iAddrFamily, ui16PortNumber);
+    if (!pServer)
+    {
+        LogDbg("[MEM] Cannot allocate pServer in ServerCreateServerThread");
+        exit(EXIT_FAILURE);
+    }
 
-	if (SettingManager::m_Ptr->m_bBools[SETBOOL_AUTO_REG] == true)
-	{
-#if defined(_WIN32) && !defined(_WIN_IOT)
-		m_upRegTimer = SetTimer(NULL, 0, 901000, NULL);
+    if (pServer->Listen())
+    {
+        if (bResume)
+        {
+            pServer->Resume();
+        }
 
-		if (m_upRegTimer == 0)
-		{
-			AppendDebugLog("%s - [ERR] Cannot start regtimer in ServerUpdateAutoRegState\n");
-			exit(EXIT_FAILURE);
-		}
-#else
-#ifdef __MACH__
-		mach_timespec_t mts;
-		clock_get_time(m_csMachClock, &mts);
-		ServiceLoop::m_Ptr->m_ui64LastRegToHublist = mts.tv_sec;
-#elif _WIN32
-		ServiceLoop::m_Ptr->m_ui64LastRegToHublist = ::GetTickCount64() / 1000;
-#else
-		timespec ts;
-		clock_gettime(CLOCK_MONOTONIC, &ts);
-		ServiceLoop::m_Ptr->m_ui64LastRegToHublist = ts.tv_sec;
-#endif
-#endif
-#if defined(_WIN32) && !defined(_WIN_IOT)
-	}
-	else
-	{
-		if (KillTimer(NULL, m_upRegTimer) == 0)
-		{
-			AppendDebugLog("%s - [ERR] Cannot stop regtimer in ServerUpdateAutoRegState\n");
-			exit(EXIT_FAILURE);
-		}
-#endif
-	}
-}
-#endif
-//---------------------------------------------------------------------------
-
-void ServerManager::CreateServerThread(const int iAddrFamily, const uint16_t ui16PortNumber, const bool bResume/* = false*/)
-{
-	ServerThread * pServer = new (std::nothrow) ServerThread(iAddrFamily, ui16PortNumber);
-	if(pServer == NULL)
-	{
-		AppendDebugLog("%s - [MEM] Cannot allocate pServer in ServerCreateServerThread\n");
-		exit(EXIT_FAILURE);
-	}
-
-	if(pServer->Listen() == true)
-	{
-		if(m_pServersE == NULL)
-		{
-			m_pServersS = pServer;
-			m_pServersE = pServer;
-		}
-		else
-		{
-			pServer->m_pPrev = m_pServersE;
-			m_pServersE->m_pNext = pServer;
-			m_pServersE = pServer;
-		}
-
-		if(bResume == true)
-		{
-			pServer->Resume();
-		}
-	}
-	else
-	{
-		delete pServer;
-	}
+        m_Servers.push_back(std::move(pServer));
+    }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void ServerManager::CommandLineSetup()
 {
-	printf("%s built on %s %s\n\n", g_sPtokaXTitle, __DATE__, __TIME__);
-	printf("Welcome to PtokaX configuration setup.\nDirectory for PtokaX configuration is: %s\nWhen this directory is wrong, then exit this setup.\nTo specify correct configuration directory start PtokaX with -c configdir parameter.", m_sPath.c_str());
+    printf("%s built on %s %s\n\n", g_sPtokaXTitle, __DATE__, __TIME__);
+    printf("Welcome to PtokaX configuration setup.\nDirectory for PtokaX configuration is: %s\nWhen this directory is wrong, then exit this setup.\nTo specify "
+           "correct configuration directory start PtokaX with -c configdir parameter.",
+           m_sPath.c_str());
 
-	const char sMenu[] = "\n\nAvailable options:\n"
-	                     "1. Basic setup. Only few things required for PtokaX run.\n"
-	                     "2. Complete setup. Long setup, where you can change all PtokaX setings.\n"
-	                     "3. Add registered user.\n"
-	                     "4. Exit this setup.\n\n"
-	                     "Your choice: ";
+    const char sMenu[] = "\n\nAvailable options:\n" // NOLINT(modernize-avoid-c-arrays)
+                         "1. Basic setup. Only few things required for PtokaX run.\n"
+                         "2. Complete setup. Long setup, where you can change all PtokaX setings.\n"
+                         "3. Add registered user.\n"
+                         "4. Exit this setup.\n\n"
+                         "Your choice: ";
 
-	printf("%s", sMenu);
+    printf("%s", sMenu);
 
-	while (true)
-	{
-		int iChar = getchar();
+    while (true)
+    {
+        const int iChar = getchar();
 
-		while (getchar() != '\n')
-		{
-			// boredom...
-		};
+        while (getchar() != '\n')
+        {
+            // boredom...
+        };
 
-		switch (iChar)
-		{
-		case '1':
-			SettingManager::m_Ptr->CmdLineBasicSetup();
-			printf("%s", sMenu);
-			continue;
-		case '2':
-			SettingManager::m_Ptr->CmdLineCompleteSetup();
-			printf("%s", sMenu);
-			continue;
-		case '3':
-			RegManager::m_Ptr->AddRegCmdLine();
-			printf("%s", sMenu);
-			continue;
-		case '4':
-			printf("%s ending...\n", g_sPtokaXTitle);
-			break;
-		default:
-			printf("Unknown option: %c\nYour choice: ", iChar);
-			continue;
-		}
+        switch (iChar)
+        {
+        case '1':
+            SettingManager::m_Ptr->CmdLineBasicSetup();
+            printf("%s", sMenu);
+            continue;
+        case '2':
+            SettingManager::m_Ptr->CmdLineCompleteSetup();
+            printf("%s", sMenu);
+            continue;
+        case '3':
+            RegManager::m_Ptr->AddRegCmdLine();
+            printf("%s", sMenu);
+            continue;
+        case '4':
+            printf("%s ending...\n", g_sPtokaXTitle);
+            break;
+        default:
+            printf("Unknown option: %c\nYour choice: ", iChar);
+            continue;
+        }
 
-		break;
-	}
+        break;
+    }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-bool ServerManager::ResolveHubAddress(const bool bSilent/* = false*/)
+bool ServerManager::ResolveHubAddress(const bool bSilent /* = false*/)
 {
-	if (SettingManager::m_Ptr->m_bBools[SETBOOL_RESOLVE_TO_IP] == true)
-	{
-		if (isIP(SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS]) == false)
-		{
-#ifdef _BUILD_GUI
-			MainWindow::m_Ptr->SetStatusValue((string(LanguageManager::m_Ptr->m_sTexts[LAN_RESOLVING_HUB_ADDRESS], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RESOLVING_HUB_ADDRESS]) + "...").c_str());
-#endif
+    if (SettingManager::m_Ptr->m_bBools[std::to_underlying(SetBoolIds::SETBOOL_RESOLVE_TO_IP)])
+    {
+        if (!isIP(SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_HUB_ADDRESS)].c_str()))
+        {
 
-			struct addrinfo hints;
-			memset(&hints, 0, sizeof(addrinfo));
+            addrinfo hints = {};
 
-			if (m_bUseIPv6 == true)
-			{
-				hints.ai_family = AF_UNSPEC;
-			}
-			else
-			{
-				hints.ai_family = AF_INET;
-			}
+            if (m_bUseIPv6)
+            {
+                hints.ai_family = AF_UNSPEC;
+            }
+            else
+            {
+                hints.ai_family = AF_INET;
+            }
 
-			struct addrinfo *res;
+            struct addrinfo* res;
 
-			if (::getaddrinfo(SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS], NULL, &hints, &res) != 0 || (res->ai_family != AF_INET && res->ai_family != AF_INET6))
-			{
-				if (bSilent == false)
-				{
-#ifdef _WIN32
-					int err = WSAGetLastError();
-#ifdef _BUILD_GUI
-					::MessageBox(MainWindow::m_Ptr->m_hWnd, (std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_RESOLVING_OF_HOSTNAME], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RESOLVING_OF_HOSTNAME]) + " '" + std::to_string(SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS]) + "' " +
-					             std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_HAS_FAILED], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_HAS_FAILED]) + ".\n" + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_ERROR_CODE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_ERROR_CODE]) + ": " + std::to_string(WSErrorStr(err)) + " (" + std::to_string(err) + ")\n\n" +
-					             std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_CHECK_THE_ADDRESS_PLEASE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_CHECK_THE_ADDRESS_PLEASE]) + ".").c_str(), LanguageManager::m_Ptr->m_sTexts[LAN_ERROR], MB_OK | MB_ICONERROR);
-#else
-					AppendLog(std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_RESOLVING_OF_HOSTNAME], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RESOLVING_OF_HOSTNAME]) +
-					          " '" + std::to_string(SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS]) + "' " + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_HAS_FAILED], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_HAS_FAILED]) + ".\n" + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_ERROR_CODE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_ERROR_CODE]) +
-					          ": " + std::to_string(WSErrorStr(err)) + " (" + std::to_string(err) + ")\n\n" + std::to_string(LanguageManager::m_Ptr->m_sTexts[LAN_CHECK_THE_ADDRESS_PLEASE], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_CHECK_THE_ADDRESS_PLEASE]) + ".");
-#endif
-#else
-					AppendLog(string(LanguageManager::m_Ptr->m_sTexts[LAN_RESOLVING_OF_HOSTNAME], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RESOLVING_OF_HOSTNAME]) +
-					          " '" + string(SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS]) + "' " + string(LanguageManager::m_Ptr->m_sTexts[LAN_HAS_FAILED], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_HAS_FAILED]) + ".\n" + string(LanguageManager::m_Ptr->m_sTexts[LAN_CHECK_THE_ADDRESS_PLEASE],
-					                  (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_CHECK_THE_ADDRESS_PLEASE]) + ".");
-#endif
-				}
+            if (::getaddrinfo(SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_HUB_ADDRESS)].c_str(), nullptr, &hints, &res) != 0 ||
+                (res->ai_family != AF_INET && res->ai_family != AF_INET6))
+            {
+                if (!bSilent)
+                {
+                    LogInfo("{} '{}' {}.\n{}. ",
+                            LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_RESOLVING_OF_HOSTNAME)],
+                            SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_HUB_ADDRESS)],
+                            LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_HAS_FAILED)],
+                            LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_CHECK_THE_ADDRESS_PLEASE)]);
+                }
 
-				return false;
-			}
-			else
-			{
-				Memo("*** " + string(SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS], (size_t)SettingManager::m_Ptr->m_ui16TextsLens[SETTXT_HUB_ADDRESS]) + " " + string(LanguageManager::m_Ptr->m_sTexts[LAN_RESOLVED_SUCCESSFULLY], (size_t)LanguageManager::m_Ptr->m_ui16TextsLens[LAN_RESOLVED_SUCCESSFULLY]) + ".");
+                return false;
+            }
 
-				if (m_bUseIPv6 == true)
-				{
-					struct addrinfo *next = res;
-					while (next != NULL)
-					{
-						if (next->ai_family == AF_INET)
-						{
-							if (((sockaddr_in *)(next->ai_addr))->sin_addr.s_addr != INADDR_ANY)
-							{
-								strcpy(m_sHubIP, inet_ntoa(((sockaddr_in *)(next->ai_addr))->sin_addr));
-							}
-						}
-						else if (next->ai_family == AF_INET6)
-						{
-#if defined(_WIN32) && !defined(_WIN64) && !defined(_WIN_IOT)
-							win_inet_ntop(&((struct sockaddr_in6 *)next->ai_addr)->sin6_addr, m_sHubIP6, 40);
-#else
-							inet_ntop(AF_INET6, &((struct sockaddr_in6 *)next->ai_addr)->sin6_addr, m_sHubIP6, 40);
-#endif
-						}
+            LogInfo("*** {} {}.", SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_HUB_ADDRESS)], LanguageManager::m_Ptr->m_sTexts[std::to_underlying(LangIds::LAN_RESOLVED_SUCCESSFULLY)]);
 
-						next = next->ai_next;
-					}
-				}
-				else if (((sockaddr_in *)(res->ai_addr))->sin_addr.s_addr != INADDR_ANY)
-				{
-					strcpy(m_sHubIP, inet_ntoa(((sockaddr_in *)(res->ai_addr))->sin_addr));
-				}
+            if (m_bUseIPv6)
+            {
+                struct addrinfo* next = res;
+                while (next)
+                {
+                    if (next->ai_family == AF_INET)
+                    {
+                        if ((reinterpret_cast<sockaddr_in*>(next->ai_addr))->sin_addr.s_addr != INADDR_ANY)
+                        {
+                            inet_ntop(AF_INET, &(reinterpret_cast<sockaddr_in*>(next->ai_addr))->sin_addr, m_sHubIP.data(), m_sHubIP.size());
+                        }
+                    }
+                    else if (next->ai_family == AF_INET6)
+                    {
+                        inet_ntop(AF_INET6, &(reinterpret_cast<sockaddr_in6*>(next->ai_addr))->sin6_addr, m_sHubIP6.data(), m_sHubIP6.size());
+                    }
 
-				if (m_sHubIP[0] != '\0')
-				{
-					string msg = "*** " + string(m_sHubIP);
-					if (IsPrivateIP(m_sHubIP) == true)
-					{
-						SettingManager::m_Ptr->SetBool(SETBOOL_AUTO_REG, false);
-					}
-					if (m_sHubIP6[0] != '\0')
-					{
-						msg += " / " + string(m_sHubIP6);
-						if (IsPrivateIP(m_sHubIP6) == true)
-						{
-							SettingManager::m_Ptr->SetBool(SETBOOL_AUTO_REG, false);
-						}
-					}
+                    next = next->ai_next;
+                }
+            }
+            else if ((reinterpret_cast<sockaddr_in*>(res->ai_addr))->sin_addr.s_addr != INADDR_ANY)
+            {
+                inet_ntop(AF_INET, &(reinterpret_cast<sockaddr_in*>(res->ai_addr))->sin_addr, m_sHubIP.data(), m_sHubIP.size());
+            }
 
-					Memo(msg);
-				}
-				else if (m_sHubIP6[0] != '\0')
-				{
-					Memo("*** " + string(m_sHubIP6));
-					if (IsPrivateIP(m_sHubIP6) == true)
-					{
-						SettingManager::m_Ptr->SetBool(SETBOOL_AUTO_REG, false);
-					}
-				}
+            if (m_sHubIP[0] != '\0')
+            {
+                std::string msg = "*** " + std::string(m_sHubIP.data());
+                if (IsPrivateIP(m_sHubIP.data()))
+                {
+                    SettingManager::m_Ptr->SetBool(std::to_underlying(SetBoolIds::SETBOOL_AUTO_REG), false);
+                }
+                if (m_sHubIP6[0] != '\0')
+                {
+                    msg += " / " + std::string(m_sHubIP6.data());
+                    if (IsPrivateIP(m_sHubIP6.data()))
+                    {
+                        SettingManager::m_Ptr->SetBool(std::to_underlying(SetBoolIds::SETBOOL_AUTO_REG), false);
+                    }
+                }
 
-				freeaddrinfo(res);
-			}
-		}
-		else
-		{
-			strcpy(m_sHubIP, SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS]);
-			if (IsPrivateIP(SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS]) == true)
-			{
-				SettingManager::m_Ptr->SetBool(SETBOOL_AUTO_REG, false);
-			}
-		}
-	}
-	else
-	{
-		if (SettingManager::m_Ptr->m_sTexts[SETTXT_IPV4_ADDRESS] != NULL)
-		{
-			strcpy(m_sHubIP, SettingManager::m_Ptr->m_sTexts[SETTXT_IPV4_ADDRESS]);
-		}
-		else
-		{
-			m_sHubIP[0] = '\0';
-		}
+                LogInfo("{}", msg);
+            }
+            else if (m_sHubIP6[0] != '\0')
+            {
+                LogInfo("*** {}", m_sHubIP6.data());
+                if (IsPrivateIP(m_sHubIP6.data()))
+                {
+                    SettingManager::m_Ptr->SetBool(std::to_underlying(SetBoolIds::SETBOOL_AUTO_REG), false);
+                }
+            }
 
-		if (SettingManager::m_Ptr->m_sTexts[SETTXT_IPV6_ADDRESS] != NULL)
-		{
-			strcpy(m_sHubIP6, SettingManager::m_Ptr->m_sTexts[SETTXT_IPV6_ADDRESS]);
-		}
-		else
-		{
-			m_sHubIP6[0] = '\0';
-		}
+            freeaddrinfo(res);
+        }
+        else
+        {
+            SafeStrCopy(m_sHubIP, SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_HUB_ADDRESS)].c_str());
+            if (IsPrivateIP(SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_HUB_ADDRESS)].c_str()))
+            {
+                SettingManager::m_Ptr->SetBool(std::to_underlying(SetBoolIds::SETBOOL_AUTO_REG), false);
+            }
+        }
+    }
+    else
+    {
+        if (!SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_IPV4_ADDRESS)].empty())
+        {
+            SafeStrCopy(m_sHubIP, SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_IPV4_ADDRESS)].c_str());
+        }
+        else
+        {
+            m_sHubIP[0] = '\0';
+        }
 
-		if (isIP(SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS]) == true)
-		{
-			if (IsPrivateIP(SettingManager::m_Ptr->m_sTexts[SETTXT_HUB_ADDRESS]) == true)
-			{
-				SettingManager::m_Ptr->SetBool(SETBOOL_AUTO_REG, false);
-			}
-		}
-	}
+        if (!SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_IPV6_ADDRESS)].empty())
+        {
+            SafeStrCopy(m_sHubIP6, SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_IPV6_ADDRESS)].c_str());
+        }
+        else
+        {
+            m_sHubIP6[0] = '\0';
+        }
 
-	return true;
+        if (isIP(SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_HUB_ADDRESS)].c_str()))
+        {
+            if (IsPrivateIP(SettingManager::m_Ptr->m_sTexts[std::to_underlying(SetTxtIds::SETTXT_HUB_ADDRESS)].c_str()))
+            {
+                SettingManager::m_Ptr->SetBool(std::to_underlying(SetBoolIds::SETBOOL_AUTO_REG), false);
+            }
+        }
+    }
+
+    return true;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

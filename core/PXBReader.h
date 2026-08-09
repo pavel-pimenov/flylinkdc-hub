@@ -19,51 +19,55 @@
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #ifndef PXBReaderH
 #define PXBReaderH
-//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------
+
+#include <vector>
 
 class PXBReader
 {
 private:
-	FILE * m_pFile;
+    FILE* m_pFile = nullptr;
 
-	char * m_pActualPosition;
+    char* m_pActualPosition = nullptr;
 
-	size_t m_szRemainingSize;
+    size_t m_szRemainingSize = 0;
 
-	uint8_t m_ui8AllocatedSize;
+    bool m_bFullRead = false;
 
-	bool m_bFullRead;
+    void ReadNextFilePart();
+    [[nodiscard]] auto PrepareArrays(uint8_t ui8Size) -> bool;
 
-
-	void ReadNextFilePart();
-	bool PrepareArrays(const uint8_t ui8Size);
 public:
-	enum enmDataTypes
-	{
-		PXB_BYTE,
-		PXB_TWO_BYTES,
-		PXB_FOUR_BYTES,
-		PXB_EIGHT_BYTES,
-		PXB_STRING
-	};
+    // Sentinel for PXB_BYTE boolean true — avoids reinterpret_cast<uintptr_t>(1) UB.
+    // PXB write path checks `m_pItemDatas[i] == nullptr ? '0' : '1'` (never dereferences).
+    static inline const char s_TrueSentinel = '\0';
 
-	void ** m_pItemDatas;
+    enum enmDataTypes
+    {
+        PXB_BYTE,
+        PXB_TWO_BYTES,
+        PXB_FOUR_BYTES,
+        PXB_EIGHT_BYTES,
+        PXB_STRING
+    };
 
-	uint16_t * m_ui16ItemLengths;
+    std::vector<const void*> m_pItemDatas;
 
-	char * m_sItemIdentifiers;
+    std::vector<uint16_t> m_ui16ItemLengths;
 
-	uint8_t * m_ui8ItemValues;
+    std::vector<char> m_sItemIdentifiers;
 
-	PXBReader();
-	~PXBReader();
+    std::vector<uint8_t> m_ui8ItemValues;
 
-	bool OpenFileRead(const char * sFilename, const uint8_t ui8SubItems);
-	bool ReadNextItem(const uint16_t * pExpectedIdentificators, const uint8_t ui8ExpectedSubItems, const uint8_t ui8ExtraSubItems = 0);
+    PXBReader() = default;
+    ~PXBReader();
 
-	bool OpenFileSave(const char * sFilename, const uint8_t ui8Size);
-	bool WriteNextItem(const uint32_t ui32Length, const uint8_t ui8SubItems);
-	void WriteRemaining();
+    [[nodiscard]] auto OpenFileRead(const char* sFilename, uint8_t ui8SubItems) -> bool;
+    [[nodiscard]] auto ReadNextItem(const uint16_t* pExpectedIdentificators, uint8_t ui8ExpectedSubItems, uint8_t ui8ExtraSubItems = 0) -> bool;
+
+    [[nodiscard]] auto OpenFileSave(const char* sFilename, uint8_t ui8Size) -> bool;
+    [[nodiscard]] auto WriteNextItem(uint32_t ui32Length, uint8_t ui8SubItems) -> bool;
+    void WriteRemaining();
 };
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

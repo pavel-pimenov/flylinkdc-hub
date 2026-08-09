@@ -21,11 +21,7 @@
 #define LuaIP2CountryLibH
 //------------------------------------------------------------------------------
 
-#if LUA_VERSION_NUM > 501
-int RegIP2Country(lua_State * pLua);
-#else
-void RegIP2Country(lua_State * pLua);
-#endif
+[[nodiscard]] auto RegIP2Country(lua_State* pLua) -> int;
 //------------------------------------------------------------------------------
 
 #endif

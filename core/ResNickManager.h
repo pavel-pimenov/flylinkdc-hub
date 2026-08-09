@@ -20,45 +20,54 @@
 #ifndef ResNickManagerH
 #define ResNickManagerH
 //---------------------------------------------------------------------------
+#include <list>
+#include <string>
+//---------------------------------------------------------------------------
 
 class ReservedNicksManager
 {
 private:
-	struct ReservedNick
-	{
-		ReservedNick * m_pPrev, * m_pNext;
+    struct ReservedNick
+    {
+        std::string m_sNick;
 
-		char * m_sNick;
+        uint32_t m_ui32Hash = 0;
 
-		uint32_t m_ui32Hash;
+        bool m_bFromScript = false;
 
-		bool m_bFromScript;
+        ReservedNick() = default;
+        ~ReservedNick() = default;
 
-		ReservedNick();
-		~ReservedNick();
+        [[nodiscard]] static std::unique_ptr<ReservedNick> CreateReservedNick(const char* sNewNick, uint32_t m_ui32NickHash);
 
-		static ReservedNick * CreateReservedNick(const char * sNewNick, uint32_t m_ui32NickHash);
+        ReservedNick(const ReservedNick&) = delete;
 
-		DISALLOW_COPY_AND_ASSIGN(ReservedNick);
-	};
+        auto operator=(const ReservedNick&) -> ReservedNick& = delete;
+    };
 
-	ReservedNick * m_pReservedNicks;
+    std::list<std::unique_ptr<ReservedNick>> m_ReservedNicks;
 
-	DISALLOW_COPY_AND_ASSIGN(ReservedNicksManager);
+    void Load();
+    void LoadXML();
 
-
-	void Load();
-	void Save() const;
-	void LoadXML();
 public:
-	static ReservedNicksManager * m_Ptr;
+    void Save() const;
+    static std::unique_ptr<ReservedNicksManager> m_Ptr;
 
-	ReservedNicksManager();
-	~ReservedNicksManager();
+    ReservedNicksManager(const ReservedNicksManager&) = delete;
+    auto operator=(const ReservedNicksManager&) -> ReservedNicksManager& = delete;
 
-	bool CheckReserved(const char * sNick, const uint32_t ui32Hash) const;
-	void AddReservedNick(const char * sNick, const bool bFromScript = false);
-	void DelReservedNick(const char * sNick, const bool bFromScript = false);
+    ReservedNicksManager();
+    ~ReservedNicksManager();
+
+    [[nodiscard]] uint32_t GetCount() const
+    {
+        return static_cast<uint32_t>(m_ReservedNicks.size());
+    }
+
+    [[nodiscard]] auto CheckReserved(const char* sNick, uint32_t ui32Hash) const -> bool;
+    void AddReservedNick(const char* sNick, bool bFromScript = false);
+    void DelReservedNick(const char* sNick, bool bFromScript = false);
 };
 //---------------------------------------------------------------------------
 

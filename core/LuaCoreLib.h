@@ -21,11 +21,7 @@
 #define LuaCoreLibH
 //------------------------------------------------------------------------------
 
-#if LUA_VERSION_NUM > 501
-int RegCore(lua_State * pLua);
-#else
-void RegCore(lua_State * pLua);
-#endif
+[[nodiscard]] auto RegCore(lua_State* pLua) -> int;
 //------------------------------------------------------------------------------
 
 #endif

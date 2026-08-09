@@ -1,10 +1,11 @@
 //-----------------------------------------------------------------------------
-//(c) 2007-2024 pavel.pimenov@gmail.com
+//(c) 2007-2026 pavel.pimenov@gmail.com
 //-----------------------------------------------------------------------------
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <atomic>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <fstream>
 #include <iostream>
 
@@ -14,30 +15,15 @@
 
 #include <ctime>
 
-#ifndef _WIN32 // Only in linux
 #include <sys/time.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <cerrno>
-#else
-#include <direct.h>
-#define snprintf _snprintf
-#endif // _WIN32
-
-#ifdef _WIN32 // Only in WIN32
-#ifdef _DEBUG
-// #define VLD_DEFAULT_MAX_DATA_DUMP 1
-// #define VLD_FORCE_ENABLE // Uncoment this define to enable VLD in release
-// #include "C:\Program Files (x86)\Visual Leak Detector\include\vld.h" // VLD ������ ��� http://vld.codeplex.com/
-#endif
-#endif
-
 
 #include "CDBManager.h"
 
-#ifndef _WIN32
 #ifdef USE_LIBUNWIND
 
 #define UNW_LOCAL_ONLY
@@ -55,9 +41,7 @@ void show_backtrace (void) {
     printf ("ip = %lx, sp = %lx\n", (long) ip, (long) sp);
   }
 }
-#endif //
-
-#endif // _WIN32
+#endif // USE_LIBUNWIND
 //==========================================================================
 CDBManager g_DB;
 //==========================================================================
@@ -94,6 +78,7 @@ struct CFlyFloodCommand
 //==========================================================================
 static std::map<std::string, CFlyFloodCommand> g_ip_counter;
 //==========================================================================
+#ifdef FLYLINKDC_DEAD_CODE
 static void check_ip_flood(const std::string& p_remote_ip, const int64_t p_tick)
 {
 	CFlyFloodCommand& l_ip_stat = g_ip_counter[p_remote_ip];
@@ -106,16 +91,14 @@ static void check_ip_flood(const std::string& p_remote_ip, const int64_t p_tick)
 	if (l_ip_stat.isBan())
 	{
 		std::cout << "IP Flood IP = " << p_remote_ip << " count = " << l_ip_stat.m_count << std::endl;
-#ifndef _WIN32
-		syslog(LOG_ERR, "IP Flood %s count = %d", p_remote_ip.c_str(), l_ip_stat.m_count);
-#endif
-		// return MG_FALSE;
+		spdlog::error("IP Flood {} count = {}", p_remote_ip, l_ip_stat.m_count);
 	}
 	if (l_ip_stat.isCheckPoint())
 	{
-		l_ip_stat.init(); // �� 10 ��� �� ������� ����� ���������
+		l_ip_stat.init();
 	}
 }
+#endif // FLYLINKDC_DEAD_CODE
 //==========================================================================
 static const char *g_html_form =
     "<html><body>Error fly-server-test-port - contact: pavel.pimenov@gmail.com query</body></html>";
@@ -147,9 +130,7 @@ static int begin_request_handler(struct mg_connection *conn, enum mg_event ev)
 				mg_printf(conn, "%s", g_badRequestReply);
 				mg_printf(conn, "Error: no content\n");
 				std::cout << "Error: no content." << std::endl;
-#ifndef _WIN32
-				syslog(LOG_ERR, "Error: no content");
-#endif
+				spdlog::error("Error: no content");
 				return MG_TRUE;
 			}
 			l_flyserver_cntx.run_db_query(conn->content, conn->content_len, g_DB);
@@ -172,9 +153,8 @@ static int begin_request_handler(struct mg_connection *conn, enum mg_event ev)
 			g_sum_in_size  += l_flyserver_cntx.get_real_query_size();
 			g_z_sum_out_size += l_flyserver_cntx.get_http_len();
 			g_z_sum_in_size  += conn->content_len;
-			l_flyserver_cntx.send_syslog();
 			++g_count_query;
-			
+
 #ifdef _DEBUG
 			std::cout << "[DEBUG] l_result_mg_write = " << l_result_mg_write << " l_http_len = " << l_flyserver_cntx.get_http_len() << " l_result_mg_printf = " << l_result_mg_printf << std::endl;
 #endif
@@ -196,14 +176,14 @@ static int begin_request_handler(struct mg_connection *conn, enum mg_event ev)
 
 #endif
 
-int g_test_port_exit_flag = 0;
+std::atomic<int> g_test_port_exit_flag{ 0 };
 //======================================================================================
 class FlyServerHandler : public CivetHandler
 {
 private:
 	bool
-		handleAll(const char *method,
-			CivetServer *server,
+		handleAll(const char *,
+			CivetServer *,
 			struct mg_connection *conn)
 	{
 		/* Handler may access the request info using mg_get_request_info */
@@ -231,9 +211,7 @@ private:
 				mg_printf(conn, "%s", g_badRequestReply);
 				mg_printf(conn, "Error: no content\n");
 				std::cout << "Error: no content." << std::endl;
-#ifndef _WIN32
-				syslog(LOG_NOTICE, "Error: no content");
-#endif
+				spdlog::info("Error: no content");
 				return true;
 			}
 			std::vector<char> buf; // TODO unique_ptr[]
@@ -248,22 +226,19 @@ private:
 				if (rlen <= 0) {
 					break;
 				}
-#ifdef _DEBUG
-				std::cout << "[DEBUG] mg_read = " << rlen << std::endl;
-#endif
+				// std::cout << "[DEBUG] FlyServerHandler mg_read_len = " << rlen << " remote_ip = " << l_flyserver_cntx.m_remote_ip << std::endl;
 				nlen += rlen;
 			}
 			l_flyserver_cntx.run_db_query(buf.data(), l_flyserver_cntx.m_content_len, g_DB);
-			const int l_result_mg_printf = mg_printf(conn, "HTTP/1.1 200 OK\r\n"          // TODO - HTTP/1.1 ?
-				"Content-Length: %lu\r\n\r\n",
-				l_flyserver_cntx.get_http_len());
+		mg_printf(conn, "HTTP/1.1 200 OK\r\n"
+			"Content-Length: %lu\r\n\r\n",
+			l_flyserver_cntx.get_http_len());
 
-			const int l_result_mg_write = mg_write(conn, l_flyserver_cntx.get_result_content(), l_flyserver_cntx.get_http_len());
+		mg_write(conn, l_flyserver_cntx.get_result_content(), l_flyserver_cntx.get_http_len());
 			g_sum_out_size += l_flyserver_cntx.m_res_stat.size();
 			g_sum_in_size += l_flyserver_cntx.get_real_query_size();
 			g_z_sum_out_size += l_flyserver_cntx.get_http_len();
 			g_z_sum_in_size += l_flyserver_cntx.m_content_len;
-			l_flyserver_cntx.send_syslog();
 			++g_count_query;
 
 #ifdef _DEBUG
@@ -281,8 +256,7 @@ private:
 				(int)strlen(g_html_form), g_html_form);
 			return true;
 		}
-		// Mark as processed
-		return false; //TODO ? 
+		return false;
 	}
 
 public:
@@ -295,13 +269,12 @@ public:
 //======================================================================================
 void* run_fly_server_test_port(void*)
 {
-	std::cout << std::endl << "* FlylinkDC++ server for test port (c) 2012-2024 pavel.pimenov@gmail.com " << std::endl
+	std::cout << std::endl << "* FlylinkDC++ server for test port (c) 2012-2026 pavel.pimenov@gmail.com " << std::endl
 		<< "  - civetweb " << CIVETWEB_VERSION << " (c) https://github.com/civetweb/civetweb" << std::endl;
-//		<< std::endl << "Usage: fly-server-test-port [-disable-syslog] [-disable-log-test-port]"
+//		<< std::endl << "Usage: fly-server-test-port [-disable-log-test-port]"
 //		<< std::endl << std::endl;
 	
 	g_setup_log_disable_test_port = true;
-	g_setup_syslog_disable = true;
 /*
 	for (int i = 1; i < argc; i++)
 	{
@@ -312,19 +285,9 @@ void* run_fly_server_test_port(void*)
 			g_setup_log_disable_test_port = true;
 			std::cout << "*[+] " << l_argv << std::endl;
 		}
-		if (l_argv == "-disable-syslog")
-		{
-			std::cout << "*[+] " << l_argv << std::endl;
-		}
 	}
-*/
-#ifndef _WIN32 // Only in linux
-	if (!g_setup_log_disable_test_port)
-		mkdir("log-test-port", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-#else
-	if (!g_setup_log_disable_test_port)
-		mkdir("log-test-port");
-#endif
+*/ //-V547 g_setup_log_disable_test_port is always true, dead code intentional
+	mkdir("log-test-port", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 	g_DB.init();
 
         const char *options[] = {
@@ -335,7 +298,7 @@ void* run_fly_server_test_port(void*)
 	  0 };
 
 	std::vector<std::string> cpp_options;
-	for (int i = 0; i < (sizeof(options) / sizeof(options[0]) - 1); i++) {
+	for (size_t i = 0; i < (sizeof(options) / sizeof(options[0]) - 1); i++) {
 		cpp_options.push_back(options[i]);
 		std::cout << options[i];
 		std::cout << std::endl;
@@ -345,13 +308,9 @@ void* run_fly_server_test_port(void*)
 	CivetServer server(cpp_options);
 	FlyServerHandler h_a;
 	server.addHandler("/", h_a);
-	while (g_test_port_exit_flag == 0)
+	while (g_test_port_exit_flag == 0) //-V776 V712 controlled by external signal
 	{
-#ifdef _WIN32
-		Sleep(10);
-#else
 		sleep(1);
-#endif
 	}
 	}
 	catch (CivetException& e)
@@ -361,7 +320,10 @@ void* run_fly_server_test_port(void*)
 
 	CFlyServerContext::flush_log_array(true);
 	g_DB.shutdown();
+	// Wait for detached worker threads (probe/store-log) that still use spdlog,
+	// so the logger is not destroyed while they are logging.
+	CFlyServerContext::WaitWorkerThreads();
 	std::cout << std::endl << "* fly-server-test-port shutdown!" << std::endl;
-	return NULL;
+	return nullptr;
 }
 

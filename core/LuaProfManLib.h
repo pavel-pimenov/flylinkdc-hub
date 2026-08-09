@@ -21,11 +21,7 @@
 #define LuaProfManLibH
 //------------------------------------------------------------------------------
 
-#if LUA_VERSION_NUM > 501
-int RegProfMan(lua_State * pLua);
-#else
-void RegProfMan(lua_State * pLua);
-#endif
+[[nodiscard]] auto RegProfMan(lua_State* pLua) -> int;
 //------------------------------------------------------------------------------
 
 #endif

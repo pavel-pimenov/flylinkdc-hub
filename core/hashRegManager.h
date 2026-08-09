@@ -22,77 +22,84 @@
 //---------------------------------------------------------------------------
 struct User;
 //---------------------------------------------------------------------------
+#include <cstddef>
+#include <cstdint>
+#include <list>
+#include <memory>
 #include <string>
+#include <string_view>
+#include <unordered_map>
+#include <vector>
 
 struct RegUser
 {
-	time_t m_tLastBadPass;
+    time_t m_tLastBadPass = 0;
 
-	std::string m_sNick;
+    std::string m_sNick;
 
-	union
-	{
-		char * m_sPass;
-		uint8_t * m_ui8PassHash;
-	};
+    std::vector<uint8_t> m_vPassData;
 
-	RegUser * m_pPrev, * m_pNext;
-	RegUser * m_pHashTablePrev, * m_pHashTableNext;
+    uint32_t m_ui32Hash = 0;
 
-	uint32_t m_ui32Hash;
+    uint16_t m_ui16Profile = 0;
 
-	uint16_t m_ui16Profile;
+    uint8_t m_ui8BadPassCount = 0;
 
-	uint8_t m_ui8BadPassCount;
+    bool m_bPassHash = false;
 
-	bool m_bPassHash;
+    RegUser() = default;
+    ~RegUser() = default;
 
-	RegUser();
-	~RegUser();
-
-	static RegUser * CreateReg(const char * sRegNick, const size_t szRegNickLen, const char * sRegPassword, const size_t szRegPassLen, const uint8_t * ui8RegPassHash, const uint16_t ui16RegProfile);
-	bool UpdatePassword(const char * sNewPass, const size_t szNewLen);
-	DISALLOW_COPY_AND_ASSIGN(RegUser);
+    [[nodiscard]] static auto
+    CreateReg(const char* sRegNick, size_t szRegNickLen, const char* sRegPassword, size_t szRegPassLen, const uint8_t* ui8RegPassHash, uint16_t ui16RegProfile)
+        -> RegUser*;
+    [[nodiscard]] auto UpdatePassword(std::string_view sNewPass) -> bool;
+    RegUser(const RegUser&) = delete;
+    auto operator=(const RegUser&) -> RegUser& = delete;
 };
 //---------------------------------------------------------------------------
 
 class RegManager
 {
 private:
-	RegUser * m_pTable[65536];
+    // Таблица регистраций: ключ — хеш ника, значение — non-owning указатель.
+    // Владение RegUser остаётся в m_RegList (std::list<unique_ptr>).
+    std::unordered_multimap<uint32_t, RegUser*> m_Table;
 
-	uint8_t m_ui8SaveCalls;
+    uint8_t m_ui8SaveCalls = 0;
 
-	DISALLOW_COPY_AND_ASSIGN(RegManager);
+    void LoadXML();
 
-	void LoadXML();
 public:
-	static RegManager * m_Ptr;
+    static std::unique_ptr<RegManager> m_Ptr;
 
-	RegUser * m_pRegListS, * m_pRegListE;
+    std::list<std::unique_ptr<RegUser>> m_RegList;
 
-	RegManager(void);
-	~RegManager(void);
+    RegManager(const RegManager&) = delete;
+    auto operator=(const RegManager&) -> RegManager& = delete;
 
-	bool AddNew(const char * sNick, const char * sPasswd, const uint16_t iProfile);
+    RegManager();
+    ~RegManager();
 
-	void Add(RegUser * pReg);
-	void Add2Table(RegUser * pReg);
-	static void ChangeReg(RegUser * pReg, const char * sNewPasswd, const uint16_t ui16NewProfile);
-	void Delete(RegUser * pReg, const bool bFromGui = false);
-	void Rem(RegUser * pReg);
-	void RemFromTable(RegUser * pReg);
+    [[nodiscard]] auto AddNew(const char* sNick, const char* sPasswd, uint16_t iProfile) -> bool;
 
-	RegUser * Find(const char * sNick, const size_t szNickLen);
-	RegUser * Find(User * pUser);
-	RegUser * Find(const uint32_t ui32Hash, const char * sNick);
+    void Add(RegUser* pReg);
+    void Add2Table(RegUser* pReg);
+    static void ChangeReg(RegUser* pReg, const char* sNewPasswd, uint16_t ui16NewProfile);
+    void Delete(RegUser* pReg, bool bFromGui = false);
+    void Rem(RegUser* pReg);
+    void RemFromTable(RegUser* pReg);
 
-	void Load(void);
-	void Save(const bool bSaveOnChange = false, const bool bSaveOnTime = false);
+    [[nodiscard]] auto Find(std::string_view sNick) const -> RegUser*;
+    [[nodiscard]] auto Find(User* pUser) const -> RegUser*;
+    [[nodiscard]] auto Find(uint32_t ui32Hash, std::string_view sNick) const -> RegUser*;
 
-	void HashPasswords() const;
+    void Load();
+    void Save(bool bSaveOnChange = false, bool bSaveOnTime = false);
 
-	void AddRegCmdLine();
+    void HashPasswords() const;
+
+    void AddRegCmdLine();
 };
 //---------------------------------------------------------------------------
 
