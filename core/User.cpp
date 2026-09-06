@@ -201,6 +201,12 @@ void UserParseMyInfo(User* pUser)
     // if the length is 0 (defense-in-depth on top of the DcCommands::MyINFO truncation guard).
     if (pUser->m_ui16MyInfoOriginalLen <= 14 + pUser->m_sNick.size())
     {
+        LogWarn("[SECURITY] User %s (%s): MyINFO too short (%u bytes, nick len %zu) - user closed.", pUser->m_sNick.c_str(), pUser->m_sIP.data(),
+            pUser->m_ui16MyInfoOriginalLen, pUser->m_sNick.size());
+
+        UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s): truncated MyINFO (%u bytes) - user closed.", pUser->m_sNick.c_str(), pUser->m_sIP.data(),
+            pUser->m_ui16MyInfoOriginalLen);
+
         pUser->Close();
         return;
     }
@@ -262,6 +268,10 @@ void UserParseMyInfo(User* pUser)
     // PPK ... check for valid numeric share, kill fakers !
     if (!HaveOnlyNumbers(sMyINFOParts[4], iMyINFOPartsLen[4]))
     {
+        LogWarn("[SECURITY] User %s (%s): non-numeric share value (len %u) - user closed.", pUser->m_sNick.c_str(), pUser->m_sIP.data(), iMyINFOPartsLen[4]);
+
+        UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) sent fake non-numeric share value - user closed.", pUser->m_sNick.c_str(), pUser->m_sIP.data());
+
         pUser->Close();
         return;
     }

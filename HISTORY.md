@@ -8,6 +8,12 @@
 - **`Dockerfile`**: в builder добавлен пропущенный пакет `pkgconf` (без него cmake падал с `Could NOT find PkgConfig`).
 - **`Dockerfile`**: `COPY build_number.txt` теперь с комментарием про обязательный `bash gen-build-number.sh` перед сборкой (файл в gitignore, `test-hub.sh --docker` генерирует его автоматически).
 
+### SECURITY: логирование причин закрытия соединения в UserParseMyInfo
+
+- **`core/User.cpp`**: два голых `pUser->Close()` без пояснений (нарушение правила AGENTS.md) теперь пишут `LogWarn` + `UdpDebug` ДО закрытия:
+  - слишком короткий MyINFO (`m_ui16MyInfoOriginalLen <= 14 + nick.size()`, защита от underflow `len - 1u`): в лог идут ник, IP и фактическая длина;
+  - нечисловое share-поле (`HaveOnlyNumbers` fail, поддельная шара): в лог идут ник, IP и длина поля.
+
 ## 2026-08-06
 
 ### ASan/UBSan soak run in Docker (Debug build)
