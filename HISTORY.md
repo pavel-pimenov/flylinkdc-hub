@@ -1,5 +1,9 @@
 ## 2026-09-06
 
+### Дедупликация pinger-close в DcCommands (ClosePinger)
+
+- **`core/DcCommands.cpp`**: два зеркальных блока отключения пингеров (`BotINFO`↔`GetNickList`) объединены в хелпер `ClosePinger(User*, received, earlier)` в анонимном namespace — политика "system-лог ДО Close(), без спама в ops-чат" теперь в одном месте, будущие рассинхроны лога и закрытия исключены.
+
 ### Логи lifecycle listen-сокетов в ServerManager
 
 - **`core/ServerManager.cpp`**: старт (`CreateServerThread`) и остановка (`UpdateServers` при удалении порта из настроек) listener-сокетов теперь пишут `LogInfo("[SYS] Listening on port {} (...)" / "Stopping listener on port {} ...")` с номером порта и семейством. Раньше в system-логе не было видно когда хаб начал/перестал слушать порт — важно при диагностике "хаб не принимает коннекты".

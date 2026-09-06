@@ -1045,6 +1045,15 @@ void DcCommands::PreProcessData(DcCommand* pDcCommand)
 
     Unknown(pDcCommand);
 }
+namespace {
+// Helper: drop a pre-login pinger (recon $BotINFO <-> $GetNickList pair).
+// Always logs to system log BEFORE closing; never notifies ops chat (pingers are routine noise).
+void ClosePinger(User* pUser, const char* sReceived, const char* sEarlier)
+{
+    LogDbg("[PINGER] {} ({}): ${} after ${} - user closed.", pUser->m_sNick, pUser->m_sIP.data(), sReceived, sEarlier);
+    pUser->Close();
+}
+} // namespace
 //---------------------------------------------------------------------------
 
 // $BotINFO pinger identification|
@@ -1100,10 +1109,7 @@ void DcCommands::BotINFO(DcCommand* pDcCommand)
     if (((pDcCommand->m_pUser->m_ui32BoolBits & User::BIT_HAVE_GETNICKLIST) == User::BIT_HAVE_GETNICKLIST))
     {
         // Pinger recon: $BotINFO after $GetNickList, pre-login - drop silently from ops chat, keep system log
-        LogDbg("[PINGER] {} ({}): $BotINFO after $GetNickList - user closed.",
-            pDcCommand->m_pUser->m_sNick, pDcCommand->m_pUser->m_sIP.data());
-
-        pDcCommand->m_pUser->Close();
+        ClosePinger(pDcCommand->m_pUser, "BotINFO", "GetNickList");
     }
 }
 //---------------------------------------------------------------------------
@@ -1525,10 +1531,7 @@ bool DcCommands::GetNickList(DcCommand* pDcCommand)
             if (((pDcCommand->m_pUser->m_ui32BoolBits & User::BIT_HAVE_BOTINFO) == User::BIT_HAVE_BOTINFO))
             {
                 // Pinger recon: $GetNickList after $BotINFO, pre-login - drop (ops notified above if REPORT_PINGERS)
-                LogDbg("[PINGER] {} ({}): $GetNickList after $BotINFO - user closed.",
-                    pDcCommand->m_pUser->m_sNick, pDcCommand->m_pUser->m_sIP.data());
-
-                pDcCommand->m_pUser->Close();
+                ClosePinger(pDcCommand->m_pUser, "GetNickList", "BotINFO");
             }
             return false;
         }
