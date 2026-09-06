@@ -1,5 +1,13 @@
 ## 2026-09-06
 
+### Логи: printf-плейсхолдеры -> fmt-стиль в Log* (значения терялись)
+
+- **Баг**: макросы `LogDbg/LogWarn/LogDbgErr` — это spdlog (`fmt`-стиль `{}`), но 13 вызовов использовали printf-плейсхолдеры (`%s/%u/%hu/%zu`). `fmt` не подставляет `%`-плейсхолдеры — в лог печатался сырой текст `%s`, а переданные значения (ник, IP, длины) молча отбрасывались. Особенно критично для `[SECURITY]`-строк.
+- **`core/User.cpp`** (4): короткий MyINFO, нечисловая шара, overflow шары, SendBuffer overflow (+ заодно `Close()` в slow-user ветке перенесён ПОСЛЕ `LogWarn`+`UdpDebug`, был до).
+- **`core/DcCommands.cpp`** (1): `$MyINFO too long`.
+- **`core/hashBanManager.cpp`** (8): проверки длин в `BanManager::Load` + два `"%s [ERR] Add/Add2 ban failed"` без аргументов (болтающийся `%s` убран).
+- Проверено: `UdpDebug::BroadcastFormat` — это `vsnprintf`, там printf-стиль корректен и не трогался.
+
 ### Нейминг: статические константы User.cpp под g_
 
 - **`core/User.cpp`**: `sBadTag/sOtherNoTag/sUnknownTag/sDefaultNick` -> `g_sBadTag/g_sOtherNoTag/g_sUnknownTag/g_sDefaultNick` (правило AGENTS.md: статические переменные с префиксом `g_`, 10 вхождений в одном файле).

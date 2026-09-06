@@ -201,7 +201,7 @@ void UserParseMyInfo(User* pUser)
     // if the length is 0 (defense-in-depth on top of the DcCommands::MyINFO truncation guard).
     if (pUser->m_ui16MyInfoOriginalLen <= 14 + pUser->m_sNick.size())
     {
-        LogWarn("[SECURITY] User %s (%s): MyINFO too short (%u bytes, nick len %zu) - user closed.", pUser->m_sNick.c_str(), pUser->m_sIP.data(),
+        LogWarn("[SECURITY] User {} ({}): MyINFO too short ({} bytes, nick len {}) - user closed.", pUser->m_sNick.c_str(), pUser->m_sIP.data(),
             pUser->m_ui16MyInfoOriginalLen, pUser->m_sNick.size());
 
         UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s): truncated MyINFO (%u bytes) - user closed.", pUser->m_sNick.c_str(), pUser->m_sIP.data(),
@@ -268,7 +268,7 @@ void UserParseMyInfo(User* pUser)
     // PPK ... check for valid numeric share, kill fakers !
     if (!HaveOnlyNumbers(sMyINFOParts[4], iMyINFOPartsLen[4]))
     {
-        LogWarn("[SECURITY] User %s (%s): non-numeric share value (len %u) - user closed.", pUser->m_sNick.c_str(), pUser->m_sIP.data(), iMyINFOPartsLen[4]);
+        LogWarn("[SECURITY] User {} ({}): non-numeric share value (len {}) - user closed.", pUser->m_sNick.c_str(), pUser->m_sIP.data(), iMyINFOPartsLen[4]);
 
         UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) sent fake non-numeric share value - user closed.", pUser->m_sNick.c_str(), pUser->m_sIP.data());
 
@@ -279,7 +279,7 @@ void UserParseMyInfo(User* pUser)
     uint64_t ui64NewShare = 0;
     if (!ParseShare(sMyINFOParts[4], ui64NewShare))
     {
-        LogWarn("[SECURITY] User %s (%s): fake share value (overflow) '%s' - user closed.", pUser->m_sNick.c_str(), pUser->m_sIP.data(), sMyINFOParts[4]);
+        LogWarn("[SECURITY] User {} ({}): fake share value (overflow) '{}' - user closed.", pUser->m_sNick.c_str(), pUser->m_sIP.data(), sMyINFOParts[4]);
 
         UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) sent fake share value (overflow) - user closed.", pUser->m_sNick.c_str(), pUser->m_sIP.data());
 
@@ -1235,7 +1235,15 @@ bool User::PutInSendBuf(const char* sText, const size_t szTxtLen)
                     {
                         // we want to drop the slow user
                         m_ui32BoolBits |= BIT_ERROR;
-                        Close();
+
+                        LogWarn("[SECURITY] User {} ({}): SendBuffer overflow (AL:{}[SL:{}|NL:{}|FL:{}]/ML:{}) - user closed.",
+                            m_sNick.c_str(),
+                            m_sIP.data(),
+                            szAllignLen,
+                            m_ui32SendBufDataLen,
+                            szTxtLen,
+                            m_pSendBufHead - m_pSendBuf.get(),
+                            szMaxBufLen);
 
                         UdpDebug::m_Ptr->BroadcastFormat("[SYS] %s (%s) SendBuffer overflow (AL:%zu[SL:%u|NL:%zu|FL:%zu]/ML:%zu). User disconnected.",
                                                          m_sNick.c_str(),
@@ -1245,6 +1253,8 @@ bool User::PutInSendBuf(const char* sText, const size_t szTxtLen)
                                                          szTxtLen,
                                                          m_pSendBufHead - m_pSendBuf.get(),
                                                          szMaxBufLen);
+
+                        Close();
                         return false;
                     }
 

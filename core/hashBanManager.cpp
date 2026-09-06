@@ -743,7 +743,7 @@ void BanManager::Load()
         {
             if (pxbBans.m_ui16ItemLengths[1] > 64)
             {
-                LogDbgErr("[ERR] sNick too long %hu in BanManager::Load", pxbBans.m_ui16ItemLengths[1]);
+                LogDbgErr("[ERR] sNick too long {} in BanManager::Load", pxbBans.m_ui16ItemLengths[1]);
 
                 exit(EXIT_FAILURE);
             }
@@ -766,7 +766,7 @@ void BanManager::Load()
             {
                 if (pxbBans.m_ui16ItemLengths[3] != 16)
                 {
-                    LogDbgErr("[ERR] Ban IP address have incorrect length %hu in BanManager::Load", pxbBans.m_ui16ItemLengths[3]);
+                    LogDbgErr("[ERR] Ban IP address have incorrect length {} in BanManager::Load", pxbBans.m_ui16ItemLengths[3]);
 
                     exit(EXIT_FAILURE);
                 }
@@ -827,7 +827,7 @@ void BanManager::Load()
         {
             if (pxbBans.m_ui16ItemLengths[8] != 8)
             {
-                LogDbgErr("[ERR] Temp ban expire time have incorrect length %hu in BanManager::Load", pxbBans.m_ui16ItemLengths[8]);
+                LogDbgErr("[ERR] Temp ban expire time have incorrect length {} in BanManager::Load", pxbBans.m_ui16ItemLengths[8]);
 
                 exit(EXIT_FAILURE);
             }
@@ -846,7 +846,7 @@ void BanManager::Load()
                 {
                     if (!Add(pBan.release()))
                     {
-                        LogDbg("%s [ERR] Add ban failed in BanManager::Load\n");
+                        LogDbg("[ERR] Add ban failed in BanManager::Load\n");
 
                         exit(EXIT_FAILURE);
                     }
@@ -857,7 +857,7 @@ void BanManager::Load()
         {
             if (!Add(pBan.release()))
             {
-                LogDbg("%s [ERR] Add2 ban failed in BanManager::Load\n");
+                LogDbg("[ERR] Add2 ban failed in BanManager::Load\n");
 
                 exit(EXIT_FAILURE);
             }
@@ -916,7 +916,7 @@ void BanManager::Load()
         // Do we have first IP address?
         if (pxbRangeBans.m_ui16ItemLengths[1] != 16)
         {
-            LogDbgErr("[ERR] Range Ban first IP address have incorrect length %hu in BanManager::Load", pxbBans.m_ui16ItemLengths[1]);
+            LogDbgErr("[ERR] Range Ban first IP address have incorrect length {} in BanManager::Load", pxbBans.m_ui16ItemLengths[1]);
 
             exit(EXIT_FAILURE);
         }
@@ -941,7 +941,7 @@ void BanManager::Load()
         // Do we have second IP address?
         if (pxbRangeBans.m_ui16ItemLengths[2] != 16)
         {
-            LogDbgErr("[ERR] Range Ban second IP address have incorrect length %hu in BanManager::Load", pxbBans.m_ui16ItemLengths[2]);
+            LogDbgErr("[ERR] Range Ban second IP address have incorrect length {} in BanManager::Load", pxbBans.m_ui16ItemLengths[2]);
 
             exit(EXIT_FAILURE);
         }
@@ -996,7 +996,7 @@ void BanManager::Load()
         {
             if (pxbRangeBans.m_ui16ItemLengths[6] != 8)
             {
-                LogDbgErr("[ERR] Temp range ban expire time have incorrect lenght %hu in BanManager::Load", pxbRangeBans.m_ui16ItemLengths[6]);
+                LogDbgErr("[ERR] Temp range ban expire time have incorrect lenght {} in BanManager::Load", pxbRangeBans.m_ui16ItemLengths[6]);
 
                 exit(EXIT_FAILURE);
             }

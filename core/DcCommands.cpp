@@ -2528,7 +2528,7 @@ bool DcCommands::MyINFO(DcCommand* pDcCommand)
     // would cast to 0, making UserParseMyInfo read OOB (m_ui16MyInfoOriginalLen - 1u underflows).
     if (pDcCommand->m_ui32CommandLen > UINT16_MAX)
     {
-        LogWarn("[SECURITY] User %s (%s): $MyINFO too long (%u bytes) - user closed.", pDcCommand->m_pUser->m_sNick.c_str(),
+        LogWarn("[SECURITY] User {} ({}): $MyINFO too long ({} bytes) - user closed.", pDcCommand->m_pUser->m_sNick.c_str(),
                    pDcCommand->m_pUser->m_sIP.data(), pDcCommand->m_ui32CommandLen);
 
         pDcCommand->m_pUser->SendFormat(
