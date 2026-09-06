@@ -1,7 +1,11 @@
 ## 2026-09-06
 
-### Логирование ДО Close() при bad_alloc в colUsers
+### SECURITY: логирование pinger-отключений и snprintf-ошибки в DcCommands
 
+- **`core/DcCommands.cpp` (`BotINFO`, `GetNickList`)**: отключения пингеров (recon-запросы `$BotINFO`↔`$GetNickList` до логина) закрывали соединение молча. Добавлен `LogDbg("[PINGER] ...")` ДО `Close()` — только system-лог, без спама в ops-чат (в `GetNickList` уведомление оператору уже есть под флагом `REPORT_PINGERS`).
+- **`core/DcCommands.cpp` (`ValidateUserNick`)**: ветка `snprintf failed (iMsgLen <= 0)` при проверке лимита коннектов с IP закрывала юзера без единого лога (подготовленное UdpDebug-сообщение терялось). Добавлен `LogDbgErr` ДО `Close()`.
+
+### Логирование ДО Close() при bad_alloc в colUsers
 - **`core/colUsers.cpp`**: в 6 обработчиках `catch (bad_alloc)` (`Add2NickList` ×2, `Add2OpList`, `Add2MyInfos`, `Add2MyInfosTag`, `Add2UserIP`) строка `pUser->Close()` стояла ДО `LogDbg`/`LogDbgErr` — при OOM причина закрытия могла потеряться в логе. Порядок исправлен: сначала флаг `BIT_ERROR` + лог, затем `Close()` (требование AGENTS.md: причина всегда логируется ДО закрытия).
 
 ### Dockerfile: selectable Ubuntu base (24.04 default, 26.04 broken upstream)

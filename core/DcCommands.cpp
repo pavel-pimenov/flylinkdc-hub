@@ -1099,6 +1099,10 @@ void DcCommands::BotINFO(DcCommand* pDcCommand)
 
     if (((pDcCommand->m_pUser->m_ui32BoolBits & User::BIT_HAVE_GETNICKLIST) == User::BIT_HAVE_GETNICKLIST))
     {
+        // Pinger recon: $BotINFO after $GetNickList, pre-login - drop silently from ops chat, keep system log
+        LogDbg("[PINGER] {} ({}): $BotINFO after $GetNickList - user closed.",
+            pDcCommand->m_pUser->m_sNick, pDcCommand->m_pUser->m_sIP.data());
+
         pDcCommand->m_pUser->Close();
     }
 }
@@ -1520,6 +1524,10 @@ bool DcCommands::GetNickList(DcCommand* pDcCommand)
 
             if (((pDcCommand->m_pUser->m_ui32BoolBits & User::BIT_HAVE_BOTINFO) == User::BIT_HAVE_BOTINFO))
             {
+                // Pinger recon: $GetNickList after $BotINFO, pre-login - drop (ops notified above if REPORT_PINGERS)
+                LogDbg("[PINGER] {} ({}): $GetNickList after $BotINFO - user closed.",
+                    pDcCommand->m_pUser->m_sNick, pDcCommand->m_pUser->m_sIP.data());
+
                 pDcCommand->m_pUser->Close();
             }
             return false;
@@ -4353,6 +4361,9 @@ bool DcCommands::ValidateUserNick(DcCommand* pDcCommand, User* pUser, const char
                                    pUser->m_sIP.data());
             if (iMsgLen <= 0)
             {
+                LogDbgErr("[ERR] snprintf failed ({}) in DcCommands::ValidateUserNick for {} ({}) - user closed.",
+                    iMsgLen, pUser->m_sNick, pUser->m_sIP.data());
+
                 pUser->Close();
                 return false;
             }
