@@ -355,15 +355,24 @@ inline void shutdown_and_close(T& p_socket, int p_type)
     safe_closesocket(p_socket);
 }
 
-// Appends formatted text to buffer at offset. Returns true on success, false on snprintf error.
-// On success, offset is advanced by the number of characters written.
+// Appends formatted text to buffer at offset. Returns true on success, false on snprintf error
+// or when the output does not fit (truncation). On success, offset is advanced by the number
+// of characters written; on failure offset is left unchanged.
 [[nodiscard]] inline auto SnprintfAppend(char* buf, int& offset, size_t size, const char* fmt, ...) -> bool
 {
+    if (offset < 0 || static_cast<size_t>(offset) >= size)
+    {
+        return false;
+    }
+    const size_t uiAvail = size - static_cast<size_t>(offset);
     va_list args;
     va_start(args, fmt);
-    const int iRet = vsnprintf(buf + offset, size - static_cast<size_t>(offset), fmt, args);
+    const int iRet = vsnprintf(buf + offset, uiAvail, fmt, args);
     va_end(args);
-    if (iRet <= 0)
+    // vsnprintf returns the length it WOULD have written: iRet >= uiAvail means truncation.
+    // All callers must treat false as failure - continuing with a truncated offset would
+    // underflow (size - offset) into a huge size_t and corrupt memory past the buffer.
+    if (iRet <= 0 || static_cast<size_t>(iRet) >= uiAvail)
     {
         return false;
     }
