@@ -44,10 +44,10 @@
 #include "DeFlood.h"
 //---------------------------------------------------------------------------
 static constexpr size_t g_ui32ZMinDataLen = 128;
-static constexpr const char* sBadTag = "BAD TAG!";           // 8
-static constexpr const char* sOtherNoTag = "OTHER (NO TAG)"; // 14
-static constexpr const char* sUnknownTag = "UNKNOWN TAG";    // 11
-static constexpr const char* sDefaultNick = "<unknown>";     // 9
+static constexpr const char* g_sBadTag = "BAD TAG!";           // 8
+static constexpr const char* g_sOtherNoTag = "OTHER (NO TAG)"; // 14
+static constexpr const char* g_sUnknownTag = "UNKNOWN TAG";    // 11
+static constexpr const char* g_sDefaultNick = "<unknown>";     // 9
 //---------------------------------------------------------------------------
 
 static constexpr uint32_t g_ui32MaxCmdLenPreLogin = 1024U;
@@ -170,7 +170,7 @@ void UserSetBadTag(User* pUser, const char* sDesc, const uint8_t ui8DescLen)
     pUser->m_sTag = {};
 
     // PPK ... set bad tag
-    pUser->m_sClient = sBadTag;
+    pUser->m_sClient = g_sBadTag;
 
     // PPK ... send report to udp debug
     UdpDebug::m_Ptr->BroadcastFormat("[SYS] User %s (%s) have bad TAG (%s) ?!?", pUser->m_sNick.c_str(), pUser->m_sIP.data(), pUser->m_sMyInfoOriginal.data());
@@ -320,7 +320,7 @@ void UserParseMyInfo(User* pUser)
                 pUser->m_sDescription = std::string_view(pUser->m_sMyInfoOriginal.data() + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer),
                                                          static_cast<size_t>(iMyINFOPartsLen[0]));
 
-                pUser->m_sClient = sOtherNoTag;
+                pUser->m_sClient = g_sOtherNoTag;
                 return;
             }
 
@@ -342,7 +342,7 @@ void UserParseMyInfo(User* pUser)
             }
             else
             {
-                pUser->m_sClient = sUnknownTag;
+                pUser->m_sClient = g_sUnknownTag;
                 pUser->m_sTag = {};
                 sMyINFOParts[0][iMyINFOPartsLen[0] - 1] = '>'; //-V1048 intentional: restore > after sentinel check
                 pUser->m_sDescription = std::string_view(pUser->m_sMyInfoOriginal.data() + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer),
@@ -662,7 +662,7 @@ void UserParseMyInfo(User* pUser)
             std::string_view(pUser->m_sMyInfoOriginal.data() + (sMyINFOParts[0] - ServerManager::m_pGlobalBuffer), static_cast<size_t>(iMyINFOPartsLen[0]));
     }
 
-    pUser->m_sClient = sOtherNoTag;
+    pUser->m_sClient = g_sOtherNoTag;
 
     pUser->m_sTag = {};
 
@@ -709,7 +709,7 @@ LoginLogout::~LoginLogout()
 }
 //---------------------------------------------------------------------------
 
-User::User() : m_sNick(sDefaultNick), m_sClient(sOtherNoTag), m_ui8Country(246)
+User::User() : m_sNick(g_sDefaultNick), m_sClient(g_sOtherNoTag), m_ui8Country(246)
 
 {
     m_ui32BoolBits |= User::BIT_IPV4_ACTIVE;

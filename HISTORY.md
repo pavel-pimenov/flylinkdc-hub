@@ -1,5 +1,9 @@
 ## 2026-09-06
 
+### Нейминг: статические константы User.cpp под g_
+
+- **`core/User.cpp`**: `sBadTag/sOtherNoTag/sUnknownTag/sDefaultNick` -> `g_sBadTag/g_sOtherNoTag/g_sUnknownTag/g_sDefaultNick` (правило AGENTS.md: статические переменные с префиксом `g_`, 10 вхождений в одном файле).
+
 ### Нейминг: ActualDcCommand -> g_ActualDcCommand
 
 - **`core/User.cpp`**: файловый глобал `ActualDcCommand` переименован в `g_ActualDcCommand` (правило AGENTS.md: глобальные/статические переменные с префиксом `g_`). Использование только внутри `UserProcessLines`, сигнатуры не менялись.
