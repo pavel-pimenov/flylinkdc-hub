@@ -1,5 +1,9 @@
 ## 2026-09-06
 
+### Нейминг: ActualDcCommand -> g_ActualDcCommand
+
+- **`core/User.cpp`**: файловый глобал `ActualDcCommand` переименован в `g_ActualDcCommand` (правило AGENTS.md: глобальные/статические переменные с префиксом `g_`). Использование только внутри `UserProcessLines`, сигнатуры не менялись.
+
 ### SECURITY: логирование pinger-отключений и snprintf-ошибки в DcCommands
 
 - **`core/DcCommands.cpp` (`BotINFO`, `GetNickList`)**: отключения пингеров (recon-запросы `$BotINFO`↔`$GetNickList` до логина) закрывали соединение молча. Добавлен `LogDbg("[PINGER] ...")` ДО `Close()` — только system-лог, без спама в ops-чат (в `GetNickList` уведомление оператору уже есть под флагом `REPORT_PINGERS`).

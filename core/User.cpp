@@ -54,7 +54,7 @@ static constexpr uint32_t g_ui32MaxCmdLenPreLogin = 1024U;
 static constexpr uint32_t g_ui32MaxCmdLenPostLogin = 65536U;
 static constexpr size_t g_ui32MaxRecvChunk = 8U * 1024;
 static constexpr uint32_t g_ui32SmallSendBufThreshold = 1024;
-DcCommand ActualDcCommand;
+DcCommand g_ActualDcCommand;
 //---------------------------------------------------------------------------
 
 namespace {
@@ -78,11 +78,11 @@ bool UserProcessLines(User* pUser, const uint32_t ui32NewDataStart)
             if (ui32CommandLen <= (std::to_underlying(pUser->m_ui8State) < std::to_underlying(User::UserStates::STATE_ADDME) ? g_ui32MaxCmdLenPreLogin
                                                                                                                              : g_ui32MaxCmdLenPostLogin))
             {
-                ActualDcCommand.m_pUser = pUser;
-                ActualDcCommand.m_sCommand = pBuffer;
-                ActualDcCommand.m_ui32CommandLen = ui32CommandLen;
+                g_ActualDcCommand.m_pUser = pUser;
+                g_ActualDcCommand.m_sCommand = pBuffer;
+                g_ActualDcCommand.m_ui32CommandLen = ui32CommandLen;
 
-                DcCommands::m_Ptr->PreProcessData(&ActualDcCommand);
+                DcCommands::m_Ptr->PreProcessData(&g_ActualDcCommand);
             }
             else
             {
