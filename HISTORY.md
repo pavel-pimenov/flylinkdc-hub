@@ -1,5 +1,9 @@
 ## 2026-09-06
 
+### Логирование ДО Close() при bad_alloc в colUsers
+
+- **`core/colUsers.cpp`**: в 6 обработчиках `catch (bad_alloc)` (`Add2NickList` ×2, `Add2OpList`, `Add2MyInfos`, `Add2MyInfosTag`, `Add2UserIP`) строка `pUser->Close()` стояла ДО `LogDbg`/`LogDbgErr` — при OOM причина закрытия могла потеряться в логе. Порядок исправлен: сначала флаг `BIT_ERROR` + лог, затем `Close()` (требование AGENTS.md: причина всегда логируется ДО закрытия).
+
 ### Dockerfile: selectable Ubuntu base (24.04 default, 26.04 broken upstream)
 
 - **`Dockerfile`**: добавлен `ARG UBUNTU_VERSION=24.04` для обеих стадий (`builder` + runtime). Причина: образ `ubuntu:26.04` amd64 в registry сломан (пустой `/bin/dash` → `exec format error`); дефолт — 24.04 (noble) LTS. Возврат на 26.04: `docker compose build --build-arg UBUNTU_VERSION=26.04 ptokax`.

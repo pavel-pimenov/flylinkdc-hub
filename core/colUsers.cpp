@@ -202,10 +202,10 @@ void Users::Add2NickList(User* pUser)
         catch (const std::bad_alloc&)
         {
             pUser->m_ui32BoolBits |= User::BIT_ERROR;
-            pUser->Close();
 
             LogDbg("Cannot reallocate {} bytes in Users::Add2NickList for m_NickList", m_ui32NickListSize + NICKLISTSIZE + 1);
 
+            pUser->Close();
             return;
         }
         m_ui32NickListSize = static_cast<uint32_t>(m_NickList.size()) - 1;
@@ -236,10 +236,10 @@ void Users::Add2NickList(User* pUser)
         catch (const std::bad_alloc&)
         {
             pUser->m_ui32BoolBits |= User::BIT_ERROR;
-            pUser->Close();
 
             LogDbgErr("[MEM] Cannot reallocate {} bytes in Users::Add2NickList for m_OpList", m_ui32OpListSize + OPLISTSIZE + 1);
 
+            pUser->Close();
             return;
         }
         m_ui32OpListSize = static_cast<uint32_t>(m_OpList.size()) - 1;
@@ -329,10 +329,10 @@ void Users::Add2OpList(User* pUser)
         catch (const std::bad_alloc&)
         {
             pUser->m_ui32BoolBits |= User::BIT_ERROR;
-            pUser->Close();
 
             LogDbgErr("[MEM] Cannot reallocate {} bytes in Users::Add2OpList for m_OpList", m_ui32OpListSize + OPLISTSIZE + 1);
 
+            pUser->Close();
             return;
         }
         m_ui32OpListSize = static_cast<uint32_t>(m_OpList.size()) - 1;
@@ -503,10 +503,10 @@ void Users::Add2MyInfos(User* pUser)
         catch (const std::bad_alloc&)
         {
             pUser->m_ui32BoolBits |= User::BIT_ERROR;
-            pUser->Close();
 
             LogDbgErr("[MEM] Cannot reallocate {} bytes in Users::Add2MyInfos", m_ui32MyInfosSize + g_ui32MyInfoListSize + 1);
 
+            pUser->Close();
             return;
         }
         m_ui32MyInfosSize = static_cast<uint32_t>(m_MyInfos.size()) - 1;
@@ -580,10 +580,10 @@ void Users::Add2MyInfosTag(User* pUser)
         catch (const std::bad_alloc&)
         {
             pUser->m_ui32BoolBits |= User::BIT_ERROR;
-            pUser->Close();
 
             LogDbgErr("[MEM] Cannot reallocate {} bytes in Users::Add2MyInfosTag", m_ui32MyInfosTagSize + g_ui32MyInfoListSize + 1);
 
+            pUser->Close();
             return;
         }
         m_ui32MyInfosTagSize = static_cast<uint32_t>(m_MyInfosTag.size()) - 1;
@@ -718,10 +718,10 @@ void Users::Add2UserIP(User* pUser)
         catch (const std::bad_alloc&)
         {
             pUser->m_ui32BoolBits |= User::BIT_ERROR;
-            pUser->Close();
 
             LogDbgErr("[MEM] Cannot reallocate {} bytes in Users::Add2UserIP", m_ui32UserIPListSize + g_ui32IpListSize + 1);
 
+            pUser->Close();
             return;
         }
         m_ui32UserIPListSize = static_cast<uint32_t>(m_UserIPList.size()) - 1;
