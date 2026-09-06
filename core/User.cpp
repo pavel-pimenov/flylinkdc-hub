@@ -1092,7 +1092,8 @@ void User::SendFormat(const char* sFrom, const bool bDelayed, const char* sForma
 
     va_end(vlArgs);
 
-    if (iRet <= 0)
+    // iRet >= buffer size means truncation: PutInSendBuf would read past the buffer end.
+    if (iRet <= 0 || static_cast<size_t>(iRet) >= ServerManager::m_szGlobalBufferSize)
     {
         LogDbgErr("[ERR] vsnprintf wrong value {} in User::SendFormatDelayed from: {}", iRet, sFrom);
 
@@ -1156,7 +1157,8 @@ void User::SendFormatCheckPM(const char* sFrom, const char* sOtherNick, const bo
 
     va_end(vlArgs);
 
-    if (iRet <= 0)
+    // iRet >= remaining space means truncation: iMsgLen would overshoot the buffer end.
+    if (iRet <= 0 || static_cast<size_t>(iRet) >= ServerManager::m_szGlobalBufferSize - iMsgLen)
     {
         LogDbgErr("[ERR] vsnprintf wrong value {} in User::SendFormatCheckPM from: {}", iRet, sFrom);
 

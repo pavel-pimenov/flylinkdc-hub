@@ -1134,7 +1134,8 @@ void GlobalDataQueue::StatusMessageFormat(const char* sFrom, const char* sFormat
 
     va_end(vlArgs);
 
-    if (iRet <= 0)
+    // iRet >= remaining space means truncation: queue item would read past the buffer end.
+    if (iRet <= 0 || static_cast<size_t>(iRet) >= ServerManager::m_szGlobalBufferSize - iMsgLen)
     {
         LogDbgErr("[ERR] vsnprintf wrong value {} in GlobalDataQueue::StatusMessageFormat from: {}", iRet, sFrom);
         return;

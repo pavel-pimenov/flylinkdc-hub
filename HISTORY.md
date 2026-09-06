@@ -1,5 +1,9 @@
 ## 2026-09-06
 
+### Харденинг vsnprintf truncation в SendFormat/StatusMessageFormat
+
+- **`core/User.cpp`** (`SendFormat`, `SendFormatCheckPM`), **`core/GlobalDataQueue.cpp`** (`StatusMessageFormat`): проверялось только `iRet <= 0`, truncation (`iRet >= остаток буфера`) не детектировалась — `iMsgLen` уезжал за конец 256 КБ глобального буфера, дальше `PutInSendBuf`/`AddQueueItem` читали бы чужую память кучи и рассылали её клиентам (OOB read + infoleak). Добавлена проверка `iRet >= remaining` с паттерном из уже защищённого `UdpDebug::Broadcast`. Практически недостижимо (сообщения собираются из ограниченных полей), но класс устранён.
+
 ### Харденинг SnprintfAppend против переполнения буфера
 
 - **`core/utility.h`**: `SnprintfAppend` не детектировал truncation — `vsnprintf` возвращает длину "сколько хотел записать", и при нехватке места `offset` уезжал за конец буфера, а следующий вызов считал `size - offset` с underflow в огромный `size_t` → запись мимо буфера. Теперь: проверка `offset` до вызова и `iRet >= avail` после, при неуспехе `offset` не меняется, все вызывающие уже обрабатывают `false`. Практически недостижимо (глобальный буфер 256 КБ против команд ≤ 64 КБ), но класс бага устранён на уровне хелпера для всех вызывающих сразу.
