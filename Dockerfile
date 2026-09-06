@@ -29,10 +29,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Build zlib-ng (SIMD-optimized zlib replacement, vendored in deps/)
-COPY deps/zlib-ng-2.3.3.tar.gz /tmp/zlib-ng.tar.gz
-RUN tar xzf /tmp/zlib-ng.tar.gz -C /tmp && \
-    rm /tmp/zlib-ng.tar.gz && \
-    cmake -B /tmp/zlib-ng-2.3.3/build -G Ninja \
+COPY deps/zlib-ng-2.3.3 /tmp/zlib-ng-2.3.3
+RUN cmake -B /tmp/zlib-ng-2.3.3/build -G Ninja \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/local \
         -DZLIB_COMPAT=ON \
