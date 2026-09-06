@@ -127,7 +127,7 @@ else
 fi
 
 echo "=== [1/5] Lua syntax check ==="
-LUA_ERRS=$(find "$SCRIPT_DIR/scripts" \( -name '*.lua' -o -name '*.lu' \) -print0 | xargs -0 luac5.4 -p 2>&1)
+LUA_ERRS=$(find "$SCRIPT_DIR/scripts" \( -name '*.lua' -o -name '*.lu' \) -print0 2>/dev/null | xargs -0 -r luac5.4 -p 2>&1)
 if [ -z "$LUA_ERRS" ]; then
     LUA_COUNT=$(find "$SCRIPT_DIR/scripts" -name '*.lua' -o -name '*.lu' | wc -l)
     echo "OK: All $LUA_COUNT Lua scripts pass syntax check"

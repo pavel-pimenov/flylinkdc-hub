@@ -14,6 +14,10 @@
   - слишком короткий MyINFO (`m_ui16MyInfoOriginalLen <= 14 + nick.size()`, защита от underflow `len - 1u`): в лог идут ник, IP и фактическая длина;
   - нечисловое share-поле (`HaveOnlyNumbers` fail, поддельная шара): в лог идут ник, IP и длина поля.
 
+### test-hub.sh: фикс падения lua-проверки при пустом scripts/
+
+- **`test-hub.sh`**: добавлен флаг `-r` к `xargs luac5.4` (не запускать компилятор без входных файлов) и `2>/dev/null` к `find` — на checkout без пользовательских скриптов (`scripts/` отсутствует, монтируется volume) проверка падала с `FAIL: Lua syntax errors` из-за usage-ошибки `luac5.4 -p` без аргументов. Теперь: `OK: All 0 Lua scripts pass syntax check`.
+
 ## 2026-08-06
 
 ### ASan/UBSan soak run in Docker (Debug build)
