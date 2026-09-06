@@ -1,3 +1,13 @@
+## 2026-09-06
+
+### Dockerfile: selectable Ubuntu base (24.04 default, 26.04 broken upstream)
+
+- **`Dockerfile`**: добавлен `ARG UBUNTU_VERSION=24.04` для обеих стадий (`builder` + runtime). Причина: образ `ubuntu:26.04` amd64 в registry сломан (пустой `/bin/dash` → `exec format error`); дефолт — 24.04 (noble) LTS. Возврат на 26.04: `docker compose build --build-arg UBUNTU_VERSION=26.04 ptokax`.
+- **`Dockerfile`**: runtime-зависимости выбираются по версии (`libtinyxml2-10/libspdlog1.12/libfmt9` для 24.04, `-11/1.15/10` для 26.04).
+- **`Dockerfile`**: zlib-ng собирается из завендоренного тарболла `deps/zlib-ng-2.3.3.tar.gz` (2.4 MB, исходники zlib-ng 2.3.3 с GitHub, sha256 `f9c65aa9...ca0c907d1`) — скачивание из сети на этапе сборки больше не нужно, clean-checkout собирается офлайн.
+- **`Dockerfile`**: в builder добавлен пропущенный пакет `pkgconf` (без него cmake падал с `Could NOT find PkgConfig`).
+- **`Dockerfile`**: `COPY build_number.txt` теперь с комментарием про обязательный `bash gen-build-number.sh` перед сборкой (файл в gitignore, `test-hub.sh --docker` генерирует его автоматически).
+
 ## 2026-08-06
 
 ### ASan/UBSan soak run in Docker (Debug build)

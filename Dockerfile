@@ -1,6 +1,13 @@
 # syntax=docker/dockerfile:1
-FROM ubuntu:26.04 AS builder
+# Base image version is selectable via --build-arg UBUNTU_VERSION.
+# NOTE: ubuntu:26.04 amd64 image is currently broken in the registry
+# (empty /bin/dash -> "exec format error"), so the default is 24.04 (noble) LTS.
+# Switch back to 26.04 once Canonical fixes the base image:
+#   docker compose build --build-arg UBUNTU_VERSION=26.04 ptokax
+ARG UBUNTU_VERSION=24.04
+FROM ubuntu:${UBUNTU_VERSION} AS builder
 
+ARG UBUNTU_VERSION
 ARG BUILD_TYPE=Release
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -10,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     ninja-build \
     mold \
-    curl \
+    pkgconf \
     liblua5.4-dev \
     lua5.4 \
     libsqlite3-dev \
@@ -21,7 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libspdlog-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Build zlib-ng (SIMD-optimized zlib replacement)
+# Build zlib-ng (SIMD-optimized zlib replacement, vendored in deps/)
 COPY deps/zlib-ng-2.3.3.tar.gz /tmp/zlib-ng.tar.gz
 RUN tar xzf /tmp/zlib-ng.tar.gz -C /tmp && \
     rm /tmp/zlib-ng.tar.gz && \
@@ -40,6 +47,8 @@ RUN tar xzf /tmp/zlib-ng.tar.gz -C /tmp && \
 WORKDIR /app
 
 COPY CMakeLists.txt ./
+# Build number must be pre-generated: bash gen-build-number.sh
+# (test-hub.sh --docker does this automatically before docker build)
 COPY build_number.txt ./
 COPY core/ core/
 COPY skein/ skein/
@@ -52,8 +61,9 @@ RUN cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
     cmake --build build -j$(nproc) && \
     cmake --install build
 
-FROM ubuntu:26.04
+FROM ubuntu:${UBUNTU_VERSION}
 
+ARG UBUNTU_VERSION
 ARG BUILD_TYPE=Release
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -61,15 +71,16 @@ ENV TZ=Europe/Moscow
 ENV LANG=ru_RU.CP1251
 ENV LC_ALL=ru_RU.CP1251
 
+# Versioned runtime libs differ between Ubuntu releases:
+#   24.04: tinyxml2-10 / spdlog 1.12 / fmt 9
+#   26.04: tinyxml2-11 / spdlog 1.15 / fmt 10
 RUN apt-get update && apt-get install -y --no-install-recommends \
     liblua5.4-0 \
     libsqlite3-0 \
     libcivetweb1 \
-    libtinyxml2-11 \
+    $(if [ "$UBUNTU_VERSION" = "26.04" ]; then echo "libtinyxml2-11 libspdlog1.15 libfmt10"; else echo "libtinyxml2-10 libspdlog1.12 libfmt9"; fi) \
     libprometheus-cpp-core1.0 \
     libprometheus-cpp-pull1.0 \
-    libspdlog1.15 \
-    libfmt10 \
     iproute2 \
     binutils \
     tzdata \
