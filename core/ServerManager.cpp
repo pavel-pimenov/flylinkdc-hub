@@ -581,6 +581,7 @@ void ServerManager::UpdateServers()
 
         if (!bFound)
         {
+            LogInfo("[SYS] Stopping listener on port {} (removed from settings).", (*it)->m_ui16Port);
             (*it)->Close();
             (*it)->WaitFor();
             it = m_Servers.erase(it);
@@ -680,6 +681,8 @@ void ServerManager::CreateServerThread(const int iAddrFamily, const uint16_t ui1
 
     if (pServer->Listen())
     {
+        LogInfo("[SYS] Listening on port {} ({}).", ui16PortNumber, iAddrFamily == AF_INET6 ? "IPv6" : "IPv4");
+
         if (bResume)
         {
             pServer->Resume();
